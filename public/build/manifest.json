@@ -1,0 +1,169 @@
+{
+  "resources/image/background-login-3.svg": {
+    "file": "assets/background-login-3.66c98ad5.js",
+    "src": "resources/image/background-login-3.svg",
+    "isEntry": true
+  },
+  "resources/image/IVAN.jpg": {
+    "file": "assets/IVAN.700ba807.js",
+    "src": "resources/image/IVAN.jpg",
+    "isEntry": true
+  },
+  "resources/image/pic-login-3.svg": {
+    "file": "assets/pic-login-3.3a843ab5.js",
+    "src": "resources/image/pic-login-3.svg",
+    "isEntry": true
+  },
+  "resources/fonts/fa-regular-400.eot": {
+    "file": "assets/fa-regular-400.6e70525b.eot",
+    "src": "resources/fonts/fa-regular-400.eot"
+  },
+  "resources/fonts/fa-brands-400.eot": {
+    "file": "assets/fa-brands-400.c563adba.eot",
+    "src": "resources/fonts/fa-brands-400.eot"
+  },
+  "resources/fonts/fa-solid-900.eot": {
+    "file": "assets/fa-solid-900.c141af32.eot",
+    "src": "resources/fonts/fa-solid-900.eot"
+  },
+  "resources/fonts/outlined-iconset.eot": {
+    "file": "assets/outlined-iconset.7e0d8908.eot",
+    "src": "resources/fonts/outlined-iconset.eot"
+  },
+  "resources/fonts/themify.eot": {
+    "file": "assets/themify.dff415da.eot",
+    "src": "resources/fonts/themify.eot"
+  },
+  "resources/fonts/materialdesignicons-webfont.eot": {
+    "file": "assets/materialdesignicons-webfont.2ed5032e.eot",
+    "src": "resources/fonts/materialdesignicons-webfont.eot"
+  },
+  "resources/fonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400.e5c1d9e7.woff2",
+    "src": "resources/fonts/fa-regular-400.woff2"
+  },
+  "resources/fonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900.08aa3a5e.woff2",
+    "src": "resources/fonts/fa-solid-900.woff2"
+  },
+  "resources/fonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400.c885e9f2.woff2",
+    "src": "resources/fonts/fa-brands-400.woff2"
+  },
+  "resources/fonts/outlined-iconset.woff": {
+    "file": "assets/outlined-iconset.df204001.woff",
+    "src": "resources/fonts/outlined-iconset.woff"
+  },
+  "resources/fonts/themify.woff": {
+    "file": "assets/themify.0db5c5a1.woff",
+    "src": "resources/fonts/themify.woff"
+  },
+  "resources/fonts/materialdesignicons-webfont.woff2": {
+    "file": "assets/materialdesignicons-webfont.3b616977.woff2",
+    "src": "resources/fonts/materialdesignicons-webfont.woff2"
+  },
+  "resources/fonts/fa-regular-400.woff": {
+    "file": "assets/fa-regular-400.9064839b.woff",
+    "src": "resources/fonts/fa-regular-400.woff"
+  },
+  "resources/fonts/outlined-iconset.ttf": {
+    "file": "assets/outlined-iconset.9eaf0678.ttf",
+    "src": "resources/fonts/outlined-iconset.ttf"
+  },
+  "resources/fonts/fa-solid-900.woff": {
+    "file": "assets/fa-solid-900.1675e164.woff",
+    "src": "resources/fonts/fa-solid-900.woff"
+  },
+  "resources/fonts/fa-brands-400.woff": {
+    "file": "assets/fa-brands-400.ca734c79.woff",
+    "src": "resources/fonts/fa-brands-400.woff"
+  },
+  "resources/fonts/themify.ttf": {
+    "file": "assets/themify.350663a4.ttf",
+    "src": "resources/fonts/themify.ttf"
+  },
+  "resources/fonts/materialdesignicons-webfont.woff": {
+    "file": "assets/materialdesignicons-webfont.25db3316.woff",
+    "src": "resources/fonts/materialdesignicons-webfont.woff"
+  },
+  "resources/fonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400.41857101.ttf",
+    "src": "resources/fonts/fa-regular-400.ttf"
+  },
+  "resources/fonts/outlined-iconset.svg": {
+    "file": "assets/outlined-iconset.0dc6f928.svg",
+    "src": "resources/fonts/outlined-iconset.svg"
+  },
+  "resources/fonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400.3b3fbc59.ttf",
+    "src": "resources/fonts/fa-brands-400.ttf"
+  },
+  "resources/fonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900.cef5dd66.ttf",
+    "src": "resources/fonts/fa-solid-900.ttf"
+  },
+  "resources/fonts/themify.svg": {
+    "file": "assets/themify.f7af2e09.svg",
+    "src": "resources/fonts/themify.svg"
+  },
+  "resources/fonts/materialdesignicons-webfont.ttf": {
+    "file": "assets/materialdesignicons-webfont.bc4ca7e6.ttf",
+    "src": "resources/fonts/materialdesignicons-webfont.ttf"
+  },
+  "resources/fonts/fa-regular-400.svg": {
+    "file": "assets/fa-regular-400.a849aa4a.svg",
+    "src": "resources/fonts/fa-regular-400.svg"
+  },
+  "resources/fonts/fa-brands-400.svg": {
+    "file": "assets/fa-brands-400.f6ae6226.svg",
+    "src": "resources/fonts/fa-brands-400.svg"
+  },
+  "resources/fonts/fa-solid-900.svg": {
+    "file": "assets/fa-solid-900.7ad9caab.svg",
+    "src": "resources/fonts/fa-solid-900.svg"
+  },
+  "resources/fonts/materialdesignicons-webfont.svg": {
+    "file": "assets/materialdesignicons-webfont.f12e9bb5.svg",
+    "src": "resources/fonts/materialdesignicons-webfont.svg"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app.e0366d2a.js",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/bootstrap.js": {
+    "file": "assets/bootstrap.f8d8814c.js",
+    "src": "resources/js/bootstrap.js",
+    "isEntry": true
+  },
+  "resources/sass/login.scss": {
+    "file": "assets/login.f374b21b.css",
+    "src": "resources/sass/login.scss",
+    "isEntry": true
+  },
+  "resources/sass/productos.scss": {
+    "file": "assets/productos.89b8cdaa.css",
+    "src": "resources/sass/productos.scss",
+    "isEntry": true
+  },
+  "resources/sass/settings.scss": {
+    "file": "assets/settings.3e4313b6.css",
+    "src": "resources/sass/settings.scss",
+    "isEntry": true
+  },
+  "resources/sass/alumnos.scss": {
+    "file": "assets/alumnos.89b8cdaa.css",
+    "src": "resources/sass/alumnos.scss",
+    "isEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app.b9721cbb.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app.88252420.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}

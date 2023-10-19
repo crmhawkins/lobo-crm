@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fe:Facturae xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:fe="http://www.facturae.es/Facturae/2014/v3.2.1/Facturae"><FileHeader><SchemaVersion>3.2.1</SchemaVersion><Modality>I</Modality><InvoiceIssuerType>EM</InvoiceIssuerType><Batch><BatchIdentifier>b00052152000004PAR202302</BatchIdentifier><InvoicesCount>1</InvoicesCount><TotalInvoicesAmount><TotalAmount>162.00</TotalAmount></TotalInvoicesAmount><TotalOutstandingAmount><TotalAmount>162.00</TotalAmount></TotalOutstandingAmount><TotalExecutableAmount><TotalAmount>162.00</TotalAmount></TotalExecutableAmount><InvoiceCurrencyCode>EUR</InvoiceCurrencyCode></Batch></FileHeader><Parties><SellerParty><TaxIdentification><PersonTypeCode>J</PersonTypeCode><ResidenceTypeCode>R</ResidenceTypeCode><TaxIdentificationNumber>b00052152</TaxIdentificationNumber></TaxIdentification><LegalEntity><CorporateName>Ejemplo</CorporateName><AddressInSpain><Address>C/ Prueba Nº 6</Address><PostCode>11202</PostCode><Town>Algeciras</Town><Province>Cadiz</Province><CountryCode>ESP</CountryCode></AddressInSpain></LegalEntity></SellerParty><BuyerParty><TaxIdentification><PersonTypeCode>F</PersonTypeCode><ResidenceTypeCode>R</ResidenceTypeCode><TaxIdentificationNumber>32548747g</TaxIdentificationNumber></TaxIdentification><Individual><Name>Manuel</Name><FirstSurname>Tirado</FirstSurname><SecondSurname>Jamon</SecondSurname><AddressInSpain><Address>C/ pruebas Nº 5</Address><PostCode>11202</PostCode><Town>Algeciras</Town><Province>Cadiz</Province><CountryCode>ESP</CountryCode></AddressInSpain></Individual></BuyerParty></Parties><Invoices><Invoice><InvoiceHeader><InvoiceNumber>000004</InvoiceNumber><InvoiceSeriesCode>PAR202302</InvoiceSeriesCode><InvoiceDocumentType>FC</InvoiceDocumentType><InvoiceClass>OO</InvoiceClass></InvoiceHeader><InvoiceIssueData><IssueDate>2023-02-14</IssueDate><InvoiceCurrencyCode>EUR</InvoiceCurrencyCode><TaxCurrencyCode>EUR</TaxCurrencyCode><LanguageName>es</LanguageName></InvoiceIssueData><TaxesOutputs><Tax><TaxTypeCode>01</TaxTypeCode><TaxRate>20.00</TaxRate><TaxableBase><TotalAmount>135.00</TotalAmount></TaxableBase><TaxAmount><TotalAmount>27.00</TotalAmount></TaxAmount></Tax></TaxesOutputs><InvoiceTotals><TotalGrossAmount>135.00</TotalGrossAmount><TotalGeneralDiscounts>0.00</TotalGeneralDiscounts><TotalGeneralSurcharges>0.00</TotalGeneralSurcharges><TotalGrossAmountBeforeTaxes>135.00</TotalGrossAmountBeforeTaxes><TotalTaxOutputs>27.00</TotalTaxOutputs><TotalTaxesWithheld>0.00</TotalTaxesWithheld><InvoiceTotal>162.00</InvoiceTotal><TotalOutstandingAmount>162.00</TotalOutstandingAmount><TotalExecutableAmount>162.00</TotalExecutableAmount></InvoiceTotals><Items><InvoiceLine><ItemDescription>GAMBAS</ItemDescription><Quantity>15</Quantity><UnitOfMeasure>01</UnitOfMeasure><UnitPriceWithoutTax>9.00</UnitPriceWithoutTax><TotalCost>135.00</TotalCost><GrossAmount>135.00</GrossAmount><TaxesOutputs><Tax><TaxTypeCode>01</TaxTypeCode><TaxRate>20.00</TaxRate><TaxableBase><TotalAmount>135.00</TotalAmount></TaxableBase><TaxAmount><TotalAmount>27.00</TotalAmount></TaxAmount></Tax></TaxesOutputs><ArticleCode>COD123456</ArticleCode></InvoiceLine></Items></Invoice></Invoices><ds:Signature xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="Signature1603103683">
+<ds:SignedInfo Id="Signature-SignedInfo579884332">
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"></ds:CanonicalizationMethod>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512"></ds:SignatureMethod>
+<ds:Reference Id="SignedPropertiesID816357136" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature1603103683-SignedProperties1375776532">
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></ds:DigestMethod>
+<ds:DigestValue>d0oGNaWytei6qJ9pNPU67mRdHDe3uOqgCj2Hl4payHdGwJoE9P3VVYsQDkS5bTeLCspK5I7eDG5KLIHWMOW8xg==</ds:DigestValue>
+</ds:Reference>
+<ds:Reference URI="#Certificate1206092389">
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></ds:DigestMethod>
+<ds:DigestValue>rrMbabBLPImOu7ojylEkQ0KIY+aejAgQgH1wKWuF/SJ20O3kyftfCMG9LmGvxgkSVIlf8pOY+eesBr1kALIa6w==</ds:DigestValue>
+</ds:Reference>
+<ds:Reference Id="Reference-ID-609453017" Type="http://www.w3.org/2000/09/xmldsig#Object" URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></ds:DigestMethod>
+<ds:DigestValue>+r+JdtdBlKCGLEiuUrIwqTLS9DA9bo4k73FPfAWULgm7Db93ml/vdnK52pyjNRhva1n7ORyVA5TGPlX9mxEkkA==</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue Id="SignatureValue875475684">
+U1TLOgcfQtKNnzJsDVpHcgBpIZi4Cg5TnTWF5e/X8zcP/NVXAT3C+eU2AcxQiMnxilHmt5pWv++4
+C4x53vg+/u10fccNDGOY1O2fNXjqN7b4LLeqAF0Xg6ju9jbxYyOdQiQLfXSPK61m1Ka10HjPHrMO
+dCgc+OgNVZ7N+iVB6eemNwqSkZgoiuSULBXTNNLjz1Kybueci0Dbs8+uqXCJ9ccx0qT8c65qSzJ9
+M3SJ411LqYx+zzWO7A0pGN0TcqO/8/Y0iSWXHlrT8WcS1qxW/RtyHiLOi34wKCIMyrO8LpZUCq/H
++H2BIFRmB4de992c+jSejqkm8HlwHsBoxHGCMQ==
+</ds:SignatureValue>
+<ds:KeyInfo Id="Certificate1206092389">
+<ds:X509Data>
+<ds:X509Certificate>
+MIII4TCCB8mgAwIBAgIQJ5OD1WFxTexhXcN4VFOobDANBgkqhkiG9w0BAQsFADBNMQswCQYDVQQG
+EwJFUzERMA8GA1UECgwIRk5NVC1SQ00xDjAMBgNVBAsMBUNFUkVTMRswGQYDVQQDDBJBQyBSZXBy
+ZXNlbnRhY2nDs24wHhcNMjExMDA2MTU0MDQwWhcNMjMxMDA2MTU0MDQwWjCCASExWTBXBgNVBA0M
+UFJlZzoxMTAxNiAvSG9qYTpDQS0zOTA4NyAvVG9tbzoxOTQzIC9Gb2xpbzoxNTcgL0ZlY2hhOjI2
+LzA1LzIwMDkgL0luc2NyaXBjacOzbjoxMRgwFgYDVQQFEw9JRENFUy03NTg5MjAwN0IxDTALBgNV
+BCoMBElWQU4xGjAYBgNVBAQMEUZFUk5BTkRFWiBDQVJET1NBMTAwLgYDVQQDDCc3NTg5MjAwN0Ig
+SVZBTiBGRVJOQU5ERVogKFI6IEI3MjEzOTg2OCkxGDAWBgNVBGEMD1ZBVEVTLUI3MjEzOTg2ODEm
+MCQGA1UECgwdSVBPSU5UIENPTVVOSUNBQ0lPTiBNQVNJVkEgU0wxCzAJBgNVBAYTAkVTMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1YPYjKhzgrfd7QRQ/ELwx/pGWQk0mTYl5VW1d4yq
+q0cbNnrfmyc0nTLhBnJSj9VOR2JXnKu1Ch437jFl6dyTh4i+SAy+N7+tfkzBq+JH56GGxNIxcEpw
+A3O6T4WUixldw/1M1vlKnLm1PbUtVkeRF3HbfNYXK/wdnARTraS41H2sJHsmaC0xzXXeHH0mqvGt
+hAOczIMQEoiJHk6l07jAyL8zXfAXuz4buBC9lAOlNT5J77g0lIoTlTS5p1LqJzb6r1iyBfHKnFHd
+gTj4QJnPfvpRGBgrAiJTa4j5q02/qLK6n1qdjdC56sa2Qxcg8gBYJKAZKilID2CipPUMH5KULwID
+AQABo4IE5TCCBOEwggELBgNVHREEggECMIH/gR1NRVJDQU5USUxAUEFUUklDSUFQRVJET01PLkNP
+TaSB3TCB2jEjMCEGCSsGAQQBrGYBFAwUQWRtaW5pc3RyYWRvciDDum5pY28xHjAcBgkrBgEEAaxm
+AQcMD1ZBVEVTLUI3MjEzOTg2ODEsMCoGCSsGAQQBrGYBBgwdSVBPSU5UIENPTVVOSUNBQ0lPTiBN
+QVNJVkEgU0wxHjAcBgkrBgEEAaxmAQQMD0lEQ0VTLTc1ODkyMDA3QjEWMBQGCSsGAQQBrGYBAwwH
+Q0FSRE9TQTEYMBYGCSsGAQQBrGYBAgwJRkVSTkFOREVaMRMwEQYJKwYBBAGsZgEBDARJVkFOMAwG
+A1UdEwEB/wQCMAAwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+BDCBggYIKwYBBQUHAQEEdjB0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcHJlcC5jZXJ0LmZubXQu
+ZXMvb2NzcHJlcC9PY3NwUmVzcG9uZGVyMDMGCCsGAQUFBzAChidodHRwOi8vd3d3LmNlcnQuZm5t
+dC5lcy9jZXJ0cy9BQ1JFUC5jcnQwHQYDVR0OBBYEFAI2GzDS3Wv1FCnBCMTap6R6s3rFMIIBPwYD
+VR0gBIIBNjCCATIwggEYBgorBgEEAaxmAwsBMIIBCDApBggrBgEFBQcCARYdaHR0cDovL3d3dy5j
+ZXJ0LmZubXQuZXMvZHBjcy8wgdoGCCsGAQUFBwICMIHNDIHKQ2VydGlmaWNhZG8gY3VhbGlmaWNh
+ZG8gZGUgcmVwcmVzZW50YW50ZSBkZSBwLiBqdXLDrWRpY2EgKHJlbGFjacOzbiBjb24gQUFQUCB5
+IGNvbnRyYXRhY2nDs24pLiBTdWpldG8gYSBjb25kaWNpb25lcyBkZSB1c28gc2Vnw7puIERQQyBk
+ZSBGTk1ULVJDTSwgTklGOiBRMjgyNjAwNC1KIChDL0pvcmdlIEp1YW4gMTA2LTI4MDA5LU1hZHJp
+ZC1Fc3Bhw7FhKTAJBgcEAIvsQAEAMAkGB2CFVAEDBQgwgaYGCCsGAQUFBwEDBIGZMIGWMAgGBgQA
+jkYBATATBgYEAI5GAQYwCQYHBACORgEGATBoBgYEAI5GAQUwXjAtFidodHRwczovL3d3dy5jZXJ0
+LmZubXQuZXMvcGRzL1BEU19lcy5wZGYTAmVzMC0WJ2h0dHBzOi8vd3d3LmNlcnQuZm5tdC5lcy9w
+ZHMvUERTX2VuLnBkZhMCZW4wCwYGBACORgEDAgEPMB8GA1UdIwQYMBaAFNxQlp/XMYnJEeTvll/2
+X4JSRmJTMIHhBgNVHR8EgdkwgdYwgdOggdCggc2GgZ1sZGFwOi8vbGRhcHJlcC5jZXJ0LmZubXQu
+ZXMvQ049Q1JMMTQ5OSxPVT1BQyUyMFJlcHJlc2VudGFjaW9uLE9VPUNFUkVTLE89Rk5NVC1SQ00s
+Qz1FUz9jZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0O2JpbmFyeT9iYXNlP29iamVjdGNsYXNzPWNS
+TERpc3RyaWJ1dGlvblBvaW50hitodHRwOi8vd3d3LmNlcnQuZm5tdC5lcy9jcmxzcmVwL0NSTDE0
+OTkuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQC/d3pC8gGte78VxVhqXA96O/ipbIvLux+2D3Srk/Nr
+2KkrKklWOrHkDNuSt61myxNaED3FOOavI+oQXBxjHXC4DLaR94m3DFUTrEQZ77GXWGBUmbAkirPg
+zXwwwW9aWhdlwWNEYVTiwQqTQRN6rADtx+BJnZDZD4+oEi6IvF+vyFMpznCpOJAAr6V54iPyqURV
+F4Zj6GcMFlDGV11TyALOCW/FQhchW6emJRKiwnPdIDCd67k3PNdJEqhABaUL8R9sXkzUKYqmPpcG
+pitUEEviP1M/QIib0JgCtAYjg7Q5Mlb06mbspqXVwdlm3RpeUqxRHe464uxt6q3CA+lcIKX4
+</ds:X509Certificate>
+<ds:X509Certificate>
+MIIFgzCCA2ugAwIBAgIPXZONMGc2yAYdGsdUhGkHMA0GCSqGSIb3DQEBCwUAMDsxCzAJBgNVBAYT
+AkVTMREwDwYDVQQKDAhGTk1ULVJDTTEZMBcGA1UECwwQQUMgUkFJWiBGTk1ULVJDTTAeFw0wODEw
+MjkxNTU5NTZaFw0zMDAxMDEwMDAwMDBaMDsxCzAJBgNVBAYTAkVTMREwDwYDVQQKDAhGTk1ULVJD
+TTEZMBcGA1UECwwQQUMgUkFJWiBGTk1ULVJDTTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoC
+ggIBALpxgHpMhm5/yBNtwMZ9HACXjywMI7sQmkCpGreHiPibVmr75nuOi5KOpyVdWRHbNi63URcf
+qQgfBBckWKo3Shjf5TnUV/3XwSyRAZHiItQDwFj8d0fsjz50Q7qsNI1NOHZnjrDIbzAzWHFctPVr
+btQBULgTfmxKo0nRIBnuvMApGGWn3v7v3QqQIecaZ5JCEJhfTzC8PhxFtBDXaEAUwED653cXeuYL
+j2VbPNmaUtu1vZ5Gzz3rkQUCwJaydkxNEJY7kvqcfw+Z374jNUUeAlz+taibmSXaXvMiwzn15Cou
+08YfxGyqxRxqAQVKL9LFwag0Jl1mpdICIfkYtwb1TplvqKtMUejPUBjFd8g5CSxJkjKZqLsXF3mw
+WsXmo8RZZUc1g16p6DULmbvkzSDGm0oGObVo/CK67lWMK07q87Hj/LaZmtVC+nFNCM+HHmpxffnT
+tOmlcYF7wk5HlqX2doWjKI/pgG6BU6VtX7hI+cL5NqYuSf+4lsKMB7ObiFj86xsc3i1w4peSMKGJ
+47xVqCfWS+2QrYv6YyVZLag13cqXM7zlzced0ezvXg5KkAYmY6252TUtB7p2ZSysV4999AeU14EC
+ll2jB0nVetBX+RvnU0Z1qrB5QstocQjpYL05ac70r8NWQMetUqIJ5G+GR4of6ygnXYMgrwTJbFaa
+i0b1AgMBAAGjgYMwgYAwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0OBBYE
+FPd9xf3E6Jobd2Sn9R2gzL+HYJptMD4GA1UdIAQ3MDUwMwYEVR0gADArMCkGCCsGAQUFBwIBFh1o
+dHRwOi8vd3d3LmNlcnQuZm5tdC5lcy9kcGNzLzANBgkqhkiG9w0BAQsFAAOCAgEAB5BK3/MjTvDD
+nFFlm5wioooMhfNzKWtN/gHiqQxjAb8EZ6WdmF/9ARP67Jpi6Yb+tmLSbkyU+8B1RXxlDPiyN8+s
+D8+Nb/kZ94/sHvJwnvDKuO+3/3Y3dlv2bojzr2IyIpMNOmqOFGYMLVN0V2Ue1bLdI4E7pWYjJ2cJ
+j+F3qkPNZVEI7VFY/uY5+ctHhKQV8Xa7pO6kO8Rf77IzlhEYt8llvhjho6Tc+hj507wTmzl6NLrT
+Qfv6MooqtyuGC2mDOL7Nii4LcK2NJpLuHvUBKwrZ1pebbuCoGRw6IYsMHkCtA+fdZn71uSANA+iW
++YJF1DngoABd15jmfZ5nc8OaKveri6E6FO80vFIOiZiaBECEHX5FaZNXzuvO+FB8TxxuBEOb+dY7
+Ixjp6o7RTUaN8Tvkasq6+yO3m/qZASlaWFot4/nUbQ4mrcFuNLwy+AwF+mWj2zs3gyLp1txyM/1d
+8iC9djwj2ij3+RvrWWTV3F9yfiD8zYm1kGdNYno/Tq0dwzn+evQoFt9B9kiABdcPUXmsEKvU7ANm
+5mqwujGSQkBqvjrTcuFqN1W8rB2Vt2lh8kORdOag0wokRqEIr9baRRmW1FMdW4R58MD3R++Lj8UG
+rp1MYp3/RgT408m2ECVAdf4WqslKYIYvuu8wd+RU4riEmViAqhOLUTpPSPaLtrM=
+</ds:X509Certificate>
+<ds:X509Certificate>
+MIIG3DCCBMSgAwIBAgIQYcLU1PaprndVkma5ja/WITANBgkqhkiG9w0BAQsFADA7MQswCQYDVQQG
+EwJFUzERMA8GA1UECgwIRk5NVC1SQ00xGTAXBgNVBAsMEEFDIFJBSVogRk5NVC1SQ00wHhcNMTUw
+NjMwMDk1MTUzWhcNMjkxMjMxMTA1MTUzWjBNMQswCQYDVQQGEwJFUzERMA8GA1UECgwIRk5NVC1S
+Q00xDjAMBgNVBAsMBUNFUkVTMRswGQYDVQQDDBJBQyBSZXByZXNlbnRhY2nDs24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCO7E+oUYbuTJaWkEQtIFgcRHD/kHavy+XBFdfCdUzDh9w
+7Yq4kYckBPW/YU1QRa4v35HbajEMCs4cyLnoJy8Wyzq7qrSwmNHhMYDjtGywJXbCo5SZVbIwyagW
+ig8Nb/x9Y5WGWIY76E9agPAoEYOxOG8h1J6ipNoBbq0R+4N4ODaq57ABY7mUSXb4WgjoVg4WxxZw
+0GGLuc8R1idoX1G/VqxvNymeCZ7o1bEwbs7X3NhRsK21w3ju8pkUNZXN6Pkflh9qIslOLiokKbiD
+wwAZE4nvU//B8Q8FLYk1sgTQTLET2EQZ308FlECRp3i6Ay4iezc0Yd3FKIDmOxCdDUcDAgMBAAGj
+ggLIMIICxDASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQU3FCW
+n9cxickR5O+WX/ZfglJGYlMwgZgGCCsGAQUFBwEBBIGLMIGIMEkGCCsGAQUFBzABhj1odHRwOi8v
+b2NzcGZubXRyY21jYS5jZXJ0LmZubXQuZXMvb2NzcGZubXRyY21jYS9PY3NwUmVzcG9uZGVyMDsG
+CCsGAQUFBzAChi9odHRwOi8vd3d3LmNlcnQuZm5tdC5lcy9jZXJ0cy9BQ1JBSVpGTk1UUkNNLmNy
+dDAfBgNVHSMEGDAWgBT3fcX9xOiaG3dkp/UdoMy/h2CabTCB6wYDVR0gBIHjMIHgMIHdBgRVHSAA
+MIHUMCkGCCsGAQUFBwIBFh1odHRwOi8vd3d3LmNlcnQuZm5tdC5lcy9kcGNzLzCBpgYIKwYBBQUH
+AgIwgZkMgZZTdWpldG8gYSBsYXMgY29uZGljaW9uZXMgZGUgdXNvIGV4cHVlc3RhcyBlbiBsYSBE
+ZWNsYXJhY2nDs24gZGUgUHLDoWN0aWNhcyBkZSBDZXJ0aWZpY2FjacOzbiBkZSBsYSBGTk1ULVJD
+TSAoIEMvIEpvcmdlIEp1YW4sIDEwNi0yODAwOS1NYWRyaWQtRXNwYcOxYSkwgdQGA1UdHwSBzDCB
+yTCBxqCBw6CBwIaBkGxkYXA6Ly9sZGFwZm5tdC5jZXJ0LmZubXQuZXMvQ049Q1JMLE9VPUFDJTIw
+UkFJWiUyMEZOTVQtUkNNLE89Rk5NVC1SQ00sQz1FUz9hdXRob3JpdHlSZXZvY2F0aW9uTGlzdDti
+aW5hcnk/YmFzZT9vYmplY3RjbGFzcz1jUkxEaXN0cmlidXRpb25Qb2ludIYraHR0cDovL3d3dy5j
+ZXJ0LmZubXQuZXMvY3Jscy9BUkxGTk1UUkNNLmNybDANBgkqhkiG9w0BAQsFAAOCAgEApS/HpvFq
+3S42VmjXtoNVxdh+m1/NdjoWVY6M2o9c+UZofrZWbaiQ+aNOn6/+Qf/LZk41jD+nEa/O1GkPyAin
+eYtjyW6Ae7ltVPIVIWQa3fALcgyN7s/U31qPooU7Zv7a5mghpxapWHvtL9yxpLjrtGsZD32qysIJ
+2pjDqJa5WeWVKF2RS1zy6Bm/9JzlxzTCH03kivP5ltp+cHik/KzJZ+HgPv6BLwO+OYrJ19vGbPuD
+GgOj7uJTG3XQIlZchTltgCmNRPKs/HOGOyDmWxm07FmrADQ1NWag3gjoH8xcfAlp9aBnm/UXFJuA
+kGOq8ASr+A5dpJeDP/rlKphDdxJpG5YKRwRSb7PnAccstmGxynL+K/0ofxAhbWqC6z7KeGyZBTeV
+IilPhp+xZzJnvFVBjN6s2j7W3+esQkiT4SdY9RN+c3tBuWF54UNc7YVe6KVTjzkpev9szp6vUNQ+
+A45i2KGXRLN6/16nA9fujzITRWmX4tOGABo0aL/wBrf3Po89gvZwZRaVQ9Bw/KfEF8eZDhA1MgQK
+SPJLSXSl58elHGFLUR2CQMGl+mgfPB0qZUUkRG/RYpZLocczAz6pfkxA3Mt3DfIyVtA/YJ0O4ZYp
+dbH9zdJZI1RQEWmFrMOrEAWmGIG0SmNpARqOPJsTQJomUcvd3EvA7so2LzLJ+Sjj2So=
+</ds:X509Certificate>
+</ds:X509Data>
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>
+1YPYjKhzgrfd7QRQ/ELwx/pGWQk0mTYl5VW1d4yqq0cbNnrfmyc0nTLhBnJSj9VOR2JXnKu1Ch43
+7jFl6dyTh4i+SAy+N7+tfkzBq+JH56GGxNIxcEpwA3O6T4WUixldw/1M1vlKnLm1PbUtVkeRF3Hb
+fNYXK/wdnARTraS41H2sJHsmaC0xzXXeHH0mqvGthAOczIMQEoiJHk6l07jAyL8zXfAXuz4buBC9
+lAOlNT5J77g0lIoTlTS5p1LqJzb6r1iyBfHKnFHdgTj4QJnPfvpRGBgrAiJTa4j5q02/qLK6n1qd
+jdC56sa2Qxcg8gBYJKAZKilID2CipPUMH5KULw==
+</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo>
+<ds:Object Id="Signature1603103683-Object1706599723"><xades:QualifyingProperties Target="#Signature1603103683"><xades:SignedProperties Id="Signature1603103683-SignedProperties1375776532"><xades:SignedSignatureProperties><xades:SigningTime>2023-02-08T14:29:59+00:00</xades:SigningTime><xades:SigningCertificate><xades:Cert><xades:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"></ds:DigestMethod><ds:DigestValue>UvQxqCIRI0ZG9Fy/OiJJUOaqBI5V6WlmgsRrV4xopTinrZTnJCilE86iUpQOgQTXYrnrn6kQxcYSCtVNGV47fA==</ds:DigestValue></xades:CertDigest><xades:IssuerSerial><ds:X509IssuerName>CN=AC Representación,OU=CERES,O=FNMT-RCM,C=ES</ds:X509IssuerName><ds:X509SerialNumber>52605833375230055164725588663381239916</ds:X509SerialNumber></xades:IssuerSerial></xades:Cert></xades:SigningCertificate><xades:SignaturePolicyIdentifier><xades:SignaturePolicyId><xades:SigPolicyId><xades:Identifier>http://www.facturae.es/politica_de_firma_formato_facturae/politica_de_firma_formato_facturae_v3_1.pdf</xades:Identifier><xades:Description>Política de Firma FacturaE v3.1</xades:Description></xades:SigPolicyId><xades:SigPolicyHash><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></ds:DigestMethod><ds:DigestValue>Ohixl6upD6av8N7pEvDABhEL6hM=</ds:DigestValue></xades:SigPolicyHash></xades:SignaturePolicyId></xades:SignaturePolicyIdentifier><xades:SignerRole><xades:ClaimedRoles><xades:ClaimedRole>emisor</xades:ClaimedRole></xades:ClaimedRoles></xades:SignerRole></xades:SignedSignatureProperties><xades:SignedDataObjectProperties><xades:DataObjectFormat ObjectReference="#Reference-ID-609453017"><xades:Description>Factura electrónica</xades:Description><xades:ObjectIdentifier><xades:Identifier Qualifier="OIDAsURN">urn:oid:1.2.840.10003.5.109.10</xades:Identifier></xades:ObjectIdentifier><xades:MimeType>text/xml</xades:MimeType></xades:DataObjectFormat></xades:SignedDataObjectProperties></xades:SignedProperties></xades:QualifyingProperties></ds:Object></ds:Signature></fe:Facturae>

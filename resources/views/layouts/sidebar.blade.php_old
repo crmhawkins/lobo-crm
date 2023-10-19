@@ -1,0 +1,195 @@
+<div class="sidebarpadre">
+
+<nav id="sidebar" class="hide sidebar-wrapper animate__animated animate__fadeInLeft animate__fadeOutLeft" style="width: 100%">
+
+    <div class="sidebar-content">
+        {{-- <a href="" id="cerrarSidebar">X</a> --}}
+        @if (isset($empresa))
+            <div class="sidebar-brand">
+                <a href="#" class="crmName">CRM {{ $empresa->name }}</a>
+
+                <div id="close-sidebar">
+                </div>
+                <div class="cerrar">
+                </div>
+            </div>
+        @else
+            <div class="sidebar-brand">
+                {{-- <a href="#" class="crmName">CRM LA FABRICA S.L.</a> --}}
+                <div id="close-sidebar">
+                </div>
+            </div>
+        @endif
+        @if (isset($empresa))
+            <img src="/assets/{{ $empresa->photo }}" alt="Logo" title="" class="img-fluid"
+                style="max-width: 200px; padding: 0 1.2rem;"></a>
+        @else
+        <img src="{{ asset('images/logo.png') }}" style="max-width: 80%;" class="img-rounded mx-auto d-block img-fluid" alt="Logo">
+
+        @endif
+
+        {{-- <div class="sidebar-header">
+            <div class="user-pic">
+                <p style="color: white">User Image</p>
+                <img class="img-fluid" src="{{ asset('images/logo_formal_fondo_negro.png') }}"
+                    alt="User picture">
+
+            </div>
+            <div class="user-info">
+                Si hay un usuario logeado, se pasa al sidebar
+                @if ($user)
+                    <span class="user-name">{{ $user->name }}
+                        <strong>{{ $user->surname }}</strong>
+                    </span>
+                    <span class="user-role">{{ $user->role }}</span>
+                    <span class="user-status">
+                        <i class="fa fa-circle"></i>
+                        <span>Online</span>
+                    </span>
+                @endif
+
+            </div>
+        </div> --}}
+
+    
+        <div class="sidebar-menu">
+            <ul>
+                <li class="header-menu">
+                    <span>General</span>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/contratos">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Contratos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/resumen-mensual">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Resumen Mensual</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/resumen-semanas">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Resumen Semanal</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/clientes">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/programas">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Programas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/monitores">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Monitores</span>
+                    </a>
+                </li>
+                <li class="header-menu-morado">
+                    <span>Configuración</span>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/servicios-packs">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Servicio Packs</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/servicios-categorias">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Servicios Categoria</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/servicios">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Servicios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/admin/eventos">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Eventos</span>
+                    </a>
+                </li>
+  
+                <li class="sidebar-item">
+                    <a href="/admin/presupuestos">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <span>Presupuestos</span>
+                    </a>
+                </li> 
+                <li class="sidebar-item">
+                    <a href="/admin/facturas">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Facturas</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a href="/../home">
+                        <i class="fa fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+      
+
+
+            </ul>
+        </div>
+        <!-- sidebar-menu  -->
+    </div>
+    <!-- sidebar-content  -->
+    <div class="sidebar-footer">
+        <a href="#">
+            <i class="fa fa-bell"></i>
+            <span class="badge badge-pill badge-warning notification">3</span>
+        </a>
+        <a href="#">
+            <i class="fa fa-envelope"></i>
+            <span class="badge badge-pill badge-success notification">7</span>
+        </a>
+        <a href="#">
+            <i class="fa fa-cog"></i>
+            <span class="badge-sonar"></span>
+        </a>
+        <a href="#">
+            <i class="fa fa-power-off"></i>
+        </a>
+    </div>
+</nav>
+
+<input type="checkbox" id="check">
+{{-- <label for="check">
+    <span class="fas fa-bars boton" id="bars" ></span>
+</label> --}}
+<!-- sidebar-wrapper  -->
+</div>
+{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+    // Cambia el Sidebar
+    $("#bars").on("click", function(e){
+        $("#sidebar").animate({left: 0}, 200);
+        setTimeout(function() {
+            $("#bars").hide();
+            }, 200);
+
+    } )
+    $("#cerrarSidebar").on("click", function(e){
+        e.preventDefault()
+        $("#sidebar").animate({left: "-100%"}, 200);
+        $("#bars").show();
+
+    } )
+
+</script>

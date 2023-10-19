@@ -1,0 +1,234 @@
+    // Breadcrumb
+    .breadcrumb {
+        padding: 0.6rem 0.85rem;
+        background-color: transparent;
+    }
+    .breadcrumb-item a {
+        color: #F29401;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item {
+        color: #F29401;
+        font-weight: bold;
+    }
+    .breadcrumb-item.active {
+        color: #F29401;
+      }
+
+      .breadcrumb-item + .breadcrumb-item::before {
+        color: #F29401;
+        content: ">";
+        font-weight: bold;
+      }
+
+    // Sidebar
+    .chiller-theme .sidebar-wrapper {
+        // background: #31353D;
+        background: #F9F9F9;
+    }
+    .chiller-theme .sidebar-wrapper .sidebar-header,
+    .chiller-theme .sidebar-wrapper .sidebar-search,
+    .chiller-theme .sidebar-wrapper .sidebar-menu {
+        border-top: 1px solid #F9F9F9;
+    }
+    .chiller-theme .sidebar-wrapper .sidebar-menu ul li a i,
+    .chiller-theme .sidebar-wrapper .sidebar-menu .sidebar-dropdown div,
+    .chiller-theme .sidebar-wrapper .sidebar-search input.search-menu,
+    .chiller-theme .sidebar-wrapper .sidebar-search .input-group-text {
+        background: #fff;
+    }
+
+    .chiller-theme .sidebar-footer {
+        background: #F9F9F9;
+        box-shadow: 0px -1px 5px #282c33;
+        border-top: 1px solid #F9F9F9;
+    }
+
+    .chiller-theme .sidebar-menu .sidebar-item{
+        width: auto;
+        margin: 0.45rem 1.45rem 0 1.45rem;
+    }
+
+    .chiller-theme .sidebar-wrapper .sidebar-header .user-info .user-role,
+  .chiller-theme .sidebar-wrapper .sidebar-header .user-info .user-status,
+  .chiller-theme .sidebar-wrapper .sidebar-search input.search-menu,
+  .chiller-theme .sidebar-wrapper .sidebar-search .input-group-text,
+  .chiller-theme .sidebar-wrapper .sidebar-brand>a,
+  .chiller-theme .sidebar-wrapper .sidebar-menu ul li a,
+  .chiller-theme .sidebar-footer>a {
+      color: #818896;
+      background-color: white;
+      border-radius: 10px;
+
+  }
+  
+  .chiller-theme .sidebar-wrapper .sidebar-menu ul li:hover>a,
+  .chiller-theme .sidebar-wrapper .sidebar-menu .sidebar-dropdown.active>a,
+  .chiller-theme .sidebar-wrapper .sidebar-header .user-info,
+  .chiller-theme .sidebar-wrapper .sidebar-brand>a:hover,
+  .chiller-theme .sidebar-footer>a:hover i {
+      color: white;
+      background-color: #47EAB5 ;
+  }
+    
+  .sidebar-wrapper .sidebar-menu .header-menu span {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 15px 20px 5px 9px;
+    display: block;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f39c12;
+    margin: 0 2rem;
+  }
+
+  .chiller-theme .sidebar-wrapper .sidebar-menu .header-menu span {
+    color: #f39c12;
+  }
+
+
+  .sidebar-wrapper .sidebar-menu .header-menu-morado span {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 15px 20px 5px 9px;
+    display: block;
+    text-transform: uppercase;
+    border-bottom: 1px solid  #971D79 ;
+    margin: 0 2rem;
+  }
+
+  .chiller-theme .sidebar-wrapper .sidebar-menu .header-menu-morado span {
+    color:  #971D79 ;
+  }
+
+  #sidebar {}
+
+ /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  .sidebar-menu {
+    scrollbar-width: thin;
+    scrollbar-color: #971D79 #f9f9f9;
+  }
+
+  /* Chrome, Edge, and Safari */
+  .sidebar-menu::-webkit-scrollbar {
+    width: 40px;
+  }
+
+  .sidebar-menu::-webkit-scrollbar-track {
+    background: #f9f9f9;
+  }
+
+  .sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: #7d3c98;
+    border-radius: 10px;
+    border: 8px double #f9f9f9;
+  }
+
+
+  .crmName {
+    font-size: 130%;
+}
+#check {
+    display: none;
+}
+.boton {
+    font-size: 201%;
+    position: absolute;
+    top: 30;
+    left: 280;
+}
+#sidebar {
+    /* display: inline;
+    position: fixed; */
+}
+#cerrarSidebar{
+    z-index: 100000;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: inline;
+    top: 20px;
+    left: 90%;
+    color: white;
+    font-size: 27px;
+    font-weight: bold;
+}
+
+/* Media Query para ordenadores con pantallas grandes */
+@media (min-width: 1414px) {
+/* #sidebar {
+    width: 220px !important ;
+} */
+#bars{
+    display: none;
+    left: 250px;
+    top: 50px
+}
+}
+
+// Datebase
+.dataTables_wrapper {
+    margin-top: 4rem;
+}
+.dt-buttons {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.dt-button {
+    background-color:  #d5d8dc ;
+    border: none;
+    padding: 0.35rem 0.65rem;
+    color:  #212f3d ;
+}
+
+.dt-button:hover {
+    background-color:  #212f3d ;
+    color:  #d5d8dc ;
+}
+
+// Header page
+.header-page {
+    background-color:  #026893 ;
+    color: white;
+    padding: 0.45rem 1.5rem;
+}
+.dataTables_wrapper thead tr {
+    background-color: white;
+}
+table.dataTable.no-footer {
+    
+    margin-top: 1rem;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: none;
+    text-align: right;
+  }
+
+  table.dataTable thead > tr > th.sorting, table.dataTable thead > tr > th.sorting_asc, table.dataTable thead > tr > th.sorting_desc, table.dataTable thead > tr > th.sorting_asc_disabled, table.dataTable thead > tr > th.sorting_desc_disabled, table.dataTable thead > tr > td.sorting, table.dataTable thead > tr > td.sorting_asc, table.dataTable thead > tr > td.sorting_desc, table.dataTable thead > tr > td.sorting_asc_disabled, table.dataTable thead > tr > td.sorting_desc_disabled {
+    font-weight: 500;
+
+  }
+
+  table.dataTable thead > tr > th.sorting_asc::before, table.dataTable thead > tr > th.sorting_desc::after, table.dataTable thead > tr > td.sorting_asc::before {
+    opacity: .6;
+  }
+  table.dataTable thead > tr > th.sorting::before, table.dataTable thead > tr > th.sorting::after {
+    opacity: 0;
+  }
+
+  table.dataTable thead > tr > th.sorting_asc::before{
+    opacity: .6;
+  }
+  
+
+  table.dataTable thead > tr > th.sorting_desc::after {
+    opacity: 0.6;
+  }
+
+  table.dataTable thead > tr > th.sorting::before, table.dataTable thead > tr > th.sorting_asc::before, table.dataTable thead > tr > th.sorting_desc::before, table.dataTable thead > tr > th.sorting_asc_disabled::before, table.dataTable thead > tr > th.sorting_desc_disabled::before, table.dataTable thead > tr > td.sorting::before, table.dataTable thead > tr > td.sorting_asc::before, table.dataTable thead > tr > td.sorting_desc::before, table.dataTable thead > tr > td.sorting_asc_disabled::before, table.dataTable thead > tr > td.sorting_desc_disabled::before {
+    bottom: 38%;
+    content: "▲";
+  }

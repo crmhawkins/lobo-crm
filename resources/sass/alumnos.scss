@@ -1,0 +1,36 @@
+h1{
+    font-size: 2rem;
+}
+h2{
+    color: chocolate;
+}
+label{
+}
+.btn-export {
+    display: block;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    background-color: transparent;
+    color: #7FB3D5;
+    width: 100%;
+    text-align: left;
+}
+.btn-export:hover {
+    background-color: #AEB6BF;
+    color: white;
+}
+.dt-button-collection {
+    margin-top: -3px !important;
+}
+
+.dt-button-collection div{
+    background-color: #F3F3F3;
+    width: 120px;
+    padding: 0.8rem 0.8rem;
+}
+.dt-down-arrow {
+    margin-left: 0.5rem;
+}
+div#tableCliente_paginate, div#tableCliente_info {
+    margin-top: 1rem;
+}
