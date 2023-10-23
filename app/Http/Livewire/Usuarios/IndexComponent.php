@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Usuarios;
 
+use App\Models\Rol;
 use App\Models\User;
 use Livewire\Component;
 
@@ -19,6 +20,10 @@ class IndexComponent extends Component
     {
 
         return view('livewire.usuarios.index-component');
+    }
+
+    public function mostrarRol($id){
+        return Rol::where('id', $id)->first()->nombre;
     }
 
 }

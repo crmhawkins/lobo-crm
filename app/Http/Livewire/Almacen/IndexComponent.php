@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Albaranes;
+namespace App\Http\Livewire\Almacen;
 
 use App\Models\Clients;
 use App\Models\Pedido;
@@ -27,7 +27,7 @@ class IndexComponent extends Component
     public function render()
     {
 
-        return view('livewire.albaranes.index-component');
+        return view('livewire.almacen.index-component');
     }
 
     public function getNombreCliente($id){

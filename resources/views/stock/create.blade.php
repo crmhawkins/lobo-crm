@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nuevo producto')
+@section('title', 'Nuevo lote de producto')
 
 @section('head')
     {{-- @vite(['resources/sass/productos.scss'])
@@ -8,7 +8,7 @@
 
 @section('content-principal')
 <div>
-    @livewire('productos.create-component')
+    @livewire('stock.create-component', ['identificador' => $id])
 </div>
 @endsection
 

@@ -8,6 +8,14 @@
 $(document).ready(function() {
     $('#datatable').DataTable();
 
+    $('#datatable-res').DataTable({
+        searching: false,
+        ordering: false,
+        responsive: true,
+        paging: false,
+
+    });
+
     //Buttons examples
     var table = $('#datatable-buttons').DataTable({
         lengthChange: false,
@@ -22,8 +30,8 @@ $(document).ready(function() {
             "paginate": {
                 "first": "Primero",
                 "last": "Ultimo",
-                "next": "Siguiente",
-                "previous": "Anterior"
+                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
+                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
             },
             "zeroRecords": "No se encontraron registros coincidentes",
         }

@@ -3778,7 +3778,19 @@ table.focus-on tbody tr.focused td {
     width: 50px;
     height: 50px;
 }
-
+@media only screen and (max-width: 480px) {
+    .img {
+        width: 40px;
+        height: 40px;
+    }
+    .alert-button {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .logo{
+        min-width: 100px !important;
+    }
+}
 .sub_title_user {
     font-size: 0.8rem;
     color: white;

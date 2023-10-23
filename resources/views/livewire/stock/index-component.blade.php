@@ -1,4 +1,5 @@
 <div class="container-fluid">
+    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -18,43 +19,79 @@
         <div class="col-12">
             <div class="card m-b-30">
                 <div class="card-body row">
-                    <div class="col-10">
-                        <h4 class="mt-0 header-title font-24">Listado de todos los productos</h4>
-                        <p class="sub-title../plugins mb-5">Listado completo de todos nuestros productos, para editar o
-                            ver
-                            la
-                            informacion completa pulse el boton de Ver/Editar en la columna acciones.
+                    <div class="col-12">
+                        <h4 class="mt-0 header-title font-24">Listado de stockaje</h4>
+                        <p class="sub-title../plugins mb-5">Listado completo del stockaje, para ver o añadir un lote,
+                            seleccione un producto de la lista.
                         </p>
-                    </div>
-                    <div class="col-2">
-                        <a href="productos-create" class="btn btn-lg btn-primary">Añadir producto</a>
                     </div>
                     @if (count($productos) > 0)
                         <div class="row justify-content-center">
-                            @foreach ($productos as $presup)
-                                <div class="col-md-3">
-                                    <div class="card m-b-30 border border-1">
-                                        <img class="card-img-top img-fluid"
-                                            src="{{ asset('storage/photos/' . $presup->foto_ruta) }}"
-                                            alt="Card image cap">
-                                        <div class="card-body border border-1">
-                                            <h4 class="card-title row mt-0" style="justify-content: space-evenly !important;">
-                                                {{ $presup->nombre }}
-
-                                            </h4>
-                                            <h4 class="card-title font-16" style="text-align: center;">{{ $presup->precio }} € sin IVA,
-                                                {{ round($presup->precio + $presup->precio * ($presup->iva / 100), 2) }}
-                                                €
-                                                con IVA</h4>
-                                                <a href="productos-edit/{{ $presup->id }}"
-                                                    class="btn btn-primary w-100">Ver</a>
-                                        </div>
-                                    </div>
+                            <div class="col-md-12" wire:ignore>
+                                <div x-data="" x-init="$('#select2-producto').select2();
+                                $('#select2-producto').on('change', function(e) {
+                                    var data = $('#select2-producto').select2('val');
+                                    @this.set('producto_seleccionado', data);
+                                    @this.emit('setLotes');
+                                });">
+                                    <label for="fechaVencimiento">Producto</label>
+                                    <select class="form-control" name="producto" id="select2-producto"
+                                        value="{{ $producto_seleccionado }}">
+                                        @foreach ($productos as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <h6 class="text-center">No se encuentran productos disponibles</h6>
+                            </div>
+                            @if ($producto_seleccionado != 0 && $producto_seleccionado != null)
+                                <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                                    $('#tabla-stock').DataTable({
+                                        responsive: true,
+                                        fixedHeader: {
+                                            header: true,
+                                            footer: true,
+                                        },
+                                        searching: false,
+                                        paging: false,
+                                        info: false,
+                                    });
+                                })" wire:key='{{rand()}}'>
+                                    <table id="tabla-stock"
+                                        class="table table-striped table-bordered dt-responsive nowrap"
+                                        wire:key='{{ rand() }}'>
+                                        <thead>
+                                            <tr>
+                                                <th>Lote</th>
+                                                <th>Cantidad inicial</th>
+                                                <th>Cantidad actual</th>
+                                                <th>Fecha de entrada</th>
+                                                <th>Acciones:</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($producto_lotes as $loteIndex => $lote)
+                                                <tr>
+                                                    <th>{{ $lote['lote_id'] }}</th>
+                                                    <td>{{ $lote['cantidad_inicial'] }}</td>
+                                                    <td>{{ $lote['cantidad_actual'] }}</td>
+                                                    <td>{{ $this->formatFecha($lote['fecha_entrada']) }}</td>
+                                                    <td><a href="stock-edit/{{ $lote['id'] }}"
+                                                            class="btn @mobile btn-md @elsemobile btn-lg w-100 @endmobile btn-primary">Ver/Editar</a></td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                        <table class="table table-striped table-bordered dt-responsive nowrap mt-3">
+                                            <tr>
+                                                <td colspan="5"><a href="stock-create/{{ $producto_seleccionado }}"
+                                                        class="btn btn-lg btn-primary w-100">AÑADIR NUEVO LOTE</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                </div>
+                            @endif
+                        @else
+                            <h6 class="text-center">No se encuentran productos disponibles</h6>
                     @endif
                 </div>
             </div>

@@ -1,5 +1,4 @@
 <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-
     <div class="exit-button-col" style="text-align:right;">
         <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                 xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
@@ -12,37 +11,50 @@
         </button>
     </div>
     <div class="menu_footer_new">
-        <div class="exit-button-col">
-            <a class="footer-button" href="{{ route('productos.index') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-codesandbox"
-                    width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M20 7.5v9l-4 2.25l-4 2.25l-4 -2.25l-4 -2.25v-9l4 -2.25l4 -2.25l4 2.25z" />
-                    <path d="M12 12l4 -2.25l4 -2.25" />
-                    <line x1="12" y1="12" x2="12" y2="21" />
-                    <path d="M12 12l-4 -2.25l-4 -2.25" />
-                    <path d="M20 12l-4 2v4.75" />
-                    <path d="M4 12l4 2l0 4.75" />
-                    <path d="M8 5.25l4 2.25l4 -2.25" />
-                </svg>
-                <span>PRODUCTOS</span>
-            </a>
-        </div>
+        @if ($user_rol != 4)
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('productos.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-codesandbox"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M20 7.5v9l-4 2.25l-4 2.25l-4 -2.25l-4 -2.25v-9l4 -2.25l4 -2.25l4 2.25z" />
+                        <path d="M12 12l4 -2.25l4 -2.25" />
+                        <line x1="12" y1="12" x2="12" y2="21" />
+                        <path d="M12 12l-4 -2.25l-4 -2.25" />
+                        <path d="M20 12l-4 2v4.75" />
+                        <path d="M4 12l4 2l0 4.75" />
+                        <path d="M8 5.25l4 2.25l4 -2.25" />
+                    </svg>
+                    <span>PRODUCTOS</span>
+                </a>
+            </div>
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('pedidos.create') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-plus"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                        <path d="M9 12h6"></path>
+                        <path d="M12 9v6"></path>
+                    </svg>
+                    <span>NUEVO PEDIDO</span>
+                </a>
 
-        <div class="exit-button-col">
-            <a class="footer-button" href="{{ route('pedidos.index') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="44"
-                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                </svg>
-                <span>PEDIDOS</span>
-            </a>
-
-        </div>
-
+            </div>
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('pedidos.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="44"
+                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                    </svg>
+                    <span>PEDIDOS</span>
+                </a>
+            </div>
+        @endif
         <div class="exit-button-col">
             <a class="footer-button" href="{{ route('clientes.index') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="44"
@@ -56,58 +68,81 @@
                 </svg>
                 <span>CLIENTES</span>
             </a>
-
         </div>
-        <div class="exit-button-col">
-            <a class="footer-button" href="{{ route('facturas.index') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice"
-                    width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
-                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                    <path d="M9 7l1 0"></path>
-                    <path d="M9 13l6 0"></path>
-                    <path d="M13 17l2 0"></path>
-                </svg>
-                <span>FACTURAS</span>
-            </a>
-        </div>
-        <div class="exit-button-col">
-            <a class="footer-button" href="{{ route('albaran.index') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d" width="44"
-                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                    <path d="M12 13.5l4 -1.5"></path>
-                    <path d="M8 11.846l4 1.654v4.5l4 -1.846v-4.308l-4 -1.846z"></path>
-                    <path d="M8 12v4.2l4 1.8"></path>
-                </svg>
-                <span>ALMACÉN</span>
-            </a>
-        </div>
-        <div class="exit-button-col">
-            <a class="footer-button" href="{{ route('stock.index') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-packages" width="44"
-                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M7 16.5l-5 -3l5 -3l5 3v5.5l-5 3z"></path>
-                    <path d="M2 13.5v5.5l5 3"></path>
-                    <path d="M7 16.545l5 -3.03"></path>
-                    <path d="M17 16.5l-5 -3l5 -3l5 3v5.5l-5 3z"></path>
-                    <path d="M12 19l5 3"></path>
-                    <path d="M17 16.5l5 -3"></path>
-                    <path d="M12 13.5v-5.5l-5 -3l5 -3l5 3v5.5"></path>
-                    <path d="M7 5.03v5.455"></path>
-                    <path d="M12 8l5 -3"></path>
-                </svg>
-                <span>STOCK</span>
-            </a>
-        </div>
-
+        @if ($user_rol != 4)
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('facturas.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                        <path d="M9 7l1 0"></path>
+                        <path d="M9 13l6 0"></path>
+                        <path d="M13 17l2 0"></path>
+                    </svg>
+                    <span>FACTURAS</span>
+                </a>
+            </div>
+        @endif
+        @if ($user_rol == 1 || $user_rol == 4)
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('almacen.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                        <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                        <path d="M12 13.5l4 -1.5"></path>
+                        <path d="M8 11.846l4 1.654v4.5l4 -1.846v-4.308l-4 -1.846z"></path>
+                        <path d="M8 12v4.2l4 1.8"></path>
+                    </svg>
+                    <span>ALMACÉN</span>
+                </a>
+            </div>
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('stock.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-packages"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M7 16.5l-5 -3l5 -3l5 3v5.5l-5 3z"></path>
+                        <path d="M2 13.5v5.5l5 3"></path>
+                        <path d="M7 16.545l5 -3.03"></path>
+                        <path d="M17 16.5l-5 -3l5 -3l5 3v5.5l-5 3z"></path>
+                        <path d="M12 19l5 3"></path>
+                        <path d="M17 16.5l5 -3"></path>
+                        <path d="M12 13.5v-5.5l-5 -3l5 -3l5 3v5.5"></path>
+                        <path d="M7 5.03v5.455"></path>
+                        <path d="M12 8l5 -3"></path>
+                    </svg>
+                    <span>STOCK</span>
+                </a>
+            </div>
+        @endif
+        @if ($user_rol == 1)
+            <div class="exit-button-col">
+                <a class="footer-button" href="{{ route('usuarios.index') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-cog"
+                        width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+                        <path d="M6 21v-2a4 4 0 0 1 4 -4h2.5"></path>
+                        <path d="M19.001 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                        <path d="M19.001 15.5v1.5"></path>
+                        <path d="M19.001 21v1.5"></path>
+                        <path d="M22.032 17.25l-1.299 .75"></path>
+                        <path d="M17.27 20l-1.3 .75"></path>
+                        <path d="M15.97 17.25l1.3 .75"></path>
+                        <path d="M20.733 20l1.3 .75"></path>
+                    </svg>
+                    <span>ADMIN. USUARIOS</span>
+                </a>
+            </div>
+        @endif
     </div>
 
     <div class="col-2 col-md-2 col-lg-1 exit-button-col">
@@ -122,7 +157,7 @@
             </svg><span>SALIR</span>
         </button>
         <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK"
-            action="https://ventamayorista.crmhawkins.com/admin/logout" method="POST" style="display: none;">
+            action="{{ route('logout') }}" method="POST" style="display: none;">
             <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
         </form>
     </div>

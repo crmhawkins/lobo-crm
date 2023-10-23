@@ -30,7 +30,7 @@ use App\Http\Controllers\DepartamentosUserController;
 use App\Http\Controllers\TipoGastoController;
 use App\Http\Controllers\CategoriaEventoController;
 use App\Http\Controllers\TipoEventoController;
-use App\Http\Controllers\AlbaranController;
+use App\Http\Controllers\AlmacenController;
 
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\ServicioCategoriaController;
@@ -92,21 +92,21 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/productos-create', [ProductosController::class, 'create'])->name('productos.create');
     Route::get('/productos-edit/{id}', [ProductosController::class, 'edit'])->name('productos.edit');
 
-    Route::get('/productos-lote', [ProductosLoteController::class, 'index'])->name('productosLote.index');
-    Route::get('/productos-lote-create', [ProductosLoteController::class, 'create'])->name('productosLote.create');
-    Route::get('/productos-lote-edit/{id}', [ProductosLoteController::class, 'edit'])->name('productosLote.edit');
-
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
     Route::get('/facturas-create', [FacturaController::class, 'create'])->name('facturas.create');
     Route::get('/facturas-edit/{id}', [FacturaController::class, 'edit'])->name('facturas.edit');
     Route::get('/facturas-pdf/{id}', [FacturaController::class, 'pdf'])->name('facturas.pdf');
 
-    Route::get('/albaranes', [AlbaranController::class, 'index'])->name('albaran.index');
-    Route::get('/albaranes-create/{id}', [AlbaranController::class, 'create'])->name('albaran.create');
-    Route::get('/albaranes-edit/{id}', [AlbaranController::class, 'edit'])->name('albaran.edit');
-    Route::get('/albaranes-pdf/{id}', [AlbaranController::class, 'pdf'])->name('albaran.pdf');
+    Route::get('/almacen', [AlmacenController::class, 'index'])->name('almacen.index');
+    Route::get('/almacen-create/{id}', [AlmacenController::class, 'create'])->name('almacen.create');
+    Route::get('/almacen-edit/{id}', [AlmacenController::class, 'edit'])->name('almacen.edit');
+    Route::get('/almacen-pdf/{id}', [AlmacenController::class, 'pdf'])->name('almacen.pdf');
 
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock-create/{id}', [StockController::class, 'create'])->name('stock.create');
     Route::get('/stock-edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
+
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios-create', [UsuarioController::class, 'create'])->name('usuarios.create');
+    Route::get('/usuarios-edit/{id}', [UsuarioController::class, 'edit'])->name('usuarios.edit');
 });

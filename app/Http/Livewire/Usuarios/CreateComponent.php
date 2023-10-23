@@ -3,11 +3,13 @@
 namespace App\Http\Livewire\Usuarios;
 
 use App\Models\DepartamentosUser;
+use App\Models\Rol;
 use App\Models\User;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class CreateComponent extends Component
@@ -17,17 +19,18 @@ class CreateComponent extends Component
 
     public $name;
     public $surname;
-    public $role = "Empleado"; // 0 por defecto por si no se selecciona ninguna
+    public $roles;
+    public $role; // 0 por defecto por si no se selecciona ninguna
     public $username;
+    public $user_department_id = 1;
     public $despartamentos;
     public $password;
     public $email;
-    public $user_department_id = 1;
     public $inactive;
 
 
     public function mount(){
-        $this->despartamentos = DepartamentosUser::all();
+        $this->roles = Rol::all();
     }
 
     public function render()
@@ -44,9 +47,9 @@ class CreateComponent extends Component
             'name' => 'required',
             'surname' => 'required',
             'role' => 'required',
+            'user_department_id' => 'required',
             'username' => 'required',
             'password' => 'required',
-            'user_department_id' => 'required',
             'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
 
         ],
@@ -57,7 +60,6 @@ class CreateComponent extends Component
                 'role.required' => 'El rol es obligatorio.',
                 'username.required' => 'El nombre de usuario es obligatorio.',
                 'password.required' => 'La contraseña es obligatoria.',
-                'user_department_id.required' => 'El departamento es obligatorio.',
                 'email.required' => 'El email es obligatorio.',
                 'email.regex' => 'Introduce un email válido',
             ]);

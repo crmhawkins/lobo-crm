@@ -10,7 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AlbaranController extends Controller
+class AlmacenController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,7 @@ class AlbaranController extends Controller
         $response = '';
         // $user = Auth::user();
 
-        return view('albaranes.index', compact('response'));
+        return view('almacen.index', compact('response'));
     }
 
     /**
@@ -32,7 +32,7 @@ class AlbaranController extends Controller
      */
     public function create($id)
     {
-        return view('albaranes.create', compact('id'));
+        return view('almacen.create', compact('id'));
     }
 
     /**
@@ -65,7 +65,7 @@ class AlbaranController extends Controller
      */
     public function edit($id)
     {
-        return view('albaranes.edit', compact('id'));
+        return view('almacen.edit', compact('id'));
     }
 
     /**
@@ -107,7 +107,7 @@ class AlbaranController extends Controller
             }
 
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-            $pdf = Pdf::loadView('livewire.albaranes.pdf-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
+            $pdf = Pdf::loadView('livewire.almacen.pdf-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
             return $pdf->stream();
             }else{
                 $productos = Productos::all();
@@ -119,12 +119,12 @@ class AlbaranController extends Controller
             }
 
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-            $pdf = Pdf::loadView('livewire.albaranes.ticket-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
+            $pdf = Pdf::loadView('livewire.almacen.ticket-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
             return $pdf->stream();
             }
 
         } else {
-            return redirect('admin/albaranes');
+            return redirect('admin/almacen');
         }
     }
 }

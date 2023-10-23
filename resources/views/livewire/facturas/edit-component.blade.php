@@ -136,7 +136,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label for="descripcion" class="col-sm-12 col-form-label">Descripción</label>
+                                <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
                                 <div class="col-sm-12">
                                     <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"
                                         placeholder="Factura para el cliente Dani..."></textarea>
@@ -177,6 +177,23 @@
                                 factura</button>
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Borrar
                                 factura</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card m-b-30">
+                <div class="card-body">
+                    <h5>Acciones</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            @if($estado == 'Pendiente')
+                            <button class="w-100 btn btn-info mb-2" id="alertaFacturar">Marcar como facturada</button>
+                            <button class="w-100 btn btn-dark mb-2" id="alertaCancelar">Marcar como cancelada</button>
+                            @else
+                            <button class="w-100 btn btn-warning mb-2" wire:click.prevent="imprimirFactura">Descargar PDF de la factura</button>
+                            <button class="w-100 btn btn-info mb-2" id="alertaPDF">Enviar factura por correo</button>
+                            @endif
+
                         </div>
                     </div>
                 </div>

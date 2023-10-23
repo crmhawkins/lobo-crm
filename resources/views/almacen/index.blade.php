@@ -1,7 +1,7 @@
 
 @extends('layouts.app')
 
-@section('title', 'Editar datos de albarán')
+@section('title', 'Gestión de pedidos en Almacén')
 @section('head')
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.0/css/responsive.dataTables.css">
     @vite(['resources/sass/productos.scss'])
@@ -14,7 +14,7 @@
 
 @section('content-principal')
 <div>
-    @livewire('albaranes.edit-component', ['identificador'=>$id])
+    @livewire('almacen.index-component')
 </div>
 
 @endsection

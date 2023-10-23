@@ -47,6 +47,7 @@
 <body>
     @php
         $user = Auth::user();
+        $user_rol = $user->role;
     @endphp
     <div id="app">
         <style>
@@ -68,7 +69,11 @@
                 </div>
 
             </div>
+            @mobile
+            @include('layouts.footerMobile')
+            @elsemobile
             @include('layouts.footer')
+            @endmobile
             {{-- <div class="row w-100 m-0">
                 <div class="col-md-2 p-0 contenedor-sidebar">
 

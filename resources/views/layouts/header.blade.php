@@ -1,17 +1,14 @@
-    <div class="row header_row">
-        <div class="col-6 col-md-6 header_logo">
+    <div class="row header_row" style="align-content: center !important">
+        <div class="col-4 col-md-6 header_logo">
             <img src="{{ asset('assets/images/logo_la_fabrica.png') }}" style="max-width: 10%" class="logo" onclick='window.location="/home"'>
         </div>
         <div class="col-4 col-md-4 header_user">
-            <div class="row user" style="align-items: center">
-                <div class="col-6 text-right">
+            <div class="row user" style="align-content: center">
+                <div class="col-md-6">
                 </div>
                 <div class="col-6 user_name px-3">
-                    <div class="row">
-                        <div class="col-3 text-right">
-                            <img src="/images/user_lobo.png" class="img">
-                        </div>
-                        <div class="col-3">
+                    <div class="row" >
+                        <div class="col-12 text-right">
                             <span class="title_user">
                                 @if (strlen(Auth::user()->name) < 5)
                                     {{ Auth::user()->name }}
@@ -19,13 +16,13 @@
                                     {{ Auth::user()->name . str_repeat(' ', 5) }}
                                 @endif
                             </span>
-                            <p class="sub_title_user">{{ Auth::user()->role }}</p>
+                            <p class="sub_title_user">{{ $roles->where('id', Auth::user()->role)->first()->nombre }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-1 col-md-1 header_user">
+        <div class="col-1 col-md-1 header_user text-left">
             <button class="alert-button" data-toggle="modal" data-target="#modalAlertas" style="position:relative">
                 <span class="badge badge-secondary" id="alertasPendientes"
                     style="position: absolute;

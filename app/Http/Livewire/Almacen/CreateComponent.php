@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Albaranes;
+namespace App\Http\Livewire\Almacen;
 
 use App\Models\Alumno;
 use App\Models\Clients;
@@ -59,7 +59,7 @@ class CreateComponent extends Component
 
     public function render()
     {
-        return view('livewire.albaranes.create-component');
+        return view('livewire.almacen.create-component');
     }
 
 

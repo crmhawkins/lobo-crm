@@ -25,12 +25,12 @@
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
-                                <th scope="col">Número</th>
-                                <th scope="col">Fecha emisión</th>
-                                <th scope="col">Cliente</th>
-                                <th scope="col">Precio</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">Acciones</th>
+                                <th scope="col">Nº</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Cliente: @mobile &nbsp; @endmobile</th>
+                                <th scope="col">Precio: @mobile &nbsp; @endmobile</th>
+                                <th scope="col">Estado: @mobile &nbsp; @endmobile</th>
+                                <th scope="col">Acciones: @mobile &nbsp; @endmobile</th>
                             </tr>
                         </thead>
                         <tbody>

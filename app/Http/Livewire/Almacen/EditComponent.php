@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Albaranes;
+namespace App\Http\Livewire\Almacen;
 
 use App\Models\Albaran;
 use App\Models\Clients;
@@ -78,7 +78,7 @@ class EditComponent extends Component
     {
 
         // $this->tipoCliente == 0;
-        return view('livewire.albaranes.edit-component');
+        return view('livewire.almacen.edit-component');
     }
     public function getNombreTabla($id)
     {
@@ -281,7 +281,7 @@ class EditComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('facturas.index');
+        return redirect()->route('almacen.index');
     }
     // Función para cuando se llama a la alerta
     public function confirmDelete()
@@ -289,7 +289,7 @@ class EditComponent extends Component
         $factura = Facturas::find($this->identificador);
         event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
         $factura->delete();
-        return redirect()->route('facturas.index');
+        return redirect()->route('almacen.index');
     }
 
     public function listarPresupuesto($id)
