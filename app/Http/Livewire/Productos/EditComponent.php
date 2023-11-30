@@ -80,10 +80,9 @@ class EditComponent extends Component
         if (file_exists('storage/photos/' . $this->foto_rutaOld)) {
             $this->foto_ruta = $this->foto_rutaOld;
         } else {
-            $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
-
-            $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
-            $validatedData['foto_ruta'] = $name;
+            $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->getClientOriginalExtension();
+            $this->foto_ruta->storeAs('photos', $name, 'public'); // Guarda en storage/app/public/photos
+            $validatedData['foto_ruta'] = $name; // Actualiza la base de datos con el nuevo nombre de archivo
         }
 
         // Validación de datos
