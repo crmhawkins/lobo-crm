@@ -14,11 +14,25 @@ class Productos extends Model
     protected $fillable = [
         'nombre',
         'precio',
-        'uds_caja',
-        'iva',
+        'unidades_por_caja',
+        'cajas_por_pallet',
         'foto_ruta',
+        'descripcion',
+        'materiales',
+        'medidas_botella',
+        'peso_neto_unidad',
+        'temp_conservacion',
+        'caducidad',
+        'ingredientes',
+        'alergenos',
+        'proceso_elaboracion',
+        'info_nutricional',
+        'grad_alcohol',
+        'domicilio_fabricante',
+        'stock_seguridad'
 
     ];
+
 
     /**
      * Mutaciones de fecha.

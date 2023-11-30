@@ -11,8 +11,8 @@ class Settings extends Model
     protected $table = "settings";
 
     protected $fillable = [
-        'precio_gasoil_km',
-        'saldo_inicial',
+        'qr_creados_productos',
+        'qr_creados_mercaderia',
     ];
 
     /**

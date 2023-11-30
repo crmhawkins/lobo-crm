@@ -52,7 +52,7 @@
                                                 alt="Card image cap"></td>
                                         <td>{{ $presup->nombre }}</td>
                                         <td> &nbsp; {{ $presup->precio }} €</td>
-                                        <td> &nbsp; <a href="pedidos-edit/{{ $presup->id }}"
+                                        <td> &nbsp; <a href="productos-edit/{{ $presup->id }}"
                                                 class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>
                                 @endforeach

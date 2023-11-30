@@ -32,19 +32,20 @@ class EditComponent extends Component
     public $observaciones;
     public $tipo_pedido_id;
     public $productos_pedido = [];
+    public $productos_pedido_borrar = [];
     public $productos;
     public $clientes;
+    public $descuento;
     public $unidades_producto;
     public $addProducto;
     public $producto_seleccionado;
-    public $lote_seleccionado;
-    public $lotes;
+    public $unidades_caja_producto;
+    public $unidades_pallet_producto;
 
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
         $this->productos = Productos::all();
-        $this->lotes = ProductoLote::all();
         $this->clientes = Clients::all();
         $this->nombre = $pedido->nombre;
         $this->cliente_id = $pedido->cliente_id;
@@ -66,7 +67,9 @@ class EditComponent extends Component
                 'id' => $producto->id,
                 'producto_lote_id' => $producto->producto_lote_id,
                 'unidades_old' => $producto->unidades,
+                'precio_ud' => $producto->precio_ud,
                 'unidades' => 0,
+                'borrar' => 0,
             ];
         }
     }
@@ -96,6 +99,7 @@ class EditComponent extends Component
                 'localidad_entrega' => 'nullable',
                 'cod_postal_entrega' => 'nullable',
                 'orden_entrega' => 'nullable',
+                'descuento' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -112,18 +116,19 @@ class EditComponent extends Component
 
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
-                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $pedidosSave->id, 'unidades' => $productos['unidades']]);
-                $producto_stock = ProductoLote::find($productos['producto_lote_id']);
-                $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-                $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
+                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades'], 'precio_ud' => $productos['precio_ud']]);
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
-                    DB::table('productos_pedido')->find($productos['id'])->update(['unidades' => $unidades_finales]);
-                    $producto_stock = ProductoLote::find($productos['producto_lote_id']);
-                    $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-                    $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
+                    DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud']]);
+                } else {
+                    DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
                 }
+            }
+        }
+        foreach ($this->productos_pedido_borrar as $productos) {
+            if (isset($productos['id'])) {
+                DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->delete();
             }
         }
         event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
@@ -154,13 +159,16 @@ class EditComponent extends Component
             'confirmed',
             'update',
             'alertaGuardar',
+            'aceptarPedido',
+            'rechazarPedido',
             'alertaAlmacen',
             'updateAlmacen',
             'checkLote'
         ];
     }
 
-    public function updateAlmacen(){
+    public function updateAlmacen()
+    {
         $this->estado = 4;
         // Validación de datos
         $validatedData = $this->validate(
@@ -193,7 +201,7 @@ class EditComponent extends Component
 
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
-                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $pedidosSave->id, 'unidades' => $productos['unidades']]);
+                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades']]);
                 $producto_stock = ProductoLote::find($productos['producto_lote_id']);
                 $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
                 $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
@@ -242,6 +250,92 @@ class EditComponent extends Component
         ]);
     }
 
+    public function aceptarPedido()
+    {
+        $pedido = Pedido::find($this->identificador);
+        $pedidosSave = $pedido->update(['estado' => 2]);
+        if ($pedidosSave) {
+            $this->alert('success', '¡Pedido aceptado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido enviar el pedido!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+
+    public function rechazarPedido()
+    {
+        $pedido = Pedido::find($this->identificador);
+        $pedidosSave = $pedido->update(['estado' => 3]);
+        if ($pedidosSave) {
+            $this->alert('success', '¡Pedido rechazado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido enviar el pedido!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+
+    public function alertaAceptar()
+    {
+        $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'aceptarPedido',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+    }
+
+    public function alertaRechazar()
+    {
+        $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'rechazarPedido',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+    }
+
+    public function updatePallet()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = $this->unidades_pallet_producto * $producto->cajas_por_pallet;
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateCaja()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
     public function alertaAlmacen()
     {
         $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de proceder.', [
@@ -255,61 +349,79 @@ class EditComponent extends Component
             'timerProgressBar' => true,
         ]);
     }
-
-    public function checkLote()
+    public function getUnidadesTabla($id)
     {
-        if ($this->producto_seleccionado == null) {
-            $this->lote_seleccionado == null;
+        $producto = Productos::find($this->productos_pedido[$id]['producto_lote_id']);
+        if (isset($this->productos_pedido[$id]['unidades_old'])) {
+            $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
+            $cajas = ($uds_total / $producto->unidades_por_caja);
+            $pallets = floor($cajas / $producto->cajas_por_pallet);
+            $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+            $unidades = '';
+            if ($cajas_sobrantes > 0) {
+                $unidades = $uds_total . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+            } else {
+                $unidades = $uds_total . ' unidades (' . $pallets . ' pallets)';
+            }
         } else {
-            $this->lote_seleccionado = ProductoLote::where('producto_id', $this->producto_seleccionado)->first()->id;
+            $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
+            $pallets = floor($cajas / $producto->cajas_por_pallet);
+            $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+            $unidades = '';
+            if ($cajas_sobrantes > 0) {
+                $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+            } else {
+                $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+            }
         }
+
+        return $unidades;
     }
 
+    public function deleteArticulo($id)
+    {
+        $this->productos_pedido_borrar[] = $this->productos_pedido[$id];
+        unset($this->productos_pedido[$id]);
+        $this->productos_pedido = array_values($this->productos_pedido);
+    }
     public function getNombreTabla($id)
     {
-        $producto_id = $this->lotes->where('id', $id)->first()->producto_id;
-        $nombre_producto = $this->productos->where('id', $producto_id)->first()->nombre;
+        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
-    }
-    public function getNombreLoteTabla($id)
-    {
-        $producto_id = $this->lotes->where('id', $id)->first()->lote_id;
-        return $producto_id;
     }
     public function addProductos($id)
     {
-        $producto = ProductoLote::find($id);
         $producto_existe = false;
-        $producto_id = 0;
-        if ($this->unidades_producto < $producto->cantidad_actual) {
-            foreach ($this->productos_pedido as $productos) {
-                if ($productos['producto_lote_id'] == $id) {
-                    $producto_existe = true;
-                    $producto_id = $productos['producto_lote_id'];
-                }
+        $producto_id = $id;
+        foreach ($this->productos_pedido as $productos) {
+            if ($productos['producto_lote_id'] == $id) {
+                $producto_existe = true;
+                $producto_id = $productos['producto_lote_id'];
             }
-            if ($producto_existe == true) {
-                $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
-                $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
-            } else {
-                $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto];
+        }
+        if ($producto_existe == true) {
+            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
+            $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
+            if (!isset($this->productos_pedido[$producto]['precio_ud'])) {
+                $this->productos_pedido[$producto]['precio_ud'] = 0;
             }
         } else {
-            $this->alert('warning', 'No hay unidades disponibles suficientes para la petición solicitada.');
+            $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto, "precio_ud" => 0];
         }
+
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }
+
     public function setPrecioEstimado()
     {
         $this->precioEstimado = 0;
         foreach ($this->productos_pedido as $productos) {
-            $lote = ProductoLote::find($productos['producto_lote_id']);
-            $producto = Productos::find($lote->producto_id);
-            $this->precioEstimado += ($producto->precio * $productos['unidades']);
+            $this->precioEstimado += ($productos['precio_ud']);
         }
+        $this->precio = $this->precioEstimado - $this->descuento;
     }
 
     public function getProductoNombre()
@@ -350,12 +462,10 @@ class EditComponent extends Component
     public function getProductoImg()
     {
         $producto = Productos::find($this->producto_seleccionado);
-        $lote = ProductoLote::find($this->lote_seleccionado);
-        if ($this->unidades_producto < $lote->cantidad_actual) {
+        if ($producto != null) {
             return asset('storage/photos/' . $producto->foto_ruta);
         }
 
-        $this->unidades_producto = 0;
         $this->emit('refreshComponent');
     }
 
@@ -367,7 +477,8 @@ class EditComponent extends Component
         return redirect()->route('pedidos.index');
     }
 
-    public function getEstadoNombre(){
+    public function getEstadoNombre()
+    {
         return PedidosStatus::firstWhere('id', $this->estado)->status;
     }
 }

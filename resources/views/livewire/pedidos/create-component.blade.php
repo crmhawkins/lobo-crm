@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -137,29 +136,26 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                <th>Lote</th>
-                                                <th>Unidades</th>
-                                                <th>Precio por unidad</th>
-                                                <th>Precio total</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio</th>
+                                                <th>Eliminar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                             @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
                                                     <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
                                                     </td>
-                                                    <td>{{ $this->getNombreLoteTabla($producto['producto_lote_id']) }}
-                                                    </td>
-                                                    <td>{{ $producto['unidades'] }}</td>
+                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
                                                     <td><input type="number" class="form-control"
-                                                            wire:model="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change='setPrecioEstimado'>
+                                                            wire:model="productos_pedido.{{ $productoIndex }}.precio_ud"
+                                                            wire:change='setPrecioEstimado'>
                                                     </td>
-                                                    <td>{{ $producto['precio_ud'] * $producto['unidades'] }}</td>
+                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{$productoIndex}}')">X</button></td>
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <th colspan="4">Precio estimado</th>
+                                                <th colspan="3">Precio estimado</th>
                                                 <th>{{ $precioEstimado }} €</td>
                                             </tr>
                                         </tbody>
@@ -167,7 +163,14 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-11">
+                        <div class="form-group col-md-5">
+                            <label for="fecha">Descuento</label>
+                            <input type="text" wire:model="descuento" class="form-control" wire:change='setPrecioEstimado()'>
+                        </div>
+                        <div class="form-group col-md-1">
+                           &nbsp;
+                        </div>
+                        <div class="form-group col-md-5">
                             <label for="fecha">Precio final</label>
                             <input type="text" wire:model="precio" class="form-control">
                         </div>
@@ -201,15 +204,6 @@
                                                     <h2 class="card-title mt-0 font-32"
                                                         style="text-align: center; margin-bottom: -0.25rem !important;">
                                                         {{ $this->getProductoNombre() }}</h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoPrecio() }}, </h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoPrecioIVA() }}</h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoUds() }} unidades disponibles</h2>
                                                     <img class="mx-auto" src="{{ $this->getProductoImg() }}"
                                                         style="max-width: 30%; text-align:center;"
                                                         alt="Card image cap">
@@ -227,7 +221,9 @@
                                         $('#select2-producto').on('change', function(e) {
                                             var data = $('#select2-producto').select2('val');
                                             @this.set('producto_seleccionado', data);
-                                            @this.emit('checkLote');
+                                            @this.set('unidades_pallet_producto', 0);
+                                            @this.set('unidades_caja_producto', 0);
+                                            @this.set('unidades_producto', 0);
                                             console.log('data');
                                         });">
                                             <select name="producto" id="select2-producto"
@@ -244,43 +240,35 @@
                                 </div>
                                 @if ($producto_seleccionado != null)
                                     <div class="row justify-content-center mt-1">
-                                        <div class="col-md-6" style="text-align: center !important;">
-                                            <label for="fechaVencimiento">Lote seleccionado</label>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Pallets</label>
                                         </div>
-                                        <div class="col-md-2" style="text-align: center !important;">
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Cajas</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
                                             <label for="unidades">Uds.</label>
                                         </div>
-                                        <div class="col-md-2" style="text-align: center !important;">
+                                        <div class="col-md-3" style="text-align: center !important;">
                                             <label for="unidades">&nbsp; </label>
                                         </div>
-                                        <div class="col-md-6" wire:ignore>
-                                            <div x-data="" x-init="$('#select2-lote').select2();
-                                            $('#select2-lote').on('change', function(e) {
-                                                var data = $('#select2-lote').select2('val');
-                                                @this.set('lote_seleccionado', data);
-                                                console.log('data');
-                                            });">
-                                                <select name="lote" id="select2-lote"
-                                                    wire:model="lote_seleccionado" style="width: 100% !important"
-                                                    wire:change='checkLote'>
-                                                    @foreach ($lotes->where('producto_id', $producto_seleccionado) as $lote)
-                                                        <option value="{{ $lote->id }}">{{ $lote->lote_id }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                    </div>
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
                                         </div>
-                                        <div class="col-md-2">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_producto">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
                                         </div>
-                                        <div class="col-md-2" style="justify-content: start !important"
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_producto" disabled>
+                                        </div>
+                                        <div class="col-md-3" style="justify-content: start !important"
                                             style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
                                             <button type="button" class="btn btn-primary w-100"
-                                                wire:click.prevent="addProductos('{{ $lote_seleccionado }}')"
+                                                wire:click.prevent="addProductos('{{ $producto_seleccionado }}')"
                                                 data-dismiss="modal" aria-label="Close">+</a>
                                         </div>
-
                                     </div>
                                 @endif
                             </div>

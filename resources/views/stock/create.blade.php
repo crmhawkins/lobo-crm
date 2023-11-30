@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nuevo lote de producto')
+@section('title', 'REGISTRAR ENTRADA DE STOCK DE MERCADERÍA')
 
 @section('head')
     {{-- @vite(['resources/sass/productos.scss'])

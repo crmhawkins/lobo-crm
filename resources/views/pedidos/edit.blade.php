@@ -9,6 +9,6 @@
 
 @section('content-principal')
 <div>
-    @livewire('pedidos.edit-component', ['identificador'=>$id])
+    @livewire('pedidos.edit-component', ['identificador' => $id])
 </div>
 @endsection

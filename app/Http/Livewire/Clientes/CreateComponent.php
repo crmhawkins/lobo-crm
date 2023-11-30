@@ -29,7 +29,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        $this->clientes = Cliente::all();
+        $this->clientes = Clients::all();
     }
 
     public function crearClientes()

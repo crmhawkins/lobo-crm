@@ -17,12 +17,22 @@ class CreateComponent extends Component
 
     public $nombre;
     public $precio;
-    public $iva;
     public $foto_ruta;
-    public $unidades_disponibles = 0;
-    public $unidades_reservadas = 0;
-    public $unidades_vendidas = 0;
-
+    public $unidades_por_caja = 0;
+    public $cajas_por_pallet = 0;
+    public $descripcion;
+    public $materiales;
+    public $medidas_botella;
+    public $peso_neto_unidad;
+    public $temp_conservacion;
+    public $caducidad;
+    public $ingredientes;
+    public $alergenos;
+    public $proceso_elaboracion;
+    public $info_nutricional;
+    public $grad_alcohol;
+    public $domicilio_fabricante;
+    public $stock_seguridad;
     public function mount()
     {
     }
@@ -41,24 +51,33 @@ class CreateComponent extends Component
             [
                 'nombre' => 'required',
                 'precio' => 'required',
-                'iva' => 'required',
                 'foto_ruta' => 'required',
-                'unidades_disponibles' => 'required',
-                'unidades_reservadas' => 'required',
-                'unidades_vendidas' => 'required',
+                'unidades_por_caja' => 'required',
+                'cajas_por_pallet' => 'required',
+                'descripcion' => 'nullable',
+                'materiales' => 'nullable',
+                'medidas_botella' => 'nullable',
+                'peso_neto_unidad' => 'nullable',
+                'temp_conservacion' => 'nullable',
+                'caducidad' => 'nullable',
+                'ingredientes' => 'nullable',
+                'alergenos' => 'nullable',
+                'proceso_elaboracion' => 'nullable',
+                'info_nutricional' => 'nullable',
+                'grad_alcohol' => 'nullable',
+                'domicilio_fabricante' => 'nullable',
+                'stock_seguridad' => 'nullable',
             ],
             // Mensajes de error
             [
                 'nombre.required' => 'La Categoria es obligatoria.',
                 'precio.required' => 'El código de producto es obligatorio.',
-                'iva.required' => 'La descripción es obligatoria.',
                 'foto_ruta.required' => 'El precio es obligatorio.',
-                'unidades_disponibles.required' => 'El nombre es obligatorio.',
-                'unidades_reservadas.required' => 'La descripción es obligatoria.',
-                'unidades_vendidas.required' => 'El precio es obligatorio.',
+                'unidades_por_caja.required' => 'El nombre es obligatorio.',
+                'cajas_por_pallet.required' => 'La descripción es obligatoria.',
             ]
         );
-        $name = md5($this->foto_ruta . microtime()).'.'.$this->foto_ruta->extension();
+        $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
 
         $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
 

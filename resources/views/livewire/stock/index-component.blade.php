@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -24,7 +23,25 @@
                         <p class="sub-title../plugins mb-5">Listado completo del stockaje, para ver o añadir un lote,
                             seleccione un producto de la lista.
                         </p>
+                        <button type="button" wire:click.prevent="alertaGuardar"
+                            class="btn btn-lg btn-primary w-100">GENERAR CÓDIGOS QR</button>
                     </div>
+                    @if (auth()->user()->role == 1)
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-12 mt-1">
+                            <label for="fechaVencimiento">Almacén</label>
+                                <select name="almacen" id="select2-almacen" wire:model="almacen_id"
+                                    wire:change='setLotes' style="width: 100% !important">
+                                    <option value="{{ null }}">-- Selecciona un almacén --
+                                    </option>
+                                    @foreach ($almacenes as $presup)
+                                        <option value="{{ $presup->id }}">{{ $presup->almacen }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                        </div>
+                    </div>
+                    @endif
                     @if (count($productos) > 0)
                         <div class="row justify-content-center">
                             <div class="col-md-12" wire:ignore>
@@ -55,39 +72,27 @@
                                         paging: false,
                                         info: false,
                                     });
-                                })" wire:key='{{rand()}}'>
+                                })"
+                                    wire:key='{{ rand() }}'>
                                     <table id="tabla-stock"
                                         class="table table-striped table-bordered dt-responsive nowrap"
                                         wire:key='{{ rand() }}'>
                                         <thead>
                                             <tr>
-                                                <th>Lote</th>
-                                                <th>Cantidad inicial</th>
-                                                <th>Cantidad actual</th>
+                                                <th>Lote/Pallet</th>
                                                 <th>Fecha de entrada</th>
-                                                <th>Acciones:</th>
+                                                <th>Cantidad (en cajas)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($producto_lotes as $loteIndex => $lote)
                                                 <tr>
                                                     <th>{{ $lote['lote_id'] }}</th>
-                                                    <td>{{ $lote['cantidad_inicial'] }}</td>
-                                                    <td>{{ $lote['cantidad_actual'] }}</td>
-                                                    <td>{{ $this->formatFecha($lote['fecha_entrada']) }}</td>
-                                                    <td><a href="stock-edit/{{ $lote['id'] }}"
-                                                            class="btn @mobile btn-md @elsemobile btn-lg w-100 @endmobile btn-primary">Ver/Editar</a></td>
+                                                    <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
+                                                    <td>{{ $lote['cantidad'] }}</td>
                                                 </tr>
                                             @endforeach
-                                        </table>
-                                        <table class="table table-striped table-bordered dt-responsive nowrap mt-3">
-                                            <tr>
-                                                <td colspan="5"><a href="stock-create/{{ $producto_seleccionado }}"
-                                                        class="btn btn-lg btn-primary w-100">AÑADIR NUEVO LOTE</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-
+                                    </table>
                                 </div>
                             @endif
                         @else
@@ -97,10 +102,6 @@
             </div>
         </div>
     </div>
-
-
-
-
 </div>
 
 

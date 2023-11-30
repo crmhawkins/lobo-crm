@@ -24,21 +24,42 @@ class EditComponent extends Component
     public $foto_ruta;
     public $nueva_foto = 0;
     public $producto_lotes = [];
-    public $unidades_vendidas;
-    public $unidades_disponibles;
-    public $unidades_reservadas;
-
+    public $unidades_por_caja;
+    public $cajas_por_pallet;
+    public $descripcion;
+    public $materiales;
+    public $medidas_botella;
+    public $peso_neto_unidad;
+    public $temp_conservacion;
+    public $caducidad;
+    public $ingredientes;
+    public $alergenos;
+    public $proceso_elaboracion;
+    public $info_nutricional;
+    public $grad_alcohol;
+    public $domicilio_fabricante;
     public function mount()
     {
         $product = Productos::find($this->identificador);
         $this->nombre = $product->nombre;
         $this->precio = $product->precio;
 
-        $this->iva = $product->iva;
         $this->precio = $product->precio;
-        $this->unidades_disponibles = $product->unidades_disponibles;
-        $this->unidades_reservadas = $product->unidades_reservadas;
-        $this->unidades_vendidas = $product->unidades_vendidas;
+        $this->unidades_por_caja = $product->unidades_por_caja;
+        $this->cajas_por_pallet = $product->cajas_por_pallet;
+
+        $this->descripcion = $product->descripcion;
+        $this->materiales = $product->materiales;
+        $this->medidas_botella = $product->medidas_botella;
+        $this->peso_neto_unidad = $product->peso_neto_unidad;
+        $this->temp_conservacion = $product->temp_conservacion;
+        $this->caducidad = $product->caducidad;
+        $this->ingredientes = $product->ingredientes;
+        $this->alergenos = $product->alergenos;
+        $this->proceso_elaboracion = $product->proceso_elaboracion;
+        $this->info_nutricional = $product->info_nutricional;
+        $this->grad_alcohol = $product->grad_alcohol;
+        $this->domicilio_fabricante = $product->domicilio_fabricante;
 
         $product->foto_ruta != null ? $this->foto_rutaOld = $product->foto_ruta : $this->foto_rutaOld = '';
 
@@ -56,28 +77,7 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
-
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'nombre' => 'required',
-                'precio' => 'required',
-                'iva' => 'required',
-                'foto_ruta' => 'required',
-            ],
-            // Mensajes de error
-            [
-                'nombre.required' => 'La Categoria es obligatoria.',
-                'precio.required' => 'El código de producto es obligatorio.',
-                'iva.required' => 'La descripción es obligatoria.',
-                'foto_ruta.required' => 'El precio es obligatorio.',
-                'unidades_disponibles.required' => 'El nombre es obligatorio.',
-                'unidades_reservadas.required' => 'La descripción es obligatoria.',
-                'unidades_vendidas.required' => 'El precio es obligatorio.',
-            ]
-        );
-
-        if (file_exists(public_path() . 'photos/' . $this->foto_rutaOld)) {
+        if (file_exists('storage/photos/' . $this->foto_rutaOld)) {
             $this->foto_ruta = $this->foto_rutaOld;
         } else {
             $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
@@ -85,6 +85,38 @@ class EditComponent extends Component
             $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
             $validatedData['foto_ruta'] = $name;
         }
+
+        // Validación de datos
+        $validatedData = $this->validate(
+            [
+                'nombre' => 'required',
+                'precio' => 'required',
+                'foto_ruta' => 'required',
+                'unidades_por_caja' => 'required',
+                'cajas_por_pallet' => 'required',
+                'descripcion' => 'nullable',
+                'materiales' => 'nullable',
+                'medidas_botella' => 'nullable',
+                'peso_neto_unidad' => 'nullable',
+                'temp_conservacion' => 'nullable',
+                'caducidad' => 'nullable',
+                'ingredientes' => 'nullable',
+                'alergenos' => 'nullable',
+                'proceso_elaboracion' => 'nullable',
+                'info_nutricional' => 'nullable',
+                'grad_alcohol' => 'nullable',
+                'domicilio_fabricante' => 'nullable',
+            ],
+            // Mensajes de error
+            [
+                'nombre.required' => 'La Categoria es obligatoria.',
+                'precio.required' => 'El código de producto es obligatorio.',
+                'foto_ruta.required' => 'El precio es obligatorio.',
+                'unidades_por_caja.required' => 'El nombre es obligatorio.',
+                'cajas_por_pallet.required' => 'La descripción es obligatoria.',
+            ]
+        );
+
 
         // Encuentra el producto identificado
         $product = Productos::find($this->identificador);

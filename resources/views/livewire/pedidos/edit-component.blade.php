@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -45,7 +44,7 @@
                         </div>
                         <div class="form-group col-md-3" wire:ignore>
                             <label for="estado">Estado</label>
-                            <input type="text" value="{{$this->getEstadoNombre()}}" class="form-control" disabled>
+                            <input type="text" value="{{ $this->getEstadoNombre() }}" class="form-control" disabled>
                         </div>
                         <div class="form-group col-md-3" wire:ignore>
                             <div x-data="" x-init="$('#select2-tipo').select2();
@@ -124,35 +123,44 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                <th>Lote</th>
-                                                <th>Unidades</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio</th>
+                                                <th>Eliminar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
-                                            @foreach ($productos_pedido as $producto)
+                                            @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
                                                     <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
                                                     </td>
-                                                    <td>{{ $this->getNombreLoteTabla($producto['producto_lote_id']) }}
+                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                    <td><input type="number" class="form-control"
+                                                            wire:model="productos_pedido.{{ $productoIndex }}.precio_ud"
+                                                            wire:change='setPrecioEstimado'>
                                                     </td>
-                                                    @if(isset($producto['id']))
-                                                    <td>{{ $producto['unidades'] + $producto['unidades_old'] }}</td>
-                                                    @else
-                                                    <td>{{ $producto['unidades'] }}</td>
-                                                    @endif
+                                                    <td><button type="button" class="btn btn-danger"
+                                                            wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <th colspan="2">Precio estimado</th>
-                                                <th>{{ $precioEstimado }}</td>
+                                                <th colspan="3">Precio estimado</th>
+                                                <th>{{ $precioEstimado }} €</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-11">
+                        <div class="form-group col-md-5">
+                            <label for="fecha">Descuento</label>
+                            <input type="text" wire:model="descuento" class="form-control"
+                                wire:change='setPrecioEstimado()'>
+                        </div>
+                        <div class="form-group col-md-1">
+                            &nbsp;
+                        </div>
+                        <div class="form-group col-md-5">
                             <label for="fecha">Precio final</label>
                             <input type="text" wire:model="precio" class="form-control">
                         </div>
@@ -171,41 +179,41 @@
                             </div>
                             <div class="modal-body">
                                 @if ($producto_seleccionado != null)
-                                    <div class="form-row justify-content-center">
-                                        <div class="form-group col-md-12">
-                                            <div class="card m-b-30 border border-dark border-1">
-                                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-12">
+                                            <div class="card border border-dark border-1"
+                                                style="margin-bottom: 5px !important">
+                                                <div class="card-body"
+                                                    style="
+                                                display: flex;
+                                                flex-direction: column;
+                                                flex-wrap: wrap;
+                                                align-items: center;
+                                                justify-content: center;
+                                            ">
                                                     <h2 class="card-title mt-0 font-32"
                                                         style="text-align: center; margin-bottom: -0.25rem !important;">
                                                         {{ $this->getProductoNombre() }}</h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoPrecio() }}, </h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoPrecioIVA() }}</h2>
-                                                    <h2 class="card-subtitle text-muted font-20"
-                                                        style="text-align: center">
-                                                        {{ $this->getProductoUds() }} unidades disponibles</h2>
+                                                    <img class="mx-auto" src="{{ $this->getProductoImg() }}"
+                                                        style="max-width: 30%; text-align:center;"
+                                                        alt="Card image cap">
                                                 </div>
-                                                <img class="mx-auto" src="{{ $this->getProductoImg() }}"
-                                                    style="max-width: 30%;" alt="Card image cap">
                                             </div>
                                         </div>
                                     </div>
                                 @endif
-                                <div class="form-row justify-content-center">
-                                    <div class="form-group col-md-6" style="text-align: center !important;"> <label
-                                            for="fechaVencimiento">Producto seleccionado</label></div>
-                                    <div class="form-group col-md-2" style="text-align: center !important;"> <label
-                                            for="unidades">Uds.</label></div>
-                                    <div class="form-group col-md-2" style="text-align: center !important;"> <label
-                                            for="unidades">&nbsp; </label></div>
-                                    <div class="form-group col-md-6" wire:ignore>
+                                <div class="row justify-content-center">
+                                    <div class="col-md-10" style="text-align: center !important;">
+                                        <label for="fechaVencimiento">Producto seleccionado</label>
+                                    </div>
+                                    <div class="col-md-10" wire:ignore>
                                         <div x-data="" x-init="$('#select2-producto').select2();
                                         $('#select2-producto').on('change', function(e) {
                                             var data = $('#select2-producto').select2('val');
                                             @this.set('producto_seleccionado', data);
+                                            @this.set('unidades_pallet_producto', 0);
+                                            @this.set('unidades_caja_producto', 0);
+                                            @this.set('unidades_producto', 0);
                                             console.log('data');
                                         });">
                                             <select name="producto" id="select2-producto"
@@ -219,17 +227,43 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-2">
-                                        <input type="number" class="form-control" wire:model="unidades_producto">
-                                    </div>
-                                    <div class="form-group col-md-2" style="justify-content: start !important"
-                                        style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
-                                        <button type="button" class="btn btn-primary w-100"
-                                            wire:click.prevent="addProductos('{{ $presup->id }}')"
-                                            data-dismiss="modal" aria-label="Close">+</a>
-                                    </div>
                                 </div>
-
+                                @if ($producto_seleccionado != null)
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Pallets</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Cajas</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">Uds.</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">&nbsp; </label>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control"
+                                                wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control"
+                                                wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_producto"
+                                                disabled>
+                                        </div>
+                                        <div class="col-md-3" style="justify-content: start !important"
+                                            style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
+                                            <button type="button" class="btn btn-primary w-100"
+                                                wire:click.prevent="addProductos('{{ $producto_seleccionado }}')"
+                                                data-dismiss="modal" aria-label="Close">+</a>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -245,21 +279,19 @@
                     <h5>Opciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar datos del
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                datos del
                                 pedido</button>
                         </div>
-                        @if($this->getEstadoNombre() == 'Pendiente de revisión')
-                        <div class="col-12">
-                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Aceptar pedido</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Rechazar pedido</button>
-                        </div>
-                        @endif
-                        @if($this->getEstadoNombre() == 'Aceptado')
-                        <div class="col-12">
-                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaAlmacen">Enviar a almacén</button>
-                        </div>
+                        @if ($this->getEstadoNombre() == 'Pendiente de revisión' && auth()->user()->role == 2)
+                            <div class="col-12">
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaAceptar">Aceptar
+                                    pedido</button>
+                            </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaRechazar">Rechazar
+                                    pedido</button>
+                            </div>
                         @endif
                     </div>
                 </div>

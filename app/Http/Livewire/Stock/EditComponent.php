@@ -2,9 +2,12 @@
 
 namespace App\Http\Livewire\Stock;
 
+use App\Models\Almacen;
 use App\Models\Productos;
-use App\Models\ProductoLote;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Stock;
 use App\Models\ProductosCategories;
+use App\Models\StockEntrante;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -16,27 +19,33 @@ class EditComponent extends Component
     use WithFileUploads;
 
     public $identificador;
-    public $producto;
-    public $lote;
-    public $nombre;
-    public $cantidad_inicial;
-    public $cantidad_actual;
-    public $lote_id;
-    public $producto_id;
-    public $fecha_entrada;
+    public $qr_id;
+    public $numero;
+    public $precio = 0;
     public $estado;
-
+    public $fecha;
+    public $observaciones;
+    public $producto_seleccionado;
+    public $unidades_producto;
+    public $almacenes;
+    public $almacen_id;
+    public $productos_pedido = [];
+    public $productos_disponibles = [];
+    public $productos;
     public function mount()
     {
-        $this->lote = ProductoLote::where("id", $this->identificador)->first();
-        $this->producto = Productos::where('id', $this->lote->producto_id)->first();
-        $this->nombre = $this->producto->nombre;
-        $this->cantidad_inicial = $this->lote->cantidad_inicial;
-        $this->cantidad_actual = $this->lote->cantidad_actual;
-        $this->lote_id = $this->lote->lote_id;
-        $this->producto_id = $this->lote->producto_id;
-        $this->fecha_entrada = Carbon::parse($this->lote->fecha_entrada)->format('Y-m-d');
-        $this->estado = $this->lote->estado;
+        $stock = Stock::where('qr_id', $this->identificador)->first();
+        $this->fecha = $stock->fecha;
+        $this->estado = $stock->estado;
+        $this->qr_id = $this->identificador;
+        $this->productos = Productos::all();
+        $this->almacenes = Almacen::all();
+        $user = Auth::user();
+        $this->almacen_id = $stock->almacen_id;
+        $stock_disponible = StockEntrante::where('stock_id', $stock->id)->get();
+        foreach ($stock_disponible as $productoIndex => $producto) {
+            $this->productos_disponibles[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => $producto->cantidad];
+        }
     }
 
     public function render()
@@ -137,5 +146,52 @@ class EditComponent extends Component
         $product->delete();
         return redirect()->route('stock.index');
     }
+    public function getProductoNombre()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        if ($producto != null && $producto->nombre != null) {
+            return $producto->nombre;
+        }
+    }
 
+    public function getProductoImagen()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        if ($producto != null && $producto->foto_ruta != null) {
+            return $producto->foto_ruta;
+        }
+    }
+
+    public function getNombreTabla($id)
+    {
+        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
+        return $nombre_producto;
+    }
+
+    public function deleteArticulo($id)
+    {
+        unset($this->productos_pedido[$id]);
+        $this->productos_pedido = array_values($this->productos_pedido);
+    }
+
+    public function addProducto($id)
+    {
+        $producto_existe = false;
+        $producto_id = $id;
+        foreach ($this->productos_pedido as $productos) {
+            if ($productos['producto_id'] == $id) {
+                $producto_existe = true;
+                $producto_id = $productos['producto_id'];
+            }
+        }
+        if ($producto_existe == true) {
+            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_id'));
+            $this->productos_pedido[$producto]['cantidad'] = $this->productos_pedido[$producto]['cantidad'] + $this->unidades_producto;
+        } else {
+            $this->productos_pedido[] = ['producto_id' => $id, "cantidad" => $this->unidades_producto];
+        }
+        $this->producto_seleccionado = 0;
+        $this->unidades_producto = 0;
+        $this->emit('refreshComponent');
+    }
 }

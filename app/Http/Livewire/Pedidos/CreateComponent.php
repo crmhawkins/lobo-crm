@@ -31,17 +31,17 @@ class CreateComponent extends Component
     public $tipo_pedido_id = 1;
     public $productos_pedido = [];
     public $productos;
-    public $lotes;
+    public $descuento = 0;
     public $clientes;
     public $unidades_producto = 0;
     public $addProducto = 0;
     public $producto_seleccionado;
-    public $lote_seleccionado;
+    public $unidades_pallet_producto;
+    public $unidades_caja_producto;
 
     public function mount()
     {
         $this->productos = Productos::all();
-        $this->lotes = ProductoLote::all();
         $this->clientes = Clients::all();
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
@@ -137,48 +137,62 @@ class CreateComponent extends Component
         ]);
     }
 
-    public function checkLote()
+    public function updatePallet()
     {
-        if ($this->producto_seleccionado == null) {
-            $this->lote_seleccionado == null;
-        } else {
-            $this->lote_seleccionado = ProductoLote::where('producto_id', $this->producto_seleccionado)->first()->id;
-        }
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = $this->unidades_pallet_producto * $producto->cajas_por_pallet;
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateCaja()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+
+    public function deleteArticulo($id)
+    {
+        unset($this->productos_pedido[$id]);
+        $this->productos_pedido = array_values($this->productos_pedido);
     }
 
     public function getNombreTabla($id)
     {
-        $producto_id = $this->lotes->where('id', $id)->first()->producto_id;
-        $nombre_producto = $this->productos->where('id', $producto_id)->first()->nombre;
+        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
     }
-    public function getNombreLoteTabla($id)
+    public function getUnidadesTabla($id)
     {
-        $producto_id = $this->lotes->where('id', $id)->first()->lote_id;
-        return $producto_id;
+        $producto = Productos::find($this->productos_pedido[$id]['producto_lote_id']);
+        $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
+        $pallets = floor($cajas / $producto->cajas_por_pallet);
+        $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+        $unidades = '';
+        if ($cajas_sobrantes > 0) {
+            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+        } else {
+            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+        }
+        return $unidades;
     }
 
     public function addProductos($id)
     {
-        $producto = ProductoLote::find($id);
         $producto_existe = false;
-        $producto_id = 0;
-        if ($this->unidades_producto < $producto->cantidad_actual) {
-            foreach ($this->productos_pedido as $productos) {
-                if ($productos['producto_lote_id'] == $id) {
-                    $producto_existe = true;
-                    $producto_id = $productos['producto_lote_id'];
-                }
+        $producto_id = $id;
+        foreach ($this->productos_pedido as $productos) {
+            if ($productos['producto_lote_id'] == $id) {
+                $producto_existe = true;
+                $producto_id = $productos['producto_lote_id'];
             }
-            if ($producto_existe == true) {
-                $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
-                $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
-            } else {
-                $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto, "precio_ud" => 0];
-            }
-        } else {
-            $this->alert('warning', 'No hay unidades disponibles suficientes para la petición solicitada.');
         }
+        if ($producto_existe == true) {
+            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
+            $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
+        } else {
+            $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto, "precio_ud" => 0];
+        }
+
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
         $this->setPrecioEstimado();
@@ -188,8 +202,9 @@ class CreateComponent extends Component
     {
         $this->precioEstimado = 0;
         foreach ($this->productos_pedido as $productos) {
-            $this->precioEstimado += ($productos['precio_ud'] * $productos['unidades']);
+            $this->precioEstimado += ($productos['precio_ud']);
         }
+        $this->precio = $this->precioEstimado - $this->descuento;
     }
 
     public function getProductoNombre()
@@ -213,29 +228,14 @@ class CreateComponent extends Component
             return ($producto->precio + ($producto->precio * ($producto->iva / 100))) . "€ (Con IVA)";
         }
     }
-    public function getProductoUds()
-    {
-        if ($this->lote_seleccionado != null) {
-            $producto = ProductoLote::find($this->lote_seleccionado);
-            if ($producto != null && $producto->cantidad_actual != null) {
-                foreach ($this->productos_pedido as $productos) {
-                    if ($productos['producto_lote_id'] == $this->lote_seleccionado) {
-                        return ($producto->cantidad_actual - $this->unidades_producto - $productos["unidades"]);
-                    }
-                }
-                return ($producto->cantidad_actual - $this->unidades_producto);
-            }
-        }
-    }
+
     public function getProductoImg()
     {
         $producto = Productos::find($this->producto_seleccionado);
-        $lote = ProductoLote::find($this->lote_seleccionado);
-        if ($this->unidades_producto < $lote->cantidad_actual) {
+        if ($producto != null) {
             return asset('storage/photos/' . $producto->foto_ruta);
         }
 
-        $this->unidades_producto = 0;
         $this->emit('refreshComponent');
     }
 
@@ -246,7 +246,8 @@ class CreateComponent extends Component
         return redirect()->route('pedidos.index');
     }
 
-    public function getEstadoNombre(){
+    public function getEstadoNombre()
+    {
         return PedidosStatus::firstWhere('id', $this->estado)->status;
     }
 }

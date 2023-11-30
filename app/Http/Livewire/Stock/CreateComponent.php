@@ -2,14 +2,16 @@
 
 namespace App\Http\Livewire\Stock;
 
-use App\Models\ProductoLote;
 use App\Models\Productos;
 use App\Models\ProductosCategories;
-
-use Illuminate\Support\Carbon;
+use App\Models\Stock;
+use App\Models\StockEntrante;
+use App\Models\Almacen;
+use Carbon\Carbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
 {
@@ -17,20 +19,30 @@ class CreateComponent extends Component
     use WithFileUploads;
 
     public $identificador;
-    public $producto;
-    public $nombre;
-    public $cantidad_inicial;
-    public $cantidad_actual;
-    public $lote_id;
-    public $producto_id;
-    public $fecha_entrada;
-    public $estado = 1;
+    public $qr_id;
+    public $numero;
+    public $precio = 0;
+    public $estado;
+    public $fecha;
+    public $observaciones;
+    public $producto_seleccionado;
+    public $unidades_producto;
+    public $almacenes;
+    public $almacen_id;
+    public $productos_pedido = [];
+    public $productos;
+
+    protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function mount()
     {
-        $this->producto = Productos::find($this->identificador);
-        $this->nombre = $this->producto->nombre;
-        $this->fecha_entrada = Carbon::now()->format('Y-m-d');
+        $this->fecha = Carbon::now()->format('Y-m-d');
+        $this->estado = 0;
+        $this->qr_id = $this->identificador;
+        $this->productos = Productos::all();
+        $this->almacenes = Almacen::all();
+        $user = Auth::user();
+        $this->almacen_id = $user->almacen_id;
     }
 
     public function render()
@@ -38,37 +50,95 @@ class CreateComponent extends Component
         return view('livewire.stock.create-component');
     }
 
-    // Al hacer submit en el formulario
+    public function getProductoNombre()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        if ($producto != null && $producto->nombre != null) {
+            return $producto->nombre;
+        }
+    }
+
+    public function getProductoImagen()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        if ($producto != null && $producto->foto_ruta != null) {
+            return $producto->foto_ruta;
+        }
+    }
+
+    public function getNombreTabla($id)
+    {
+        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
+        return $nombre_producto;
+    }
+
+    public function deleteArticulo($id)
+    {
+        unset($this->productos_pedido[$id]);
+        $this->productos_pedido = array_values($this->productos_pedido);
+    }
+
+    public function addProducto($id)
+    {
+        $producto_existe = false;
+        $producto_id = $id;
+        foreach ($this->productos_pedido as $productos) {
+            if ($productos['producto_id'] == $id) {
+                $producto_existe = true;
+                $producto_id = $productos['producto_id'];
+            }
+        }
+        if ($producto_existe == true) {
+            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_id'));
+            $this->productos_pedido[$producto]['cantidad'] = $this->productos_pedido[$producto]['cantidad'] + $this->unidades_producto;
+        } else {
+            $this->productos_pedido[] = ['producto_id' => $id, "cantidad" => $this->unidades_producto];
+        }
+        $this->producto_seleccionado = 0;
+        $this->unidades_producto = 0;
+        $this->emit('refreshComponent');
+    }
+
     public function submit()
     {
-        $this->cantidad_actual = $this->cantidad_inicial;
-        $this->producto_id = $this->identificador;
+
         // Validación de datos
         $validatedData = $this->validate(
             [
-                'lote_id' => 'required',
-                'producto_id' => 'required',
-                'cantidad_actual' => 'required',
-                'cantidad_inicial' => 'required',
-                'fecha_entrada' => 'required',
+                'qr_id' => 'required',
                 'estado' => 'required',
+                'fecha' => 'required',
+                'almacen_id' => 'required',
+                'observaciones' => 'nullable',
             ],
             // Mensajes de error
             [
-                'lote_id.required' => 'La identificación del lote es obligatoria.',
-                'producto_id.required' => 'El ID de producto es obligatorio.',
-                'cantidad_actual.required' => 'La cantidad de unidades del producto es obligatoria.',
-                'cantidad_inicial.required' => 'La cantidad de unidades del producto es obligatoria.',
-                'fecha_entrada.required' => 'La fecha de entrada del lote es obligatorio.',
-                'estado.required' => 'El estado del lote es obligatoria.',
+                'qr_id.required' => 'El precio del pedido es obligatorio.',
+                'lote_id.required' => 'El numero de orden es obligatorio.',
+                'estado.required' => 'El estado del pedido es obligatoria.',
+                'fecha.required' => 'La fecha es obligatoria.',
             ]
         );
-            // Guardar datos validados
-        $productosSave = ProductoLote::create($validatedData);
+
+        // Guardar datos validados
+        $mercaderiaSave = Stock::create($validatedData);
+        $dia = Carbon::now();
+        foreach ($this->productos_pedido as $productosIndex => $productos) {
+            $producto = Productos::find($productos['producto_id']);
+            for ($i = 0; $i < $productos['cantidad']; $i++) {
+                $lote_id = $dia->format('ymd') . $producto->id . $i;
+                StockEntrante::create([
+                    'producto_id' => $productos['producto_id'],
+                    'lote_id' => $lote_id,
+                    'stock_id' => $mercaderiaSave->id,
+                    'cantidad' => $producto->cajas_por_pallet,
+                ]);
+            }
+        }
 
         // Alertas de guardado exitoso
-        if ($productosSave) {
-            $this->alert('success', 'Lote de producto registrado correctamente!', [
+        if ($mercaderiaSave) {
+            $this->alert('success', '¡Stock entrante registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -78,7 +148,7 @@ class CreateComponent extends Component
                 'timerProgressBar' => true,
             ]);
         } else {
-            $this->alert('error', '¡No se ha podido guardar el lote de producto!', [
+            $this->alert('error', '¡No se ha podido guardar la entrada del stock!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -91,11 +161,24 @@ class CreateComponent extends Component
     {
         return [
             'confirmed',
-            'submit'
+            'submit',
+            'alertaGuardar',
+            'checkLote'
         ];
     }
-
-    // Función para cuando se llama a la alerta
+    public function alertaGuardar()
+    {
+        $this->alert('warning', 'Comprueba que el stock introducido es correcto antes de guardar.', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'submit',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => false,
+        ]);
+    }
     public function confirmed()
     {
         // Do something

@@ -55,8 +55,8 @@
                                     <span class="badge badge-info">Enviado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Completado")
                                     <span class="badge badge-info">Enviado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Cancelado")
-                                    <span class="badge badge-danger">Cancelado</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Rechazado")
+                                    <span class="badge badge-danger">Rechazado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Facturado")
                                     <span class="badge badge-success">Facturado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Pagado")

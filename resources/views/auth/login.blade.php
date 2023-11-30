@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>LOBO DEL SUR</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.css" integrity="sha512-CaTMQoJ49k4vw9XO0VpTBpmMz8XpCWP5JhGmBvuBqCOaOHWENWO1CrVl09u4yp8yBVSID6smD4+gpzDJVQOPwQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -13,7 +13,7 @@
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
-<body style="background-color: #03386c;">
+<body style="background-color: #35a8e0;">
     <div class="container">
         <div class="row justify-content-center mt-5">
             <div class="col-sm-12 text-center">
@@ -82,7 +82,7 @@
                                 <div class="row mb-0 justify-content-center">
                                     <div class="col-sm-11">
                                         <button type="submit" class="btn w-100"
-                                            style="background-color: #1d60a3; color: white;">
+                                            style="background-color: #35a8e0; color: white;">
                                             {{ __('Iniciar sesión') }}
                                         </button>
                                     </div>

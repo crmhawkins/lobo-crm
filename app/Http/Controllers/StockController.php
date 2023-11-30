@@ -3,6 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Stock;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
+use App\Models\Settings;
+use Carbon\Carbon;
 
 class StockController extends Controller
 {
@@ -24,8 +31,12 @@ class StockController extends Controller
      */
     public function create($id)
     {
-        return view('stock.create', compact('id'));
-
+        $stock_existente = Stock::find($id);
+        if ($stock_existente != null) {
+            $this->edit($id);
+        } else {
+            return view('stock.create', compact('id'));
+        }
     }
 
     /**
@@ -59,9 +70,26 @@ class StockController extends Controller
     public function edit($id)
     {
         return view('stock.edit', compact('id'));
-
     }
+    public function crearQR()
+    {
+        $count_qrs = Settings::find(1)->qr_creados_productos;
+        $year = Carbon::now()->format('y');
+        $qr_type = 'p';
 
+        // Generar códigos QR
+        $qrcodes = [];
+        for ($i = 0; $i < 35; $i++) { // Ajusta este número según la cantidad que desees
+            $codigoAleatorio = $year . '-' . $qr_type . "-" . sprintf('%08d', $count_qrs + $i);
+            $qrcodes[] = QrCode::errorCorrection('H')->format('png')->eye('circle')->size('120')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate(route('stock.create', ['id' => $codigoAleatorio]));
+        }
+        $new_count = Settings::find(1)->update(['qr_creados_productos' => ($count_qrs + 35)]);
+
+
+        // Generar y transmitir PDF
+        $pdf = PDF::loadView('stock.qrcodes', compact('qrcodes'))->setPaper('a4');
+        return $pdf->stream('qrcodes.pdf');
+    }
     /**
      * Update the specified resource in storage.
      *

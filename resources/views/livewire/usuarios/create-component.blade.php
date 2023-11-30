@@ -1,5 +1,4 @@
     <div class="container-fluid">
-        <script src="//unpkg.com/alpinejs" defer></script>
         <div class="page-title-box">
             <div class="row align-items-center">
                 <div class="col-sm-6">
