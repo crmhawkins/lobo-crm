@@ -62,6 +62,6 @@ class IndexComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('stock-mercaderia.crearQR');
+        return redirect()->route('stock-mercaderia.crear-qr');
     }
 }
