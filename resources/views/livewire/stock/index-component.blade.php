@@ -21,8 +21,10 @@
                     <div class="col-12">
                         <h4 class="mt-0 header-title font-24">Listado de stockaje</h4>
 
-                        <video id="preview" style="width: 100%; display: none;"></video>
-                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100" style="display: none;">CERRAR ESCÁNER</button>
+                        <div style="display: flex; justify-content: center;">
+                            <canvas id="qr-canvas" style="width: 50%; display: none;"></canvas>
+                        </div>
+                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100 mt-2" style="display: none;">CERRAR ESCÁNER</button>
                         <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
                         <button type="button" onclick="iniciarEscaneo('salida')" class="btn btn-lg btn-primary w-100 mt-2">SALIDA DE STOCK</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
@@ -164,52 +166,72 @@
             })
         });
     </script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
     <script>
-        let scanner = null;
+
+        let video = document.createElement("video");
+        let canvasElement = document.getElementById("qr-canvas");
+        let botoncerrar = document.getElementById("btnCerrarEscaneo");
+        let canvas = canvasElement.getContext("2d", { willReadFrequently: true });
+        let scanning = false;
         let currentAction = '';
 
         function iniciarEscaneo(action) {
-            currentAction = action;
-            document.getElementById('preview').style.display = 'block'; // Mostrar el video
-        document.getElementById('btnCerrarEscaneo').style.display = 'block'; // Mostrar el botón de cerrar
+            currentAction = action; // Guardamos la acción actual
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                scanning = true;
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true); // necesario para iOS Safari
+                video.play();
+                requestAnimationFrame(tick);
+            });
+            botoncerrar.style.display = "block";
+            canvasElement.style.display = "block";
+        }
 
-            if (!scanner) {
-                scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-                scanner.addListener('scan', function (content) {
-                    console.log(content); // Contenido del QR
-                    if (currentAction === 'añadir') {
-                        window.location.href = '/admin/stock-create/' + content;
-                    } else if (currentAction === 'salida') {
-                        window.location.href = '/admin/stock-edit/' + content;
-                    }
+        function tick() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA && scanning) {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
                 });
 
-                Instascan.Camera.getCameras().then(function (cameras) {
-                    if (cameras.length > 0) {
-                        scanner.start(cameras[0]);
-                    } else {
-                        console.error('No cameras found.');
-                        alert('No se encontraron cámaras.');
-                    }
-                }).catch(function (e) {
-                    console.error(e);
-                    alert('Error al acceder a la cámara: ' + e);
-                });
-            } else {
-                scanner.start();
+                if (code) {
+                    console.log("Código QR encontrado", code.data);
+                    handleQRCodeAction(code.data);
+                    scanning = false;
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    canvasElement.style.display = "none";
+                }
             }
+            if (scanning) {
+                requestAnimationFrame(tick);
+            }
+        }
+
+        function handleQRCodeAction(data) {
+            // Aquí manejas las diferentes acciones basadas en el código QR y la acción actual
+            if (currentAction === 'añadir') {
+                window.location.href = '/stock-create/' + data;
+            } else if (currentAction === 'salida') {
+                window.location.href = '/stock-edit/' + data;
+            }
+            // Agrega más condiciones según sea necesario
         }
 
         function cerrarEscaneo() {
-            if (scanner) {
-                scanner.stop();
+            scanning = false;
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
             }
-            document.getElementById('preview').style.display = 'none'; // Ocultar el video
-            document.getElementById('btnCerrarEscaneo').style.display = 'none'; // Ocultar el botón de cerrar
+            canvasElement.style.display = "none";
+            botoncerrar.style.display = "none";
         }
-
     </script>
+
     <script src="../assets/js/jquery.slimscroll.js"></script>
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>

@@ -21,9 +21,10 @@
                 <div class="card-body row">
                     <div class="col-12">
                         <h4 class="mt-0 header-title font-24">Listado de stockaje de materiales</h4>
-
-                        <video id="preview" style="width: 100%; display: none;"></video>
-                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100" style="display: none;">CERRAR ESCÁNER</button>
+                        <div style="display: flex; justify-content: center;">
+                        <canvas id="qr-canvas" style="width: 50%; display: none;"></canvas>
+                        </div>
+                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100 mt-2" style="display: none;">CERRAR ESCÁNER</button>
                         <button type="button" onclick="iniciarEscaneo()" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
 
 
@@ -129,42 +130,56 @@
             })
         });
     </script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
     <script>
-
-        let scanner = null;
+        let video = document.createElement("video");
+        let canvasElement = document.getElementById("qr-canvas");
+        let canvas = canvasElement.getContext("2d", { willReadFrequently: true });
+        let scanning = false;
 
         function iniciarEscaneo() {
-            if (!scanner) {
-                scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-                scanner.addListener('scan', function (url) {
-                    window.location.href = url; // Redirecciona a la URL del QR
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                scanning = true;
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true); // necesario para iOS Safari
+                video.play();
+                requestAnimationFrame(tick);
+            });
+
+            canvasElement.style.display = "block";
+            document.getElementById('btnCerrarEscaneo').style.display = "block";
+        }
+
+        function tick() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA && scanning) {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
                 });
 
-                Instascan.Camera.getCameras().then(function (cameras) {
-                    if (cameras.length > 0) {
-                        scanner.start(cameras[0]);
-                    } else {
-                        console.error('No cameras found.');
-                        alert('No se encontraron cámaras.');
-                    }
-                }).catch(function (e) {
-                    console.error(e);
-                    alert('Error al acceder a la cámara: ' + e);
-                });
-            } else {
-                scanner.start();
+                if (code) {
+                    console.log("Código QR encontrado", code.data);
+                    // Manejar el resultado del escaneo del QR
+                    scanning = false;
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    canvasElement.style.display = "none";
+                }
             }
-            document.getElementById('preview').style.display = 'block'; // Mostrar el video
-            document.getElementById('btnCerrarEscaneo').style.display = 'block'; // Mostrar el botón de cerrar
+            if (scanning) {
+                requestAnimationFrame(tick);
+            }
         }
 
         function cerrarEscaneo() {
-            if (scanner) {
-                scanner.stop();
+            scanning = false;
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
             }
-            document.getElementById('preview').style.display = 'none'; // Ocultar el video
-            document.getElementById('btnCerrarEscaneo').style.display = 'none'; // Ocultar el botón de cerrar
+            canvasElement.style.display = "none";
+            document.getElementById('btnCerrarEscaneo').style.display = "none";
         }
     </script>
     <script src="../assets/js/jquery.slimscroll.js"></script>
