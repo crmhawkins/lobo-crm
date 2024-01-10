@@ -215,9 +215,9 @@
         function handleQRCodeAction(data) {
             // Aquí manejas las diferentes acciones basadas en el código QR y la acción actual
             if (currentAction === 'añadir') {
-                window.location.href = '/stock-create/' + data;
+                window.location.href = '/admin/stock-create/' + data;
             } else if (currentAction === 'salida') {
-                window.location.href = '/stock-edit/' + data;
+                window.location.href = '/admin/stock-edit/' + data;
             }
             // Agrega más condiciones según sea necesario
         }
