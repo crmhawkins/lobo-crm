@@ -90,7 +90,7 @@
         </div>
 
     </div>
-    <script src="http://lobo-crm.test/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
@@ -104,19 +104,19 @@
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="http://lobo-crm.test/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="http://lobo-crm.test/assets/js/metismenu.min.js"></script>
-    <script src="http://lobo-crm.test/assets/js/jquery.slimscroll.js"></script>
-    <script src="http://lobo-crm.test/assets/js/waves.min.js"></script>
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/metismenu.min.js"></script>
+    <script src="/assets/js/jquery.slimscroll.js"></script>
+    <script src="/assets/js/waves.min.js"></script>
 
     <!--Morris Chart-->
     {{-- <script src="../plugins/morris/morris.min.js"></script> --}}
-    <script src="http://lobo-crm.test/plugins/raphael/raphael.min.js"></script>
+    <script src="/plugins/raphael/raphael.min.js"></script>
 
     {{-- <script src="../assets/pages/dashboard.init.js"></script> --}}
 
     <!-- App js -->
-    <script src="http://lobo-crm.test/assets/js/app.js"></script>
+    <script src="/assets/js/app.js"></script>
 
     @livewireScripts
     @yield('scripts')
