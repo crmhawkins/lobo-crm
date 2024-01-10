@@ -17,19 +17,22 @@ class CreateComponent extends Component
 
     use LivewireAlert;
 
-    public $numero_factura;
-    public $pedido_id = 1; // 0 por defecto por si no se selecciona ninguno
+    public $idpedido;
+    public $numero_factura; // 0 por defecto por si no se selecciona ninguno
     public $fecha_emision;
     public $fecha_vencimiento;
     public $descripcion;
     public $estado = "Pendiente";
     public $metodo_pago = "No Pagado";
     public $pedidos;
+    public $pedido;
+    public $pedido_id;
 
     public function mount()
     {
+        $this->pedido = Pedido::find($this->idpedido);
+        $this->pedido_id = $this->idpedido;
         $this->numero_factura = Facturas::count() + 1;
-        $this->pedidos = Pedido::where('estado', 'Aceptado')->get();
         $this->fecha_emision = Carbon::now()->format('d/m/Y');
     }
 
@@ -67,7 +70,8 @@ class CreateComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
 
         // Alertas de guardado exitoso
-        if ($facturasSave) {
+        $pedidosSave = $this->pedido->update(['estado' => 5]);
+        if ($facturasSave && $pedidosSave) {
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

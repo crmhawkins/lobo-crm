@@ -30,6 +30,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
+
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 0;
         $this->qr_id = $this->identificador;
@@ -39,7 +40,6 @@ class CreateComponent extends Component
 
     public function render()
     {
-
         return view('livewire.stock-mercaderia.create-component');
     }
     public function getMercaderiaNombre()
@@ -179,6 +179,7 @@ class CreateComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('orden-mercaderia.index');
+        return redirect()->route('mercaderia.index');
+        /*return redirect()->route('orden-mercaderia.index');*/
     }
 }

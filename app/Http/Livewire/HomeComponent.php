@@ -15,10 +15,8 @@ class HomeComponent extends Component
 
     public function mount()
     {
-        $jornada = Jornada::where('user_id', Auth::id())->where('status', 1)->count();
-        if ($jornada > 0) {
-            $this->jornada_activa = 1;
-        }
+        $this->checkJornada();
+
     }
     public function render()
     {

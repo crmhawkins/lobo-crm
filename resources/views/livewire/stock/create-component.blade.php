@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-row justify-content-center">
                         @if (auth()->user()->almacen_id == 0)
-                            <div class="form-group col-md-11">
+                            <div class="form-group col-md-10">
                                 <div>
                                     <select name="almacen" id="select2-almacen" wire:model="almacen_id"
                                         style="width: 100% !important">
@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         @else
-                            <div class="form-group col-md-11">
+                            <div class="form-group col-md-10">
                                 <h4> Almacén de destino: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
                                 </h4>
                             </div>
@@ -54,6 +54,11 @@
                         <div class="form-group col-md-2">
                             <label for="fecha">Fecha</label>
                             <input type="date" wire:model="fecha" class="form-control" disabled>
+                        </div>
+                        <div class="form-group col-md-2">
+
+                            <label for="fecha">Nº de Orden</label>
+                            <input type="string" wire:model="orden_numero" class="form-control">
                         </div>
                         <div class="form-group col-md-4" wire:ignore>
                             <div x-data="" x-init="$('#select2-estado').select2();
@@ -105,18 +110,10 @@
                                                         {{ $this->getNombreTabla($producto['producto_id']) }}
                                                     </td>
                                                     <td width="25%">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-6 text-end"><input type="number"
-                                                                    class="form-control"
-                                                                    wire:model="productos_pedido.{{ $productoIndex }}.cantidad">
-                                                            </div>
-                                                            <div class="col-6 text-start">
-                                                                <p class="my-auto">unidades</p>
-                                                            </div>
-                                                        </div>
+                                                        1 palet <!-- Cambiado a texto fijo -->
                                                     </td>
-                                                    <td width="25%"><button type="button" class="btn btn-danger"
-                                                            wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                    <td width="25%">
+                                                        <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -186,26 +183,17 @@
                                     </div>
                                 </div>
                                 @if ($producto_seleccionado != null)
-                                    <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7" style="text-align: center !important;">
-                                            <label for="unidades">Unidades (pallets)</label>
-                                        </div>
-                                        <div class="col-md-3" style="text-align: center !important;">
-                                            <label for="unidades">&nbsp; </label>
-                                        </div>
+                                <!-- Quitar sección de unidades y reemplazarla por una indicación fija -->
+                                <div class="row justify-content-center mt-1">
+                                    <div class="col-md-10" style="text-align: center !important;">
+                                        <p>Un palet del producto seleccionado será añadido.</p>
                                     </div>
-                                    <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_producto">
-                                        </div>
-                                        <div class="col-md-3" style="justify-content: start !important"
-                                            style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
-                                            <button type="button" class="btn btn-primary w-100"
-                                                wire:click.prevent="addProducto('{{ $producto_seleccionado }}')"
-                                                data-dismiss="modal" aria-label="Close">+</a>
-                                        </div>
+                                </div>
+                                <div class="row justify-content-center mt-1">
+                                    <div class="col-md-10" style="display: flex;justify-content: center;">
+                                        <button type="button" class="btn btn-primary" wire:click.prevent="addProducto('{{ $producto_seleccionado }}')" data-dismiss="modal" aria-label="Close">Añadir Producto</button>
                                     </div>
+                                </div>
                                 @endif
                             </div>
                             <div class="modal-footer">

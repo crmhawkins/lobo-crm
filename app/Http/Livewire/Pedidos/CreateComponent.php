@@ -16,11 +16,12 @@ use Illuminate\Support\Facades\DB;
 class CreateComponent extends Component
 {
     use LivewireAlert;
-    public $cliente_id = 1;
+    public $cliente_id;
     public $nombre;
     public $precio = 0;
     public $precioEstimado = 0;
-    public $estado = 'Pendiente';
+    public $precioSinDescuento;
+    public $estado = 1;
     public $direccion_entrega;
     public $provincia_entrega;
     public $localidad_entrega;
@@ -38,13 +39,33 @@ class CreateComponent extends Component
     public $producto_seleccionado;
     public $unidades_pallet_producto;
     public $unidades_caja_producto;
+    public $precio_crema;
+    public $precio_vodka07l;
+    public $precio_vodka175l;
+    public $precio_vodka3l;
+
 
     public function mount()
     {
+
         $this->productos = Productos::all();
-        $this->clientes = Clients::all();
+        $this->clientes = Clients::where('estado', 2)->get();
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
+        $this->cliente_id = null;
+    }
+
+    public function selectCliente()
+    {
+        $cliente = Clients::find($this->cliente_id);
+        $this->localidad_entrega = $cliente->localidad;
+        $this->provincia_entrega = $cliente->provincia;
+        $this->direccion_entrega = $cliente->direccion;
+        $this->cod_postal_entrega = $cliente->cod_postal;
+        $this->precio_crema = $cliente->precio_crema;
+        $this->precio_vodka07l = $cliente->precio_vodka07l;
+        $this->precio_vodka175l = $cliente->precio_vodka175l;
+        $this->precio_vodka3l = $cliente->precio_vodka3l;
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -71,6 +92,7 @@ class CreateComponent extends Component
                 'localidad_entrega' => 'nullable',
                 'cod_postal_entrega' => 'nullable',
                 'orden_entrega' => 'nullable',
+                'descuento'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -85,7 +107,13 @@ class CreateComponent extends Component
         $pedidosSave = Pedido::create($validatedData);
 
         foreach ($this->productos_pedido as $productos) {
-            DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $pedidosSave->id, 'unidades' => $productos['unidades'], 'precio_ud' => $productos['precio_ud']]);
+            DB::table('productos_pedido')->insert([
+                'producto_lote_id' => $productos['producto_lote_id'],
+                'pedido_id' => $pedidosSave->id,
+                'unidades' => $productos['unidades'],
+                'precio_ud' => $productos['precio_ud'],
+                'precio_total' => $productos['precio_total']
+            ]);
             $producto_stock = ProductoLote::find($productos['producto_lote_id']);
             $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
             $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
@@ -154,6 +182,8 @@ class CreateComponent extends Component
     {
         unset($this->productos_pedido[$id]);
         $this->productos_pedido = array_values($this->productos_pedido);
+        $this->setPrecioEstimado();
+        $this->emit('refreshComponent');
     }
 
     public function getNombreTabla($id)
@@ -178,34 +208,82 @@ class CreateComponent extends Component
 
     public function addProductos($id)
     {
-        $producto_existe = false;
-        $producto_id = $id;
-        foreach ($this->productos_pedido as $productos) {
-            if ($productos['producto_lote_id'] == $id) {
-                $producto_existe = true;
-                $producto_id = $productos['producto_lote_id'];
-            }
-        }
-        if ($producto_existe == true) {
-            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
-            $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
-        } else {
-            $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto, "precio_ud" => 0];
+        $producto = Productos::find($id);
+        if (!$producto) {
+            // Muestra una alerta al usuario indicando que el producto no se encontró
+            $this->alert('error', 'Producto no encontrado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+            return;
         }
 
-        $this->producto_seleccionado = 0;
-        $this->unidades_producto = 0;
+        $precioUnitario = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+        $precioTotal = $precioUnitario * $this->unidades_producto;
+
+        $producto_existe = false;
+        foreach ($this->productos_pedido as $productoPedido) {
+            if ($productoPedido['producto_lote_id'] == $id) {
+                $producto_existe = true;
+                break;
+            }
+        }
+
+        if ($producto_existe) {
+            $key = array_search($id, array_column($this->productos_pedido, 'producto_lote_id'));
+            $this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+            $this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
+            $this->productos_pedido[$key]['precio_total'] += $precioTotal;
+        } else {
+            $this->productos_pedido[] = [
+                'producto_lote_id' => $id,
+                'unidades' => $this->unidades_producto,
+                'precio_ud' => $precioUnitario,
+                'precio_total' => $precioTotal
+            ];
+        }
+
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }
-    public function setPrecioEstimado()
+    private function obtenerPrecioPorTipo($tipoPrecio)
     {
-        $this->precioEstimado = 0;
-        foreach ($this->productos_pedido as $productos) {
-            $this->precioEstimado += ($productos['precio_ud']);
+        switch ($tipoPrecio) {
+            case 1:
+                return $this->precio_crema;
+            case 2:
+                return $this->precio_vodka07l;
+            case 3:
+                return $this->precio_vodka175l;
+            case 4:
+                return $this->precio_vodka3l;
+            default:
+                return 0;
         }
-        $this->precio = $this->precioEstimado - $this->descuento;
     }
+
+
+    public function setPrecioEstimado()
+{
+    $this->precioEstimado = 0;
+    foreach ($this->productos_pedido as $producto) {
+        $this->precioEstimado += $producto['precio_total'];
+    }
+    $this->precioSinDescuento = $this->precioEstimado;
+    // Verificar si el descuento está activado
+    if ($this->descuento) {
+        // Calcular el 3% de descuento del precio total
+        $descuento = $this->precioEstimado * 0.03;
+        // Aplicar el descuento al precio total
+        $this->precioEstimado -= $descuento;
+    }
+
+    // Asignar el precio final
+   $this->precio = number_format($this->precioEstimado, 2, '.', '');
+}
 
     public function getProductoNombre()
     {

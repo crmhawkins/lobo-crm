@@ -20,11 +20,12 @@
                 <div class="card-body row">
                     <div class="col-12">
                         <h4 class="mt-0 header-title font-24">Listado de stockaje</h4>
-                        <p class="sub-title../plugins mb-5">Listado completo del stockaje, para ver o añadir un lote,
-                            seleccione un producto de la lista.
-                        </p>
-                        <button type="button" wire:click.prevent="alertaGuardar"
-                            class="btn btn-lg btn-primary w-100">GENERAR CÓDIGOS QR</button>
+
+                        <video id="preview" style="width: 100%; display: none;"></video>
+                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100" style="display: none;">CERRAR ESCÁNER</button>
+                        <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
+                        <button type="button" onclick="iniciarEscaneo('salida')" class="btn btn-lg btn-primary w-100 mt-2">SALIDA DE STOCK</button>
+                        <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                     </div>
                     @if (auth()->user()->role == 1)
                     <div class="row justify-content-center">
@@ -82,6 +83,7 @@
                                                 <th>Lote/Pallet</th>
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en cajas)</th>
+                                                {{--<th>Accion</th>--}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -90,6 +92,9 @@
                                                     <th>{{ $lote['lote_id'] }}</th>
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
+                                                    {{--<td>
+                                                        <button class="btn btn-primary" wire:click.prevent="generarPDFConQRCode({{ $lote->id }})">Generar QR</button>
+                                                    </td>--}}
                                                 </tr>
                                             @endforeach
                                     </table>
@@ -159,6 +164,52 @@
             })
         });
     </script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <script>
+        let scanner = null;
+        let currentAction = '';
+
+        function iniciarEscaneo(action) {
+            currentAction = action;
+            document.getElementById('preview').style.display = 'block'; // Mostrar el video
+        document.getElementById('btnCerrarEscaneo').style.display = 'block'; // Mostrar el botón de cerrar
+
+            if (!scanner) {
+                scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+                scanner.addListener('scan', function (content) {
+                    console.log(content); // Contenido del QR
+                    if (currentAction === 'añadir') {
+                        window.location.href = '/admin/stock-create/' + content;
+                    } else if (currentAction === 'salida') {
+                        window.location.href = '/admin/stock-edit/' + content;
+                    }
+                });
+
+                Instascan.Camera.getCameras().then(function (cameras) {
+                    if (cameras.length > 0) {
+                        scanner.start(cameras[0]);
+                    } else {
+                        console.error('No cameras found.');
+                        alert('No se encontraron cámaras.');
+                    }
+                }).catch(function (e) {
+                    console.error(e);
+                    alert('Error al acceder a la cámara: ' + e);
+                });
+            } else {
+                scanner.start();
+            }
+        }
+
+        function cerrarEscaneo() {
+            if (scanner) {
+                scanner.stop();
+            }
+            document.getElementById('preview').style.display = 'none'; // Ocultar el video
+            document.getElementById('btnCerrarEscaneo').style.display = 'none'; // Ocultar el botón de cerrar
+        }
+
+    </script>
     <script src="../assets/js/jquery.slimscroll.js"></script>
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>

@@ -292,7 +292,7 @@ class EditComponent extends Component
         return redirect()->route('almacen.index');
     }
 
-    public function listarPresupuesto($id)
+    /*public function listarPresupuesto($id)
     {
         $this->id_presupuesto = $id;
         if ($this->id_presupuesto != null) {
@@ -303,13 +303,13 @@ class EditComponent extends Component
         } else {
             $this->estadoPresupuesto = 0;
         }
-    }
+    }-->*/
 
     public function imprimirFactura()
     {
         $factura = Facturas::find($this->identificador);
         $presupuesto = Presupuesto::find($this->id_presupuesto);
-        $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
+        $cliente = Clients::where('id', $presupuesto->id_cliente)->first();
         $evento = Evento::where('id', $presupuesto->id_evento)->get();
         $listaServicios = [];
         $listaPacks = [];

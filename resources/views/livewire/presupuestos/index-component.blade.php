@@ -48,13 +48,13 @@
                                 <td>{{ $presup->descuento }} €</td>
                                 <td>{{ $presup->precioFinal }} €</td>
                                 <td>@if($presup->estado == "Aceptado")
-                                    <span class="badge badge-success">Aceptado</span> 
+                                    <span class="badge badge-success">Aceptado</span>
                                     @elseif($presup->estado == "Pendiente")
-                                    <span class="badge badge-warning">Pendiente</span> 
-                                    @elseif($presup->estado == "Cancelado") 
+                                    <span class="badge badge-warning">Pendiente</span>
+                                    @elseif($presup->estado == "Cancelado")
                                     <span class="badge badge-danger">Cancelado</span>
-                                    @elseif($presup->estado == "Facturado") 
-                                    <span class="badge badge-info">Facturado</span> 
+                                    @elseif($presup->estado == "Facturado")
+                                    <span class="badge badge-info">Facturado</span>
                                     @endif
                                 </td>
 

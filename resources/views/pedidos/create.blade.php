@@ -6,7 +6,7 @@
     {{-- @vite(['resources/sass/productos.scss'])
     @vite(['resources/sass/alumnos.scss']) --}}
 
-@section('content-principal')
+    @section('content-principal')
 <div>
     @livewire('pedidos.create-component')
 </div>

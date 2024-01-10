@@ -23,32 +23,34 @@
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 básicos del pedido</h5>
                         </div>
-                        <div class="form-group col-md-3" wire:ignore>
-                            <div x-data="" x-init="$('#select2-cliente').select2();
+                        <div class="form-group col-md-4" wire:ignore>
+                            <div x-data="" x-init="$('#select2-cliente').select2({placeholder: '-- Selecciona un cliente --'});
                             $('#select2-cliente').on('change', function(e) {
-                                var data = $('#select2-estado').select2('val');
+                                var data = $('#select2-cliente').select2('val');
                                 @this.set('cliente_id', data);
+                                @this.call('selectCliente');
                             });">
-                                <label for="fechaVencimiento">Nº del cliente</label>
+                                <label for="Cliente">Cliente</label>
                                 <select class="form-control" name="cliente_id" id="select2-cliente"
-                                    wire:model="cliente_id">
+                                    wire:model="cliente_id" >
+                                    <option value=""></option>
                                     @foreach ($clientes as $cliente)
                                         <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-3">
                             <label for="fecha">Fecha</label>
                             <input type="text" value="{{ $fecha }}" class="form-control" disabled>
                         </div>
-                        <div class="form-group col-md-3" wire:ignore>
+                        {{--<div class="form-group col-md-3" wire:ignore>
                             <div x-data="" x-init="$('#select2-estado').select2();
                             $('#select2-estado').on('change', function(e) {
                                 var data = $('#select2-estado').select2('val');
                                 @this.set('estado', data);
                             });">
-                                <label for="fechaVencimiento">Estado</label>
+                                <label for="estado">Estado</label>
                                 <select class="form-control" name="estado" id="select2-estado"
                                     value="{{ $estado }}">
                                     <option value="Pendiente">Pendiente</option>
@@ -58,8 +60,8 @@
                                     <option value="Facturado">Facturado</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group col-md-3" wire:ignore>
+                        </div>--}}
+                        <div class="form-group col-md-4" wire:ignore>
                             <div x-data="" x-init="$('#select2-tipo').select2();
                             $('#select2-tipo').on('change', function(e) {
                                 var data = $('#select2-tipo').select2('val');
@@ -82,39 +84,39 @@
                                 de envío</h5>
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Dirección</label>
-                            <input type="text" wire:model="direccion_entrega" class="form-control">
+                            <label for="localidad_entrega">Dirección</label>
+                            <input type="text" wire:model="direccion_entrega" class="form-control" readonly>
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Localidad</label>
-                            <input type="text" wire:model="localidad_entrega" class="form-control">
+                            <label for="localidad_entrega">Localidad</label>
+                            <input type="text" wire:model="localidad_entrega" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-5">
-                            <label for="fecha">Provincia</label>
-                            <input type="text" wire:model="provincia_entrega" class="form-control">
+                            <label for="provincia_entrega">Provincia</label>
+                            <input type="text" wire:model="provincia_entrega" class="form-control" readonly>
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Código postal</label>
-                            <input type="text" wire:model="cod_postal_entrega" class="form-control">
+                            <label for="cod_postal_entrega">Código postal</label>
+                            <input type="text" wire:model="cod_postal_entrega" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-row mb-4 justify-content-center">
-                        <div class="form-group col-md-5">
+                       {{-- <div class="form-group col-md-5">
                             <label for="fecha">Órden de entrega</label>
                             <input type="text" wire:model="orden_entrega" class="form-control">
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
+                        </div>--}}
+                        <div class="form-group col-md-11">
                             <label for="fecha">Observaciones</label>
                             <textarea wire:model="observaciones" class="form-control"></textarea>
                         </div>
@@ -137,42 +139,40 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
-                                                <th>Precio</th>
+                                                <th>Precio unidad</th>
+                                                <th>Precio total</th>
                                                 <th>Eliminar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
-                                                    <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
-                                                    </td>
+                                                    <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}</td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
-                                                    <td><input type="number" class="form-control"
-                                                            wire:model="productos_pedido.{{ $productoIndex }}.precio_ud"
-                                                            wire:change='setPrecioEstimado'>
-                                                    </td>
+                                                    <td>{{ $producto['precio_ud']}} €</td>
+                                                    <td>{{ $producto['precio_total']}} €</td>
                                                     <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{$productoIndex}}')">X</button></td>
                                                 </tr>
                                             @endforeach
                                             <tr>
                                                 <th colspan="3">Precio estimado</th>
-                                                <th>{{ $precioEstimado }} €</td>
+                                                <th>{{ $precioSinDescuento }} €</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-5">
-                            <label for="fecha">Descuento</label>
-                            <input type="text" wire:model="descuento" class="form-control" wire:change='setPrecioEstimado()'>
+                        <div class="form-group col-md-5 d-flex align-items-center">
+                            <label for="descuento">Descuento</label>
+                            <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
                         </div>
                         <div class="form-group col-md-1">
                            &nbsp;
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fecha">Precio final</label>
-                            <input type="text" wire:model="precio" class="form-control">
+                            <input type="text" wire:model="precio" class="form-control" readonly>
                         </div>
                     </div>
                 </div>

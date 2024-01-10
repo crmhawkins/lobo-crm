@@ -3,18 +3,18 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">TRAMITAR ÓRDEN DE PRODUCCIÓN</span></h4>
+                <h4 class="page-title">VER ÓRDEN DE PRODUCCIÓN</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Producción</a></li>
-                    <li class="breadcrumb-item active">Editar órden de producción</li>
+                    <li class="breadcrumb-item active">Ver órden de producción</li>
                 </ol>
             </div>
         </div>
     </div>
-    <div class="row" style="align-items: start !important">
+    <div class="row justify-content-center" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
@@ -24,13 +24,15 @@
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 básicos del pedido</h5>
                         </div>
-                        @if (auth()->user()->almacen_id == 0)
+                        {{--@if (auth()->user()->almacen_id == 0)--}}
                             <div class="form-group col-md-11">
                                 <div>
-                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id"
-                                        style="width: 100% !important">
-                                        <option value="{{ null }}">-- Selecciona un almacén --
-                                        </option>
+                                    @if(($this->estado) == "0")
+                                    <select name="almacen" wire:model="almacen_id" style="width: 100% !important" >
+                                    @else
+                                    <select name="almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                    @endif
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
                                         @foreach ($almacenes as $presup)
                                             <option value="{{ $presup->id }}">{{ $presup->almacen }}
                                             </option>
@@ -38,12 +40,12 @@
                                     </select>
                                 </div>
                             </div>
-                        @else
+                       {{-- @else
                             <div class="form-group col-md-11">
                                 <h4> Almacén de destino: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
                                 </h4>
                             </div>
-                        @endif
+                        @endif--}}
                         <div class="form-group col-md-2">
                             <label for="fecha">Nº de orden</label>
                             <input type="text" wire:model="numero" class="form-control" disabled>
@@ -60,7 +62,7 @@
                             });">
                                 <label for="fechaVencimiento">Estado</label>
                                 <select class="form-control" name="estado" id="select2-estado"
-                                    value="{{ $estado }}">
+                                    wire:model="estado" disabled>
                                     <option value="0">Pendiente</option>
                                     <option value="1">Aceptado</option>
                                 </select>
@@ -68,7 +70,7 @@
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fecha">Observaciones</label>
-                            <textarea wire:model="observaciones" class="form-control"></textarea>
+                            <textarea wire:model="observaciones" class="form-control" readonly></textarea>
                         </div>
                     </div>
                 </div>
@@ -79,8 +81,8 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
-                                Lista de productos <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                Lista de productos {{--<button type="button" class="btn btn-primary" data-toggle="modal"
+                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>--}}
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_ordenados) > 0)
@@ -89,7 +91,7 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
-                                                <th>Eliminar</th>
+                                                {{--<th>Eliminar</th>--}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -102,16 +104,16 @@
                                                         <div class="row align-items-center">
                                                             <div class="col-6 text-end"><input type="number"
                                                                     class="form-control"
-                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad">
+                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad" readonly>
                                                             </div>
                                                             <div class="col-6 text-start">
                                                                 <p class="my-auto">pallets</p>
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td width="25%"><button type="button" class="btn btn-danger"
+                                                     </td>
+                                                    {{--<td width="25%"><button type="button" class="btn btn-danger"
                                                             wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                    </td>
+                                                    </td>--}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -247,19 +249,20 @@
                 </div>
             </div>
         </div>
+        @if(($this->estado) == "0")
         <div class="col-md-3" style="width: 23vw !important;">
             <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
                 <div class="card-body">
-                    <h5>Opciones de guardado</h5>
+                    <h5>COMPLETAR PROCUCCIÓN</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                presupuesto</button>
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="completarProduccion">Completar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        @endif
         <style>
             fieldset.scheduler-border {
                 border: 1px groove #ddd !important;

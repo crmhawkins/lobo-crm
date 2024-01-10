@@ -24,7 +24,7 @@
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 básicos del pedido</h5>
                         </div>
-                        @if (auth()->user()->almacen_id == 0)
+                        {{--@if (auth()->user()->almacen_id == 0)--}}
                             <div class="form-group col-md-11">
                                 <div>
                                     <select name="almacen" id="select2-almacen" wire:model="almacen_id"
@@ -38,12 +38,12 @@
                                     </select>
                                 </div>
                             </div>
-                        @else
+                       {{--  @else
                             <div class="form-group col-md-11">
                                 <h4> Almacén de destino: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
                                 </h4>
                             </div>
-                        @endif
+                        @endif--}}
                         <div class="form-group col-md-2">
                             <label for="fecha">Nº de orden</label>
                             <input type="text" wire:model="numero" class="form-control" disabled>
@@ -60,7 +60,7 @@
                             });">
                                 <label for="fechaVencimiento">Estado</label>
                                 <select class="form-control" name="estado" id="select2-estado"
-                                    value="{{ $estado }}">
+                                wire:model="estado">
                                     <option value="0">Pendiente</option>
                                     <option value="1">Aceptado</option>
                                 </select>
@@ -102,7 +102,8 @@
                                                         <div class="row align-items-center">
                                                             <div class="col-6 text-end"><input type="number"
                                                                     class="form-control"
-                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad">
+                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad"
+                                                                    wire:change='setPrecioEstimado'>
                                                             </div>
                                                             <div class="col-6 text-start">
                                                                 <p class="my-auto">pallets</p>

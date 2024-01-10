@@ -19,6 +19,7 @@ class Pedido extends Model
         'precio',
         'estado',
         'fecha',
+        'descuento',
         'direccion_entrega',
         'provincia_entrega',
         'localidad_entrega',

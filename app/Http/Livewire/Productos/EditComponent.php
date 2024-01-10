@@ -18,7 +18,7 @@ class EditComponent extends Component
     public $identificador;
 
     public $nombre;
-    public $precio;
+    public $tipo_precio;
     public $iva;
     public $foto_rutaOld;
     public $foto_ruta;
@@ -42,9 +42,7 @@ class EditComponent extends Component
     {
         $product = Productos::find($this->identificador);
         $this->nombre = $product->nombre;
-        $this->precio = $product->precio;
-
-        $this->precio = $product->precio;
+        $this->tipo_precio = $product->tipo_precio;
         $this->unidades_por_caja = $product->unidades_por_caja;
         $this->cajas_por_pallet = $product->cajas_por_pallet;
 
@@ -89,7 +87,7 @@ class EditComponent extends Component
         $validatedData = $this->validate(
             [
                 'nombre' => 'required',
-                'precio' => 'required',
+                'tipo_precio' => 'required',
                 'foto_ruta' => 'required',
                 'unidades_por_caja' => 'required',
                 'cajas_por_pallet' => 'required',
@@ -109,7 +107,7 @@ class EditComponent extends Component
             // Mensajes de error
             [
                 'nombre.required' => 'La Categoria es obligatoria.',
-                'precio.required' => 'El código de producto es obligatorio.',
+                'tipo_precio.required' => 'El código de producto es obligatorio.',
                 'foto_ruta.required' => 'El precio es obligatorio.',
                 'unidades_por_caja.required' => 'El nombre es obligatorio.',
                 'cajas_por_pallet.required' => 'La descripción es obligatoria.',

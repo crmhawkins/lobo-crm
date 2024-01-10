@@ -20,6 +20,10 @@ class Mercaderia extends Model
     ];
 
 
+    public function stockMercaderiaEntrante()
+    {
+        return $this->hasMany(StockMercaderiaEntrante::class);
+    }
     /**
      * Mutaciones de fecha.
      *

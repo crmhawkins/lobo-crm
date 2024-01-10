@@ -45,6 +45,7 @@ class EditComponent extends Component
         $stock_disponible = StockEntrante::where('stock_id', $stock->id)->get();
         foreach ($stock_disponible as $productoIndex => $producto) {
             $this->productos_disponibles[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => $producto->cantidad];
+            $this->productos_pedido[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => 0];
         }
     }
 
@@ -174,7 +175,7 @@ class EditComponent extends Component
         $this->productos_pedido = array_values($this->productos_pedido);
     }
 
-    public function addProducto($id)
+   /* public function addProducto($id)
     {
         $producto_existe = false;
         $producto_id = $id;
@@ -193,5 +194,5 @@ class EditComponent extends Component
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
         $this->emit('refreshComponent');
-    }
+    }*/
 }

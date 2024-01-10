@@ -103,8 +103,7 @@
                         <div class="form-group col-md-6">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
-                                Stock saliente <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                Stock saliente
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
@@ -112,17 +111,20 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
+                                                <th>Lote</th>
                                                 <th>Cantidad</th>
-                                                <th>Eliminar</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
-                                                    <td width="25%">
+                                                    <td width="35%">
                                                         {{ $this->getNombreTabla($producto['producto_id']) }}
                                                     </td>
                                                     <td width="25%">
+                                                        {{ $producto['lote_id'] }}
+                                                    </td>
+                                                    <td width="40%">
                                                         <div class="row align-items-center">
                                                             <div class="col-6 text-end"><input type="number"
                                                                     class="form-control"
@@ -132,10 +134,6 @@
                                                                 <p class="my-auto">cajas</p>
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td width="25%"><button type="button" class="btn btn-danger"
-                                                            wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

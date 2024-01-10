@@ -80,7 +80,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
 
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
-    Route::get('/facturas-create', [FacturaController::class, 'create'])->name('facturas.create');
+    Route::get('/facturas-create/{id}', [FacturaController::class, 'create'])->name('facturas.create');
     Route::get('/facturas-edit/{id}', [FacturaController::class, 'edit'])->name('facturas.edit');
     Route::get('/facturas-pdf/{id}', [FacturaController::class, 'pdf'])->name('facturas.pdf');
 
@@ -92,7 +92,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock-create/{id}', [StockController::class, 'create'])->name('stock.create');
     Route::get('/stock-edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
-    Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock-mercaderia.crear-qr');
+    Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock.crear-qr');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios-create', [UsuarioController::class, 'create'])->name('usuarios.create');

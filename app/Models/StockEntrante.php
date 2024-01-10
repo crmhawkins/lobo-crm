@@ -14,6 +14,7 @@ class StockEntrante extends Model
     protected $fillable = [
         'stock_id',
         'lote_id',
+        'orden_numero',
         'producto_id',
         'cantidad',
         ];

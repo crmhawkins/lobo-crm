@@ -102,6 +102,7 @@ class CreateComponent extends Component
     {
         unset($this->productos_ordenados[$id]);
         $this->productos_ordenados = array_values($this->productos_ordenados);
+
         $this->setPrecioEstimado();
     }
 
@@ -129,29 +130,31 @@ class CreateComponent extends Component
     }
 
     public function setPrecioEstimado()
-    {
-        foreach ($this->productos_ordenados as $productos) {
-            $materiales = MaterialesProducto::where('producto_id', $productos['producto_id'])->get();
-            $producto = Productos::where('id', $productos['producto_id'])->first();
-            $unidades = $producto->cajas_por_pallet * $producto->unidades_por_caja;
-            foreach ($materiales as $material) {
-                $mercaderia_existe = false;
-                $mercaderia_id = $material->mercaderia_id;
-                foreach ($this->mercaderias_gastadas as $mercaderias) {
-                    if ($mercaderias['mercaderia_id'] == $material->mercaderia_id) {
-                        $mercaderia_existe = true;
-                        $mercaderia_id = $mercaderias['mercaderia_id'];
-                    }
-                }
-                if ($mercaderia_existe == true) {
-                    $mercaderia = array_search($mercaderia_id, array_column($this->mercaderias_gastadas, 'mercaderia_id'));
-                    $this->mercaderias_gastadas[$mercaderia]['cantidad'] = $material->cantidad * $productos['cantidad'] * $unidades;
-                } else {
-                    $this->mercaderias_gastadas[] = ['mercaderia_id' => $mercaderia_id, "cantidad" => $material->cantidad * $productos['cantidad'] * $unidades];
-                }
+{
+    $this->mercaderias_gastadas = [];
+    foreach ($this->productos_ordenados as $productoOrdenado) {
+        $materiales = MaterialesProducto::where('producto_id', $productoOrdenado['producto_id'])->get();
+        $producto = Productos::where('id', $productoOrdenado['producto_id'])->first();
+
+        foreach ($materiales as $material) {
+            $cantidadMaterialPorProducto = $material->cantidad * $productoOrdenado['cantidad'] * $producto->cajas_por_pallet;
+
+            // Buscar si el material ya existe en mercaderias_gastadas
+            $index = array_search($material->mercaderia_id, array_column($this->mercaderias_gastadas, 'mercaderia_id'));
+
+            if ($index !== false) {
+                // Actualizar la cantidad si el material ya existe
+                $this->mercaderias_gastadas[$index]['cantidad'] += $cantidadMaterialPorProducto;
+            } else {
+                // Agregar el material si no existe
+                $this->mercaderias_gastadas[] = [
+                    'mercaderia_id' => $material->mercaderia_id,
+                    'cantidad' => $cantidadMaterialPorProducto
+                ];
             }
         }
     }
+}
 
     public function sacarStock($productoId, $cantidad)
     {
@@ -205,9 +208,47 @@ class CreateComponent extends Component
             }
         }
     }
+    public function ComprobacionStock ($mercaderiaId, $newProductionQuantity)
+    {
+        $currentStock = $this->getStock($mercaderiaId);
+        $currentProductionUsage = $this->getStockGastado($mercaderiaId);
+        $resultingQuantity = $currentStock - $currentProductionUsage - $newProductionQuantity;
 
+        return $resultingQuantity >= 0;
+    }
+    public function getStockGastado($id)
+    {
+        return MercaderiaProduccion::where('mercaderia_id', $id)->get()->sum('cantidad');
+    }
+
+    public function getStock($id)
+    {
+        return StockMercaderiaEntrante::where('mercaderia_id', $id)->get()->sum('cantidad');
+    }
     public function submit()
     {
+        $productosSinStock = [];
+
+        foreach ($this->mercaderias_gastadas as $mercaderia) {
+            if (!$this->ComprobacionStock($mercaderia['mercaderia_id'], $mercaderia['cantidad'])) {
+                $nombreProducto = $this->getNombreTabla2($mercaderia['mercaderia_id']);
+                $productosSinStock[] = $nombreProducto;
+            }
+        }
+
+        if (!empty($productosSinStock)) {
+            $productosListados = implode('<br>', $productosSinStock); // Usa <br> para el salto de línea
+            $this->alert('error', 'Stock insuficiente para los siguientes productos:<br>' . $productosListados, [
+                'position' => 'center',
+                'timer' => 0, // 0 significa que no desaparece automáticamente
+                'toast' => false,
+                'showConfirmButton' => false, // No muestra el botón de confirmación
+                'onDismissed' => '', // No hace nada cuando se cierra
+                'allowOutsideClick' => true // Permite cerrar haciendo clic fuera
+            ]);
+            return;
+        }
+
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -229,13 +270,12 @@ class CreateComponent extends Component
         // Guardar datos validados
         $mercaderiaSave = OrdenProduccion::create($validatedData);
 
-        if($this->estado == 1){
-            foreach ($this->mercaderias_gastadas as $mercaderiaIndex => $mercaderia) {
+        foreach ($this->mercaderias_gastadas as $mercaderiaIndex => $mercaderia) {
                 $this->sacarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
-            }
-
-            $this->sumarStock();
         }
+        /*if($this->estado == 1){
+            $this->sumarStock();
+        }*/
         foreach ($this->productos_ordenados as $mercaderiaIndex => $producto) {
             ProductosProduccion::create(['orden_id' => $mercaderiaSave->id, 'producto_id' => $producto['producto_id'], 'cantidad' => $producto['cantidad']]);
         }

@@ -31,11 +31,15 @@ class CreateComponent extends Component
     public $almacen_id;
     public $productos_pedido = [];
     public $productos;
+    public $stock;
+    public $orden_numero;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function mount()
     {
+
+
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 0;
         $this->qr_id = $this->identificador;
@@ -49,6 +53,7 @@ class CreateComponent extends Component
     {
         return view('livewire.stock.create-component');
     }
+
 
     public function getProductoNombre()
     {
@@ -78,7 +83,7 @@ class CreateComponent extends Component
         $this->productos_pedido = array_values($this->productos_pedido);
     }
 
-    public function addProducto($id)
+    /*public function addProducto($id)
     {
         $producto_existe = false;
         $producto_id = $id;
@@ -97,7 +102,22 @@ class CreateComponent extends Component
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
         $this->emit('refreshComponent');
-    }
+    }*/
+    public function addProducto($id)
+{
+    // Limpiar cualquier producto existente
+    $this->productos_pedido = [];
+
+    // Añadir el producto seleccionado con una cantidad fija de 1 palet
+    $this->productos_pedido[] = ['producto_id' => $id, 'cantidad' => 1];
+
+    // Restablecer selecciones
+    $this->producto_seleccionado = 0;
+    $this->unidades_producto = 0;
+
+    // Refrescar el componente
+    $this->emit('refreshComponent');
+}
 
     public function submit()
     {
@@ -109,18 +129,19 @@ class CreateComponent extends Component
                 'estado' => 'required',
                 'fecha' => 'required',
                 'almacen_id' => 'required',
+                'orden_numero' => 'required',
                 'observaciones' => 'nullable',
             ],
             // Mensajes de error
             [
                 'qr_id.required' => 'El precio del pedido es obligatorio.',
-                'lote_id.required' => 'El numero de orden es obligatorio.',
+                'lote_id.required' => 'El lote es obligatorio.',
                 'estado.required' => 'El estado del pedido es obligatoria.',
                 'fecha.required' => 'La fecha es obligatoria.',
             ]
         );
 
-        // Guardar datos validados
+
         $mercaderiaSave = Stock::create($validatedData);
         $dia = Carbon::now();
         foreach ($this->productos_pedido as $productosIndex => $productos) {
@@ -132,6 +153,7 @@ class CreateComponent extends Component
                     'lote_id' => $lote_id,
                     'stock_id' => $mercaderiaSave->id,
                     'cantidad' => $producto->cajas_por_pallet,
+                    'orden_numero' => $validatedData['orden_numero'],
                 ]);
             }
         }

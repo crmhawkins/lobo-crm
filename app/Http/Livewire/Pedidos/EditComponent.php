@@ -7,11 +7,14 @@ use App\Models\ProductoLote;
 use App\Models\Productos;
 use App\Models\Clients;
 use App\Models\Pedido;
+use App\Mail\PedidoMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EditComponent extends Component
 {
@@ -21,6 +24,7 @@ class EditComponent extends Component
     public $nombre;
     public $precio;
     public $precioEstimado;
+    public $precioSinDescuento;
     public $estado;
     public $estado_old;
     public $direccion_entrega;
@@ -41,21 +45,31 @@ class EditComponent extends Component
     public $producto_seleccionado;
     public $unidades_caja_producto;
     public $unidades_pallet_producto;
+    public $precio_crema;
+    public $precio_vodka07l;
+    public $precio_vodka175l;
+    public $precio_vodka3l;
 
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
         $this->productos = Productos::all();
-        $this->clientes = Clients::all();
+        $this->clientes = Clients::where('estado', 2)->get();
         $this->nombre = $pedido->nombre;
-        $this->cliente_id = $pedido->cliente_id;
+        $this->cliente_id = ltrim($pedido->cliente_id,0);
+        $cliente = Clients::find($this->cliente_id);
         $this->nombre = $pedido->nombre;
         $this->estado = $pedido->estado;
         $this->estado_old = $pedido->estado;
-        $this->direccion_entrega = $pedido->direccion_entrega;
-        $this->provincia_entrega = $pedido->provincia_entrega;
-        $this->localidad_entrega = $pedido->localidad_entrega;
-        $this->cod_postal_entrega = $pedido->cod_postal_entrega;
+        $this->descuento = $pedido->descuento;
+        $this->localidad_entrega = $cliente->localidad;
+        $this->provincia_entrega = $cliente->provincia;
+        $this->direccion_entrega = $cliente->direccion;
+        $this->cod_postal_entrega = $cliente->cod_postal;
+        $this->precio_crema = $cliente->precio_crema;
+        $this->precio_vodka07l = $cliente->precio_vodka07l;
+        $this->precio_vodka175l = $cliente->precio_vodka175l;
+        $this->precio_vodka3l = $cliente->precio_vodka3l;
         $this->orden_entrega = $pedido->orden_entrega;
         $this->fecha = $pedido->fecha;
         $this->observaciones = $pedido->observaciones;
@@ -68,10 +82,26 @@ class EditComponent extends Component
                 'producto_lote_id' => $producto->producto_lote_id,
                 'unidades_old' => $producto->unidades,
                 'precio_ud' => $producto->precio_ud,
+                'precio_total' => $producto->precio_total,
                 'unidades' => 0,
                 'borrar' => 0,
             ];
         }
+        $this->setPrecioEstimado();
+        $this->emit('refreshComponent');
+    }
+
+    public function selectCliente()
+    {
+        $cliente = Clients::find($this->cliente_id);
+        $this->localidad_entrega = $cliente->localidad;
+        $this->provincia_entrega = $cliente->provincia;
+        $this->direccion_entrega = $cliente->direccion;
+        $this->cod_postal_entrega = $cliente->cod_postal;
+        $this->precio_crema = $cliente->precio_crema;
+        $this->precio_vodka07l = $cliente->precio_vodka07l;
+        $this->precio_vodka175l = $cliente->precio_vodka175l;
+        $this->precio_vodka3l = $cliente->precio_vodka3l;
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -116,7 +146,12 @@ class EditComponent extends Component
 
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
-                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades'], 'precio_ud' => $productos['precio_ud']]);
+                DB::table('productos_pedido')->insert([
+                    'producto_lote_id' => $productos['producto_lote_id'],
+                    'pedido_id' => $this->identificador,
+                    'unidades' => $productos['unidades'],
+                    'precio_ud' => $productos['precio_ud'],
+                    'precio_total' => $productos['precio_total']]);
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
@@ -159,6 +194,9 @@ class EditComponent extends Component
             'confirmed',
             'update',
             'alertaGuardar',
+            'confirmDelete',
+            'destroy',
+            'imprimirPedido',
             'aceptarPedido',
             'rechazarPedido',
             'alertaAlmacen',
@@ -250,6 +288,22 @@ class EditComponent extends Component
         ]);
     }
 
+    public function destroy(){
+
+        $this->alert('warning', '¿Seguro que desea borrar el Pedido? No hay vuelta atrás', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmDelete',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ]);
+
+    }
+
     public function aceptarPedido()
     {
         $pedido = Pedido::find($this->identificador);
@@ -276,7 +330,7 @@ class EditComponent extends Component
     public function rechazarPedido()
     {
         $pedido = Pedido::find($this->identificador);
-        $pedidosSave = $pedido->update(['estado' => 3]);
+        $pedidosSave = $pedido->update(['estado' => 7]);
         if ($pedidosSave) {
             $this->alert('success', '¡Pedido rechazado!', [
                 'position' => 'center',
@@ -380,9 +434,12 @@ class EditComponent extends Component
 
     public function deleteArticulo($id)
     {
+
         $this->productos_pedido_borrar[] = $this->productos_pedido[$id];
         unset($this->productos_pedido[$id]);
         $this->productos_pedido = array_values($this->productos_pedido);
+        $this->setPrecioEstimado();
+        $this->emit('refreshComponent');
     }
     public function getNombreTabla($id)
     {
@@ -391,38 +448,80 @@ class EditComponent extends Component
     }
     public function addProductos($id)
     {
-        $producto_existe = false;
-        $producto_id = $id;
-        foreach ($this->productos_pedido as $productos) {
-            if ($productos['producto_lote_id'] == $id) {
-                $producto_existe = true;
-                $producto_id = $productos['producto_lote_id'];
-            }
-        }
-        if ($producto_existe == true) {
-            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_lote_id'));
-            $this->productos_pedido[$producto]['unidades'] = $this->productos_pedido[$producto]['unidades'] + $this->unidades_producto;
-            if (!isset($this->productos_pedido[$producto]['precio_ud'])) {
-                $this->productos_pedido[$producto]['precio_ud'] = 0;
-            }
-        } else {
-            $this->productos_pedido[] = ['producto_lote_id' => $id, "unidades" => $this->unidades_producto, "precio_ud" => 0];
+        $producto = Productos::find($id);
+        if (!$producto) {
+            $this->alert('error', 'Producto no encontrado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+            return;
         }
 
-        $this->producto_seleccionado = 0;
-        $this->unidades_producto = 0;
+        $precioUnitario = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+        $precioTotal = $precioUnitario * $this->unidades_producto;
+
+        $producto_existe = false;
+        foreach ($this->productos_pedido as &$productoPedido) {
+            if ($productoPedido['producto_lote_id'] == $id) {
+                $producto_existe = true;
+                $productoPedido['unidades'] += $this->unidades_producto;  // Actualiza la cantidad
+                $productoPedido['precio_ud'] = $precioUnitario;
+                $productoPedido['precio_total'] += $precioTotal;  // Actualiza el precio total
+                break;
+            }
+        }
+
+        if (!$producto_existe) {
+            $this->productos_pedido[] = [
+                'producto_lote_id' => $id,
+                'unidades' => $this->unidades_producto,
+                'precio_ud' => $precioUnitario,
+                'precio_total' => $precioTotal
+            ];
+        }
+
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }
+    private function obtenerPrecioPorTipo($tipoPrecio)
+    {
+        switch ($tipoPrecio) {
+            case 1:
+                return $this->precio_crema;
+            case 2:
+                return $this->precio_vodka07l;
+            case 3:
+                return $this->precio_vodka175l;
+            case 4:
+                return $this->precio_vodka3l;
+            default:
+                return 0;
+        }
+    }
+
 
     public function setPrecioEstimado()
-    {
-        $this->precioEstimado = 0;
-        foreach ($this->productos_pedido as $productos) {
-            $this->precioEstimado += ($productos['precio_ud']);
-        }
-        $this->precio = $this->precioEstimado - $this->descuento;
+{
+    $this->precioEstimado = 0;
+    foreach ($this->productos_pedido as $producto) {
+        $this->precioEstimado += $producto['precio_total'];
     }
+    $this->precioSinDescuento = $this->precioEstimado;
+    // Verificar si el descuento está activado
+    if ($this->descuento) {
+        // Calcular el 3% de descuento del precio total
+        $descuento = $this->precioEstimado * 0.03;
+        // Aplicar el descuento al precio total
+        $this->precioEstimado -= $descuento;
+    }
+
+    // Asignar el precio final
+   $this->precio = number_format($this->precioEstimado, 2, '.', '');
+}
+
 
     public function getProductoNombre()
     {
@@ -481,4 +580,70 @@ class EditComponent extends Component
     {
         return PedidosStatus::firstWhere('id', $this->estado)->status;
     }
+
+    public function confirmDelete()
+    {
+        $pedidoId = $this->identificador;
+
+        // Primero, elimina todos los productos_pedido asociados con este pedido
+        DB::table('productos_pedido')->where('pedido_id', $pedidoId)->delete();
+
+        // Luego, elimina el pedido
+        $pedido = Pedido::find($pedidoId);
+        if ($pedido) {
+            event(new \App\Events\LogEvent(Auth::user(), 10, $pedido->id));
+            $pedido->delete();
+        }
+
+        return redirect()->route('pedidos.index');
+
+    }
+    public function imprimirPedido()
+    {
+    $pedido = Pedido::find($this->identificador);
+    if (!$pedido) {
+        abort(404, 'Pedido no encontrado');
+    }
+
+    $cliente = Clients::find($pedido->cliente_id);
+    $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+    // Preparar los datos de los productos del pedido
+    $productos = [];
+    foreach ($productosPedido as $productoPedido) {
+        $producto = Productos::find($productoPedido->producto_lote_id);
+        if ($producto) {
+            $productos[] = [
+                'nombre' => $producto->nombre,
+                'cantidad' => $productoPedido->unidades,
+                'precio_ud' => $productoPedido->precio_ud,
+                'precio_total' => $productoPedido->precio_total,
+            ];
+        }
+    }
+
+    $datos = [
+        'pedido' => $pedido,
+        'cliente' => $cliente,
+        'localidad_entrega' => $pedido->localidad_entrega,
+        'direccion_entrega' => $pedido->direccion_entrega,
+        'cod_postal_entrega' => $pedido->cod_postal_entrega,
+        'provincia_entrega' => $pedido->provincia_entrega,
+        'fecha' => $pedido->fecha,
+        'observaciones' => $pedido->observaciones,
+        'precio' => $pedido->precio,
+        'descuento' => $pedido->descuento,
+        'productos' => $productos,
+    ];
+
+    $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+    Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+    /*--return response()->streamDownload(
+        fn () => print($pdf),
+        "pedido_{$pedido->id}.pdf"
+    );*/
+}
+
+
+
 }

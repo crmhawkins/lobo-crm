@@ -38,7 +38,7 @@
                                     <tr>
                                         <th scope="col">Imagen</th>
                                         <th scope="col">Nombre</th>
-                                        <th scope="col">Precio: </th>
+                                        <th scope="col">Tipo de precio</th>
                                         <th scope="col">Acciones: </th>
                                     </tr>
                                 </thead>
@@ -51,7 +51,7 @@
                                                 src="{{ asset('storage/photos/' . $presup->foto_ruta) }}"
                                                 alt="Card image cap"></td>
                                         <td>{{ $presup->nombre }}</td>
-                                        <td> &nbsp; {{ $presup->precio }} €</td>
+                                        <td> &nbsp; {{ $tipoPrecioMap[$presup->tipo_precio] ?? 'Precio no definido' }}</td>
                                         <td> &nbsp; <a href="productos-edit/{{ $presup->id }}"
                                                 class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>

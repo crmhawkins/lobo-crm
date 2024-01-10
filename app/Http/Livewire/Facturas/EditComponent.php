@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Facturas;
 use App\Models\Presupuesto;
 use App\Models\Cursos;
 use App\Models\Alumno;
-use App\Models\Cliente;
+use App\Models\Clients;
 use App\Models\Facturas;
 use App\Models\Empresa;
 use App\Models\Evento;
@@ -251,7 +251,7 @@ class EditComponent extends Component
     {
         $factura = Facturas::find($this->identificador);
         $presupuesto = Presupuesto::find($this->id_presupuesto);
-        $cliente = Cliente::where('id', $presupuesto->id_cliente)->first();
+        $cliente = Clients::where('id', $presupuesto->id_cliente)->first();
         $evento = Evento::where('id', $presupuesto->id_evento)->get();
         $listaServicios = [];
         $listaPacks = [];

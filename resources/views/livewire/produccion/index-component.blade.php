@@ -23,9 +23,28 @@
                     <h4 class="mt-0 header-title">Listado de todas las órdenes de producción</h4>
                     <a href="{{ route('produccion.create') }}" class="btn btn-lg btn-primary w-100 mb-1">NUEVA ÓRDEN DE
                         PRODUCCIÓN</a>
-                    <a href="{{ route('materiales-producto.index') }}" class="btn btn-lg btn-primary w-100">ASIGNACIÓN DE
+                    <a style="margin-bottom: 15px;" href="{{ route('materiales-producto.index') }}" class="btn btn-lg btn-primary w-100">ASIGNACIÓN DE
                         MATERIALES A PRODUCTOS</a>
                     @if (count($ordenes_produccion) > 0)
+
+                    <!-- Aquí comienza el botón desplegable para filtrar por columna -->
+                     <div id="Botonesfiltros">
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                             Filtrar por Columna
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" data-column="0">Nº de órden</a>
+                                <a class="dropdown-item" href="#" data-column="1">Fecha de emisión</a>
+                                <a class="dropdown-item" href="#" data-column="2">Almacén</a>
+                                <a class="dropdown-item" href="#" data-column="3">Estado</a>
+                                <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <!-- Aquí termina el botón desplegable -->
+                            <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
+                        </div>
+                     </div>
+
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
@@ -43,9 +62,17 @@
                                         <td>{{ $produccion->numero }}</td>
                                         <td>{{ $produccion->fecha }}</td>
                                         <td>{{ $this->getAlmacen($produccion->almacen_id) }}</td>
-                                        <td>{{ $this->getEstado($produccion->estado) }}</td>
+                                        <td>
+                                            @if(($produccion->estado) == "0")
+                                            <span class="badge badge-warning">Pendiente</span>
+                                            @elseif(($produccion->estado) == "1")
+                                            <span class="badge badge-success">Completado</span>
+                                            @endif
+                                        </td>
+
                                         <td> <a href="produccion-edit/{{ $produccion->id }}"
-                                                class="btn btn-primary">Ver/Editar</a> </td>
+                                                class="btn btn-primary">Ver</a>
+                                            </td>
                                     </tr>
                                 @endforeach
                             </tbody>

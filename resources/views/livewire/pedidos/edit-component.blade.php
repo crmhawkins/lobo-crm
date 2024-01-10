@@ -23,17 +23,22 @@
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 básicos del pedido</h5>
                         </div>
-                        <div class="form-group col-md-3" wire:ignore>
-                            <div x-data="" x-init="$('#select2-cliente').select2();
-                            $('#select2-cliente').on('change', function(e) {
-                                var data = $('#select2-estado').select2('val');
-                                @this.set('cliente_id', data);
-                            });">
-                                <label for="fechaVencimiento">Nº del cliente</label>
+
+                        <div class="form-group col-md-3" wire:ignore >
+                            <div x-data="" x-init="
+                                $('#select2-cliente').select2();
+                                $('#select2-cliente').on('change', function (e) {
+                                    var data = $(this).select2('val');
+                                    @this.set('cliente_id', data);
+                                    @this.call('selectCliente');
+                                });"
+                            >
+                                <label for="Cliente">Cliente</label>
                                 <select class="form-control" name="cliente_id" id="select2-cliente"
                                     wire:model="cliente_id">
-                                    @foreach ($clientes as $cliente)
-                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                    <option value=""></option>
+                                    @foreach ($clientes as $client)
+                                        <option value="{{ $client->id }}">{{ $client->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -53,8 +58,7 @@
                                 @this.set('tipo_pedido_id', data);
                             });">
                                 <label for="fechaVencimiento">Tipo de pedido</label>
-                                <select class="form-control" name="estado" id="select2-tipo"
-                                    value="{{ $tipo_pedido_id }}">
+                                <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id">
                                     <option value="0">Albarán y factura</option>
                                     <option value="1">Albarán sin factura</option>
                                     <option value="2">Ticket simplificado</option>
@@ -69,39 +73,39 @@
                                 de envío</h5>
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Dirección</label>
-                            <input type="text" wire:model="direccion_entrega" class="form-control">
+                            <label for="localidad_entrega">Dirección</label>
+                            <input type="text" wire:model="direccion_entrega" class="form-control" readonly>
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Localidad</label>
-                            <input type="text" wire:model="localidad_entrega" class="form-control">
+                            <label for="localidad_entrega">Localidad</label>
+                            <input type="text" wire:model="localidad_entrega" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-5">
-                            <label for="fecha">Provincia</label>
-                            <input type="text" wire:model="provincia_entrega" class="form-control">
+                            <label for="provincia_entrega">Provincia</label>
+                            <input type="text" wire:model="provincia_entrega" class="form-control" readonly>
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
                         <div class="form-group col-md-5">
-                            <label for="fecha">Código postal</label>
-                            <input type="text" wire:model="cod_postal_entrega" class="form-control">
+                            <label for="cod_postal_entrega">Código postal</label>
+                            <input type="text" wire:model="cod_postal_entrega" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="form-row mb-4 justify-content-center">
-                        <div class="form-group col-md-5">
+                       {{-- <div class="form-group col-md-5">
                             <label for="fecha">Órden de entrega</label>
-                            <input type="text" wire:model="orden_entrega" class="form-control" disabled>
+                            <input type="text" wire:model="orden_entrega" class="form-control">
                         </div>
                         <div class="form-group col-md-1">
                             &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
+                        </div>--}}
+                        <div class="form-group col-md-11">
                             <label for="fecha">Observaciones</label>
                             <textarea wire:model="observaciones" class="form-control"></textarea>
                         </div>
@@ -124,7 +128,8 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
-                                                <th>Precio</th>
+                                                <th>Precio unidad</th>
+                                                 <th>Precio total</th>
                                                 <th>Eliminar</th>
                                             </tr>
                                         </thead>
@@ -134,35 +139,31 @@
                                                     <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
                                                     </td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
-                                                    <td><input type="number" class="form-control"
-                                                            wire:model="productos_pedido.{{ $productoIndex }}.precio_ud"
-                                                            wire:change='setPrecioEstimado'>
-                                                    </td>
-                                                    <td><button type="button" class="btn btn-danger"
-                                                            wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                    <td>{{ $producto['precio_ud']}} €</td>
+                                                    <td>{{ $producto['precio_total']}} €</td>
+                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
                                                 <th colspan="3">Precio estimado</th>
-                                                <th>{{ $precioEstimado }} €</td>
+                                                <th>{{ $precioSinDescuento }} €</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-5">
-                            <label for="fecha">Descuento</label>
-                            <input type="text" wire:model="descuento" class="form-control"
-                                wire:change='setPrecioEstimado()'>
+                        <div class="form-group col-md-5 d-flex align-items-center">
+                            <label for="descuento">Descuento</label>
+                            <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
                         </div>
                         <div class="form-group col-md-1">
-                            &nbsp;
+                           &nbsp;
                         </div>
                         <div class="form-group col-md-5">
                             <label for="fecha">Precio final</label>
-                            <input type="text" wire:model="precio" class="form-control">
+                            <input type="text" wire:model="precio" class="form-control" readonly>
                         </div>
                     </div>
                 </div>
@@ -279,20 +280,31 @@
                     <h5>Opciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
+                            <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
+                        </div>
+                        <div class="col-12">
+                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
                                 datos del
                                 pedido</button>
                         </div>
-                        @if ($this->getEstadoNombre() == 'Pendiente de revisión' && auth()->user()->role == 2)
+                        @php
+                        $mostrarElemento = Auth::user()->isdirectorcomercial();
+                        @endphp
+
+                        @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento)
                             <div class="col-12">
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaAceptar">Aceptar
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar
                                     pedido</button>
                             </div>
                             <div class="col-12">
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaRechazar">Rechazar
+                                <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar
                                     pedido</button>
                             </div>
                         @endif
+                        <div class="col-12">
+                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
+                                pedido</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -375,6 +387,32 @@
                 });
             });
 
+            $("#imprimirPedido").on("click", () => {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Pulsa el botón de confirmar para enviara el pedido al cliente. Esto es irreversible.',
+                    icon: 'info',
+                    showConfirmButton: true,
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.livewire.emit('imprimirPedido');
+                    }
+                });
+            });
+            $("#alertaEliminar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Pulsa el botón de confirmar para eliminar el pedido. Esto es irreversible.',
+                icon: 'error',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('destroy');
+                }
+            });
+            });
             $.datepicker.regional['es'] = {
                 closeText: 'Cerrar',
                 prevText: '< Ant',

@@ -27,6 +27,7 @@ class CreateComponent extends Component
     public $password;
     public $email;
     public $inactive;
+    public $almacen_id = 0;
 
 
     public function mount(){

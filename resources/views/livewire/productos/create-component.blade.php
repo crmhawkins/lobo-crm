@@ -21,13 +21,25 @@
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <div class="row d-flex align-items-center">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="nombre" class="col-form-label">Nombre del producto</label>
                                 <input type="text" class="form-control" wire:model="nombre" name="nombre"
                                     id="nombre" placeholder="Nombre del producto...">
                                 @error('nombre')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
+                            </div>
+                            <div class="col-md-6">
+                            <label for="tipo_precio">Tipo de precio</label>
+                                <select class="form-control" name="tipo_precio" id="select-tipo_precio"
+                                    wire:model="tipo_precio">
+
+                                        <option value="1">Crema</option>
+                                        <option value="2">Vodka 0,7L</option>
+                                        <option value="3">Vodka 1,75L</option>
+                                        <option value="4">Vodka 3L</option>
+
+                                </select>
                             </div>
                         </div>
                         <div class="row d-flex align-items-center">

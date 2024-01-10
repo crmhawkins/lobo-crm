@@ -70,8 +70,7 @@ class EditComponent extends Component
             ];
         }
         $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
-        $user = Auth::user();
-        $this->almacen_id = $user->almacen_id;
+        $this->almacen_id = $orden->almacen_id;
     }
 
     public function render()
@@ -206,7 +205,33 @@ class EditComponent extends Component
         }
     }
 
-    public function sumarStock()
+    public function completarProduccion()
+    {
+        $Orden = OrdenProduccion::find($this->identificador);
+        /*$this->sumarStock();*/
+        $OrdenSave = $Orden->update(['estado' => 1]);
+        if ($OrdenSave) {
+            $this->alert('success', '¡Producción completada!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+
+
+        } else {
+            $this->alert('error', '¡No se ha podido cambiar al orden a completada!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+
+   /* public function sumarStock()
     {
         $fecha = Carbon::now();
         // Obtener las entradas de StockEntrante para el producto, ordenadas por ejemplo por fecha
@@ -220,12 +245,13 @@ class EditComponent extends Component
                 StockEntrante::create([
                     'producto_id' => $productos['producto_id'],
                     'lote_id' => $lote_id,
+                    'orden_numero'=> $this->numero,
                     'stock_id' => $entrada->id,
                     'cantidad' => $producto->cajas_por_pallet,
                 ]);
             }
         }
-    }
+    }*/
 
     public function update()
     {
@@ -255,7 +281,7 @@ class EditComponent extends Component
                 $this->sacarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
             }
 
-            $this->sumarStock();
+            /*$this->sumarStock();*/
         }
         foreach ($this->productos_ordenados as $mercaderiaIndex => $producto) {
             if ($producto['id'] != null) {

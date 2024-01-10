@@ -9,6 +9,6 @@
 
 @section('content-principal')
 <div>
-    @livewire('stock-mercaderia.create-component', ['identificador'=>$id])
+    @livewire('stock-mercaderia.create-component', ['identificador' => $id])
 </div>
 @endsection

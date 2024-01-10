@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Pedidos;
 
-use App\Models\Cliente;
+use App\Models\Clients;
 use App\Models\Pedido;
 use App\Models\PedidosStatus;
 use Livewire\Component;
@@ -14,7 +14,7 @@ class IndexComponent extends Component
     public function mount()
     {
         $this->pedidos = Pedido::all();
-        $this->clientes = Cliente::all();
+        $this->clientes = Clients::all();
     }
 
     public function getClienteNombre($id){

@@ -3,13 +3,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">EDITAR ASIGNACIÓN DE MATERIALES A PRODUCTOS</span></h4>
+                <h4 class="page-title">EDITAR ASIGNACIÓN DE MATERIALES A PRODUCTOS POR CAJA</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Productos</a></li>
-                    <li class="breadcrumb-item active">Asignar materiales a producto</li>
+                    <li class="breadcrumb-item active">Asignar materiales a producto por caja</li>
                 </ol>
             </div>
         </div>
@@ -54,7 +54,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                <th>Cantidad</th>
+                                                <th>Cantidad por caja</th>
                                                 <th>Eliminar</th>
                                             </tr>
                                         </thead>

@@ -13,7 +13,7 @@ class Productos extends Model
 
     protected $fillable = [
         'nombre',
-        'precio',
+        'tipo_precio',
         'unidades_por_caja',
         'cajas_por_pallet',
         'foto_ruta',

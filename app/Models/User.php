@@ -17,6 +17,11 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+     protected $attributes = [
+        // Valores predeterminados
+        'almacen_id' => 0,
+    ];
     protected $fillable = [
         'user_department_id',
         'username',
@@ -60,4 +65,29 @@ class User extends Authenticatable
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function isAdmin(){
+        return $this->role == 1 ? true : false;
+
+    }
+    public function isdirectorcomercial(){
+        return ($this->role == 1 || $this->role == 2) ? true : false;
+
+    }
+    public function iscomercial(){
+        return ($this->role == 1 || $this->role == 3) ? true : false;
+
+    }
+    public function isfabrica(){
+        return ($this->role == 1 || $this->role == 5) ? true : false;
+
+    }
+    public function isalmacen(){
+        return ($this->role == 1 || $this->role == 4) ? true : false;
+
+    }
+    public function isadministrativo(){
+        return ($this->role == 1 || $this->role == 6) ? true : false;
+
+    }
 }

@@ -22,12 +22,34 @@
                         informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
                     @if (count($facturas) > 0)
+
+                        <!-- Aquí comienza el botón desplegable para filtrar por columna -->
+                    <div id="Botonesfiltros">
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                             Filtrar por Columna
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" data-column="0">Número</a>
+                                <a class="dropdown-item" href="#" data-column="1">Pedido asociado</a>
+                                <a class="dropdown-item" href="#" data-column="2">Descripción</a>
+                                <a class="dropdown-item" href="#" data-column="3">Total</a>
+                                <a class="dropdown-item" href="#" data-column="4">Método de pago<</a>
+                                <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <!-- Aquí termina el botón desplegable -->
+                            <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
+                        </div>
+                    </div>
+
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                                 <tr>
                                     <th scope="col">Número</th>
                                     <th scope="col">Pedido asociado</th>
                                     <th scope="col">Descripción</th>
+                                    <th scope="col">Fecha de emisión</th>
+                                    <th scope="col">Fecha de vencimiento</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Método de pago</th>
                                     <th scope="col">Acciones</th>
@@ -45,6 +67,13 @@
                                                     {{ $fact->pedido_id }}</a></td>
                                         @endif
                                         <td>{{ $fact->descripcion }}</td>
+                                        <td>{{ $fact->fecha_emision }}</td>
+                                        <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()))
+                                            <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
+                                            @else
+                                            <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $pedidos->where('id', $fact->pedido_id)->first()->precio }}€
                                         </td>
                                         <td>{{ $fact->metodo_pago }}</td>
@@ -62,7 +91,7 @@
                 </div>
             </div>
             @section('scripts')
-                <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
+               {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
                 <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
                 <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -114,5 +143,22 @@
                             location.reload();
                         })
                     });
-                </script>
-            @endsection
+                </script>--}}
+
+<script src="../assets/js/jquery.slimscroll.js"></script>
+<script src="../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Buttons examples -->
+<script src="../plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="../plugins/datatables/jszip.min.js"></script>
+<script src="../plugins/datatables/pdfmake.min.js"></script>
+<script src="../plugins/datatables/vfs_fonts.js"></script>
+<script src="../plugins/datatables/buttons.html5.min.js"></script>
+<script src="../plugins/datatables/buttons.print.min.js"></script>
+<script src="../plugins/datatables/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="../plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="../assets/pages/datatables.init.js"></script>
+@endsection

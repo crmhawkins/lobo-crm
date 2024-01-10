@@ -25,6 +25,12 @@ class EditComponent extends Component
     public $telefono;
     public $email;
     public $forma_pago_pref;
+    public $estado;
+    public $precio_crema;
+    public $precio_vodka07l;
+    public $precio_vodka175l;
+    public $precio_vodka3l;
+    public $nota;
 
     public function mount()
     {
@@ -41,6 +47,12 @@ class EditComponent extends Component
         $this->telefono = $cliente->telefono;
         $this->email = $cliente->email;
         $this->forma_pago_pref = $cliente->forma_pago_pref;
+        $this->estado = $cliente->estado;
+        $this->precio_crema = $cliente->precio_crema;
+        $this->precio_vodka07l = $cliente->precio_vodka07l;
+        $this->precio_vodka175l = $cliente->precio_vodka175l;
+        $this->precio_vodka3l = $cliente->precio_vodka3l;
+        $this->nota = $cliente->nota;
     }
 
 
@@ -65,6 +77,11 @@ class EditComponent extends Component
             'telefono' => 'required',
             'email' => 'required',
             'forma_pago_pref'=> 'nullable',
+            'precio_crema'=> 'required',
+            'precio_vodka07l'=> 'required',
+            'precio_vodka175l'=> 'required',
+            'precio_vodka3l'=> 'required',
+            'nota' => 'nullable',
 
         ],
             // Mensajes de error
@@ -78,7 +95,10 @@ class EditComponent extends Component
                 'cod_postal.required' => 'El código es obligatoria.',
                 'telefono.required' => 'El telefono es obligatorio.',
                 'email.required' => 'El email es obligatorio.',
-
+                'precio_crema'=> 'El precio es obligatorio.',
+                'precio_vodka07l'=> 'El precio es obligatorio.',
+                'precio_vodka175l'=> 'El precio es obligatorio.',
+                'precio_vodka3l'=> 'El precio es obligatorio.',
             ]);
 
         // Encuentra el identificador
@@ -96,6 +116,12 @@ class EditComponent extends Component
             'telefono' => $this->telefono,
             'email' => $this->email,
             'forma_pago_pref' => $this->forma_pago_pref,
+            'estado' => $this->estado,
+            'precio_crema'=> $this->precio_crema,
+            'precio_vodka07l'=>$this->precio_vodka07l,
+            'precio_vodka175l'=>$this->precio_vodka175l,
+            'precio_vodka3l'=> $this->precio_vodka3l,
+            'nota'=> $this->nota,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 

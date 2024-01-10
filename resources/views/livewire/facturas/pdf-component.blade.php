@@ -57,9 +57,9 @@
             <td width="10%">&nbsp;</td>
             <td class="bold" width="40%" style="text-align: right !important">
                 <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">FACTURA</h1><br>
-                <span style="font-size: 80%"><span style="font-weight: bold;">#F230569</span><br>
-                    <span style="font-weight: bold;">Fecha:</span> 16/05/2023<br>
-                    <span style="font-weight: bold;">Vencimiento:</span> 16/08/2023</span>
+                <span style="font-size: 80%"><span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
+                    <span style="font-weight: bold;">Fecha:</span> {{$factura->fecha_emision}}<br>
+                    <span style="font-weight: bold;">Vencimiento:</span> {{$factura->fecha_vencimiento}}</span>
             </td>
         </tr>
     </table>
@@ -67,7 +67,7 @@
     <!-- Información del Cliente y Dirección de Envío -->
     <table>
         <tr style="vertical-align: top;">
-            <td style="text-align: left !important" width="50%">
+            <td style="text-align: left !important" width="40%">
                 <span style="font-weight: bold; color:#0196eb">Cliente</span><br>
                 <span style="font-weight: bold;">{{$cliente->nombre}}</span><br>
                 {{$cliente->dni_cif}}<br>
@@ -76,16 +76,13 @@
                 {{$cliente->telefono}}<br>
                 {{$cliente->email}}
             </td>
-            <td style="text-align: left !important" width="50%">
+            <td style="text-align: left !important" width="10%"></td>
+            <td style="text-align: left !important" width="30%">
                 <span style="font-weight: bold; color:#0196eb">Dirección de envío</span><br>
-                ALMACÉN VALENCIA<br>
-                POLIGONO INDUSTRIAL EL BONY<br>
-                CALLE 32 - NAVE 219<br>
-                46470 - CATARROJA (VALENCIA)<br><br>
-                HORARIO: 08:00 a 13:00 h<br>
-                LLAMAR A JORGE ALMAGRO PARA CONCERTAR CITA<br>
-                610118397
+                {{$pedido->direccion_entrega}}<br>
+                {{$pedido->cod_postal_entrega}} - {{$pedido->localidad_entrega}} ({{$pedido->provincia_entrega}})<br><br>
             </td>
+            <td style="text-align: left !important" width="20%"></td>
         </tr>
     </table>
 
@@ -96,60 +93,61 @@
             <th>PRECIO</th>
             <th>UNIDADES</th>
             <th>SUBTOTAL</th>
-            <th>IVA</th>
-            <th>TOTAL</th>
         </tr>
         <tr style="background-color:#fff; color: #fff;">
             <th style="padding: 0px !important; height: 10px !important;"></th>
         </tr>
+        @foreach ($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
-            <td style="text-align: left !important"><span style="font-weight: bold !important;"> LOBO CREMA PINK</span><br>sabor fresa (13080523)</td>
-            <td>7,50€</td>
-            <td>630</td>
-            <td>4.725,00€</td>
-            <td>21%</td>
-            <td>5.717,25€</td>
+            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
+            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+            <td>{{ $producto['cantidad'] }}</td>
+            <td>{{ number_format($producto['precio_total'], 2) }} €</td>
+
         </tr>
+        @endforeach
+        @if ($pedido->descuento )
+        <tr>
+            <td></td>
+            <td></td>
+            <td>Descuento Aplicado:</td>
+            <td>3%<</td>
+        </tr>
+        @endif
     </table>
 
-    <table style="margin-top: 5% !important">
+    <table style="margin-top: 1% !important">
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
-            <td>3</td>
+            <td>{{ number_format($pedido->precio, 2) }}€</td>
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>IVA 21%</td>
-            <td>3</td>
+            <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>TOTAL</td>
-            <td>3</td>
+            <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
         </tr>
     </table>
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
-    <table class="footer" >
+   {{-- <table class="footer" >
         <tr>
-            <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> A230334</td>
+            <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
         </tr>
         <tr>
-            <td style="text-align: left !important">Nº PEDIDO: SERGI12 050223</td>
-        </tr>
-        <tr>
-            <td style="text-align: left !important">Enviado desde fábrica</td>
-        </tr>
-        <tr>
-            <td style="text-align: left !important">1 PALLET PINK (105 CAJAS)</td>
+            <td style="text-align: left !important">Nº PEDIDO: {{$pedido->id}}</td>
         </tr>
         <tr>
             <td style="text-align: left !important">Pagar por transferencia bancaria al siguiente número de cuenta:<br>
                 <span style="font-weight: bold">LA CAIXA: ES31 2100 8508 5102 0019 7802</span>
             </td>
         </tr>
-    </table>
+    </table>--}}
 </body>
 
 </html>

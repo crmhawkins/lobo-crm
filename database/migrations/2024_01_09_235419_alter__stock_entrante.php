@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('mercaderia', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('stock_entrante', function (Blueprint $table) {
+            $table->string('orden_numero'); // Añade la columna precio_total
         });
     }
 
@@ -26,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mercaderia');
+        Schema::table('stock_entrante', function (Blueprint $table) {
+            $table->dropColumn('orden_numero'); // Elimina la columna precio_total
+        });
     }
 };

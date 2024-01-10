@@ -24,8 +24,13 @@ class CreateComponent extends Component
     public $cod_postal;
     public $telefono;
     public $email;
-    public $forma_pago_pref;
-
+    public $forma_pago_pref = "";
+    public $estado;
+    public $precio_crema;
+    public $precio_vodka07l;
+    public $precio_vodka175l;
+    public $precio_vodka3l;
+    public $nota;
 
     public function mount()
     {
@@ -59,7 +64,9 @@ class CreateComponent extends Component
                 'cod_postal' => 'required',
                 'telefono' => 'required',
                 'email' => 'required',
-                'forma_pago_pref' => 'nullable',
+                'forma_pago_pref' => 'required',
+                'nota' => 'nullable',
+
             ],
             // Mensajes de error
             [

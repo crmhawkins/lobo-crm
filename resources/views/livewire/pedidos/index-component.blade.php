@@ -22,6 +22,26 @@
                     <p class="sub-title../plugins">Listado completo de todos nuestros pedidos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
                     @if (count($pedidos) > 0)
+
+                    <!-- Aquí comienza el botón desplegable para filtrar por columna -->
+                    <div id="Botonesfiltros">
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                             Filtrar por Columna
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" data-column="0">Nº</a>
+                                <a class="dropdown-item" href="#" data-column="1">Fecha</a>
+                                <a class="dropdown-item" href="#" data-column="2">Cliente</a>
+                                <a class="dropdown-item" href="#" data-column="3">Precio</a>
+                                <a class="dropdown-item" href="#" data-column="4">Estado</a>
+                                <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <!-- Aquí termina el botón desplegable -->
+                            <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
+                        </div>
+                    </div>
+
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
@@ -41,26 +61,21 @@
                                 <td>{{ $presup->fecha }}</td>
                                 <td>{{ $this->getClienteNombre($presup->cliente_id) }}</td>
                                 <td>{{ $presup->precio }} €</td>
-                                <td>@if($this->getEstadoNombre($presup->estado) == "Aceptado")
-                                    <span class="badge badge-primary">Aceptado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Pendiente de revisión")
-                                    <span class="badge badge-warning">Pendiente</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Completado")
-                                    <span class="badge badge-info">Completado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "En almacén (Pendiente)")
-                                    <span class="badge badge-warning">En almacén (Pendiente)</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "En almacén (En preparación)")
-                                    <span class="badge badge-primary">En almacén (En preparación)</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Enviado")
-                                    <span class="badge badge-info">Enviado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Completado")
-                                    <span class="badge badge-info">Enviado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Rechazado")
-                                    <span class="badge badge-danger">Rechazado</span>
+                                <td>@if($this->getEstadoNombre($presup->estado) == "Recibido")
+                                    <span class="badge badge-warning">Recibido</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Aceptado en Almacén")
+                                    <span class="badge badge-primary">Aceptado en Almacén</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Preparación")
+                                    <span class="badge badge-info">Preparación</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Albarán")
+                                    <span class="badge badge-secondary">Albarán</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Entregado")
+                                    <span class="badge badge-secondary">Entregado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Facturado")
                                     <span class="badge badge-success">Facturado</span>
-                                    @elseif($this->getEstadoNombre($presup->estado) == "Pagado")
-                                    <span class="badge badge-success">Pagado</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "Rechazado")
+                                    <span class="badge badge-danger">Rechazado</span>
+
                                     @endif
                                 </td>
                                 <td> <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a> </td>

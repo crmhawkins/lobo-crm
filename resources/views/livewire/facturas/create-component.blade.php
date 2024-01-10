@@ -15,7 +15,7 @@
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
-    <div class="row">
+    <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
@@ -27,26 +27,16 @@
                                 <label for="numero_factura" class="col-sm-12 col-form-label">Número de Factura</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="numero_factura" class="form-control"
-                                        name="numero_factura" id="numero_factura">
+                                        name="numero_factura" id="numero_factura" disabled>
                                     @error('numero_factura')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-9" wire:ignore>
-                                <div x-data="" x-init="$('#select2-pedido').select2();
-                                $('#select2-pedido').on('change', function(e) {
-                                    var data = $('#select2-pedido').select2('val');
-                                    @this.set('pedido_id', data);
-                                });">
-                                    <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
-                                    <select class="form-control" name="pedido_id" id="select2-pedido"
-                                        wire:model="pedido_id">
-                                        @foreach ($pedidos as $pedido)
-                                            <option value="{{ $pedido->id }}">{{ $pedido->id }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="col-md-4">
+                                <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
+                                <input type="text" wire:model="pedido_id" class="form-control" disabled>
+                            </div>
                             </div>
                         </div>
 

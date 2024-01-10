@@ -21,8 +21,14 @@
                 <div class="card-body row">
                     <div class="col-12">
                         <h4 class="mt-0 header-title font-24">Listado de stockaje de materiales</h4>
+
+                        <video id="preview" style="width: 100%; display: none;"></video>
+                        <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100" style="display: none;">CERRAR ESCÁNER</button>
+                        <button type="button" onclick="iniciarEscaneo()" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
+
+
                         <button type="button" wire:click.prevent="alertaGuardar"
-                                        class="btn btn-lg btn-primary w-100">GENERAR CÓDIGOS QR</button>
+                                        class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                     </div>
                     @if (count($mercaderia) > 0)
                         <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
@@ -123,6 +129,44 @@
             })
         });
     </script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <script>
+
+        let scanner = null;
+
+        function iniciarEscaneo() {
+            if (!scanner) {
+                scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+                scanner.addListener('scan', function (url) {
+                    window.location.href = url; // Redirecciona a la URL del QR
+                });
+
+                Instascan.Camera.getCameras().then(function (cameras) {
+                    if (cameras.length > 0) {
+                        scanner.start(cameras[0]);
+                    } else {
+                        console.error('No cameras found.');
+                        alert('No se encontraron cámaras.');
+                    }
+                }).catch(function (e) {
+                    console.error(e);
+                    alert('Error al acceder a la cámara: ' + e);
+                });
+            } else {
+                scanner.start();
+            }
+            document.getElementById('preview').style.display = 'block'; // Mostrar el video
+            document.getElementById('btnCerrarEscaneo').style.display = 'block'; // Mostrar el botón de cerrar
+        }
+
+        function cerrarEscaneo() {
+            if (scanner) {
+                scanner.stop();
+            }
+            document.getElementById('preview').style.display = 'none'; // Ocultar el video
+            document.getElementById('btnCerrarEscaneo').style.display = 'none'; // Ocultar el botón de cerrar
+        }
+    </script>
     <script src="../assets/js/jquery.slimscroll.js"></script>
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>

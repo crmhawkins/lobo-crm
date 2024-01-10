@@ -14,7 +14,7 @@
             </div>
         </div> <!-- end row -->
     </div>
-    <!-- end page-title -->zº
+    <!-- end page-title -->
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -33,7 +33,7 @@
                                 <label for="num_albaran" class="col-sm-12 col-form-label">Número de albarán</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="num_albaran" class="form-control"
-                                        name="num_albaran" id="num_albaran">
+                                        name="num_albaran" id="num_albaran" readonly>
                                     @error('num_albaran')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -47,7 +47,7 @@
                                 <label for="fecha" class="col-sm-12 col-form-label">Fecha</label>
                                 <div class="col-sm-12">
                                     <input type="date" wire:model="fecha" class="form-control"
-                                        placeholder="15/02/2023">
+                                        placeholder="15/02/2023" readonly>
                                     @error('fecha')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -190,29 +190,38 @@
                                         <tr>
                                             <th>Producto</th>
                                             <th>Lote</th>
-                                            <th>Unidades</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio unidad</th>
+                                            <th>Precio total</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
 
-                                        @foreach ($productos_pedido as $producto)
+                                        @foreach ($productos_pedido as $productoIndex => $producto)
                                             <tr>
                                                 <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
                                                 </td>
                                                 <td>{{ $this->getNombreLoteTabla($producto['producto_lote_id']) }}
+                                                <td>{{ $this->getUnidadesTabla($productoIndex)}}</td>
+                                                <td>{{ $producto['precio_ud']}} €</td>
+                                                <td>{{ $producto['precio_total']}} €</td>
+
                                                 </td>
-                                                @if (isset($producto['id']))
-                                                    <td>{{ $producto['unidades'] + $producto['unidades_old'] }}
-                                                    </td>
-                                                @else
-                                                    <td>{{ $producto['unidades'] }}</td>
-                                                @endif
                                             </tr>
                                         @endforeach
+                                        @if ($descuento)
                                         <tr>
-                                            <th colspan="2">Importe</th>
+                                            <th colspan="1">Descuento aplicado</th>
+                                            <th colspan="3">Importe</th>
                                             <th>{{ $pedido->precio }} €</td>
                                         </tr>
+                                        @else
+                                        <tr>
+                                            <th colspan="4">Importe</th>
+                                            <th>{{ $pedido->precio }} €</td>
+                                        </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             @endif
@@ -228,9 +237,7 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-info mb-2" id="alertaGuardar">Validar pedido para su preparación</button>
-                            <button class="w-100 btn btn-warning mb-2" id="alertaDevolver">Mandar pedido de vuelta a gestión</button>
-                        </div>
+                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran">Generar Albarán</button>
                     </div>
                 </div>
             </div>

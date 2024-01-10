@@ -40,9 +40,30 @@
                                             value="1" id="check1">
                                         <label for="check1" class=" col-form-label">Empresa</label>
                                     </div>
-                                    <div class="form-group col-sm-11">
+                                    <div class="form-group col-sm-9">
                                         &nbsp;
                                     </div>
+                                    @php
+                                    $mostrarElemento = Auth::user()->isAdmin();
+                                    @endphp
+                                    @if ($mostrarElemento)
+                                    <div class="form-group col-md-2" wire:ignore>
+                                        <div x-data="" x-init="$('#select2-estado').select2();
+                                            $('#select2-estado').on('change', function(e) {
+                                            var data = $('#select2-estado').select2('val');
+                                            @this.set('estado', data);
+                                            });">
+                                            <label for="Estado">Estado</label>
+                                                <select class="form-control" wire:model="estado" name="estado" id="select2-estado"
+                                                value="{{ $estado }}">
+                                                    <option value="1">Pendiente</option>
+                                                    <option value="2">Aceptado</option>
+                                                    <option value="3">Rechazado</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div class="col-sm-1 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
                                             value="0" id="check2">
@@ -212,17 +233,117 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group row justify-content-center">
-                            <div class="col-sm-11">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Forma de pago preferida</label>
+                            <div class="col-sm-2">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Cremas</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model="forma_pago_pref" class="form-control"
-                                        name="forma_pago_pref" id="forma_pago_pref" placeholder="Forma de pago preferida">
+                                    <input type="number" step=".01" wire:model="precio_crema" class="form-control" name="precio_crema"
+                                        id="precio_crema" placeholder="8.34">
+                                    @error('precio_crema')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .precio_crema {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 0,7L</label>
+                                <div class="col-sm-12">
+                                    <input type="number" step=".01" wire:model="precio_vodka07l" class="form-control" name="precio_vodka07l"
+                                        id="precio_vodka07l" placeholder="23.50">
+                                    @error('precio_vodka07l')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .precio_vodka07l {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 1,75L</label>
+                                <div class="col-sm-12">
+                                    <input type="number" step=".01" wire:model="precio_vodka175l" class="form-control" name="precio_vodka175l"
+                                        id="precio_vodka175l" placeholder="52.00">
+                                    @error('precio_vodka175l')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .precio_vodka175l {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 3L</label>
+                                <div class="col-sm-12">
+                                    <input type="number" step=".01" wire:model="precio_vodka3l" class="form-control" name="precio_vodka3l"
+                                        id="precio_vodka3l" placeholder="135.00">
+                                    @error('precio_vodka3l')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .precio_vodka3l {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                            <div class="col-sm-5">
+                                <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref">
+                                        <option value="giro_bancario">Giro Bancario</option>
+                                        <option value="pagare">Pagare</option>
+                                        <option value="confirming">Confirming</option>
+                                        <option value="30/45/60">30/45/60</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
                                     @error('forma_pago_pref')
                                         <span class="text-danger">{{ $message }}</span>
 
                                         <style>
                                             .forma_pago_pref {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
+                                <div class="col-sm-12">
+                                    <input type="textarea" wire:model="nota" class="form-control"
+                                        name="nota" id="nota" placeholder="Nota">
+                                    @error('nota')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .nota {
                                                 color: red;
                                             }
                                         </style>

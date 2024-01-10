@@ -9,12 +9,14 @@ use App\Models\Productos;
 use App\Models\StockEntrante;
 use App\Models\Stock;
 use App\Models\Almacen;
-use PDF;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class IndexComponent extends Component
 
 {
+
     use LivewireAlert;
     public $productos;
     public $almacen_id;

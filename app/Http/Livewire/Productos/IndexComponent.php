@@ -23,4 +23,11 @@ class IndexComponent extends Component
         ]);
     }
 
+    public $tipoPrecioMap = [
+        1 => 'Crema',
+        2 => 'Vodka 0,7L',
+        3 => 'Vodka 1,75L',
+        4 => 'Vodka 3L',
+    ];
+
 }

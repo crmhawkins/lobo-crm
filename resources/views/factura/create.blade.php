@@ -14,7 +14,7 @@
 
 @section('content-principal')
 <div>
-    @livewire('facturas.create-component')
+    @livewire('facturas.create-component', ['idpedido'=>$id])
 </div>
 
 @endsection

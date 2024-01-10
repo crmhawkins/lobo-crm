@@ -24,8 +24,10 @@
                     @if (count($mercaderias) > 0)
                         <div class="col-md-12" wire:ignore>
                             <a href="{{ route('stock-mercaderia.index') }}"
+                                class="btn btn-lg btn-primary w-100 mb-1">ENTRADA DE MATERIALES</a>
+                            <a href="#" wire:click.prevent="comprobarStockMateriales"
                                 class="btn btn-lg btn-primary w-100 mb-1">COMPROBAR STOCK DE MATERIALES</a>
-                            <a href="{{ route('produccion.create') }}" class="btn btn-lg btn-primary w-100">NUEVO
+                            <a href="{{ route('mercaderia.create') }}" class="btn btn-lg btn-primary w-100">NUEVO
                                 MATERIAL PARA PRODUCTO</a>
 
                             <div x-data="" x-init="$nextTick(() => {
@@ -48,36 +50,7 @@
                             </div>
                         </div>
                         <div class="col-md-12" wire:ignore.self>
-                            <div x-data=''
-                                x-init='$nextTick(() => {
-                                var table = $("#datatable-buttons").DataTable({
-                                    lengthChange: false,
-                                    buttons: ["copy", "excel", "pdf", "colvis"],
-                                    "language": {
-                                        "lengthMenu": "Mostrando _MENU_ registros por página",
-                                        "zeroRecords": "Nothing found - sorry",
-                                        "info": "Mostrando página _PAGE_ of _PAGES_",
-                                        "infoEmpty": "No hay registros disponibles",
-                                        "infoFiltered": "(filtrado de _MAX_ total registros)",
-                                        "search": "Buscar:",
-                                        "paginate": {
-                                            "first": "Primero",
-                                            "last": "Ultimo",
-                                            "next": "<i class=`fa-solid fa-arrow-right w-100`></i>",
-                                            "previous": "<i class=`fa-solid fa-arrow-left w-100`></i>"
-                                        },
-                                        "zeroRecords": "No se encontraron registros coincidentes",
-                                    }
-                                });
 
-                                table.buttons().container()
-                                    .appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)");
-
-                                Livewire.on("refreshComponent", () => {
-                                    table.destroy();
-                                });
-                            });'
-                                wire:key='{{ time() }}'>
                             </div>
                             <table id="datatable-buttons"
                                 class="table table-striped table-bordered dt-responsive nowrap"
@@ -86,6 +59,8 @@
                                     <tr>
                                         <th scope="col">Nombre</th>
                                         <th scope="col">Categoría</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Cantidad asignada</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
                                 </thead>
@@ -94,6 +69,8 @@
                                         <tr>
                                             <td>{{ $mercaderia->nombre }}</td>
                                             <td>{{ $this->getCategoria($mercaderia->categoria_id) }}</td>
+                                            <td>{{ $this->getCantidad($mercaderia->id)}}</td>
+                                            <td>{{ $this->getCantidadProduccion($mercaderia->id) }}</td>
                                             <td> <a href="mercaderia-edit/{{ $mercaderia->id }}"
                                                     class="btn btn-primary">Ver/Editar</a> </td>
                                         </tr>
@@ -109,6 +86,21 @@
 </div>
 
 @section('scripts')
+<script>
+    $("#comprobarStockMateriales").on("click", () => {
+        Swal.fire({
+            title: '¿Desea comprobar el stock de materiales?',
+            text: 'Pulsa el botón de confirmar para continuar.',
+            icon: 'info',
+            showConfirmButton: true,
+            showCancelButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.livewire.emit('comprobarStockMateriales');
+            }
+        });
+    });
+</script>
     <script src="../assets/js/jquery.slimscroll.js"></script>
 
     <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
@@ -125,4 +117,5 @@
     <!-- Responsive examples -->
     <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
     <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="../assets/pages/datatables.init.js"></script>
 @endsection
