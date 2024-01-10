@@ -34,10 +34,20 @@ class HomeComponent extends Component
     public function finalizarJornada()
     {
         $hora_final = Carbon::now()->toDateTimeString();
-        $user_id = Auth::id();
-        $jornada_actual = Jornada::where('user_id', $user_id)->where('status', 1)->first();
-        $jornada_actual->update(['hora_final' => $hora_final, 'status' => 0]);
-        $this->checkJornada();
+    $user_id = Auth::id();
+
+    // Obtener la jornada activa actual
+    $jornada_actual = Jornada::where('user_id', $user_id)->where('status', 1)->first();
+
+    // Asegurarse de que existe una jornada activa antes de intentar actualizar
+    if ($jornada_actual) {
+        $jornada_actual->update([
+            'hora_final' => $hora_final, // Actualizar solo la hora final
+            'status' => 0 // Cambiar el estado a inactivo
+        ]);
+    }
+
+    $this->checkJornada();
     }
     public function iniciarPausa()
     {
