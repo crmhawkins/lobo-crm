@@ -33,12 +33,12 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <!--Morris Chart CSS -->
-    <link rel="stylesheet" href="http://lobo-crm.test/plugins/morris/morris.css">
+    <link rel="stylesheet" href="/plugins/morris/morris.css">
 
-    <link href="http://lobo-crm.test/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="http://lobo-crm.test/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
-    <link href="http://lobo-crm.test/assets/css/icons.css" rel="stylesheet" type="text/css">
-    <link href="http://lobo-crm.test/assets/css/style.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/icons.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/style.css" rel="stylesheet" type="text/css">
     {{-- <link rel="stylesheet" href="../css/metismenu.min.css"> --}}
     @yield('head')
 
