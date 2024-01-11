@@ -116,9 +116,9 @@ class CreateComponent extends Component
                 'precio_ud' => $productos['precio_ud'],
                 'precio_total' => $productos['precio_total']
             ]);
-            $producto_stock = ProductoLote::find($productos['producto_lote_id']);
+            /*$producto_stock = ProductoLote::find($productos['producto_lote_id']);
             $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-            $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
+            $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
         }
         event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
 

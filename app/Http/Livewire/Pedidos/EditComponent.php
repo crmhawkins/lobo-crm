@@ -246,16 +246,16 @@ class EditComponent extends Component
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
                 DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades']]);
-                $producto_stock = ProductoLote::find($productos['producto_lote_id']);
+                /*$producto_stock = ProductoLote::find($productos['producto_lote_id']);
                 $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-                $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
+                $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
                     DB::table('productos_pedido')->find($productos['id'])->update(['unidades' => $unidades_finales]);
-                    $producto_stock = ProductoLote::find($productos['producto_lote_id']);
+                   /* $producto_stock = ProductoLote::find($productos['producto_lote_id']);
                     $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-                    $producto_stock->update(['cantidad_actual' => $cantidad_actual]);
+                    $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
                 }
             }
         }
