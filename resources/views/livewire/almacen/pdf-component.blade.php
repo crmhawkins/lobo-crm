@@ -94,7 +94,6 @@
             <td>{{ number_format($producto['precio_total'], 2) }}€</td>
         </tr>
         @endforeach
-        @endforeach
         @if ($pedido->descuento )
         <tr>
             <td></td>
