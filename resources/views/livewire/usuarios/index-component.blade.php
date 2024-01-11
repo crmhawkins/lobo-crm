@@ -32,6 +32,7 @@
                                     <th scope="col">Username</th>
                                     <th scope="col">Rol</th>
                                     <th scope="col">Email</th>
+                                    <th scope="col">Almacen</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
@@ -42,6 +43,13 @@
                                         <td>{{ $user->username }}</td>
                                         <td>{{ $this->mostrarRol($user->role) }}</td>
                                         <td>{{ $user->email }}</td>
+                                        <td>
+                                            @if ($user->almacen_id == 0)
+                                                Sin almacén
+                                            @else
+                                                {{ $user->almacen->almacen ?? 'Almacén no encontrado' }}
+                                            @endif
+                                        </td>
                                         <td> <a href="usuarios-edit/{{ $user->id }}"
                                                 class="btn btn-primary">Ver/Editar</a> </td>
                                     </tr>

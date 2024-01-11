@@ -2,9 +2,9 @@
 
 namespace App\Http\Livewire\Usuarios;
 
-use App\Models\DepartamentosUser;
 use App\Models\Rol;
 use App\Models\User;
+use App\Models\Almacen;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -28,9 +28,12 @@ class CreateComponent extends Component
     public $email;
     public $inactive;
     public $almacen_id = 0;
+    public $almacenes;
+
 
 
     public function mount(){
+        $this->almacenes = Almacen::all();
         $this->roles = Rol::all();
     }
 
@@ -51,6 +54,7 @@ class CreateComponent extends Component
             'user_department_id' => 'required',
             'username' => 'required',
             'password' => 'required',
+            'almacen_id' => 'required',
             'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
 
         ],

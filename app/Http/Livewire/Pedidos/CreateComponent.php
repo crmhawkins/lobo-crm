@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 class CreateComponent extends Component
 {
     use LivewireAlert;
+    public $almacen_id = 0;
     public $cliente_id;
     public $nombre;
     public $precio = 0;
@@ -86,6 +87,7 @@ class CreateComponent extends Component
                 'estado' => 'required',
                 'fecha' => 'required',
                 'tipo_pedido_id' => 'required',
+                'almacen_id' => 'required',
                 'observaciones' => 'nullable',
                 'direccion_entrega' => 'nullable',
                 'provincia_entrega' => 'nullable',

@@ -280,8 +280,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3" style="width: 23vw !important;">
-            <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
+        <div class="col-md-3">
+            <div class="card m-b-30" >
                 <div class="card-body">
                     <h5>Opciones de guardado</h5>
                     <div class="row">

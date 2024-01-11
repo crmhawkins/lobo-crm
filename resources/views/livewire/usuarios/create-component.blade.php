@@ -88,6 +88,27 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <div class="col-md-11" wire:ignore>
+                                    <div x-data="" x-init="$('#select2-almacen').select2();
+                                    $('#select2-almacen').on('change', function(e) {
+                                        var data = $('#select2-almacen').select2('val');
+                                        console.log(data)
+                                        @this.set('almacen_id', data);
+                                    });">
+                                        <label for="fechaVencimiento" class="col-sm-12 col-form-label">Almacen asignado</label>
+                                        <div class="col-sm-12">
+                                            <select class="form-control" name="almacen" id="select2-almacen"
+                                                wire:model="almacen_id">
+                                                <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                                @foreach ($almacenes as $presup)
+                                                    <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <div class="col-11">
                                     <label for="password" class="col-12 col-form-label">Contraseña</label>
                                     <div class="col-12">

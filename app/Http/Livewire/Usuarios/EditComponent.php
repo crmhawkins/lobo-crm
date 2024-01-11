@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Usuarios;
 
 use App\Models\User;
+use App\Models\Almacen;
 use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -22,12 +23,13 @@ class EditComponent extends Component
     public $email;
     public $inactive;
     public $despartamentos;
-
+    public $almacenes;
+    public $almacen_id ;
     public function mount()
     {
         $usuarios = User::find($this->identificador);
-        $this->despartamentos = DepartamentosUser::all();
-
+        $this->almacenes = Almacen::all();
+        $this->almacen_id = $usuarios->almacen_id;
         $this->name = $usuarios->name;
         $this->surname = $usuarios->surname;
         $this->role = $usuarios->role;
@@ -51,6 +53,7 @@ class EditComponent extends Component
             'name' => 'required',
             'surname' => 'required',
             'role' => 'required',
+            'almacen_id' => 'nullable',
             'username' => 'required',
             'password' => 'required',
             'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
@@ -75,6 +78,7 @@ class EditComponent extends Component
             'name' => $this->name,
             'surname' => $this->surname,
             'role' => $this->role,
+            'almacen_id' => $this->almacen_id,
             'username' => $this->username,
             'password' => $this->password,
             'email' => $this->email,

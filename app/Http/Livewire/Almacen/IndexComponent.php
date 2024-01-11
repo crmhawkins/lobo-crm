@@ -2,8 +2,10 @@
 
 namespace App\Http\Livewire\Almacen;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Clients;
 use App\Models\Pedido;
+use App\Models\StockEntrante;
 use App\Models\Facturas;
 use App\Models\Productos;
 use Livewire\Component;
@@ -24,10 +26,20 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
-        $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
-        $this->pedidos_enviados = Pedido::where('estado', 4)->get();
+        $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
 
+        // Filtrar pedidos basados en almacen_id
+        if ($userAlmacenId == 0) {
+            // El usuario puede ver todos los pedidos
+            $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
+            $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
+            $this->pedidos_enviados = Pedido::where('estado', 4)->get();
+        } else {
+            // El usuario solo puede ver los pedidos de su almacén
+            $this->pedidos_pendientes = Pedido::where('estado', 2)->where('almacen_id', $userAlmacenId)->get();
+            $this->pedidos_preparacion = Pedido::where('estado', 3)->where('almacen_id', $userAlmacenId)->get();
+            $this->pedidos_enviados = Pedido::where('estado', 4)->where('almacen_id', $userAlmacenId)->get();
+        }
     }
 
     public function render()
@@ -124,6 +136,44 @@ class IndexComponent extends Component
             fn () => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"
         );
+    }
+    public function comprobarStockPedido($pedidoId)
+    {
+        $pedido = Pedido::find($pedidoId);
+        if (!$pedido) {
+            $this->alert('error', 'Pedido no encontrado.');
+            return;
+        }
+
+        $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+        $almacenId = $pedido->almacen_id;
+        $mensaje = "Comprobación de stock para el pedido: {$pedido->id}\n";
+
+        foreach ($productosPedido as $productoPedido) {
+            $producto = Productos::find($productoPedido->producto_lote_id);
+            $stockTotal = StockEntrante::whereHas('stock', function ($query) use ($almacenId) {
+                                $query->where('almacen_id', $almacenId);
+                            })
+                            ->where('producto_id', $productoPedido->producto_lote_id)
+                            ->sum('cantidad');
+
+            $mensaje .= "Producto: {$producto->nombre}, Requerido: {$productoPedido->unidades}, En Stock: {$stockTotal} - ";
+
+            if ($stockTotal >= $productoPedido->unidades) {
+                $mensaje .= "Stock suficiente.\n";
+            } else {
+                $mensaje .= "Stock insuficiente.\n";
+            }
+        }
+
+        $this->alert('info', $mensaje, [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => '',
+            'confirmButtonText' => 'Entendido',
+        ]);
     }
 }
 

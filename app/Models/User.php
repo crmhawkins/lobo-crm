@@ -29,6 +29,7 @@ class User extends Authenticatable
         'surname',
         'role',
         'email',
+        'almacen_id',
         'password',
         'image',
         'seniority_years',
@@ -65,6 +66,11 @@ class User extends Authenticatable
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function almacen()
+    {
+        return $this->belongsTo(Almacen::class, 'almacen_id');
+    }
 
     public function isAdmin(){
         return $this->role == 1 ? true : false;

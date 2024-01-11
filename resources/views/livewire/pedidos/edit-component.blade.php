@@ -24,7 +24,7 @@
                                 básicos del pedido</h5>
                         </div>
 
-                        <div class="form-group col-md-3" wire:ignore >
+                        <div class="form-group col-md-4" wire:ignore >
                             <div x-data="" x-init="
                                 $('#select2-cliente').select2();
                                 $('#select2-cliente').on('change', function (e) {
@@ -43,15 +43,19 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-4">
                             <label for="fecha">Fecha</label>
                             <input type="text" value="{{ $fecha }}" class="form-control" disabled>
                         </div>
-                        <div class="form-group col-md-3" wire:ignore>
+                        <div class="form-group col-md-4" wire:ignore>
                             <label for="estado">Estado</label>
                             <input type="text" value="{{ $this->getEstadoNombre() }}" class="form-control" disabled>
                         </div>
-                        <div class="form-group col-md-3" wire:ignore>
+
+                    </div>
+
+                    <div class="form-row justify-content-center">
+                        <div class="form-group col-md-6" wire:ignore>
                             <div x-data="" x-init="$('#select2-tipo').select2();
                             $('#select2-tipo').on('change', function(e) {
                                 var data = $('#select2-tipo').select2('val');
@@ -65,7 +69,48 @@
                                 </select>
                             </div>
                         </div>
+                        @php
+                        $mostrarElemento = Auth::user()->isdirectorcomercial();
+                        @endphp
+                        @if($mostrarElemento)
+                            <!-- Si la condición es verdadera, muestra esto -->
+                            <div class="form-group col-md-6" wire:ignore>
+                                <!-- Aquí va tu código HTML cuando la condición es verdadera -->
+                                <div x-data="" x-init="$('#select2-almacen').select2();
+                                    $('#select2-almacen').on('change', function(e) {
+                                    var data = $('#select2-almacen').select2('val');
+                                    @this.set('almacen_id', data);
+                                    });">
+                                    <label for="fechaVencimiento">Almacen</label>
+                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Si la condición es falsa, muestra esto (con el atributo 'disabled') -->
+                            <div class="form-group col-md-6" wire:ignore>
+                                <!-- Aquí va tu código HTML pero con el select deshabilitado -->
+                                <div x-data="" x-init="$('#select2-tipo1').select2();
+                                    $('#select2-tipo1').on('change', function(e) {
+                                    var data = $('#select2-tipo1').select2('val');
+                                    @this.set('almacen_id', data);
+                                    });" style="pointer-events: none; opacity: 0.5;">
+                                    <label for="fechaVencimiento">Almacen</label>
+                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                     </div>
+
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
@@ -274,8 +319,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3" style="width: 23vw !important;">
-            <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
+        <div class="col-md-3">
+            <div class="card m-b-30">
                 <div class="card-body">
                     <h5>Opciones</h5>
                     <div class="row">
@@ -287,9 +332,7 @@
                                 datos del
                                 pedido</button>
                         </div>
-                        @php
-                        $mostrarElemento = Auth::user()->isdirectorcomercial();
-                        @endphp
+
 
                         @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento)
                             <div class="col-12">

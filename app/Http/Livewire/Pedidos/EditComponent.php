@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Pedidos;
 
+use App\Models\Almacen;
 use App\Models\PedidosStatus;
 use App\Models\ProductoLote;
 use App\Models\Productos;
@@ -49,6 +50,8 @@ class EditComponent extends Component
     public $precio_vodka07l;
     public $precio_vodka175l;
     public $precio_vodka3l;
+    public $almacen_id;
+    public $almacenes;
 
     public function mount()
     {
@@ -61,6 +64,8 @@ class EditComponent extends Component
         $this->nombre = $pedido->nombre;
         $this->estado = $pedido->estado;
         $this->estado_old = $pedido->estado;
+        $this->almacenes = Almacen::all();
+        $this->almacen_id = $pedido->almacen_id;
         $this->descuento = $pedido->descuento;
         $this->localidad_entrega = $cliente->localidad;
         $this->provincia_entrega = $cliente->provincia;
@@ -124,6 +129,7 @@ class EditComponent extends Component
                 'fecha' => 'required',
                 'tipo_pedido_id' => 'required',
                 'observaciones' => 'nullable',
+                'almacen_id' => 'nullable',
                 'direccion_entrega' => 'nullable',
                 'provincia_entrega' => 'nullable',
                 'localidad_entrega' => 'nullable',
@@ -306,7 +312,34 @@ class EditComponent extends Component
 
     public function aceptarPedido()
     {
+
+        $validatedData = $this->validate(
+            [
+                'cliente_id' => 'required',
+                'nombre' => 'nullable',
+                'precio' => 'required',
+                'estado' => 'required',
+                'fecha' => 'required',
+                'tipo_pedido_id' => 'required',
+                'observaciones' => 'nullable',
+                'almacen_id' => 'nullable',
+                'direccion_entrega' => 'nullable',
+                'provincia_entrega' => 'nullable',
+                'localidad_entrega' => 'nullable',
+                'cod_postal_entrega' => 'nullable',
+                'orden_entrega' => 'nullable',
+                'descuento' => 'nullable',
+            ],
+            // Mensajes de error
+            [
+                'precio.required' => 'El precio del pedido es obligatorio.',
+                'cliente_id.required' => 'El cliente es obligatorio.',
+                'estado.required' => 'El estado del pedido es obligatoria.',
+                'fecha.required' => 'La fecha es obligatoria.',
+            ]
+        );
         $pedido = Pedido::find($this->identificador);
+        $pedido->update($validatedData);
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
             $this->alert('success', '¡Pedido aceptado!', [

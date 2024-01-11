@@ -57,30 +57,15 @@
 
                         <div class="form-group row">
                             <div class="col-sm-6">
-                                <label for="user_department_id" class="col-sm-12 col-form-label">Departamento </label>
-                                <div class="col-sm-10" wire:ignore.self>
-                                    @if (count($despartamentos) > 0)
-                                    <select id="user_department_id" class="form-control js-example-responsive" wire:model="user_department_id">
-                                        @foreach ($despartamentos as $despartamento)
-                                        <option value="{{$despartamento->id}}">{{$despartamento->name}}</option>
+                                <label for="almacen_id" class="col-sm-12 col-form-label">Almacen asignado </label>
+                                <div class="col-sm-10" >
+                                    <select id="almacen_id" class="form-control js-example-responsive" wire:model="almacen_id">
+                                        <option value="0">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
                                         @endforeach
                                     </select>
-                                    @else
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <input type="text" class="form-control" value="No hay departamentos creados." name="no-departament" id="no-departament" disabled>
 
-                                            <input type="hidden" name="user_department_id">
-                                        </div>
-                                        <div class="col-3">
-                                            <a target="_blank" href="{{route('departamento.create')}}" class="btn btn-primary btn-lg waves-effect waves-light">Crear Departamento</a>
-                                        </div>
-                                    </div>
-
-                                    @endif
-                                    @error('user_department_id')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
                                 </div>
                             </div>
                             <div class="col-sm-6">

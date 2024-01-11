@@ -27,6 +27,7 @@ class Pedido extends Model
         'orden_entrega',
         'observaciones',
         'tipo_pedido_id',
+        'almacen_id',
     ];
 
     /**

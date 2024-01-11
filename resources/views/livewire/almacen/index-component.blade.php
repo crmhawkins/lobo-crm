@@ -148,7 +148,7 @@
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
-                                        <td> <a href="albaranes-edit/{{ $pedido->id }}" class="btn btn-primary">Comprobar pedido</a>
+                                        <td> <a href="#" wire:click.prevent="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary">Comprobar pedido</a>
                                             <a href="almacen-create/{{ $pedido->id }}" class="btn btn-primary">Generar albarán</a>
 
                                         </td>
