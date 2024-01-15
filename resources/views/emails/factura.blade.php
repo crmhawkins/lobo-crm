@@ -38,7 +38,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>Detalles de su Pedido</h2>
+            <h2>Detalles de su Factura</h2>
         </div>
 
         <p>Hola {{ $cliente->nombre }},</p>
@@ -59,12 +59,35 @@
                     <td>{{ number_format($producto['precio_total'], 2) }}€</td>
                 </tr>
             @endforeach
-            <tr>
-                <th colspan="3">Total</th>
-                <th>{{ number_format($pedido->precio, 2) }} €</th>
+        </table>
+        @if($datos['conIva'])
+        <table style="margin-top: 5% !important">
+            <tr style="background-color:#ececec;">
+                <td colspan="3"></td>
+                <td>BASE IMPONIBLE</td>
+                <td>{{ number_format($pedido->precio, 2) }}€</td>
+            </tr>
+            <tr style="background-color:#ececec;">
+                <td colspan="3"></td>
+                <td>IVA 21%</td>
+                <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
+            </tr>
+            <tr style="background-color:#ececec;">
+                <td colspan="3"></td>
+                <td>TOTAL</td>
+                <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
             </tr>
         </table>
-        <p>Iva no Incluido.</p>
+        @else
+        <table style="margin-top: 5% !important">
+            <tr style="background-color:#ececec;">
+                <td colspan="3"></td>
+                <td>Total</td>
+                <td>{{ number_format($pedido->precio, 2) }}€</td>
+            </tr>
+        </table>
+
+        @endif
         @if ($pedido->descuento)
             <p>Se ha aplicado un descuento en su pedido.</p>
         @endif

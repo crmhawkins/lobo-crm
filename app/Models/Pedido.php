@@ -28,6 +28,7 @@ class Pedido extends Model
         'observaciones',
         'tipo_pedido_id',
         'almacen_id',
+        'porcentaje_descuento',
     ];
 
     /**

@@ -37,7 +37,7 @@
                                 <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
                                 <input type="text" wire:model="pedido_id" class="form-control" disabled>
                             </div>
-                            </div>
+
                         </div>
 
                         <div class="form-group row">
@@ -53,8 +53,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de
-                                    vencimiento</label>
+                                <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de vencimiento</label>
                                 <div class="col-sm-12">
                                     <input type="date" wire:model="fecha_vencimiento" class="form-control"
                                         placeholder="18/02/2023">
@@ -82,12 +81,12 @@
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
                                     <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
-                                        {{-- <option value="Pendiente">-- Seleccione un estado para el pedido--</option> --}}
-                                        <option value="No pagado">No pagado</option>
-                                        <option value="En efectivo">En efectivo</option>
-                                        <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-                                        <option value="Transferencia bancaria">Transferencia bancaria</option>
-                                    </select>
+                                            <option value="" disabled selected>Selecciona una opción</option>
+                                            <option value="giro_bancario">Giro Bancario</option>
+                                            <option value="pagare">Pagare</option>
+                                            <option value="confirming">Confirming</option>
+                                            <option value="otros">Otros</option>
+                                        </select>
                                     @error('denominacion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror

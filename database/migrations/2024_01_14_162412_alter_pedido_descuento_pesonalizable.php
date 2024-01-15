@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('productos_pedido', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('producto_pedido_id');
-            $table->bigInteger('pedido_id');
-            $table->bigInteger('unidades');
-            $table->timestamps();
+        Schema::table('pedidos', function (Blueprint $table) {
+            $table->integer('porcentaje_descuento');
         });
     }
 
@@ -29,6 +25,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('productos_pedido');
+        Schema::table('pedidos', function (Blueprint $table) {
+            $table->dropColumn('porcentaje_descuento');
+        });
+
     }
 };

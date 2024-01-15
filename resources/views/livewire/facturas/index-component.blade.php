@@ -77,9 +77,10 @@
                                         <td>{{ $pedidos->where('id', $fact->pedido_id)->first()->precio }}€
                                         </td>
                                         <td>{{ $fact->metodo_pago }}</td>
-                                        <td> <a href="facturas-edit/{{ $fact->id }}"
-                                                class="btn btn-primary">Ver/Editar</a> <a href="facturas-pdf/{{ $fact->id }}"
-                                                    class="btn btn-primary">Ver</a></td>
+                                        <td> <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">Ver/Editar</a>
+                                            <a wire:click="pdf({{ $fact->id }},true)"  class="btn btn-primary" style="color: white;">Factura Con IVA</a>
+                                            <a wire:click="pdf({{ $fact->id }},false)"  class="btn btn-primary" style="color: white;">Factura Sin IVA</a>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

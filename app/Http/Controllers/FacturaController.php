@@ -104,7 +104,7 @@ class FacturaController extends Controller
         //
     }
 
-    public function pdf($id)
+    public function pdf($id,$iva)
     {
 
         $factura = Facturas::find($id);
@@ -118,18 +118,22 @@ class FacturaController extends Controller
             // Preparar los datos de los productos del pedido
             $productos = [];
             foreach ($productosPedido as $productoPedido) {
-                $producto = Productos::find($productoPedido->producto_lote_id);
+                $producto = Productos::find($productoPedido->producto_pedido_id);
                 if ($producto) {
                     $productos[] = [
                         'nombre' => $producto->nombre,
                         'cantidad' => $productoPedido->unidades,
                         'precio_ud' => $productoPedido->precio_ud,
                         'precio_total' => $productoPedido->precio_total,
+                        'iva' => $producto->iva,
+                        'lote_id' => $productoPedido->lote_id,
+                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
                     ];
                 }
             }
 
             $datos = [
+                'conIva' => $iva,
                 'albaran' => $albaran,
                 'factura' => $factura,
                 'pedido' => $pedido,

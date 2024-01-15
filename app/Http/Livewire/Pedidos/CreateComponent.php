@@ -17,6 +17,7 @@ class CreateComponent extends Component
 {
     use LivewireAlert;
     public $almacen_id = 0;
+    public $porcentaje_descuento = 3; // Nuevo campo para el descuento personalizado
     public $cliente_id;
     public $nombre;
     public $precio = 0;
@@ -59,10 +60,10 @@ class CreateComponent extends Component
     public function selectCliente()
     {
         $cliente = Clients::find($this->cliente_id);
-        $this->localidad_entrega = $cliente->localidad;
-        $this->provincia_entrega = $cliente->provincia;
-        $this->direccion_entrega = $cliente->direccion;
-        $this->cod_postal_entrega = $cliente->cod_postal;
+        $this->localidad_entrega = $cliente->localidadenvio;
+        $this->provincia_entrega = $cliente->provinciaenvio;
+        $this->direccion_entrega = $cliente->direccionenvio;
+        $this->cod_postal_entrega = $cliente->codPostalenvio;
         $this->precio_crema = $cliente->precio_crema;
         $this->precio_vodka07l = $cliente->precio_vodka07l;
         $this->precio_vodka175l = $cliente->precio_vodka175l;
@@ -95,6 +96,7 @@ class CreateComponent extends Component
                 'cod_postal_entrega' => 'nullable',
                 'orden_entrega' => 'nullable',
                 'descuento'=> 'nullable',
+                'porcentaje_descuento'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -110,13 +112,13 @@ class CreateComponent extends Component
 
         foreach ($this->productos_pedido as $productos) {
             DB::table('productos_pedido')->insert([
-                'producto_lote_id' => $productos['producto_lote_id'],
+                'producto_pedido_id' => $productos['producto_pedido_id'],
                 'pedido_id' => $pedidosSave->id,
                 'unidades' => $productos['unidades'],
                 'precio_ud' => $productos['precio_ud'],
                 'precio_total' => $productos['precio_total']
             ]);
-            /*$producto_stock = ProductoLote::find($productos['producto_lote_id']);
+            /*$producto_stock = ProductoLote::find($productos['producto_pedido_id']);
             $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
             $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
         }
@@ -195,7 +197,7 @@ class CreateComponent extends Component
     }
     public function getUnidadesTabla($id)
     {
-        $producto = Productos::find($this->productos_pedido[$id]['producto_lote_id']);
+        $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
         $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
         $pallets = floor($cajas / $producto->cajas_por_pallet);
         $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
@@ -228,20 +230,20 @@ class CreateComponent extends Component
 
         $producto_existe = false;
         foreach ($this->productos_pedido as $productoPedido) {
-            if ($productoPedido['producto_lote_id'] == $id) {
+            if ($productoPedido['producto_pedido_id'] == $id) {
                 $producto_existe = true;
                 break;
             }
         }
 
         if ($producto_existe) {
-            $key = array_search($id, array_column($this->productos_pedido, 'producto_lote_id'));
+            $key = array_search($id, array_column($this->productos_pedido, 'producto_pedido_id'));
             $this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
             $this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
             $this->productos_pedido[$key]['precio_total'] += $precioTotal;
         } else {
             $this->productos_pedido[] = [
-                'producto_lote_id' => $id,
+                'producto_pedido_id' => $id,
                 'unidades' => $this->unidades_producto,
                 'precio_ud' => $precioUnitario,
                 'precio_total' => $precioTotal
@@ -250,6 +252,15 @@ class CreateComponent extends Component
 
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
+    }
+
+    public function actualizarPrecioTotal($index)
+    {
+        $producto = $this->productos_pedido[$index];
+        if(isset($producto['precio_ud']) && isset($producto['unidades'])) {
+            $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] * $producto['unidades'];
+        }
+        $this->setPrecioEstimado();
     }
     private function obtenerPrecioPorTipo($tipoPrecio)
     {
@@ -267,25 +278,26 @@ class CreateComponent extends Component
         }
     }
 
-
     public function setPrecioEstimado()
-{
-    $this->precioEstimado = 0;
-    foreach ($this->productos_pedido as $producto) {
-        $this->precioEstimado += $producto['precio_total'];
-    }
-    $this->precioSinDescuento = $this->precioEstimado;
-    // Verificar si el descuento está activado
-    if ($this->descuento) {
-        // Calcular el 3% de descuento del precio total
-        $descuento = $this->precioEstimado * 0.03;
-        // Aplicar el descuento al precio total
-        $this->precioEstimado -= $descuento;
-    }
+    {
+        $this->precioEstimado = 0;
+        foreach ($this->productos_pedido as $producto) {
+            $this->precioEstimado += $producto['precio_total'];
+        }
+        $this->precioSinDescuento = $this->precioEstimado;
+        // Verificar si el descuento está activado
+        if ($this->descuento) {
+            // Calcular el 3% de descuento del precio total
+            //$descuento = $this->descuento_personalizado ?? ($this->precioEstimado * 0.03);
+            $descuento = $this->precioEstimado * ($this->porcentaje_descuento / 100);
 
-    // Asignar el precio final
-   $this->precio = number_format($this->precioEstimado, 2, '.', '');
-}
+            // Aplicar el descuento al precio total
+            $this->precioEstimado -= $descuento;
+        }
+
+        // Asignar el precio final
+        $this->precio = number_format($this->precioEstimado, 2, '.', '');
+    }
 
     public function getProductoNombre()
     {

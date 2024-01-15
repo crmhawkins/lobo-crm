@@ -68,32 +68,31 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="col-md-11" wire:ignore>
+                                <div class="col-md-6" wire:ignore>
                                     <div x-data="" x-init="$('#select2-rol').select2();
                                     $('#select2-rol').on('change', function(e) {
                                         var data = $('#select2-rol').select2('val');
-                                        console.log(data)
                                         @this.set('role', data);
                                     });">
-                                        <label for="fechaVencimiento" class="col-sm-12 col-form-label">ROL (PUESTO DE TRABAJO)</label>
+                                        <label for="rol" class="col-sm-12 col-form-label">ROL (PUESTO DE TRABAJO)</label>
                                         <div class="col-sm-12">
-                                            <select class="form-control" name="rol" id="select2-rol"
+                                            <select class="form-control" name="role" id="select2-rol"
                                                 wire:model="role">
                                                 @foreach ($this->roles as $rol)
                                                     <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
                                                 @endforeach
                                             </select>
+                                            {{$role}}
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-md-11" wire:ignore>
+
+                                <div class="col-md-6" wire:ignore>
                                     <div x-data="" x-init="$('#select2-almacen').select2();
                                     $('#select2-almacen').on('change', function(e) {
-                                        var data = $('#select2-almacen').select2('val');
-                                        console.log(data)
-                                        @this.set('almacen_id', data);
+                                        var data2 = $('#select2-almacen').select2('val');
+                                        console.log(data2)
+                                        @this.set('almacen_id', data2);
                                     });">
                                         <label for="fechaVencimiento" class="col-sm-12 col-form-label">Almacen asignado</label>
                                         <div class="col-sm-12">
@@ -104,6 +103,7 @@
                                                     <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
                                                 @endforeach
                                             </select>
+                                            {{$almacen_id}}
                                         </div>
                                     </div>
                                 </div>
@@ -185,7 +185,9 @@
                 yearSuffix: ''
             };
             $.datepicker.setDefaults($.datepicker.regional['es']);
-            document.addEventListener('livewire:load', function() {
+            document.addEventListener('DOMSubtreeModified', (e) => {
+
+
 
 
             })

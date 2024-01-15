@@ -67,7 +67,7 @@ class EditComponent extends Component
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
                 'id' => $producto->id,
-                'producto_lote_id' => $producto->producto_lote_id,
+                'producto_pedido_id' => $producto->producto_pedido_id,
                 'unidades_old' => $producto->unidades,
                 'unidades' => 0,
             ];

@@ -90,8 +90,10 @@
     <table>
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th style="text-align: left !important">CONCEPTO</th>
-            <th>PRECIO</th>
+            <th>LOTE</th>
             <th>UNIDADES</th>
+            <th>PESO TOTAL</th>
+            <th>PRECIO</th>
             <th>SUBTOTAL</th>
         </tr>
         <tr style="background-color:#fff; color: #fff;">
@@ -100,8 +102,10 @@
         @foreach ($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
             <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
-            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+            <td>{{ $producto['lote_id'] }}</td>
             <td>{{ $producto['cantidad'] }}</td>
+            <td>{{ $producto['peso_kg'] }} Kg</td>
+            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
             <td>{{ number_format($producto['precio_total'], 2) }} €</td>
 
         </tr>
@@ -110,13 +114,16 @@
         <tr>
             <td></td>
             <td></td>
+            <td></td>
+            <td></td>
             <td>Descuento Aplicado:</td>
-            <td>3%<</td>
+            <td>{{$pedido->porcentaje_descuento}}%<</td>
         </tr>
         @endif
     </table>
 
-    <table style="margin-top: 1% !important">
+    @if($conIva)
+    <table style="margin-top: 5% !important">
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
@@ -133,6 +140,16 @@
             <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
         </tr>
     </table>
+    @else
+    <table style="margin-top: 5% !important">
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>Total</td>
+            <td>{{ number_format($pedido->precio, 2) }}€</td>
+        </tr>
+    </table>
+
+    @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
    {{-- <table class="footer" >

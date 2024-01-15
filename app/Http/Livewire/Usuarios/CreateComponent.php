@@ -20,7 +20,7 @@ class CreateComponent extends Component
     public $name;
     public $surname;
     public $roles;
-    public $role; // 0 por defecto por si no se selecciona ninguna
+    public $role = 0; // 0 por defecto por si no se selecciona ninguna
     public $username;
     public $user_department_id = 1;
     public $despartamentos;
@@ -51,7 +51,6 @@ class CreateComponent extends Component
             'name' => 'required',
             'surname' => 'required',
             'role' => 'required',
-            'user_department_id' => 'required',
             'username' => 'required',
             'password' => 'required',
             'almacen_id' => 'required',

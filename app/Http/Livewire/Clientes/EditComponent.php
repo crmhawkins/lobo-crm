@@ -31,6 +31,12 @@ class EditComponent extends Component
     public $precio_vodka175l;
     public $precio_vodka3l;
     public $nota;
+    public $usarDireccionEnvio;
+    public $direccionenvio;
+    public $provinciaenvio;
+    public $localidadenvio;
+    public $codPostalenvio;
+    public $vencimiento_factura_pref;
 
     public function mount()
     {
@@ -53,6 +59,12 @@ class EditComponent extends Component
         $this->precio_vodka175l = $cliente->precio_vodka175l;
         $this->precio_vodka3l = $cliente->precio_vodka3l;
         $this->nota = $cliente->nota;
+        $this->usarDireccionEnvio= $cliente->usarDireccionEnvio;
+        $this->direccionenvio = $cliente->direccionenvio;
+        $this->provinciaenvio = $cliente->provinciaenvio;
+        $this->localidadenvio = $cliente->localidadenvio;
+        $this->codPostalenvio = $cliente->codPostalenvio;
+        $this->vencimiento_factura_pref = $cliente->vencimiento_factura_pref;
     }
 
 
@@ -66,24 +78,27 @@ class EditComponent extends Component
     public function update()
     {
         // Validación de datos
-        $this->validate([
-            'tipo_cliente' => 'required',
-            'nombre' => 'required',
-            'dni_cif' => 'required',
-            'direccion' => 'required',
-            'provincia' => 'required',
-            'localidad' => 'required',
-            'cod_postal' => 'required',
-            'telefono' => 'required',
-            'email' => 'required',
-            'forma_pago_pref'=> 'nullable',
-            'precio_crema'=> 'required',
-            'precio_vodka07l'=> 'required',
-            'precio_vodka175l'=> 'required',
-            'precio_vodka3l'=> 'required',
-            'nota' => 'nullable',
+        $validatedData = $this->validate(
+            [
+                'tipo_cliente' => 'required',
+                'nombre' => 'required',
+                'dni_cif' => 'required',
+                'direccion' => 'required',
+                'provincia' => 'required',
+                'localidad' => 'required',
+                'cod_postal' => 'required',
+                'direccionenvio' => 'required',
+                'provinciaenvio' => 'required',
+                'localidadenvio' => 'required',
+                'codPostalenvio' => 'required',
+                'usarDireccionEnvio' => 'nullable',
+                'telefono' => 'required',
+                'email' => 'required',
+                'forma_pago_pref' => 'required',
+                'vencimiento_factura_pref' => 'required',
+                'nota' => 'nullable',
 
-        ],
+            ],
             // Mensajes de error
             [
                 'tipo_cliente.required' => 'El tipo de cliente es obligatorio.',
@@ -113,9 +128,15 @@ class EditComponent extends Component
             'provincia' => $this->provincia,
             'localidad' => $this->localidad,
             'cod_postal' => $this->cod_postal,
+            'direccionenvio' => $this->direccionenvio,
+            'provinciaenvio' => $this->provinciaenvio,
+            'localidadenvio' => $this->localidadenvio,
+            'codPostalenvio' => $this->codPostalenvio,
+            'usarDireccionEnvio' => $this->usarDireccionEnvio,
             'telefono' => $this->telefono,
             'email' => $this->email,
             'forma_pago_pref' => $this->forma_pago_pref,
+            'vencimiento_factura_pref' => $this->vencimiento_factura_pref,
             'estado' => $this->estado,
             'precio_crema'=> $this->precio_crema,
             'precio_vodka07l'=>$this->precio_vodka07l,

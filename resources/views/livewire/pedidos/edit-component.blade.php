@@ -65,7 +65,6 @@
                                 <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id">
                                     <option value="0">Albarán y factura</option>
                                     <option value="1">Albarán sin factura</option>
-                                    <option value="2">Ticket simplificado</option>
                                 </select>
                             </div>
                         </div>
@@ -181,10 +180,10 @@
                                         <tbody>
                                             @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
-                                                    <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
+                                                    <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
                                                     </td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
-                                                    <td>{{ $producto['precio_ud']}} €</td>
+                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
                                                     <td>{{ $producto['precio_total']}} €</td>
                                                     <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>
@@ -200,8 +199,15 @@
                             </div>
                         </div>
                         <div class="form-group col-md-5 d-flex align-items-center">
+                            <div class="form-group col-md-6 d-flex align-items-center">
                             <label for="descuento">Descuento</label>
                             <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
+                        </div>
+                            @if ($descuento)
+                            <div class="form-group col-md-6 d-flex align-items-center">
+                            <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                            </div>
+                         @endif
                         </div>
                         <div class="form-group col-md-1">
                            &nbsp;

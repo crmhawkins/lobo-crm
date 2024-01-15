@@ -40,6 +40,15 @@ class IndexComponent extends Component
     {
         return $this->almacenes->where('id', $id)->first()->almacen;
     }
+
+  /*  public function getPesoTotal($id,$in)
+    {
+        $pesoUnidad = $this->productos->where('id', $id)->first()->peso_neto_unidad;
+        $cantidad = ($this->productos_ordenados[$in]['cantidad'])*($this->productos->where('id', $id)->first()->unidades_por_caja)*($this->productos->where('id', $id)->first()->cajas_por_pallet);
+        $pesoTotal= ($pesoUnidad * $cantidad)/1000;
+        return $pesoTotal;
+
+    }*/
     public function getEstado($id)
     {
         if($id == 0){

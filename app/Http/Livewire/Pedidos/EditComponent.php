@@ -21,6 +21,7 @@ class EditComponent extends Component
 {
     use LivewireAlert;
     public $identificador;
+    public $porcentaje_descuento = 3; // Nuevo campo para el descuento personalizado
     public $cliente_id;
     public $nombre;
     public $precio;
@@ -67,10 +68,10 @@ class EditComponent extends Component
         $this->almacenes = Almacen::all();
         $this->almacen_id = $pedido->almacen_id;
         $this->descuento = $pedido->descuento;
-        $this->localidad_entrega = $cliente->localidad;
-        $this->provincia_entrega = $cliente->provincia;
-        $this->direccion_entrega = $cliente->direccion;
-        $this->cod_postal_entrega = $cliente->cod_postal;
+        $this->localidad_entrega = $cliente->localidadenvio;
+        $this->provincia_entrega = $cliente->provinciaenvio;
+        $this->direccion_entrega = $cliente->direccionenvio;
+        $this->cod_postal_entrega = $cliente->codPostalenvio;
         $this->precio_crema = $cliente->precio_crema;
         $this->precio_vodka07l = $cliente->precio_vodka07l;
         $this->precio_vodka175l = $cliente->precio_vodka175l;
@@ -80,11 +81,12 @@ class EditComponent extends Component
         $this->observaciones = $pedido->observaciones;
         $this->tipo_pedido_id = $pedido->tipo_pedido_id;
         $this->precio = $pedido->precio;
+        $this->porcentaje_descuento = $pedido->porcentaje_descuento;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
                 'id' => $producto->id,
-                'producto_lote_id' => $producto->producto_lote_id,
+                'producto_pedido_id' => $producto->producto_pedido_id,
                 'unidades_old' => $producto->unidades,
                 'precio_ud' => $producto->precio_ud,
                 'precio_total' => $producto->precio_total,
@@ -107,6 +109,14 @@ class EditComponent extends Component
         $this->precio_vodka07l = $cliente->precio_vodka07l;
         $this->precio_vodka175l = $cliente->precio_vodka175l;
         $this->precio_vodka3l = $cliente->precio_vodka3l;
+    }
+
+    public function actualizarPrecioTotal($index)
+    {
+        $producto = $this->productos_pedido[$index];
+
+        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] *($producto['unidades'] + $producto['unidades_old']) ;
+        $this->setPrecioEstimado();
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -136,6 +146,7 @@ class EditComponent extends Component
                 'cod_postal_entrega' => 'nullable',
                 'orden_entrega' => 'nullable',
                 'descuento' => 'nullable',
+                'porcentaje_descuento'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -153,7 +164,7 @@ class EditComponent extends Component
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
                 DB::table('productos_pedido')->insert([
-                    'producto_lote_id' => $productos['producto_lote_id'],
+                    'producto_pedido_id' => $productos['producto_pedido_id'],
                     'pedido_id' => $this->identificador,
                     'unidades' => $productos['unidades'],
                     'precio_ud' => $productos['precio_ud'],
@@ -245,15 +256,15 @@ class EditComponent extends Component
 
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
-                DB::table('productos_pedido')->insert(['producto_lote_id' => $productos['producto_lote_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades']]);
-                /*$producto_stock = ProductoLote::find($productos['producto_lote_id']);
+                DB::table('productos_pedido')->insert(['producto_pedido_id' => $productos['producto_pedido_id'], 'pedido_id' => $this->identificador, 'unidades' => $productos['unidades']]);
+                /*$producto_stock = ProductoLote::find($productos['producto_pedido_id']);
                 $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
                 $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
                     DB::table('productos_pedido')->find($productos['id'])->update(['unidades' => $unidades_finales]);
-                   /* $producto_stock = ProductoLote::find($productos['producto_lote_id']);
+                   /* $producto_stock = ProductoLote::find($productos['producto_pedido_id']);
                     $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
                     $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
                 }
@@ -438,7 +449,7 @@ class EditComponent extends Component
     }
     public function getUnidadesTabla($id)
     {
-        $producto = Productos::find($this->productos_pedido[$id]['producto_lote_id']);
+        $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
         if (isset($this->productos_pedido[$id]['unidades_old'])) {
             $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
             $cajas = ($uds_total / $producto->unidades_por_caja);
@@ -498,7 +509,7 @@ class EditComponent extends Component
 
         $producto_existe = false;
         foreach ($this->productos_pedido as &$productoPedido) {
-            if ($productoPedido['producto_lote_id'] == $id) {
+            if ($productoPedido['producto_pedido_id'] == $id) {
                 $producto_existe = true;
                 $productoPedido['unidades'] += $this->unidades_producto;  // Actualiza la cantidad
                 $productoPedido['precio_ud'] = $precioUnitario;
@@ -509,7 +520,7 @@ class EditComponent extends Component
 
         if (!$producto_existe) {
             $this->productos_pedido[] = [
-                'producto_lote_id' => $id,
+                'producto_pedido_id' => $id,
                 'unidades' => $this->unidades_producto,
                 'precio_ud' => $precioUnitario,
                 'precio_total' => $precioTotal
@@ -537,23 +548,26 @@ class EditComponent extends Component
 
 
     public function setPrecioEstimado()
-{
-    $this->precioEstimado = 0;
-    foreach ($this->productos_pedido as $producto) {
-        $this->precioEstimado += $producto['precio_total'];
-    }
-    $this->precioSinDescuento = $this->precioEstimado;
-    // Verificar si el descuento está activado
-    if ($this->descuento) {
-        // Calcular el 3% de descuento del precio total
-        $descuento = $this->precioEstimado * 0.03;
-        // Aplicar el descuento al precio total
-        $this->precioEstimado -= $descuento;
+    {
+        $this->precioEstimado = 0;
+        foreach ($this->productos_pedido as $producto) {
+            $this->precioEstimado += $producto['precio_total'];
+        }
+        $this->precioSinDescuento = $this->precioEstimado;
+        // Verificar si el descuento está activado
+        if ($this->descuento) {
+            // Calcular el 3% de descuento del precio total
+            //$descuento = $this->descuento_personalizado ?? ($this->precioEstimado * 0.03);
+            $descuento = $this->precioEstimado * ($this->porcentaje_descuento / 100);
+
+            // Aplicar el descuento al precio total
+            $this->precioEstimado -= $descuento;
+        }
+
+        // Asignar el precio final
+        $this->precio = number_format($this->precioEstimado, 2, '.', '');
     }
 
-    // Asignar el precio final
-   $this->precio = number_format($this->precioEstimado, 2, '.', '');
-}
 
 
     public function getProductoNombre()
@@ -583,7 +597,7 @@ class EditComponent extends Component
             $producto = ProductoLote::find($this->lote_seleccionado);
             if ($producto != null && $producto->cantidad_actual != null) {
                 foreach ($this->productos_pedido as $productos) {
-                    if ($productos['producto_lote_id'] == $this->lote_seleccionado) {
+                    if ($productos['producto_pedido_id'] == $this->lote_seleccionado) {
                         return ($producto->cantidad_actual - $this->unidades_producto - $productos["unidades"]);
                     }
                 }
@@ -644,7 +658,7 @@ class EditComponent extends Component
     // Preparar los datos de los productos del pedido
     $productos = [];
     foreach ($productosPedido as $productoPedido) {
-        $producto = Productos::find($productoPedido->producto_lote_id);
+        $producto = Productos::find($productoPedido->producto_pedido_id);
         if ($producto) {
             $productos[] = [
                 'nombre' => $producto->nombre,
@@ -676,7 +690,5 @@ class EditComponent extends Component
         "pedido_{$pedido->id}.pdf"
     );*/
 }
-
-
 
 }

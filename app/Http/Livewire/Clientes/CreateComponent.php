@@ -31,6 +31,12 @@ class CreateComponent extends Component
     public $precio_vodka175l;
     public $precio_vodka3l;
     public $nota;
+    public $usarDireccionEnvio = false;
+    public $direccionenvio;
+    public $provinciaenvio;
+    public $localidadenvio;
+    public $codPostalenvio;
+    public $vencimiento_factura_pref = 0;
 
     public function mount()
     {
@@ -52,6 +58,13 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+
+        if (!$this->usarDireccionEnvio) {
+            $this->direccionenvio = $this->direccion;
+            $this->provinciaenvio = $this->provincia;
+            $this->localidadenvio = $this->localidad;
+            $this->codPostalenvio = $this->cod_postal;
+        }
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -62,9 +75,15 @@ class CreateComponent extends Component
                 'provincia' => 'required',
                 'localidad' => 'required',
                 'cod_postal' => 'required',
+                'direccionenvio' => 'required',
+                'provinciaenvio' => 'required',
+                'localidadenvio' => 'required',
+                'codPostalenvio' => 'required',
+                'usarDireccionEnvio' => 'nullable',
                 'telefono' => 'required',
                 'email' => 'required',
                 'forma_pago_pref' => 'required',
+                'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
 
             ],

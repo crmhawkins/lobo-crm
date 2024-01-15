@@ -2,18 +2,16 @@
 
 namespace App\Http\Livewire\Facturas;
 
-use App\Models\Presupuesto;
-use App\Models\Cursos;
-use App\Models\Alumno;
+
+use App\Models\Pedido;
+use App\Models\Albaran;
+use App\Models\Productos;
 use App\Models\Clients;
 use App\Models\Facturas;
-use App\Models\Empresa;
-use App\Models\Evento;
-use App\Models\ServicioPack;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Mail\FacturaMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -26,7 +24,6 @@ class EditComponent extends Component
 
 
     public $numero_factura;
-    public $id_presupuesto;
     public $fecha_emision;
     public $fecha_vencimiento;
     public $descripcion;
@@ -39,20 +36,16 @@ class EditComponent extends Component
     public $presupuestos;
     public $facturas;
 
-    public $estadoPresupuesto;
-    public $presupuestoSeleccionado;
-    public $alumnoDePresupuestoSeleccionado;
-    public $cursoDePresupuestoSeleccionado;
+    public $pedido;
+    public $pedido_id;
 
 
     public function mount()
     {
         $this->facturas = Facturas::find($this->identificador);
-
-        $this->presupuestos = Presupuesto::all();
-
+        $this->pedido = Pedido::find($this->facturas->pedido_id);
+        $this->pedido_id = $this->facturas->pedido_id;
         $this->numero_factura = $this->facturas->numero_factura;
-        $this->id_presupuesto = $this->facturas->id_presupuesto;
         $this->fecha_emision = $this->facturas->fecha_emision;
         $this->fecha_vencimiento = $this->facturas->fecha_vencimiento;
         $this->descripcion = $this->facturas->descripcion;
@@ -60,9 +53,7 @@ class EditComponent extends Component
         $this->metodo_pago = $this->facturas->metodo_pago;
 
 
-        if ($this->id_presupuesto > 0 || $this->id_presupuesto != null) {
-            $this->listarPresupuesto($this->id_presupuesto);
-        }
+
     }
 
     public function render()
@@ -79,7 +70,6 @@ class EditComponent extends Component
         $this->validate(
             [
                 'numero_factura' => 'required',
-                'id_presupuesto' => 'required|numeric|min:1',
                 'fecha_emision' => 'required',
                 'fecha_vencimiento' => '',
                 'descripcion' => '',
@@ -90,14 +80,14 @@ class EditComponent extends Component
             [
                 'numero_factura.required' => 'Indique un nº de factura.',
                 'fecha_emision.required' => 'Ingrese una fecha de emisión',
-                'id_presupuesto.min' => 'Seleccione un presupuesto',
+
             ]
         );
 
         // Guardar datos validados
         $facturasSave = $this->facturas->update([
             'numero_factura' => $this->numero_factura,
-            'id_presupuesto' => $this->id_presupuesto,
+
             'fecha_emision' => $this->fecha_emision,
             'fecha_vencimiento' => $this->fecha_vencimiento,
             'descripcion' => $this->descripcion,
@@ -105,7 +95,6 @@ class EditComponent extends Component
             'metodo_pago' => $this->metodo_pago,
 
         ]);
-        event(new \App\Events\LogEvent(Auth::user(), 18, $factura->id));
 
         if ($facturasSave) {
             $this->alert('success', 'Factura actualizada correctamente!', [
@@ -156,16 +145,14 @@ class EditComponent extends Component
             'confirmDelete',
             'aceptarFactura',
             'cancelarFactura',
+            'imprimirFacturaIva',
             'imprimirFactura',
             'listarPresupuesto'
         ];
     }
     public function aceptarFactura()
     {
-        $presupuesto = $this->presupuestos->where('id', $this->facturas->id_presupuesto)->first();
-
-        $presupuestoSave = $presupuesto->update(['estado' => 'Facturado']);
-
+        $this->pedido->update(['estado' => 6]);
         $presupuesosSave = $this->facturas->update(['estado' => 'Facturada']);
 
         // Alertas de guardado exitoso
@@ -186,10 +173,6 @@ class EditComponent extends Component
                 'toast' => false,
             ]);
         }
-    }
-
-    public function generarDocumento()
-    {
     }
 
     public function cancelarFactura()
@@ -234,47 +217,120 @@ class EditComponent extends Component
         return redirect()->route('facturas.index');
     }
 
-    public function listarPresupuesto($id)
+    public function imprimirFacturaIva()
     {
-        $this->id_presupuesto = $id;
-        if ($this->id_presupuesto != null) {
-            $this->estadoPresupuesto = 1;
-            $this->presupuestoSeleccionado = Presupuesto::where('id', $this->id_presupuesto)->first();
-            $this->alumnoDePresupuestoSeleccionado = Alumno::where('id', $this->presupuestoSeleccionado->alumno_id)->first();
-            $this->cursoDePresupuestoSeleccionado = Cursos::where('id', $this->presupuestoSeleccionado->curso_id)->first();
-        } else {
-            $this->estadoPresupuesto = 0;
-        }
-    }
 
+        $factura = Facturas::find($this->identificador);
+
+        if($factura != null){
+            $pedido = Pedido::find($factura->pedido_id);
+            $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
+            $cliente = Clients::find($pedido->cliente_id);
+            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+            // Preparar los datos de los productos del pedido
+            $productos = [];
+            foreach ($productosPedido as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_pedido_id);
+                if ($producto) {
+                    $productos[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->unidades,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' => $productoPedido->precio_total,
+                        'iva' => $producto->iva,
+                        'lote_id' => $productoPedido->lote_id,
+                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                    ];
+                }
+            }
+            $iva=true;
+            $datos = [
+                'conIva' => $iva,
+                'albaran' => $albaran,
+                'factura' => $factura,
+                'pedido' => $pedido,
+                'cliente' => $cliente,
+                'localidad_entrega' => $pedido->localidad_entrega,
+                'direccion_entrega' => $pedido->direccion_entrega,
+                'cod_postal_entrega' => $pedido->cod_postal_entrega,
+                'provincia_entrega' => $pedido->provincia_entrega,
+                'fecha' => $pedido->fecha,
+                'observaciones' => $pedido->observaciones,
+                'precio' => $pedido->precio,
+                'descuento' => $pedido->descuento,
+                'productos' => $productos,
+            ];
+
+        // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
+        Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+        /*return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "factura_{$factura->id}.pdf");*/
+        }else{
+            return redirect('admin/facturas');
+        }
+
+
+    }
     public function imprimirFactura()
     {
+
         $factura = Facturas::find($this->identificador);
-        $presupuesto = Presupuesto::find($this->id_presupuesto);
-        $cliente = Clients::where('id', $presupuesto->id_cliente)->first();
-        $evento = Evento::where('id', $presupuesto->id_evento)->get();
-        $listaServicios = [];
-        $listaPacks = [];
-        $packs = ServicioPack::all();
 
-        foreach ($presupuesto->servicios()->get() as $servicio) {
-            $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'existente' => 1];
+        if($factura != null){
+            $pedido = Pedido::find($factura->pedido_id);
+            $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
+            $cliente = Clients::find($pedido->cliente_id);
+            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+            // Preparar los datos de los productos del pedido
+            $productos = [];
+            foreach ($productosPedido as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_pedido_id);
+                if ($producto) {
+                    $productos[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->unidades,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' => $productoPedido->precio_total,
+                        'iva' => $producto->iva,
+                        'lote_id' => $productoPedido->lote_id,
+                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                    ];
+                }
+            }
+            $iva=false;
+            $datos = [
+                'conIva' => $iva,
+                'albaran' => $albaran,
+                'factura' => $factura,
+                'pedido' => $pedido,
+                'cliente' => $cliente,
+                'localidad_entrega' => $pedido->localidad_entrega,
+                'direccion_entrega' => $pedido->direccion_entrega,
+                'cod_postal_entrega' => $pedido->cod_postal_entrega,
+                'provincia_entrega' => $pedido->provincia_entrega,
+                'fecha' => $pedido->fecha,
+                'observaciones' => $pedido->observaciones,
+                'precio' => $pedido->precio,
+                'descuento' => $pedido->descuento,
+                'productos' => $productos,
+            ];
+
+        // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
+        Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+        /*return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "factura_{$factura->id}.pdf");*/
+        }else{
+            return redirect('admin/facturas');
         }
 
-        foreach ($presupuesto->packs()->get() as $pack) {
-            $listaPacks[] = ['id' => $pack->id, 'numero_monitores' => json_decode($pack->pivot->numero_monitores, true), 'precioFinal' => $pack->pivot->precio_final, 'existente' => 1];
-        }
-
-
-        $datos =  [
-            'presupuesto' => $presupuesto, 'factura' => $factura, 'cliente' => $cliente,
-            'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs,
-        ];
-
-        $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical')->output(); //
-        return response()->streamDownload(
-            fn () => print($pdf),
-            'export_protocol.pdf'
-        );
     }
+
 }

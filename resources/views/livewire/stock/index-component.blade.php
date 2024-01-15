@@ -26,7 +26,6 @@
                         </div>
                         <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100 mt-2" style="display: none;">CERRAR ESCÁNER</button>
                         <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
-                        <button type="button" onclick="iniciarEscaneo('salida')" class="btn btn-lg btn-primary w-100 mt-2">SALIDA DE STOCK</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                     </div>
                     @if (auth()->user()->role == 1)

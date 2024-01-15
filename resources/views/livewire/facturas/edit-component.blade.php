@@ -25,90 +25,17 @@
                                 <label for="numero_factura" class="col-sm-12 col-form-label">Número de Factura</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="numero_factura" class="form-control"
-                                        name="numero_factura" id="numero_factura">
+                                        name="numero_factura" id="numero_factura" disabled>
                                     @error('numero_factura')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                <label for="id_presupuesto" class="col-sm-12 col-form-label">Presupuesto
-                                    asociado</label>
-                                <div class="col-sm-12" wire:ignore.self>
-                                    <select id="id_presupuesto" class="form-control js-example-responsive"
-                                        wire:model="id_presupuesto">
-                                        <option value="0">-- Seleccione un presupuesto --</option>
-                                        @foreach ($presupuestos as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->id }} </option>
-                                        @endforeach
-                                    </select>
-                                    @error('id_presupuesto')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                                <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
+                                <input type="text" wire:model="pedido_id" class="form-control" disabled>
                             </div>
                         </div>
-                        @if ($estadoPresupuesto != 0)
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <label for="detalles_presupuesto" class="col-sm-12 col-form-label">Detalles del
-                                        presupuesto</label>
-                                    <div class="col-sm-12">
-                                        <a href="{{ route('presupuestos.edit', ['id' => $presupuestoSeleccionado->id]) }}"
-                                            class="btn btn-primary w-100" target="_blank"> &nbsp;Detalles del
-                                            presupuesto</a>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="detalles_presupuesto" class="col-sm-12 col-form-label">&nbsp;</label>
-                                    <div class="col-sm-12"> <a
-                                            href="{{ route('eventos.edit', ['id' => $presupuestoSeleccionado->id_evento]) }}"
-                                            class="btn btn-primary w-100" target="_blank"> &nbsp;Detalles del evento
-                                            presupuesto</a>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="form-group row">
-                                <div class="col-md-4">
-                                    <label for="total_sin_iva" class="col-sm-12 col-form-label">Precio base</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" disabled
-                                            value="{{ $presupuestoSeleccionado->precioBase }}€" class="form-control"
-                                            name="total_sin_iva">
-                                        @error('detalles_presupuesto')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="descuento" class="col-sm-12 col-form-label">Descuento</label>
-                                    <div class="col-sm-12">
-                                        <input disabled type="text"
-                                            value="{{ $presupuestoSeleccionado->descuento }}€" class="form-control"
-                                            name="descuento">
-                                        @error('detalles_presupuesto')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-
-                                    <label for="precio" class="col-sm-12 col-form-label">Precio total</label>
-                                    <div class="col-sm-12">
-                                        <input disabled type="text"
-                                            value="{{ $presupuestoSeleccionado->precioFinal }}€" class="form-control"
-                                            name="precio">
-                                        @error('detalles_presupuesto')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Fecha de emisión</label>
@@ -151,12 +78,12 @@
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
                                     <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
-                                        {{-- <option value="Pendiente">-- Seleccione un estado para el presupuesto--</option> --}}
-                                        <option value="No pagado">No pagado</option>
-                                        <option value="En efectivo">En efectivo</option>
-                                        <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-                                        <option value="Transferencia bancaria">Transferencia bancaria</option>
-                                    </select>
+                                            <option value="" disabled selected>Selecciona una opción</option>
+                                            <option value="giro_bancario">Giro Bancario</option>
+                                            <option value="pagare">Pagare</option>
+                                            <option value="confirming">Confirming</option>
+                                            <option value="otros">Otros</option>
+                                        </select>
                                     @error('denominacion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -186,14 +113,11 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            @if($estado == 'Pendiente')
+                            @if ($estado == "pendiente")
                             <button class="w-100 btn btn-info mb-2" id="alertaFacturar">Marcar como facturada</button>
-                            <button class="w-100 btn btn-dark mb-2" id="alertaCancelar">Marcar como cancelada</button>
-                            @else
-                            <button class="w-100 btn btn-warning mb-2" wire:click.prevent="imprimirFactura">Descargar PDF de la factura</button>
-                            <button class="w-100 btn btn-info mb-2" id="alertaPDF">Enviar factura por correo</button>
                             @endif
-
+                            <button class="w-100 btn btn-info mb-2" id="EmailFacturarIva">Enviar factura por correo Con IVA</button>
+                            <button class="w-100 btn btn-info mb-2" id="EmailFacturar">Enviar factura por correo Sin IVA</button>
                         </div>
                     </div>
                 </div>
@@ -269,6 +193,32 @@
             });
         });
 
+        $("#EmailFacturarIva").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                icon: 'info',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('imprimirFacturaIva');
+                }
+            });
+        });
+
+        $("#EmailFacturar").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                icon: 'info',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('imprimirFactura');
+                }
+            });
+        });
+
         $.datepicker.regional['es'] = {
             closeText: 'Cerrar',
             prevText: '< Ant',
@@ -322,12 +272,6 @@
     </script>
     {{-- SCRIPT PARA SELECT 2 CON LIVEWIRE --}}
     <script>
-        window.initSelect2 = () => {
-            jQuery("#id_presupuesto").select2({
-                minimumResultsForSearch: 2,
-                allowClear: false
-            });
-        }
 
         initSelect2();
         window.livewire.on('select2', () => {

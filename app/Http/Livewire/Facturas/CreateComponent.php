@@ -6,7 +6,9 @@ use App\Models\Alumno;
 use App\Models\Cursos;
 use App\Models\Empresa;
 use App\Models\Pedido;
+use App\Models\Clients;
 use App\Models\Facturas;
+use App\Policies\ClientsEmailPolicy;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -27,13 +29,18 @@ class CreateComponent extends Component
     public $pedidos;
     public $pedido;
     public $pedido_id;
+    public $cliente;
 
     public function mount()
     {
         $this->pedido = Pedido::find($this->idpedido);
+        $this->cliente = Clients::find($this->pedido->cliente_id);
         $this->pedido_id = $this->idpedido;
         $this->numero_factura = Facturas::count() + 1;
-        $this->fecha_emision = Carbon::now()->format('d/m/Y');
+        $this->fecha_emision = Carbon::now()->format('Y-m-d');
+        $diasVencimiento = $this->cliente->vencimiento_factura_pref;
+        $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
+        $this->metodo_pago = $this->cliente->forma_pago_pref;
     }
 
     public function render()

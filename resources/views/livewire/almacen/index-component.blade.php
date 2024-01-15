@@ -71,9 +71,6 @@
                                             @case(1)
                                                 Albarán sin factura
                                                 @break
-                                            @case(2)
-                                                Ticket simplificado
-                                                @break
                                             @default
                                                 Tipo de pedido no reconocido
                                         @endswitch
@@ -140,9 +137,6 @@
                                                 @break
                                             @case(1)
                                                 Albarán sin factura
-                                                @break
-                                            @case(2)
-                                                Ticket simplificado
                                                 @break
                                             @default
                                                 Tipo de pedido no reconocido
@@ -212,15 +206,18 @@
                                             @case(1)
                                                 Albarán sin factura
                                                 @break
-                                            @case(2)
-                                                Ticket simplificado
-                                                @break
                                             @default
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
-                                        <td> <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
+                                        <td>
+                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},true)" class="btn btn-primary"  style="color: white;">Descargar albarán Con IVA</a>
+                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},false)" class="btn btn-primary"  style="color: white;">Descargar albarán Sin IVA</a>
+                                                @if ($pedido->estado ==8)
                                                 <a href="facturas-create/{{ $pedido->id }}" class="btn btn-primary">Crear Factura</a>
+                                                @else
+                                                <a  wire:click.prevent="enRuta({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Pedido En Ruta</a>
+                                                @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -289,7 +286,7 @@
                 })
             });
         </script>--}}
-
+document.addEventListener('DOMContentLoaded', function() {
 <script src="../assets/js/jquery.slimscroll.js"></script>
 <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
@@ -306,5 +303,7 @@
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
 <script src="../assets/pages/datatables.init.js"></script>
+});
     @endsection
+
 </div>

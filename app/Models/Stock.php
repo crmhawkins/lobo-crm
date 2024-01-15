@@ -31,7 +31,7 @@ class Stock extends Model
 
     public function entrantes()
     {
-        return $this->hasMany(StockEntrante::class, 'stock_id');
+        return $this->hasOne(StockEntrante::class, 'stock_id');
     }
 
 }

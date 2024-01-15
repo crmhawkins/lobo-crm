@@ -195,6 +195,99 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group row justify-content-center">
+                            <div class="col-sm-5">
+                                <div class="form-check ">
+                                 <input class="form-check-input" type="checkbox" wire:model="usarDireccionEnvio" id="usarDireccionEnvio">
+                                    <label class="form-check-label" for="usarDireccionEnvio">
+                                    Usar dirección de envío diferente
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                            </div>
+                        </div>
+                        @if($usarDireccionEnvio)
+                            <div class="form-group row justify-content-center">
+                                <div class="col-sm-5">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Dirección de envio</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model="direccionenvio" class="form-control" name="direccionenvio"
+                                            id="direccionenvio" placeholder="Avenida/Plaza/Calle...">
+                                        @error('direccion')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .direccionenvio {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-1">
+                                    &nbsp;
+                                </div>
+                                <div class="col-sm-5">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Provincia de envio</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model="provinciaenvio" class="form-control" name="provinciaenvio"
+                                            id="provinciaenvio" placeholder="Provincia">
+                                        @error('provincia')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .provinciaenvio {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Dir Adi 1 -->
+                            <div class="form-group row justify-content-center">
+                                <div class="col-sm-5">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Localidad de envio</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model="localidadenvio" class="form-control"
+                                            name="localidadenvio" id="localidadenvio" placeholder="Localidad">
+                                        @error('localidad')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .localidadenvio {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-1">
+                                    &nbsp;
+                                </div>
+                                <div class="col-sm-5">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal de envio</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" wire:model="codPostalenvio" class="form-control"
+                                            name="codPostalenvio" id="codPostalenvio" placeholder="Código postal">
+                                        @error('cod_postal')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .cod_postalenvio {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
@@ -314,10 +407,10 @@
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
                                 <div class="col-sm-12">
                                     <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref">
+                                        <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="giro_bancario">Giro Bancario</option>
                                         <option value="pagare">Pagare</option>
                                         <option value="confirming">Confirming</option>
-                                        <option value="30/45/60">30/45/60</option>
                                         <option value="otros">Otros</option>
                                     </select>
                                     @error('forma_pago_pref')
@@ -335,6 +428,28 @@
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
+                                <label for="forma_pago_pref" class="col-sm-12 col-form-label">Vencimiento de factura</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="vencimiento_factura_pref" class="form-control" name="vencimiento_factura_pref" id="vencimiento_factura_pref">
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        <option value="30">30 días</option>
+                                        <option value="45">45 días</option>
+                                        <option value="60">60 días</option>
+                                    </select>
+                                    @error('vencimiento_factura_pref')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .vencimiento_factura_pref {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                            <div class="col-sm-11">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"
@@ -351,6 +466,7 @@
                                 </div>
                             </div>
                         </div>
+                    </form>
                 </div>
             </div>
         </div>

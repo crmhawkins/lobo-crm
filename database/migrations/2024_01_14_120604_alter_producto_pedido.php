@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('productos_pedido', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('producto_pedido_id');
-            $table->bigInteger('pedido_id');
-            $table->bigInteger('unidades');
-            $table->timestamps();
+        Schema::table('productos_pedido', function (Blueprint $table) {
+            $table->renameColumn('producto_lote_id','producto_pedido_id');
+            $table->string('lote_id')->nullable();
         });
     }
 
@@ -29,6 +26,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('productos_pedido');
+        Schema::table('productos_pedido', function (Blueprint $table) {
+            $table->renameColumn('producto_pedido_id','producto_lote_id');
+            $table->string('lote_id');
+        });
     }
 };

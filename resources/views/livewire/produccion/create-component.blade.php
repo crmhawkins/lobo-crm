@@ -89,6 +89,7 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
+                                                <th>PESO</th>
                                                 <th>Eliminar</th>
                                             </tr>
                                         </thead>
@@ -109,6 +110,9 @@
                                                                 <p class="my-auto">pallets</p>
                                                             </div>
                                                         </div>
+                                                    </td>
+                                                    <td width="25%">
+                                                        {{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG
                                                     </td>
                                                     <td width="25%"><button type="button" class="btn btn-danger"
                                                             wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>

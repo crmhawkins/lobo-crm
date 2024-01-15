@@ -199,9 +199,9 @@
 
                                         @foreach ($productos_pedido as $producto)
                                             <tr>
-                                                <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
+                                                <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
                                                 </td>
-                                                <td>{{ $this->getNombreLoteTabla($producto['producto_lote_id']) }}
+                                                <td>{{ $this->getNombreLoteTabla($producto['producto_pedido_id']) }}
                                                 </td>
                                                 @if (isset($producto['id']))
                                                     <td>{{ $producto['unidades'] + $producto['unidades_old'] }}

@@ -25,7 +25,7 @@
                                 básicos del pedido</h5>
                         </div>
                         {{--@if (auth()->user()->almacen_id == 0)--}}
-                            <div class="form-group col-md-11">
+                            <div class="form-group col-md-12">
                                 <div>
                                     @if(($this->estado) == "0")
                                     <select name="almacen" wire:model="almacen_id" style="width: 100% !important" >
@@ -91,6 +91,7 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
+                                                <th>PESO</th>
                                                 {{--<th>Eliminar</th>--}}
                                             </tr>
                                         </thead>
@@ -111,6 +112,9 @@
                                                             </div>
                                                         </div>
                                                      </td>
+                                                     <td width="25%">
+                                                        {{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG
+                                                    </td>
                                                     {{--<td width="25%"><button type="button" class="btn btn-danger"
                                                             wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>--}}

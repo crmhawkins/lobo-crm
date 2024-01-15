@@ -185,11 +185,18 @@
                             Lista de productos</h5>
                         <div class="form-group col-md-12">
                             @if (count($productos_pedido) > 0)
+                            <div id="qr-scanner-container" style="display: none;">
+                                <div style="display: flex; justify-content: center;">
+                                    <canvas id="qr-canvas" style="width: 50%;"></canvas>
+                                </div>
+                                <button onclick="cerrarEscaneo()" type="button" class="btn btn-lg btn-danger w-100 mt-2">Cerrar Escáner</button>
+                            </div>
                                 <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
                                     <thead>
                                         <tr>
                                             <th>Producto</th>
                                             <th>Lote</th>
+                                            <th>Peso Total</th>
                                             <th>Cantidad</th>
                                             <th>Precio unidad</th>
                                             <th>Precio total</th>
@@ -200,9 +207,16 @@
 
                                         @foreach ($productos_pedido as $productoIndex => $producto)
                                             <tr>
-                                                <td>{{ $this->getNombreTabla($producto['producto_lote_id']) }}
+                                                <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
                                                 </td>
-                                                <td>{{ $this->getNombreLoteTabla($producto['producto_lote_id']) }}
+                                                @if (is_null($producto['lote_id']))
+                                                <td>
+                                                <button type="button" onclick="iniciarEscaneo({{ $productoIndex }})" class="btn btn-lg btn-primary">Escanera lote</button>
+                                                </td>
+                                                @else
+                                                <td>{{ $producto['lote_id']}}
+                                                @endif
+                                                <td>{{$this->getPesoTotal($producto['producto_pedido_id'],$productoIndex)}} KG </td>
                                                 <td>{{ $this->getUnidadesTabla($productoIndex)}}</td>
                                                 <td>{{ $producto['precio_ud']}} €</td>
                                                 <td>{{ $producto['precio_total']}} €</td>
@@ -213,12 +227,12 @@
                                         @if ($descuento)
                                         <tr>
                                             <th colspan="1">Descuento aplicado</th>
-                                            <th colspan="3">Importe</th>
+                                            <th colspan="4">Importe</th>
                                             <th>{{ $pedido->precio }} €</td>
                                         </tr>
                                         @else
                                         <tr>
-                                            <th colspan="4">Importe</th>
+                                            <th colspan="5">Importe</th>
                                             <th>{{ $pedido->precio }} €</td>
                                         </tr>
                                         @endif
@@ -237,8 +251,10 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran">Generar Albarán</button>
+                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(true)">Generar Albarán Con IVA</button>
+                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(false)">Generar Albarán Sin IVA</button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -333,5 +349,60 @@
         window.livewire.on('select2', () => {
             initSelect2();
         });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
+    <script>
+        let video = document.createElement("video");
+        let canvasElement = document.getElementById("qr-canvas");
+        let canvas = canvasElement.getContext("2d", { willReadFrequently: true });
+        let scanning = false;
+        let selectedRow = null; // Variable para almacenar la fila seleccionada
+
+        function iniciarEscaneo(rowIndex) {
+            selectedRow = rowIndex; // Guarda el índice de la fila seleccionada
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                scanning = true;
+                video.srcObject = stream;
+                video.play();
+                requestAnimationFrame(tick);
+                document.getElementById('qr-scanner-container').style.display = 'block';
+            });
+        }
+
+        function tick() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA && scanning) {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code) {
+                    scanning = false;
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    document.getElementById('qr-scanner-container').style.display = 'none';
+                    console.log("QRcódigo encontrado para la fila " + selectedRow + ": " + code.data);
+                    procesarCodigoQR(code.data, selectedRow);
+                    }
+            }
+            if (scanning) {requestAnimationFrame(tick);}
+        }
+
+        function cerrarEscaneo() {
+            scanning = false;
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('qr-scanner-container').style.display = 'none';
+        }
+
+        function procesarCodigoQR(data, rowIndex) {
+            // Aquí puedes agregar la lógica para manejar el código QR escaneado
+            console.log("Manejar QR: " + data + " para la fila: " + rowIndex);
+            // Por ejemplo, emitir un evento Livewire para actualizar los datos del backend
+            window.livewire.emit('qrScanned', data, rowIndex);
+        }
     </script>
 @endsection

@@ -33,12 +33,14 @@ class IndexComponent extends Component
             // El usuario puede ver todos los pedidos
             $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
             $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
-            $this->pedidos_enviados = Pedido::where('estado', 4)->get();
+            $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->get();
         } else {
             // El usuario solo puede ver los pedidos de su almacén
             $this->pedidos_pendientes = Pedido::where('estado', 2)->where('almacen_id', $userAlmacenId)->get();
             $this->pedidos_preparacion = Pedido::where('estado', 3)->where('almacen_id', $userAlmacenId)->get();
-            $this->pedidos_enviados = Pedido::where('estado', 4)->where('almacen_id', $userAlmacenId)->get();
+            $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
+            ->where('almacen_id', $userAlmacenId)
+            ->get();
         }
     }
 
@@ -71,9 +73,17 @@ class IndexComponent extends Component
                 'confirmButtonText' => 'ok',
                 'timerProgressBar' => true,
             ]);
+            $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
 
-            $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
-            $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
+            if ($userAlmacenId == 0) {
+                // El usuario puede ver todos los pedidos
+                $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
+                $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
+            } else {
+                // El usuario solo puede ver los pedidos de su almacén
+                $this->pedidos_pendientes = Pedido::where('estado', 2)->where('almacen_id', $userAlmacenId)->get();
+                $this->pedidos_preparacion = Pedido::where('estado', 3)->where('almacen_id', $userAlmacenId)->get();
+            }
 
         } else {
             $this->alert('error', '¡No se ha podido poner en preparación el pedido!', [
@@ -84,7 +94,42 @@ class IndexComponent extends Component
         }
     }
 
-    public function mostrarAlbaran($pedidoId)
+    public function enRuta($identificador)
+    {
+        $pedido = Pedido::find($identificador);
+        $pedidosSave = $pedido->update(['estado' => 8]);
+        if ($pedidosSave) {
+            $this->alert('success', '¡Pedido en Ruta!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+
+            $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
+            if ($userAlmacenId == 0) {
+                // El usuario puede ver todos los pedidos
+                $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->get();
+            } else {
+                // El usuario solo puede ver los pedidos de su almacén
+                $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
+                ->where('almacen_id', $userAlmacenId)
+                ->get();
+            }
+
+        } else {
+            $this->alert('error', '¡No se ha podido poner en preparación el pedido!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+
+    public function mostrarAlbaran($pedidoId,$Iva)
     {
         // Buscar el albarán asociado con el ID del pedido
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();
@@ -109,7 +154,7 @@ class IndexComponent extends Component
         // Preparar los datos de los productos del pedido
         $productos = [];
         foreach ($productosPedido as $productoPedido) {
-            $producto = Productos::find($productoPedido->producto_lote_id);
+            $producto = Productos::find($productoPedido->producto_pedido_id);
             if ($producto) {
                 $productos[] = [
                     'nombre' => $producto->nombre,
@@ -117,11 +162,14 @@ class IndexComponent extends Component
                     'precio_ud' => $productoPedido->precio_ud,
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
+                    'lote_id' => $productoPedido->lote_id,
+                    'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
                 ];
             }
         }
 
         $datos = [
+        'conIva' => $Iva,
         'pedido' => $pedido ,
         'cliente' => $cliente,
         'observaciones' => $pedido->observaciones,
@@ -150,11 +198,11 @@ class IndexComponent extends Component
         $mensaje = "Comprobación de stock para el pedido: {$pedido->id}\n";
 
         foreach ($productosPedido as $productoPedido) {
-            $producto = Productos::find($productoPedido->producto_lote_id);
+            $producto = Productos::find($productoPedido->producto_pedido_id);
             $stockTotal = StockEntrante::whereHas('stock', function ($query) use ($almacenId) {
                                 $query->where('almacen_id', $almacenId);
                             })
-                            ->where('producto_id', $productoPedido->producto_lote_id)
+                            ->where('producto_id', $productoPedido->producto_pedido_id)
                             ->sum('cantidad');
 
             $mensaje .= "Producto: {$producto->nombre}, Requerido: {$productoPedido->unidades}, En Stock: {$stockTotal} - ";

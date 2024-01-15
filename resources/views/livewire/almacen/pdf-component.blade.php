@@ -79,7 +79,9 @@
     <table>
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th style="text-align: left !important">CONCEPTO</th>
+            <th>LOTE</th>
             <th>UNIDADES</th>
+            <th>PESO TOTAL</th>
             <th>PRECIO</th>
             <th>SUBTOTAL</th>
         </tr>
@@ -89,7 +91,9 @@
         @foreach($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
             <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span><br></td>
+            <td>{{ $producto['lote_id'] }}</td>
             <td>{{ $producto['cantidad'] }}</td>
+            <td>{{ $producto['peso_kg'] }} Kg</td>
             <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
             <td>{{ number_format($producto['precio_total'], 2) }}€</td>
         </tr>
@@ -98,29 +102,41 @@
         <tr>
             <td></td>
             <td></td>
+            <td></td>
+            <td></td>
             <td>Descuento Aplicado:</td>
-            <td>3%<</td>
+            <td>{{$pedido->porcentaje_descuento}}%<</td>
         </tr>
         @endif
     </table>
+    @if($conIva)
+            <table style="margin-top: 5% !important">
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>BASE IMPONIBLE</td>
+                    <td>{{ number_format($pedido->precio, 2) }}€</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>IVA 21%</td>
+                    <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>TOTAL</td>
+                    <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
+                </tr>
+            </table>
+    @else
+        <table style="margin-top: 5% !important">
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>Total</td>
+                <td>{{ number_format($pedido->precio, 2) }}€</td>
+            </tr>
+        </table>
 
-    <table style="margin-top: 5% !important">
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>BASE IMPONIBLE</td>
-            <td>{{ number_format($pedido->precio, 2) }}€</td>
-        </tr>
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>IVA 21%</td>
-            <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
-        </tr>
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>TOTAL</td>
-            <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
-        </tr>
-    </table>
+    @endif
 </body>
 
 </html>
