@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ProductosController;
+use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AlmacenController;
@@ -53,6 +54,10 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::get('/clientes-create', [ClienteController::class, 'create'])->name('clientes.create');
     Route::get('/clientes-edit/{id}', [ClienteController::class, 'edit'])->name('clientes.edit');
+
+    Route::get('/proveedores', [ProveedoresController::class, 'index'])->name('proveedores.index');
+    Route::get('/proveedores-create', [ProveedoresController::class, 'create'])->name('proveedores.create');
+    Route::get('/proveedores-edit/{id}', [ProveedoresController::class, 'edit'])->name('proveedores.edit');
 
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos-create', [PedidoController::class, 'create'])->name('pedidos.create');
