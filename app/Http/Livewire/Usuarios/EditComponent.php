@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Usuarios;
 
 use App\Models\User;
 use App\Models\Almacen;
+use App\Models\Rol;
 use App\Models\DepartamentosUser;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -25,10 +26,12 @@ class EditComponent extends Component
     public $despartamentos;
     public $almacenes;
     public $almacen_id ;
+    public $roles;
     public function mount()
     {
         $usuarios = User::find($this->identificador);
         $this->almacenes = Almacen::all();
+        $this->roles = Rol::all();
         $this->almacen_id = $usuarios->almacen_id;
         $this->name = $usuarios->name;
         $this->surname = $usuarios->surname;

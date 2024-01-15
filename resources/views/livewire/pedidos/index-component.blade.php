@@ -75,6 +75,8 @@
                                     <span class="badge badge-success">Facturado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Rechazado")
                                     <span class="badge badge-danger">Rechazado</span>
+                                    @elseif($this->getEstadoNombre($presup->estado) == "En Ruta")
+                                    <span class="badge badge-secondary">En Ruta</span>
 
                                     @endif
                                 </td>

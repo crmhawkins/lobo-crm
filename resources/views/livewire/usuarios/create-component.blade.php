@@ -68,26 +68,25 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <div class="col-md-6" wire:ignore>
+                                <div class="col-md-6" >
                                     <div x-data="" x-init="$('#select2-rol').select2();
                                     $('#select2-rol').on('change', function(e) {
                                         var data = $('#select2-rol').select2('val');
                                         @this.set('role', data);
                                     });">
                                         <label for="rol" class="col-sm-12 col-form-label">ROL (PUESTO DE TRABAJO)</label>
-                                        <div class="col-sm-12">
+                                        <div class="col-sm-10">
                                             <select class="form-control" name="role" id="select2-rol"
                                                 wire:model="role">
                                                 @foreach ($this->roles as $rol)
                                                     <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
                                                 @endforeach
                                             </select>
-                                            {{$role}}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6" wire:ignore>
+                                <div class="col-md-6">
                                     <div x-data="" x-init="$('#select2-almacen').select2();
                                     $('#select2-almacen').on('change', function(e) {
                                         var data2 = $('#select2-almacen').select2('val');
@@ -95,7 +94,7 @@
                                         @this.set('almacen_id', data2);
                                     });">
                                         <label for="fechaVencimiento" class="col-sm-12 col-form-label">Almacen asignado</label>
-                                        <div class="col-sm-12">
+                                        <div class="col-sm-10">
                                             <select class="form-control" name="almacen" id="select2-almacen"
                                                 wire:model="almacen_id">
                                                 <option value="{{ null }}">-- Selecciona un almacén --</option>
@@ -103,7 +102,6 @@
                                                     <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
                                                 @endforeach
                                             </select>
-                                            {{$almacen_id}}
                                         </div>
                                     </div>
                                 </div>

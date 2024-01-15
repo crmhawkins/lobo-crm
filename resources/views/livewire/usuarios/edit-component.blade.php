@@ -69,14 +69,14 @@
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                                <label for="role" class="col-sm-12 col-form-label">Rol</label>
-                                <div class="col-sm-10" wire:ignore.self>
-                                    <select id="role" class="form-control js-example-responsive" wire:model="role">
-                                        <option value="alumno">Empleado</option>
-                                        @if (Auth::user()->role == 'admin')
-                                        <option value="admin">Admin</option>
-                                        @endif
-                                    </select>
+                                <label for="rol" class="col-sm-12 col-form-label">ROL (PUESTO DE TRABAJO)</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" name="role" id="select2-rol"
+                                                wire:model="role">
+                                                @foreach ($this->roles as $rol)
+                                                    <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                                                @endforeach
+                                            </select>
                                     @error('role')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
