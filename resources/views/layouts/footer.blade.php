@@ -134,12 +134,38 @@
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                             <path d="M3 21h18" />
                             <path d="M5 21v-12l5 4v-4l5 4h4" />
-                            <path
-                                d="M19 21v-8l-1.436 -9.574a.5 .5 0 0 0 -.495 -.426h-1.145a.5 .5 0 0 0 -.494 .418l-1.43 8.582" />
+                            <path d="M19 21v-8l-1.436 -9.574a.5 .5 0 0 0 -.495 -.426h-1.145a.5 .5 0 0 0 -.494 .418l-1.43 8.582" />
                             <path d="M9 17h1" />
                             <path d="M14 17h1" />
                         </svg>
                         <span>PRODUCCIÓN</span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('caja.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-safe" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="3" y="7" width="18" height="14" rx="2" />
+                            <path d="M7 7v-1a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v1" />
+                            <path d="M12 10v4" />
+                            <circle cx="12" cy="14" r="2" />
+                            <path d="M10 14h4" />
+                          </svg>
+                        <span>CAJA</span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('proveedores.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+                        </svg>
+                        <span>PROVEEDORES</span>
                     </a>
                 </div>
                 <div class="exit-button-col">
@@ -1245,7 +1271,20 @@
                         <path d="M20 12l-2 .5a6 6 0 0 1 -6.5 -6.5l.5 -2l8 8" />
                         <path d="M20 12a8 8 0 1 1 -8 -8" />
                     </svg>
-                        <span>MERCADERÍA</span>
+                        <span>MATERIALES</span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('productos.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-bottle-filled"
+                            width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path
+                                d="M13 1a2 2 0 0 1 1.995 1.85l.005 .15v.5c0 1.317 .381 2.604 1.094 3.705l.17 .25l.05 .072a9.093 9.093 0 0 1 1.68 4.92l.006 .354v6.199a3 3 0 0 1 -2.824 2.995l-.176 .005h-6a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-6.2a9.1 9.1 0 0 1 1.486 -4.982l.2 -.292l.05 -.069a6.823 6.823 0 0 0 1.264 -3.957v-.5a2 2 0 0 1 1.85 -1.995l.15 -.005h2zm.362 5h-2.724a8.827 8.827 0 0 1 -1.08 2.334l-.194 .284l-.05 .069a7.091 7.091 0 0 0 -1.307 3.798l-.003 .125a3.33 3.33 0 0 1 1.975 -.61a3.4 3.4 0 0 1 2.833 1.417c.27 .375 .706 .593 1.209 .583a1.4 1.4 0 0 0 1.166 -.583a3.4 3.4 0 0 1 .81 -.8l.003 .183c0 -1.37 -.396 -2.707 -1.137 -3.852l-.228 -.332a8.827 8.827 0 0 1 -1.273 -2.616z"
+                                stroke-width="0" fill="currentColor" />
+                        </svg>
+                        <span>PRODUCTOS</span>
                     </a>
                 </div>
             </div>
@@ -1491,6 +1530,19 @@
                             <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                         </svg>
                         <span>PEDIDOS PRODUCTOS</span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('caja.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-safe" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="3" y="7" width="18" height="14" rx="2" />
+                            <path d="M7 7v-1a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v1" />
+                            <path d="M12 10v4" />
+                            <circle cx="12" cy="14" r="2" />
+                            <path d="M10 14h4" />
+                          </svg>
+                        <span>CAJA</span>
                     </a>
                 </div>
                 <div class="exit-button-col">

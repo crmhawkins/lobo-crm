@@ -51,7 +51,7 @@ class CreateComponent extends Component
             [
                 'nombre' => 'required',
                 'tipo_precio' => 'required',
-                'foto_ruta' => 'required',
+                'foto_ruta' => 'nullable',
                 'unidades_por_caja' => 'required',
                 'cajas_por_pallet' => 'required',
                 'descripcion' => 'nullable',

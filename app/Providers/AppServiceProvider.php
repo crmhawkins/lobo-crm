@@ -8,6 +8,7 @@ use App\Models\Settings;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
+use App\Models\Alertas;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,5 +36,13 @@ class AppServiceProvider extends ServiceProvider
         setlocale(LC_TIME, 'es_ES');
         Carbon::setlocale('es');
         Carbon::setUTF8(true);
+
+        View::composer('layouts.header', function ($view) {
+        if (Auth::check()) { // Asegúrate de que el usuario está autenticado
+            $alertasPendientes = Alertas::where('user_id', Auth::id())->whereNull('leida')->count();
+            $view->with('alertasPendientes', $alertasPendientes);
+        }
+    });
     }
 }
+

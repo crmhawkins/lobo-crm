@@ -16,7 +16,6 @@ class HomeComponent extends Component
     public function mount()
     {
         $this->checkJornada();
-
     }
     public function render()
     {

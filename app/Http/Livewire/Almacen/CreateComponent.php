@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Almacen;
 
-use App\Models\Alumno;
+use App\Models\Almacen;
 use App\Models\Clients;
 use App\Models\Cursos;
 use App\Models\Empresa;
@@ -18,6 +18,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Alertas;
 
 class CreateComponent extends Component
 {
@@ -40,9 +41,10 @@ class CreateComponent extends Component
     public $estado = "Pendiente";
     public $observaciones;
     public $descuento;
+    public $almacen_id;
     public function mount()
     {
-
+        $this->almacen_id = auth()->user()->almacen_id;
         $this->pedido = Pedido::find($this->identificador);
         $this->pedido_id = $this->pedido->id;
         $this->descuento = $this->pedido->descuento;
@@ -232,15 +234,32 @@ class CreateComponent extends Component
     $productos = [];
     foreach ($productosPedido as $productoPedido) {
         $producto = Productos::find($productoPedido->producto_pedido_id);
+        $stockSeguridad =  $producto->stock_seguridad;
         $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();;
-
+        $almacen = Almacen::find($this->almacen_id);
 
         if ($stockEntrante) {
             $stockEntrante->cantidad -= $productoPedido->unidades / $producto->unidades_por_caja;
             $stockEntrante->update();
         }
+        $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
+        $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+        $sumatorioCantidad = $productoLotes->sum('cantidad');
 
+        if ($sumatorioCantidad < $stockSeguridad) {
+            $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
+            if (!$alertaExistente) {
+                Alertas::create([
+                    'user_id' => 1,
+                    'stage' => 7,
+                    'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
+                    'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
+                    'referencia_id' =>$producto->id.$almacen->id ,
+                    'leida' => null,
+                ]);
+            }
 
+        }
         if ($producto) {
             $productos[] = [
                 'nombre' => $producto->nombre,
@@ -278,6 +297,14 @@ class CreateComponent extends Component
      $albaranSave = $albaran->save(); // Guardar el albarán en la base de datos
      $pedidosSave = $pedido->update(['estado' => 4]);
      if ($pedidosSave && $albaranSave) {
+        Alertas::create([
+            'user_id' => 1,
+            'stage' => 3,
+            'titulo' => 'Estado del Pedido: Albarán',
+            'descripcion' => 'Generado Albarán del pedido nº ' . $pedido->id,
+            'referencia_id' => $pedido->id,
+            'leida' => null,
+        ]);
         $this->alert('success', '¡Albarán Generado!', [
             'position' => 'center',
             'timer' => 3000,

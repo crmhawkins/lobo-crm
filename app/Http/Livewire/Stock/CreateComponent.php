@@ -12,6 +12,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Alertas;
 
 class CreateComponent extends Component
 {
@@ -160,6 +161,24 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($mercaderiaSave) {
+
+            foreach ($this->productos_pedido as $productosIndex => $productos) {
+
+                $producto = Productos::find($productos['producto_id']);
+                $stockSeguridad =  $producto->stock_seguridad;
+                $almacen = Almacen::find($this->almacen_id);
+
+                $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
+                $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+                $sumatorioCantidad = $productoLotes->sum('cantidad');
+
+                if ($sumatorioCantidad > $stockSeguridad) {
+
+                    $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
+                    $alertaExistente->delete();
+                }
+            }
+
             $this->alert('success', '¡Stock entrante registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

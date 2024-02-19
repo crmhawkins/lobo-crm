@@ -37,6 +37,7 @@ class EditComponent extends Component
     public $localidadenvio;
     public $codPostalenvio;
     public $vencimiento_factura_pref;
+    public $porcentaje_bloq;
 
     public function mount()
     {
@@ -44,6 +45,7 @@ class EditComponent extends Component
 
 
         $this->tipo_cliente = $cliente->tipo_cliente;
+        $this->porcentaje_bloq = $cliente->porcentaje_bloq;
         $this->nombre = $cliente->nombre;
         $this->dni_cif = $cliente->dni_cif;
         $this->direccion = $cliente->direccion;
@@ -97,6 +99,7 @@ class EditComponent extends Component
                 'forma_pago_pref' => 'required',
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
+                'porcentaje_bloq'=> 'nullable'
 
             ],
             // Mensajes de error
@@ -143,6 +146,7 @@ class EditComponent extends Component
             'precio_vodka175l'=>$this->precio_vodka175l,
             'precio_vodka3l'=> $this->precio_vodka3l,
             'nota'=> $this->nota,
+            'porcentaje_bloq'=> $this->porcentaje_bloq,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 

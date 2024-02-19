@@ -38,6 +38,7 @@ class EditComponent extends Component
     public $info_nutricional;
     public $grad_alcohol;
     public $domicilio_fabricante;
+    public $stock_seguridad;
     public function mount()
     {
         $product = Productos::find($this->identificador);
@@ -45,7 +46,7 @@ class EditComponent extends Component
         $this->tipo_precio = $product->tipo_precio;
         $this->unidades_por_caja = $product->unidades_por_caja;
         $this->cajas_por_pallet = $product->cajas_por_pallet;
-
+        $this->stock_seguridad = $product->stock_seguridad;
         $this->descripcion = $product->descripcion;
         $this->materiales = $product->materiales;
         $this->medidas_botella = $product->medidas_botella;
@@ -88,7 +89,7 @@ class EditComponent extends Component
             [
                 'nombre' => 'required',
                 'tipo_precio' => 'required',
-                'foto_ruta' => 'required',
+                'foto_ruta' => 'nullable',
                 'unidades_por_caja' => 'required',
                 'cajas_por_pallet' => 'required',
                 'descripcion' => 'nullable',
@@ -103,6 +104,7 @@ class EditComponent extends Component
                 'info_nutricional' => 'nullable',
                 'grad_alcohol' => 'nullable',
                 'domicilio_fabricante' => 'nullable',
+                'stock_seguridad' => 'nullable',
             ],
             // Mensajes de error
             [

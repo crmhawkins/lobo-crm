@@ -27,7 +27,7 @@
                 <span class="badge badge-secondary" id="alertasPendientes"
                     style="position: absolute;
                                 top: -9px;
-                                right: -11px;"></span>
+                                right: -11px;">{{$alertasPendientes}}</span>
             </button>
             <div class="modal fade" id="modalAlertas">
                 <div class="modal-dialog modal-dialog-centered">
@@ -36,8 +36,7 @@
                             <h3 class="form-title">Alertas de hoy:</h3>
                         </div>
                         <div class="modal-body">
-                            <ul id="listaAlertas" class="list-group" style="max-height:400px; overflow-y:scroll;">
-                            </ul>
+                            @livewire('lista-alertas')
                         </div>
                         <div class="modal-footer">
                         </div>

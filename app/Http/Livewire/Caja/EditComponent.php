@@ -3,13 +3,14 @@
 namespace App\Http\Livewire\Caja;
 
 use App\Models\Caja;
-use App\Models\Cliente;
-use App\Models\Evento;
-use App\Models\Presupuesto;
-use App\Models\TipoEvento;
+use App\Models\Pedido;
+use App\Models\Proveedores;
+use App\Models\Clients;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+
+
 
 class EditComponent extends Component
 {
@@ -21,32 +22,35 @@ class EditComponent extends Component
     public $metodo_pago;
     public $importe;
     public $descripcion;
-    public $presupuesto_id;
+    public $poveedores;
+    public $poveedor_id;
     public $fecha;
     public $clientes;
     public $categorias;
-    public $presupuestos;
-    public $eventos;
+    public $pedido_id;
+    public $pedidos;
 
 
 
     public function mount()
     {
         $caja = Caja::find($this->identificador);
-        $this->presupuestos = Presupuesto::all();
-        $this->categorias = TipoEvento::all();
-        $this->eventos = Evento::all();
-        $this->clientes = Cliente::all();
+        $this->poveedores = Proveedores::all();
+        $this->pedidos = Pedido::all();
+        $this->clientes = Clients::all();
         $this->metodo_pago = $caja->metodo_pago;
         $this->descripcion = $caja->descripcion;
         $this->importe = $caja->importe;
-        $this->presupuesto_id = $caja->presupuesto_id;
+        $this->poveedor_id = $caja->poveedor_id;
+        $this->pedido_id = $caja->pedido_id;
         $this->fecha = $caja->fecha;
         $this->tipo_movimiento = $caja->tipo_movimiento;
 
-
     }
-
+    public function getCliente($id)
+    {
+         return $this->clientes->firstWhere('id', $this->pedidos->firstWhere('id', $id)->cliente_id)->nombre;
+    }
     public function render()
     {
         return view('livewire.caja.edit-component');
@@ -59,7 +63,8 @@ class EditComponent extends Component
         $this->validate([
             'metodo_pago' => 'required',
             'importe' => 'required',
-            'presupuesto_id' => 'required',
+            'poveedor_id' => 'nullable',
+            'pedido_id' => 'nullable',
             'fecha' => 'required',
             'tipo_movimiento' => 'required',
             'descripcion' => 'required',
@@ -77,13 +82,14 @@ class EditComponent extends Component
         $tipoSave = $caja->update([
             'metodo_pago' => $this->metodo_pago,
             'importe' => $this->importe,
-            'presupuesto_id' => $this->presupuesto_id,
+            'pedido_id' => $this->pedido_id,
+            'poveedor_id' => $this->poveedor_id,
             'fecha' => $this->fecha,
             'tipo_movimiento' => $this->tipo_movimiento,
             'descripcion' => $this->descripcion
 
         ]);
-        event(new \App\Events\LogEvent(Auth::user(), 53, $tipoSave->id));
+        event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));
 
         if ($tipoSave) {
             $this->alert('success', '¡Movimiento de caja actualizado correctamente!', [
@@ -105,7 +111,7 @@ class EditComponent extends Component
 
         session()->flash('message', 'Movimiento de caja actualizado correctamente.');
 
-        $this->emit('eventUpdated');
+        $this->emit('confirmed');
     }
 
       // Eliminación
@@ -139,16 +145,16 @@ class EditComponent extends Component
     public function confirmed()
     {
         // Do something
-        return redirect()->route('tipo-evento.index');
+        return redirect()->route('caja.index');
 
     }
     // Función para cuando se llama a la alerta
     public function confirmDelete()
     {
-        $tipo_evento = TipoEvento::find($this->identificador);
-        event(new \App\Events\LogEvent(Auth::user(), 54, $tipo_evento->id));
-        $tipo_evento->delete();
-        return redirect()->route('tipo-evento.index');
+        $Caja = Caja::find($this->identificador);
+        event(new \App\Events\LogEvent(Auth::user(), 54, $Caja->id));
+        $Caja->delete();
+        return redirect()->route('caja.index');
 
     }
 }

@@ -6,7 +6,7 @@ use App\Models\Clients;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
-use Ramsey\Uuid\Type\Integer;
+use App\Models\Alertas;
 use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
@@ -37,6 +37,7 @@ class CreateComponent extends Component
     public $localidadenvio;
     public $codPostalenvio;
     public $vencimiento_factura_pref = 0;
+    public $porcentaje_bloq = 10;
 
     public function mount()
     {
@@ -79,12 +80,13 @@ class CreateComponent extends Component
                 'provinciaenvio' => 'required',
                 'localidadenvio' => 'required',
                 'codPostalenvio' => 'required',
-                'usarDireccionEnvio' => 'nullable',
+                'usarDireccionEnvio' => 'required',
                 'telefono' => 'required',
                 'email' => 'required',
                 'forma_pago_pref' => 'required',
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
+                'porcentaje_bloq'=> 'nullable'
 
             ],
             // Mensajes de error
@@ -109,6 +111,16 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($clienteSave) {
+
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 1,
+                'titulo' => 'Revisión Pendiente: Nuevo Cliente',
+                'descripcion' => 'Nuevo cliente a la espera de aprobación: ' . $clienteSave->nombre,
+                'referencia_id' => $clienteSave->id,
+                'leida' => null,
+            ]);
+
             $this->alert('success', '¡Cliente registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

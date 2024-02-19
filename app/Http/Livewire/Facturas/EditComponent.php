@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Alertas;
 
 class EditComponent extends Component
 {
@@ -157,6 +158,15 @@ class EditComponent extends Component
 
         // Alertas de guardado exitoso
         if ($presupuesosSave) {
+
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Facturado ',
+                'descripcion' => 'Se cobro el pedido nº ' . $this->pedido->id ,
+                'referencia_id' => $this->pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', '¡Presupuesto aceptado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

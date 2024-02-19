@@ -1,5 +1,3 @@
-{{-- {{ var_dump($eventoServicios) }} --}}
-{{-- @section('content') --}}
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -175,13 +173,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row justify-content-center">
+                        <div class="form-group row justify-content-center pl-3">
                             <div class="col-sm-5">
                                 <div class="form-check ">
                                  <input class="form-check-input" type="checkbox" wire:model="usarDireccionEnvio" id="usarDireccionEnvio">
-                                    <label class="form-check-label" for="usarDireccionEnvio">
-                                    Usar dirección de envío diferente
-                                    </label>
+                                    <label class="form-check-label" for="usarDireccionEnvio">Usar dirección de envío diferente</label>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -426,7 +422,26 @@
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
-                            <div class="col-sm-11">
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Porcentaje de botellas sin cargo </label>
+                                <div class="col-sm-12">
+                                    <input type="number" wire:model="porcentaje_bloq" class="form-control"
+                                        name="porcentaje_bloq" id="porcentaje_bloq" placeholder="10">
+                                    @error('porcentaje_bloq')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .porcentaje_bloq {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"

@@ -43,7 +43,7 @@
                                 </div>
                         </div>
                         <div class="row d-flex align-items-center">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="iva" class="col-form-label">Unidades por caja</label>
                                 <input type="number" class="form-control" wire:model="unidades_por_caja"
                                     name="unidades_por_caja" id="iva" placeholder="Porcentaje de IVA...">
@@ -51,11 +51,19 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="iva" class="col-form-label">Cajas por pallet</label>
                                 <input type="number" class="form-control" wire:model="cajas_por_pallet"
                                     name="cajas_por_pallet" id="iva" placeholder="Porcentaje de IVA...">
                                 @error('cajas_por_pallet')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label for="precio" class="col-form-label">Stock de seguridad (en cajas)</label>
+                                <input type="number" class="form-control" wire:model="stock_seguridad" name="stock_seguridad"
+                                    id="stock_seguridad" placeholder="Stock de seguridad">
+                                @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>

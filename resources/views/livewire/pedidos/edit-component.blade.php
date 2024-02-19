@@ -1,3 +1,8 @@
+@php
+$mostrarElemento = Auth::user()->isdirectorcomercial();
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin || $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -31,16 +36,23 @@
                                     var data = $(this).select2('val');
                                     @this.set('cliente_id', data);
                                     @this.call('selectCliente');
-                                });"
-                            >
+                                });">
                                 <label for="Cliente">Cliente</label>
-                                <select class="form-control" name="cliente_id" id="select2-cliente"
-                                    wire:model="cliente_id">
+                                @if ($canEdit)
+                                <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id">
                                     <option value=""></option>
                                     @foreach ($clientes as $client)
                                         <option value="{{ $client->id }}">{{ $client->nombre }}</option>
                                     @endforeach
                                 </select>
+                                @else
+                                <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id" disabled>
+                                    <option value=""></option>
+                                    @foreach ($clientes as $client)
+                                        <option value="{{ $client->id }}">{{ $client->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group col-md-4">
@@ -62,35 +74,47 @@
                                 @this.set('tipo_pedido_id', data);
                             });">
                                 <label for="fechaVencimiento">Tipo de pedido</label>
+                                @if ($canEdit)
                                 <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id">
                                     <option value="0">Albarán y factura</option>
                                     <option value="1">Albarán sin factura</option>
                                 </select>
+                                @else
+                                <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id" disabled>
+                                    <option value="0">Albarán y factura</option>
+                                    <option value="1">Albarán sin factura</option>
+                                </select>
+                                @endif
                             </div>
                         </div>
-                        @php
-                        $mostrarElemento = Auth::user()->isdirectorcomercial();
-                        @endphp
                         @if($mostrarElemento)
                             <!-- Si la condición es verdadera, muestra esto -->
                             <div class="form-group col-md-6" wire:ignore>
-                                <!-- Aquí va tu código HTML cuando la condición es verdadera -->
+
                                 <div x-data="" x-init="$('#select2-almacen').select2();
                                     $('#select2-almacen').on('change', function(e) {
                                     var data = $('#select2-almacen').select2('val');
                                     @this.set('almacen_id', data);
                                     });">
                                     <label for="fechaVencimiento">Almacen</label>
+                                    @if ($canEdit)
                                     <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
                                         <option value="{{ null }}">-- Selecciona un almacén --</option>
                                         @foreach ($almacenes as $presup)
                                             <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
                                         @endforeach
                                     </select>
+                                    @else
+                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                        @endforeach
+                                    </select>
+                                    @endif
                                 </div>
                             </div>
                         @else
-                            <!-- Si la condición es falsa, muestra esto (con el atributo 'disabled') -->
                             <div class="form-group col-md-6" wire:ignore>
                                 <!-- Aquí va tu código HTML pero con el select deshabilitado -->
                                 <div x-data="" x-init="$('#select2-tipo1').select2();
@@ -151,7 +175,12 @@
                         </div>--}}
                         <div class="form-group col-md-11">
                             <label for="fecha">Observaciones</label>
-                            <textarea wire:model="observaciones" class="form-control"></textarea>
+                            @if ($canEdit)
+                                <textarea wire:model="observaciones" class="form-control"></textarea>
+                            @else
+                                <textarea wire:model="observaciones" class="form-control" disabled></textarea>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -162,8 +191,12 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
-                                Lista de productos <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                Lista de productos
+                                @if ($canEdit)
+                                <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                @else
+                                <button type="button" class="btn btn-secondary"  style="align-self: end !important;">Añadir</button>
+                                @endif
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
@@ -183,10 +216,18 @@
                                                     <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
                                                     </td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                    @if ($canEdit)
                                                     <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
+                                                    @else
+                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block" disabled>€</td>
+                                                    @endif
                                                     <td>{{ $producto['precio_total']}} €</td>
-                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                    </td>
+                                                    @if ($canEdit)
+                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button></td>
+                                                    @else
+                                                    <td><button type="button" class="btn btn-secondary">X</button></td>
+                                                    @endif
+
                                                 </tr>
                                             @endforeach
                                             <tr>
@@ -201,11 +242,19 @@
                         <div class="form-group col-md-5 d-flex align-items-center">
                             <div class="form-group col-md-6 d-flex align-items-center">
                             <label for="descuento">Descuento</label>
+                            @if ($canEdit)
                             <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
+                            @else
+                            <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;" disabled>
+                            @endif
                         </div>
                             @if ($descuento)
                             <div class="form-group col-md-6 d-flex align-items-center">
-                            <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                                @if ($canEdit)
+                                <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                                @else
+                                <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento" disabled>
+                                @endif
                             </div>
                          @endif
                         </div>
@@ -339,21 +388,31 @@
                                 pedido</button>
                         </div>
 
-
-                        @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento)
-                            <div class="col-12">
-                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar
-                                    pedido</button>
-                            </div>
-                            <div class="col-12">
-                                <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar
-                                    pedido</button>
-                            </div>
+                        @if ($bloqueado)
+                            @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
+                                </div>
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
+                                </div>
+                            @endif
+                        @else
+                            @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento)
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
+                                </div>
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
+                                </div>
+                            @endif
                         @endif
+                        @if ($canEdit)
                         <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
-                                pedido</button>
+                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
+                        @endif
+
                     </div>
                 </div>
             </div>

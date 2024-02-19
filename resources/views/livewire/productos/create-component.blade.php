@@ -60,7 +60,7 @@
                                 @enderror
                             </div>
                             <div class="col-md-4">
-                                <label for="precio" class="col-form-label">Stock de seguridad (en pallets)</label>
+                                <label for="precio" class="col-form-label">Stock de seguridad (en cajas)</label>
                                 <input type="number" class="form-control" wire:model="stock_seguridad" name="stock_seguridad"
                                     id="stock_seguridad" placeholder="Stock de seguridad">
                                 @error('precio')

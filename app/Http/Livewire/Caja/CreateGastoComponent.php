@@ -2,13 +2,11 @@
 
 namespace App\Http\Livewire\Caja;
 
-use App\Models\Cliente;
-use App\Models\Presupuesto;
-use App\Models\TipoEvento;
+use App\Models\Clients;
+use App\Models\Proveedores;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
-use App\Models\Caja;
-use App\Models\Evento;
+use App\Models\Caja;;
 use Illuminate\Support\Facades\Auth;
 
 class CreateGastoComponent extends Component
@@ -19,20 +17,15 @@ class CreateGastoComponent extends Component
     public $metodo_pago;
     public $importe;
     public $descripcion;
-    public $presupuesto_id;
     public $fecha;
     public $clientes;
-    public $categorias;
-    public $presupuestos;
-    public $eventos;
-
+    public $poveedor_id;
+    public $poveedores;
 
     public function mount()
     {
-        $this->presupuestos = Presupuesto::all();
-        $this->categorias = TipoEvento::all();
-        $this->eventos = Evento::all();
-        $this->clientes = Cliente::all();
+        $this->poveedores = Proveedores::all();
+        $this->clientes = Clients::all();
     }
     public function render()
     {
@@ -47,7 +40,7 @@ class CreateGastoComponent extends Component
                 'metodo_pago' => 'required',
                 'importe' => 'required',
                 'descripcion' => 'required',
-                'presupuesto_id' => 'required',
+                'poveedor_id' => 'nullable',
                 'fecha' => 'required',
 
 
@@ -98,8 +91,5 @@ class CreateGastoComponent extends Component
         return redirect()->route('caja.index');
     }
 
-    public function getCliente($id)
-    {
-        return $this->clientes->firstWhere('id', $this->presupuestos->firstWhere('id', $id)->id_cliente)->nombre . " " . $this->clientes->firstWhere('id', $this->presupuestos->firstWhere('id', $id)->id_cliente)->apellido;
-    }
+
 }

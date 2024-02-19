@@ -19,7 +19,9 @@ class Alertas extends Model
         'referencia_id',
         'descripcion',
         'observaciones',
-        
+        'titulo',
+        'leida',
+
     ];
 
     /**
@@ -31,12 +33,12 @@ class Alertas extends Model
         'created_at', 'updated_at', 'deleted_at',
     ];
 
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
 }

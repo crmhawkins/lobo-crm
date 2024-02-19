@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Footer con Menú Burger</title>
     <style>
-        body,
-        html {
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
         }
 
         footer {
@@ -19,6 +19,7 @@
             background-color: #fff;
             color: #35a8e0;
             z-index: 1000;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
         }
 
         button {
@@ -28,6 +29,7 @@
             padding: 10px 20px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 16px;
         }
 
         button:hover {
@@ -40,42 +42,45 @@
             left: 0;
             width: 100%;
             height: 100%;
+            overflow-y: auto;
             background-color: rgba(255, 255, 255, 1);
             color: #35a8e0;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             transform: translateY(100%);
-            /* Posiciona el menú fuera de la vista en la parte inferior */
             transition: transform 0.4s ease-in-out;
-            /* Animación suave para la transformación */
+            padding-top: 60px; /* Añade espacio en la parte superior para evitar solapamientos */
         }
 
         #fullScreenMenu a {
             color: #35a8e0;
             text-decoration: none;
-            padding: 10px;
-            font-size: 24px;
+            padding: 15px;
+            font-size: 20px;
         }
 
         #closeMenuBtn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: fixed; /* Cambiado a fixed para asegurar su posición relativa a la ventana */
+            top: 10px;
+            right: 10px;
             font-size: 30px;
+            padding: 10px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 1100;
         }
 
         #fullScreenMenu.menu-shown {
             transform: translateY(0);
-            /* Posiciona el menú en su ubicación original */
         }
     </style>
 </head>
 
 <body>
-    <!-- Resto del contenido de la página -->
 
     <footer>
         <button id="backBtn"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up"
@@ -99,7 +104,7 @@
         <button id="closeMenuBtn">&times;</button>
         <nav>
             <div class="row">
-                @if ($user_rol != 4)
+                @if ($user_rol != 4 && $user_rol != 3 && $user_rol != 6)
                     <div class="col-6"><a class="footer-button" href="{{ route('productos.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="icon icon-tabler icon-tabler-brand-codesandbox" width="44" height="44"
@@ -116,6 +121,8 @@
                             </svg>
                             <span>PRODUCTOS</span>
                         </a></div>
+                @endif
+                @if ($user_rol != 4 && $user_rol != 5 && $user_rol != 6)
                     <div class="col-6"><a class="footer-button" href="{{ route('pedidos.create') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-plus"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
@@ -137,8 +144,8 @@
                             </svg>
                             <span>PEDIDOS</span>
                         </a></div>
-                @endif
-                <div class="col-6"><a class="footer-button" href="{{ route('clientes.index') }}">
+
+                    <div class="col-6"><a class="footer-button" href="{{ route('clientes.index') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users"
                             width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
                             fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -150,8 +157,10 @@
                         </svg>
                         <span>CLIENTES</span>
                     </a></div>
-                @if ($user_rol != 4)
-                    <div class="col-6"> <a class="footer-button" href="{{ route('facturas.index') }}">
+                @endif
+                @if ($user_rol == 1 || $user_rol == 6)
+                    <div class="col-6">
+                        <a class="footer-button" href="{{ route('facturas.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="#35a8e0" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -163,9 +172,24 @@
                                 <path d="M13 17l2 0"></path>
                             </svg>
                             <span>FACTURAS</span>
-                        </a></div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a class="footer-button" href="{{ route('proveedores.index') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="44"
+                                height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+                            </svg>
+                            <span>PROVEEDORES</span>
+                        </a>
+                    </div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 4)
+                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5)
                     <div class="col-6"><a class="footer-button" href="{{ route('almacen.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5"
@@ -196,6 +220,36 @@
                             </svg>
                             <span>STOCK</span>
                         </a></div>
+                @endif
+                @if ($user_rol == 1 || $user_rol == 5)
+                    <div class="col-6">
+                        <a class="footer-button" href="{{ route('mercaderia.index') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sticker" width="44"
+                                height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M20 12l-2 .5a6 6 0 0 1 -6.5 -6.5l.5 -2l8 8" />
+                                <path d="M20 12a8 8 0 1 1 -8 -8" />
+                            </svg>
+                            <span>MATERIALES</span>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a class="footer-button" href="{{ route('usuarios.index') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-building-factory-2"
+                                width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M3 21h18" />
+                                <path d="M5 21v-12l5 4v-4l5 4h4" />
+                                <path
+                                    d="M19 21v-8l-1.436 -9.574a.5 .5 0 0 0 -.495 -.426h-1.145a.5 .5 0 0 0 -.494 .418l-1.43 8.582" />
+                                <path d="M9 17h1" />
+                                <path d="M14 17h1" />
+                            </svg>
+                            <span>PRODUCCIÓN</span>
+                        </a>
+                    </div>
                 @endif
                 @if ($user_rol == 1)
                     <div class="col-6">
@@ -239,8 +293,7 @@
 
     <script>
         document.getElementById("menuBtn").addEventListener("click", function() {
-            document.getElementById("fullScreenMenu").classList.add(
-                "menu-shown"); // Añade la clase para mostrar el menú
+            document.getElementById("fullScreenMenu").classList.add("menu-shown");
         });
 
         document.getElementById("backBtn").addEventListener("click", function() {
@@ -248,8 +301,7 @@
         });
 
         document.getElementById("closeMenuBtn").addEventListener("click", function() {
-            document.getElementById("fullScreenMenu").classList.remove(
-                "menu-shown"); // Elimina la clase para ocultar el menú
+            document.getElementById("fullScreenMenu").classList.remove("menu-shown");
         });
     </script>
 </body>

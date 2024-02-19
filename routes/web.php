@@ -19,6 +19,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMercaderiaController;
 use App\Http\Controllers\MaterialesProductoController;
+use App\Http\Controllers\CajaController;
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
 
@@ -116,5 +117,10 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock-mercaderia-edit/{id}', [StockMercaderiaController::class, 'edit'])->name('stock-mercaderia.edit');
     Route::get('/stock-mercaderia/crear-qr', [StockMercaderiaController::class, 'crearQR'])->name('stock-mercaderia.crear-qr');
     Route::get('/stock-mercaderia/mostrar-qr', [StockMercaderiaController::class, 'mostrarQR'])->name('stock-mercaderia.mostrar-qr');
+
+    Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
+    Route::get('/caja-create-ingreso', [CajaController::class, 'createIngreso'])->name('caja.create-ingreso');
+    Route::get('/caja-create-gasto', [CajaController::class, 'createGasto'])->name('caja.create-gasto');
+    Route::get('/caja-edit/{id}', [CajaController::class, 'edit'])->name('caja.edit');
 
 });

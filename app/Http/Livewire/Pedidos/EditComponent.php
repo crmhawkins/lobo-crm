@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
+use App\Models\Alertas;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -53,6 +54,8 @@ class EditComponent extends Component
     public $precio_vodka3l;
     public $almacen_id;
     public $almacenes;
+    public $bloqueado;
+    public $porcentaje_bloq;
 
     public function mount()
     {
@@ -81,7 +84,9 @@ class EditComponent extends Component
         $this->observaciones = $pedido->observaciones;
         $this->tipo_pedido_id = $pedido->tipo_pedido_id;
         $this->precio = $pedido->precio;
+        $this->bloqueado = $pedido->bloqueado;
         $this->porcentaje_descuento = $pedido->porcentaje_descuento;
+        $this->porcentaje_bloq = is_null($cliente->porcentaje_bloq) ? 10 : $cliente->porcentaje_bloq;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
@@ -96,7 +101,9 @@ class EditComponent extends Component
         }
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
+
     }
+
 
     public function selectCliente()
     {
@@ -128,7 +135,20 @@ class EditComponent extends Component
 
     public function update()
     {
+        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+            $this->bloqueado=true;
+        }else{$this->bloqueado=false;}
 
+        foreach ($this->productos_pedido as $productoPedido) {
+            $producto = Productos::find($productoPedido['producto_pedido_id']);
+            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+
+            // Compara el precio unitario del producto en el pedido con el precio base del cliente
+            if ($productoPedido['precio_ud'] != $precioBaseProducto) {
+                $this->bloqueado = true;
+                break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
+            }
+        }
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -147,6 +167,7 @@ class EditComponent extends Component
                 'orden_entrega' => 'nullable',
                 'descuento' => 'nullable',
                 'porcentaje_descuento'=> 'nullable',
+                'bloqueado'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -160,6 +181,7 @@ class EditComponent extends Component
         $pedido = Pedido::find($this->identificador);
         // Guardar datos validados
         $pedidosSave = $pedido->update($validatedData);
+
 
         foreach ($this->productos_pedido as $productos) {
             if (!isset($productos['id'])) {
@@ -187,6 +209,17 @@ class EditComponent extends Component
 
         // Alertas de guardado exitoso
         if ($pedidosSave) {
+
+            if( $this->bloqueado && $this->estado == 1){
+                Alertas::create([
+                    'user_id' => 1,
+                    'stage' => 2,
+                    'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
+                    'descripcion' => 'El pedido nº' . $pedido->id .' esta a la espera de aprobación',
+                    'referencia_id' => $pedido->id,
+                    'leida' => null,
+                ]);}
+
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -353,6 +386,14 @@ class EditComponent extends Component
         $pedido->update($validatedData);
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Aceptado en Almacén',
+                'descripcion' => 'El pedido nº ' . $pedido->id.' ha sido aceptado',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -376,6 +417,14 @@ class EditComponent extends Component
         $pedido = Pedido::find($this->identificador);
         $pedidosSave = $pedido->update(['estado' => 7]);
         if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Rechazado ',
+                'descripcion' => 'El pedido nº ' . $pedido->id . ' ha sido rechazado',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', '¡Pedido rechazado!', [
                 'position' => 'center',
                 'timer' => 3000,

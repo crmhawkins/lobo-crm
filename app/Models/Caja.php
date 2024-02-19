@@ -18,7 +18,8 @@ class Caja extends Model
 
     protected $fillable = [
         'fecha',
-        'presupuesto_id',
+        'pedido_id',
+        'poveedor_id',
         'descripcion',
         'importe',
         'metodo_pago',

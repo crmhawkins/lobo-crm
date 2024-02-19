@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
+use App\Models\Alertas;
 
 class CreateComponent extends Component
 {
@@ -79,6 +80,14 @@ class CreateComponent extends Component
         // Alertas de guardado exitoso
         $pedidosSave = $this->pedido->update(['estado' => 5]);
         if ($facturasSave && $pedidosSave) {
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Entregado ',
+                'descripcion' => 'El pedido nº ' . $this->pedido->id . ' ha sido entregado',
+                'referencia_id' => $this->pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

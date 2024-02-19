@@ -29,6 +29,7 @@ class Pedido extends Model
         'tipo_pedido_id',
         'almacen_id',
         'porcentaje_descuento',
+        'bloqueado',
     ];
 
     /**

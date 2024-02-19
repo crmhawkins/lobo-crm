@@ -14,6 +14,8 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Albaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Models\Alertas;
+
 
 class IndexComponent extends Component
 {
@@ -64,6 +66,14 @@ class IndexComponent extends Component
         $pedido = Pedido::find($identificador);
         $pedidosSave = $pedido->update(['estado' => 3]);
         if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Preparación',
+                'descripcion' => 'El pedido nº ' . $pedido->id.' esta en preparación',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', '¡Pedido en preparación!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -99,6 +109,14 @@ class IndexComponent extends Component
         $pedido = Pedido::find($identificador);
         $pedidosSave = $pedido->update(['estado' => 8]);
         if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: En Ruta ',
+                'descripcion' => 'El pedido nº ' . $pedido->id . ' esta en ruta',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
             $this->alert('success', '¡Pedido en Ruta!', [
                 'position' => 'center',
                 'timer' => 3000,

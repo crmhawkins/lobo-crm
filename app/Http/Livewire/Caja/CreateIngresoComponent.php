@@ -3,12 +3,10 @@
 namespace App\Http\Livewire\Caja;
 
 use App\Models\Caja;
-use App\Models\Cliente;
-use App\Models\Evento;
-use App\Models\Presupuesto;
+use App\Models\Clients;
+use App\Models\Pedido;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
-use App\Models\TipoEvento;
 use Illuminate\Support\Facades\Auth;
 class CreateIngresoComponent extends Component
 {
@@ -18,20 +16,16 @@ class CreateIngresoComponent extends Component
     public $metodo_pago;
     public $importe;
     public $descripcion;
-    public $presupuesto_id;
+    public $pedido_id;
     public $fecha;
     public $clientes;
-    public $categorias;
-    public $presupuestos;
-    public $eventos;
+    public $pedidos;
 
 
     public function mount()
     {
-        $this->presupuestos = Presupuesto::all();
-        $this->categorias = TipoEvento::all();
-        $this->eventos = Evento::all();
-        $this->clientes = Cliente::all();
+        $this->pedidos = Pedido::where('estado',5 )->get();
+        $this->clientes = Clients::all();
     }
     public function render()
     {
@@ -46,7 +40,7 @@ class CreateIngresoComponent extends Component
                 'metodo_pago' => 'required',
                 'importe' => 'required',
                 'descripcion' => 'required',
-                'presupuesto_id' => 'required',
+                'pedido_id' => 'required',
                 'fecha' => 'required',
 
 
@@ -99,6 +93,6 @@ class CreateIngresoComponent extends Component
 
     public function getCliente($id)
     {
-        return $this->clientes->firstWhere('id', $this->presupuestos->firstWhere('id', $id)->id_cliente)->nombre . " " . $this->clientes->firstWhere('id', $this->presupuestos->firstWhere('id', $id)->id_cliente)->apellido;
+         return $this->clientes->firstWhere('id', $this->pedidos->firstWhere('id', $id)->cliente_id)->nombre;
     }
 }

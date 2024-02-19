@@ -38,6 +38,7 @@ class Clients extends Model
         "forma_pago_pref",
         "vencimiento_factura_pref",
         "estado",
+        "porcentaje_bloq",
         "precio_crema",
         "precio_vodka07l",
         "precio_vodka175l",

@@ -6,6 +6,7 @@ use App\Models\Productos;
 use App\Models\Clients;
 use App\Models\Pedido;
 use App\Models\ProductoLote;
+use App\Models\Alertas;
 use App\Models\PedidosStatus;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -45,6 +46,8 @@ class CreateComponent extends Component
     public $precio_vodka07l;
     public $precio_vodka175l;
     public $precio_vodka3l;
+    public $bloqueado;
+    public $porcentaje_bloq;
 
 
     public function mount()
@@ -68,6 +71,8 @@ class CreateComponent extends Component
         $this->precio_vodka07l = $cliente->precio_vodka07l;
         $this->precio_vodka175l = $cliente->precio_vodka175l;
         $this->precio_vodka3l = $cliente->precio_vodka3l;
+        $this->porcentaje_bloq = $cliente->porcentaje_bloq;
+
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -78,6 +83,21 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+            $this->bloqueado=true;
+        }else{$this->bloqueado=false;}
+
+        foreach ($this->productos_pedido as $productoPedido) {
+            $producto = Productos::find($productoPedido['producto_pedido_id']);
+            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+
+            // Compara el precio unitario del producto en el pedido con el precio base del cliente
+            if ($productoPedido['precio_ud'] != $precioBaseProducto) {
+                $this->bloqueado = true;
+                break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
+            }
+        }
+
 
         // Validación de datos
         $validatedData = $this->validate(
@@ -97,6 +117,7 @@ class CreateComponent extends Component
                 'orden_entrega' => 'nullable',
                 'descuento'=> 'nullable',
                 'porcentaje_descuento'=> 'nullable',
+                'bloqueado'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -110,6 +131,25 @@ class CreateComponent extends Component
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
+        if( $this->bloqueado){
+        Alertas::create([
+            'user_id' => 1,
+            'stage' => 2,
+            'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
+            'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de aprobación',
+            'referencia_id' => $pedidosSave->id,
+            'leida' => null,
+        ]);}
+
+            Alertas::create([
+                'user_id' => 1,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Recibido',
+                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' ha sido recibido',
+                'referencia_id' => $pedidosSave->id,
+                'leida' => null,
+            ]);
+
         foreach ($this->productos_pedido as $productos) {
             DB::table('productos_pedido')->insert([
                 'producto_pedido_id' => $productos['producto_pedido_id'],
@@ -118,9 +158,7 @@ class CreateComponent extends Component
                 'precio_ud' => $productos['precio_ud'],
                 'precio_total' => $productos['precio_total']
             ]);
-            /*$producto_stock = ProductoLote::find($productos['producto_pedido_id']);
-            $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
-            $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
+
         }
         event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
 
@@ -287,8 +325,7 @@ class CreateComponent extends Component
         $this->precioSinDescuento = $this->precioEstimado;
         // Verificar si el descuento está activado
         if ($this->descuento) {
-            // Calcular el 3% de descuento del precio total
-            //$descuento = $this->descuento_personalizado ?? ($this->precioEstimado * 0.03);
+
             $descuento = $this->precioEstimado * ($this->porcentaje_descuento / 100);
 
             // Aplicar el descuento al precio total
@@ -331,10 +368,9 @@ class CreateComponent extends Component
         $this->emit('refreshComponent');
     }
 
-    // Función para cuando se llama a la alerta
+
     public function confirmed()
     {
-        // Do something
         return redirect()->route('pedidos.index');
     }
 
