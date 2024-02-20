@@ -286,7 +286,7 @@
                 })
             });
         </script>--}}
-document.addEventListener('DOMContentLoaded', function() {
+
 <script src="../assets/js/jquery.slimscroll.js"></script>
 <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="../plugins/datatables/dataTables.bootstrap4.min.js"></script>
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="../plugins/datatables/dataTables.responsive.min.js"></script>
 <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
 <script src="../assets/pages/datatables.init.js"></script>
-});
+
     @endsection
 
 </div>
