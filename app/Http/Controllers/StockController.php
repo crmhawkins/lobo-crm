@@ -81,7 +81,7 @@ class StockController extends Controller
         $qrcodes = [];
         for ($i = 0; $i < 6; $i++) { // Ajusta este número según la cantidad que desees
             $codigoAleatorio = $year . '-' . $qr_type . "-" . sprintf('%08d', $count_qrs + $i);
-            $qrcodes[] = QrCode::errorCorrection('H')->format('png')->eye('circle')->size('900')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigoAleatorio);
+            $qrcodes[] = QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigoAleatorio);
         }
         $new_count = Settings::find(1)->update(['qr_creados_productos' => ($count_qrs + 6)]);
 
