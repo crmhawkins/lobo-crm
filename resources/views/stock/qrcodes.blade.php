@@ -17,8 +17,8 @@
             margin: 10px;
             justify-content: center;
             align-items: center;
-            width: 150px; /* Ajusta este valor para cambiar el tamaño de los QR */
-            height: 150px; /* Ajusta este valor para cambiar el tamaño de los QR */
+            width: 300px; /* Ajusta este valor para cambiar el tamaño de los QR */
+            height: 300px; /* Ajusta este valor para cambiar el tamaño de los QR */
         }
         img {
             max-width: 100%;
