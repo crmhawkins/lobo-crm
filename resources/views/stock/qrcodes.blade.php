@@ -6,11 +6,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center; /* Centrar contenido en la página */
         }
         .container {
-            text-align: center;
             margin: 0 auto;
             padding: 20px;
+            max-width: 800px; /* Ajusta este valor según tus necesidades */
         }
         .qr-code {
             display: inline-flex;
