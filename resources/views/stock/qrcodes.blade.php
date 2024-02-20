@@ -11,19 +11,18 @@
             text-align: center;
             margin: 0 auto;
             padding: 20px;
-            max-width: 800px; /* Ajusta este valor según tus necesidades */
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
         }
         .qr-code {
+            display: inline-flex;
             margin: 10px;
-            width: calc(50% - 20px); /* Ajusta este valor para cambiar el espacio entre los códigos QR */
-            height: auto; /* Para mantener la proporción */
+            justify-content: center;
+            align-items: center;
+            width: 150px; /* Ajusta este valor para cambiar el tamaño de los QR */
+            height: 150px; /* Ajusta este valor para cambiar el tamaño de los QR */
         }
         img {
             max-width: 100%;
-            height: auto;
+            max-height: 100%;
         }
         @page {
             margin: 10mm;
