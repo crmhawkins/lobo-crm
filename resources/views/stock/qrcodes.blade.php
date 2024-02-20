@@ -19,8 +19,8 @@
             justify-content: space-between;
         }
         .qr-code {
-            margin-bottom: 20px; /* Ajusta este valor para el margen entre las filas */
-            width: calc(45%); /* Ajusta este valor para cambiar el espacio entre los códigos QR */
+            margin-bottom: 50px; /* Ajusta este valor para el margen entre las filas */
+            width: calc(40%); /* Ajusta este valor para cambiar el espacio entre los códigos QR */
             max-width: 350px; /* Ajusta este valor para limitar el ancho máximo de los códigos QR */
             height: auto; /* Para mantener la proporción */
         }
