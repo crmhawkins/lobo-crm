@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Clients;
 
 class ClienteController extends Controller
 {
@@ -92,5 +93,10 @@ class ClienteController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Clients::all();
+        return response()->json($data);
     }
 }

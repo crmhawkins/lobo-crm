@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\OrdenProduccion;
 
 class ProduccionController extends Controller
 {
@@ -85,5 +86,10 @@ class ProduccionController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = OrdenProduccion::all();
+        return response()->json($data);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Caja;
 
 class CajaController extends Controller
 {
@@ -90,5 +91,10 @@ class CajaController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Caja::all();
+        return response()->json($data);
     }
 }

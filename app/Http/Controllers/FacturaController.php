@@ -187,4 +187,9 @@ class FacturaController extends Controller
         return $pdf->stream();
 
     }
+    public function indexApi()
+    {
+        $data = Facturas::all();
+        return response()->json($data);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Productos;
 
 class ProductosController extends Controller
 {
@@ -83,5 +84,10 @@ class ProductosController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Productos::all();
+        return response()->json($data);
     }
 }

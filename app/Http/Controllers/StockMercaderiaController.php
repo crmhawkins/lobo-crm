@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Mercaderia;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
@@ -111,5 +112,10 @@ class StockMercaderiaController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Mercaderia::all();
+        return response()->json($data);
     }
 }

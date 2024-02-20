@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UsuarioController extends Controller
 {
@@ -85,5 +86,10 @@ class UsuarioController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = User::all();
+        return response()->json($data);
     }
 }

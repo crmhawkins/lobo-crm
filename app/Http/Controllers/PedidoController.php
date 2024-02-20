@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pedido;
 
 class PedidoController extends Controller
 {
@@ -85,4 +86,10 @@ class PedidoController extends Controller
     public function destroy($id)
     {
         //
-    }}
+    }
+    public function indexApi()
+    {
+        $data = Pedido::all();
+        return response()->json($data);
+    }
+}

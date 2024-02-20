@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Proveedores;
 
 class ProveedoresController extends Controller
 {
@@ -87,5 +88,10 @@ class ProveedoresController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Proveedores::all();
+        return response()->json($data);
     }
 }

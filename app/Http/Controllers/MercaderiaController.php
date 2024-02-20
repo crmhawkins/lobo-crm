@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Mercaderia;
 
 class MercaderiaController extends Controller
 {
@@ -85,5 +86,10 @@ class MercaderiaController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function indexApi()
+    {
+        $data = Mercaderia::all();
+        return response()->json($data);
     }
 }
