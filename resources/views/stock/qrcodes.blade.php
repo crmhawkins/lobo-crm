@@ -6,20 +6,20 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center; /* Centrar contenido en la página */
+            text-align: center; /* Alinear el texto al centro */
         }
         .container {
-            margin: 0 auto;
+            margin: 20px auto; /* Centrar horizontalmente el contenedor */
             padding: 20px;
-            max-width: 800px; /* Ajusta este valor según tus necesidades */
+            max-width: 800px; /* Ajustar según tus necesidades */
         }
         .qr-code {
             display: inline-flex;
             margin: 10px;
             justify-content: center;
             align-items: center;
-            width: 300px; /* Ajusta este valor para cambiar el tamaño de los QR */
-            height: 300px; /* Ajusta este valor para cambiar el tamaño de los QR */
+            width: 300px; /* Ajustar según tus necesidades */
+            height: 300px; /* Ajustar según tus necesidades */
         }
         img {
             max-width: 100%;
