@@ -82,6 +82,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Lote/Pallet</th>
+                                                <th>Nº Orden</th>
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en cajas)</th>
                                                 {{--<th>Accion</th>--}}
@@ -91,6 +92,7 @@
                                             @foreach ($producto_lotes as $loteIndex => $lote)
                                                 <tr>
                                                     <th>{{ $lote['lote_id'] }}</th>
+                                                    <th>{{ $lote['orden_numero'] }}</th>
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     {{--<td>
