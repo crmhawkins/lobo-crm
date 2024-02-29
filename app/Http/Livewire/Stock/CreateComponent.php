@@ -148,7 +148,7 @@ class CreateComponent extends Component
         foreach ($this->productos_pedido as $productosIndex => $productos) {
             $producto = Productos::find($productos['producto_id']);
             for ($i = 0; $i < $productos['cantidad']; $i++) {
-                $lote_id = $dia->format('ymd') . $producto->id . $i;
+                $lote_id = $dia->format('ymdHis') . $producto->id . $i;
                 StockEntrante::create([
                     'producto_id' => $productos['producto_id'],
                     'lote_id' => $lote_id,
