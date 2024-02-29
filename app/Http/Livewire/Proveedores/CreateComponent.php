@@ -23,6 +23,7 @@ class CreateComponent extends Component
     public $cod_postal;
     public $telefono;
     public $email;
+    public $cuenta_contable;
 
     public $nota;
 
@@ -60,6 +61,7 @@ class CreateComponent extends Component
                 'telefono' => 'required',
                 'email' => 'required',
                 'nota' => 'nullable',
+                'cuenta_contable'=> 'nullable'
 
             ],
             // Mensajes de error

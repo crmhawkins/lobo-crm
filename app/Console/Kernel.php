@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
                 $alertaExistente = Alertas::where('referencia_id', $pedido->id)->where('stage', 4)->first();
                 if (!$alertaExistente) {
                     Alertas::create([
-                        'user_id' => 1,
+                        'user_id' => 13,
                         'stage' => 4,
                         'titulo' => 'Pedido en preparación durante más de 2 días',
                         'descripcion' => 'El pedido nº ' . $pedido->id . ' lleva más de dos días en preparación.',
@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
                 $alertaExistente = Alertas::where('referencia_id', $pedido->id)->where('stage', 5)->first();
                 if (!$alertaExistente) {
                     Alertas::create([
-                        'user_id' => 1,
+                        'user_id' => 13,
                         'stage' => 5,
                         'titulo' => 'Pedido en envió más de 5 días',
                         'descripcion' => 'El pedido nº ' . $pedido->id . ' lleva más de 5 días en envió.',
@@ -64,7 +64,7 @@ class Kernel extends ConsoleKernel
 
                 if (!$alertaExistente) {
                     Alertas::create([
-                        'user_id' => 1,
+                        'user_id' => 13,
                         'stage' => 6,
                         'titulo' => 'Factura Vencimiento: En Tres Dias',
                         'descripcion' => 'La factura nº ' . $factura->numero_factura . ' vencera en 3 días.',

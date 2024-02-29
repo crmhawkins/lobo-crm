@@ -38,6 +38,7 @@ class CreateComponent extends Component
     public $codPostalenvio;
     public $vencimiento_factura_pref = 0;
     public $porcentaje_bloq = 10;
+    public $cuenta_contable;
 
     public function mount()
     {
@@ -86,7 +87,9 @@ class CreateComponent extends Component
                 'forma_pago_pref' => 'required',
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
-                'porcentaje_bloq'=> 'nullable'
+                'porcentaje_bloq'=> 'nullable',
+                'cuenta_contable'=> 'nullable'
+
 
             ],
             // Mensajes de error
@@ -113,7 +116,7 @@ class CreateComponent extends Component
         if ($clienteSave) {
 
             Alertas::create([
-                'user_id' => 1,
+                'user_id' => 13,
                 'stage' => 1,
                 'titulo' => 'Revisión Pendiente: Nuevo Cliente',
                 'descripcion' => 'Nuevo cliente a la espera de aprobación: ' . $clienteSave->nombre,

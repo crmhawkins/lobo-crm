@@ -38,6 +38,7 @@ class EditComponent extends Component
     public $codPostalenvio;
     public $vencimiento_factura_pref;
     public $porcentaje_bloq;
+    public $cuenta_contable;
 
     public function mount()
     {
@@ -99,7 +100,8 @@ class EditComponent extends Component
                 'forma_pago_pref' => 'required',
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
-                'porcentaje_bloq'=> 'nullable'
+                'porcentaje_bloq'=> 'nullable',
+                'cuenta_contable'=> 'nullable'
 
             ],
             // Mensajes de error

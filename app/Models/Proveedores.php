@@ -25,6 +25,7 @@ class Proveedores extends Model
         "telefono",
         "email",
         "nota",
+        "cuenta_contable",
     ];
 
     /**

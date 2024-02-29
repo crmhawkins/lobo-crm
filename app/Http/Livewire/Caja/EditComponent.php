@@ -6,6 +6,7 @@ use App\Models\Caja;
 use App\Models\Pedido;
 use App\Models\Proveedores;
 use App\Models\Clients;
+use App\Models\Facturas;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,6 @@ class EditComponent extends Component
 	    use LivewireAlert;
 
     public $identificador;
-
     public $tipo_movimiento;
     public $metodo_pago;
     public $importe;
@@ -28,7 +28,9 @@ class EditComponent extends Component
     public $clientes;
     public $categorias;
     public $pedido_id;
-    public $pedidos;
+    public $pedido;
+    public $facturas;
+
 
 
 
@@ -36,7 +38,7 @@ class EditComponent extends Component
     {
         $caja = Caja::find($this->identificador);
         $this->poveedores = Proveedores::all();
-        $this->pedidos = Pedido::all();
+        $this->facturas = Facturas::all();
         $this->clientes = Clients::all();
         $this->metodo_pago = $caja->metodo_pago;
         $this->descripcion = $caja->descripcion;
@@ -49,7 +51,9 @@ class EditComponent extends Component
     }
     public function getCliente($id)
     {
-         return $this->clientes->firstWhere('id', $this->pedidos->firstWhere('id', $id)->cliente_id)->nombre;
+        $this->pedido = Pedido::find($id);
+
+         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
     }
     public function render()
     {

@@ -212,7 +212,7 @@ class EditComponent extends Component
 
             if( $this->bloqueado && $this->estado == 1){
                 Alertas::create([
-                    'user_id' => 1,
+                    'user_id' => 13,
                     'stage' => 2,
                     'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
                     'descripcion' => 'El pedido nº' . $pedido->id .' esta a la espera de aprobación',
@@ -387,7 +387,7 @@ class EditComponent extends Component
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
             Alertas::create([
-                'user_id' => 1,
+                'user_id' => 13,
                 'stage' => 3,
                 'titulo' => 'Estado del Pedido: Aceptado en Almacén',
                 'descripcion' => 'El pedido nº ' . $pedido->id.' ha sido aceptado',
@@ -418,7 +418,7 @@ class EditComponent extends Component
         $pedidosSave = $pedido->update(['estado' => 7]);
         if ($pedidosSave) {
             Alertas::create([
-                'user_id' => 1,
+                'user_id' => 13,
                 'stage' => 3,
                 'titulo' => 'Estado del Pedido: Rechazado ',
                 'descripcion' => 'El pedido nº ' . $pedido->id . ' ha sido rechazado',

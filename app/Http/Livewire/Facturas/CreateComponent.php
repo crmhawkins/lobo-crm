@@ -81,7 +81,7 @@ class CreateComponent extends Component
         $pedidosSave = $this->pedido->update(['estado' => 5]);
         if ($facturasSave && $pedidosSave) {
             Alertas::create([
-                'user_id' => 1,
+                'user_id' => 13,
                 'stage' => 3,
                 'titulo' => 'Estado del Pedido: Entregado ',
                 'descripcion' => 'El pedido nº ' . $this->pedido->id . ' ha sido entregado',

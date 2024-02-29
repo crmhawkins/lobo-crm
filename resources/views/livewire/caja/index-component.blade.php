@@ -48,7 +48,7 @@
                                         <td>{{ $tipo->fecha }}</td>
                                         <td>{{ $tipo->descripcion }}</td>
                                         @if ($tipo->pedido_id)
-                                        <td>Pedido Nº {{ $tipo->pedido_id }} - {{ $this->getCliente($tipo->pedido_id) }}</td>
+                                        <td>Factura Nº {{ $tipo->pedido_id }} - {{ $this->getCliente($tipo->pedido_id) }}</td>
                                         @elseif($tipo->poveedor_id)
                                         <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
                                         @else

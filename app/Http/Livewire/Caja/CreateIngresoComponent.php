@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Caja;
 use App\Models\Caja;
 use App\Models\Clients;
 use App\Models\Pedido;
+use App\Models\Facturas;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -19,12 +20,14 @@ class CreateIngresoComponent extends Component
     public $pedido_id;
     public $fecha;
     public $clientes;
-    public $pedidos;
+    public $pedido;
+    public $facturas;
 
 
     public function mount()
     {
-        $this->pedidos = Pedido::where('estado',5 )->get();
+
+        $this->facturas = Facturas::all();
         $this->clientes = Clients::all();
     }
     public function render()
@@ -93,6 +96,8 @@ class CreateIngresoComponent extends Component
 
     public function getCliente($id)
     {
-         return $this->clientes->firstWhere('id', $this->pedidos->firstWhere('id', $id)->cliente_id)->nombre;
+        $this->pedido = Pedido::find($id);
+
+         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
     }
 }

@@ -44,6 +44,7 @@ class Clients extends Model
         "precio_vodka175l",
         "precio_vodka3l",
         "nota",
+        "cuenta_contable",
     ];
 
     /**

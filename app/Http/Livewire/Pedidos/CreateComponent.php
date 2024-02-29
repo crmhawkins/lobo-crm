@@ -133,7 +133,7 @@ class CreateComponent extends Component
 
         if( $this->bloqueado){
         Alertas::create([
-            'user_id' => 1,
+            'user_id' => 13,
             'stage' => 2,
             'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
             'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de aprobación',
@@ -142,7 +142,7 @@ class CreateComponent extends Component
         ]);}
 
             Alertas::create([
-                'user_id' => 1,
+                'user_id' => 13,
                 'stage' => 3,
                 'titulo' => 'Estado del Pedido: Recibido',
                 'descripcion' => 'El pedido nº ' . $pedidosSave->id.' ha sido recibido',

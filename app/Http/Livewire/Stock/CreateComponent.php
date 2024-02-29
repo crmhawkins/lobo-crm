@@ -175,7 +175,9 @@ class CreateComponent extends Component
                 if ($sumatorioCantidad > $stockSeguridad) {
 
                     $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
+                    if(isset( $alertaExistente)){
                     $alertaExistente->delete();
+                    }
                 }
             }
 

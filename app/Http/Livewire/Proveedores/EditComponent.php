@@ -23,6 +23,7 @@ class EditComponent extends Component
     public $telefono;
     public $email;
     public $nota;
+    public $cuenta_contable;
 
 
     public function mount()
@@ -64,6 +65,7 @@ class EditComponent extends Component
                 'telefono' => 'required',
                 'email' => 'required',
                 'nota' => 'nullable',
+                'cuenta_contable'=> 'nullable'
 
             ],
             // Mensajes de error

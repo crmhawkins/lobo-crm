@@ -4,6 +4,8 @@ namespace App\Http\Livewire\Caja;
 
 use App\Models\Clients;
 use App\Models\Proveedores;
+use App\Models\Facturas;
+
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use App\Models\Caja;;
@@ -21,11 +23,14 @@ class CreateGastoComponent extends Component
     public $clientes;
     public $poveedor_id;
     public $poveedores;
+    public $facturas;
+
 
     public function mount()
     {
         $this->poveedores = Proveedores::all();
         $this->clientes = Clients::all();
+
     }
     public function render()
     {

@@ -26,7 +26,7 @@
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         @if ($this->pedido_id)
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Pedidos</label>
+                            <label for="nombre" class="col-sm-12 col-form-label">Factura</label>
                             <div class="col-sm-10">
                                 <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
                                     $('#select2-monitor').on('change', function(e) {
@@ -35,11 +35,11 @@
                                     });" wire:key='rand()'>
                                     <select class="form-control" name="pedido_id" id="select2-monitor"
                                         wire:model.lazy="pedido_id">
-                                        <option value="0">-- ELIGE UN PEDIDO --</option>
-                                        @foreach ($pedidos as $pedido)
-                                        <option value="{{ $pedido->id }}">
-                                            (#{{ $pedido->id }}) - {{ $this->getCliente($pedido->id) }}
-                                        </option>
+                                        <option value="0">-- ELIGE UNA FACTURA --</option>
+                                        @foreach ($facturas as $factura)
+                                            <option value="{{ $factura->id }}">
+                                                (#{{ $factura->id }}) - {{ $this->getCliente($factura->pedido_id) }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div> @error('nombre')

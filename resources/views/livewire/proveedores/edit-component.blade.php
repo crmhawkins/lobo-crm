@@ -181,7 +181,26 @@
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
-                            <div class="col-sm-11">
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta contable</label>
+                                <div class="col-sm-12">
+                                    <input type="text" wire:model="cuenta_contable" class="form-control" name="cuenta_contable"
+                                        id="cuenta_contable" placeholder="Cuenta Contable">
+                                    @error('cuenta_contable')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .cuenta_contable {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"

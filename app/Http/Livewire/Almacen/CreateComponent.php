@@ -250,7 +250,7 @@ class CreateComponent extends Component
             $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
             if (!$alertaExistente) {
                 Alertas::create([
-                    'user_id' => 1,
+                    'user_id' => 13,
                     'stage' => 7,
                     'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
                     'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
@@ -298,7 +298,7 @@ class CreateComponent extends Component
      $pedidosSave = $pedido->update(['estado' => 4]);
      if ($pedidosSave && $albaranSave) {
         Alertas::create([
-            'user_id' => 1,
+            'user_id' => 13,
             'stage' => 3,
             'titulo' => 'Estado del Pedido: Albarán',
             'descripcion' => 'Generado Albarán del pedido nº ' . $pedido->id,

@@ -6,6 +6,7 @@ use App\Models\Settings;
 use App\Models\Clients;
 use App\Models\Pedido;
 use App\Models\Proveedores;
+use App\Models\Facturas;
 use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\Caja;
@@ -20,7 +21,8 @@ class IndexComponent extends Component
     public $saldo_inicial= 0;
     public $saldo_array = [];
     public $clientes;
-    public $pedidos;
+    public $pedido;
+    public $facturas;
 
 
     public function mount()
@@ -31,7 +33,8 @@ class IndexComponent extends Component
         $this->cambioSemana();
         $this->proceedor = Proveedores::all();
         $this->clientes = Clients::all();
-        $this->pedidos = Pedido::where('estado',5 )->get();
+        $this->facturas = Facturas::all();
+
 
     }
     public function render()
@@ -40,7 +43,10 @@ class IndexComponent extends Component
     }
     public function getCliente($id)
     {
-         return $this->clientes->firstWhere('id', $this->pedidos->firstWhere('id', $id)->cliente_id)->nombre;
+        $id_pedido = $this->facturas->firstWhere('id', $id)->id_pedido;
+        $this->pedido = Pedido::find($id_pedido);
+
+         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
     }
     public function calcular_saldo($index, $id)
     {
