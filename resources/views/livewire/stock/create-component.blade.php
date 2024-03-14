@@ -110,7 +110,7 @@
                                                         {{ $this->getNombreTabla($producto['producto_id']) }}
                                                     </td>
                                                     <td width="25%">
-                                                        <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                        {{ $this->getUnidadesTabla($productoIndex) }}
                                                     </td>
                                                     <td width="25%">
                                                         <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
