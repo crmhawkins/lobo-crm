@@ -83,14 +83,14 @@ class CreateComponent extends Component
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_pedido[$id]['producto_id']);
-        $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
+        $cajas = ($this->productos_pedido[$id]['cantidad'] / $producto->unidades_por_caja);
         $pallets = floor($cajas / $producto->cajas_por_pallet);
         $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
         $unidades = '';
         if ($cajas_sobrantes > 0) {
-            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+            $unidades = $this->productos_pedido[$id]['cantidad'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
         } else {
-            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+            $unidades = $this->productos_pedido[$id]['cantidad'] . ' unidades (' . $pallets . ' pallets)';
         }
         return $unidades;
     }
