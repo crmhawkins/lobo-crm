@@ -78,7 +78,7 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
-        if (file_exists('storage/photos/' . $this->foto_rutaOld) && isNull($this->foto_ruta)) {
+        if (file_exists('storage/photos/' . $this->foto_rutaOld) && is_null($this->foto_ruta)) {
             $this->foto_ruta = $this->foto_rutaOld;
         }
 
