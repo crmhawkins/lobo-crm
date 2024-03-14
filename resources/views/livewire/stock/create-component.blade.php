@@ -183,17 +183,37 @@
                                     </div>
                                 </div>
                                 @if ($producto_seleccionado != null)
-                                <!-- Quitar sección de unidades y reemplazarla por una indicación fija -->
-                                <div class="row justify-content-center mt-1">
-                                    <div class="col-md-10" style="text-align: center !important;">
-                                        <p>Un palet del producto seleccionado será añadido.</p>
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Pallets</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Cajas</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">Uds.</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">&nbsp; </label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row justify-content-center mt-1">
-                                    <div class="col-md-10" style="display: flex;justify-content: center;">
-                                        <button type="button" class="btn btn-primary" wire:click.prevent="addProducto('{{ $producto_seleccionado }}')" data-dismiss="modal" aria-label="Close">Añadir Producto</button>
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_producto" disabled>
+                                        </div>
+                                        <div class="col-md-3" style="justify-content: start !important"
+                                            style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
+                                            <button type="button" class="btn btn-primary w-100"
+                                                wire:click.prevent="addProductos('{{ $producto_seleccionado }}')"
+                                                data-dismiss="modal" aria-label="Close">+</a>
+                                        </div>
                                     </div>
-                                </div>
                                 @endif
                             </div>
                             <div class="modal-footer">

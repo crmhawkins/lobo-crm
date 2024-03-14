@@ -34,6 +34,8 @@ class CreateComponent extends Component
     public $productos;
     public $stock;
     public $orden_numero;
+    public $unidades_caja_producto;
+    public $unidades_pallet_producto;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -84,8 +86,22 @@ class CreateComponent extends Component
         $this->productos_pedido = array_values($this->productos_pedido);
     }
 
+    public function updatePallet()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = $this->unidades_pallet_producto * $producto->cajas_por_pallet;
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateCaja()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+
     public function addProducto($id)
     {
+        $this->productos_pedido = [];
         $producto_existe = false;
         $producto_id = $id;
         foreach ($this->productos_pedido as $productos) {
