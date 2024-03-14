@@ -48,6 +48,11 @@ class IndexComponent extends Component
             $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->whereIn('stock_id', $entradas_almacen)->get();
         }
     }
+    public function getUnidadeCaja($id)
+    {
+        $producto = Productos::find($id);
+        return  $producto->unidades_por_caja;
+    }
 
     public function getListeners()
     {

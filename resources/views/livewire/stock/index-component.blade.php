@@ -95,7 +95,8 @@
                                                 <th>Nº Interno</th>
                                                 <th>Nº Orden</th>
                                                 <th>Fecha de entrada</th>
-                                                <th>Cantidad (en cajas)</th>
+                                                <th>Cantidad (en Botellas)</th>
+                                                <th>Cantidad (en Cajas)</th>
                                                 {{--<th>Accion</th>--}}
                                             </tr>
                                         </thead>
@@ -106,6 +107,7 @@
                                                     <th>{{ $lote['orden_numero'] }}</th>
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
+                                                    <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
                                                     {{--<td>
                                                         <button class="btn btn-primary" wire:click.prevent="generarPDFConQRCode({{ $lote->id }})">Generar QR</button>
                                                     </td>--}}

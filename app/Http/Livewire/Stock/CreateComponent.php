@@ -183,16 +183,14 @@ class CreateComponent extends Component
         $dia = Carbon::now();
         foreach ($this->productos_pedido as $productosIndex => $productos) {
             $producto = Productos::find($productos['producto_id']);
-            for ($i = 0; $i < $productos['cantidad']; $i++) {
-                $lote_id = $dia->format('ymdHis') . $producto->id . $i;
-                StockEntrante::create([
-                    'producto_id' => $productos['producto_id'],
-                    'lote_id' => $lote_id,
-                    'stock_id' => $mercaderiaSave->id,
-                    'cantidad' => $producto->cajas_por_pallet,
-                    'orden_numero' => $validatedData['orden_numero'],
-                ]);
-            }
+            $lote_id = $dia->format('ymdHis') . $producto->id;
+            StockEntrante::create([
+                'producto_id' => $productos['producto_id'],
+                'lote_id' => $lote_id,
+                'stock_id' => $mercaderiaSave->id,
+                'cantidad' => $productos['cantidad'],
+                'orden_numero' => $validatedData['orden_numero'],
+            ]);
         }
 
         // Alertas de guardado exitoso
@@ -206,8 +204,7 @@ class CreateComponent extends Component
 
                 $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
                 $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
-                $sumatorioCantidad = $productoLotes->sum('cantidad');
-
+                $sumatorioCantidad = floor($productoLotes->sum('cantidad')/ $producto->unidades_por_caja);
                 if ($sumatorioCantidad > $stockSeguridad) {
 
                     $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
