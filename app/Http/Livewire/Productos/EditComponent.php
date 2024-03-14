@@ -88,10 +88,10 @@ class EditComponent extends Component
         $validatedData = $this->validate(
             [
                 'nombre' => 'required',
-                'tipo_precio' => 'required',
+                'tipo_precio' => 'nullable',
                 'foto_ruta' => 'nullable',
-                'unidades_por_caja' => 'required',
-                'cajas_por_pallet' => 'required',
+                'unidades_por_caja' => 'nullable',
+                'cajas_por_pallet' => 'nullable',
                 'descripcion' => 'nullable',
                 'materiales' => 'nullable',
                 'medidas_botella' => 'nullable',

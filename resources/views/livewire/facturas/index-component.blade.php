@@ -21,6 +21,9 @@
                     <p class="sub-title../plugins">Listado completo de todas nuestros facturas, para editar o ver la
                         informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
+                    <div class="col-12 mb-5">
+                        <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
+                    </div>
                     @if (count($facturas) > 0)
 
                         <!-- Aquí comienza el botón desplegable para filtrar por columna -->
@@ -52,6 +55,7 @@
                                     <th scope="col">Fecha de vencimiento</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Método de pago</th>
+                                    <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
@@ -74,9 +78,22 @@
                                             <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $pedidos->where('id', $fact->pedido_id)->first()->precio }}€
+                                        <td>{{ $fact->precio }}€
                                         </td>
                                         <td>{{ $fact->metodo_pago }}</td>
+                                        <td>@switch($fact->estado)
+                                            @case('Pendiente')
+                                            <span class="badge badge-warning">{{ $fact->estado }}</span>
+                                                @break
+                                            @case('Pagado')
+                                            <span class="badge badge-success">{{ $fact->estado }}</span>
+                                                @break
+                                            @case('Cancelado')
+                                            <span class="badge badge-danger">{{ $fact->estado }}</span>
+                                                @break
+                                            @default
+                                            <span class="badge badge-info">{{ $fact->estado }}</span>
+                                        @endswitch</td>
                                         <td> <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">Ver/Editar</a>
                                             <a wire:click="pdf({{ $fact->id }},true)"  class="btn btn-primary" style="color: white;">Factura Con IVA</a>
                                             <a wire:click="pdf({{ $fact->id }},false)"  class="btn btn-primary" style="color: white;">Factura Sin IVA</a>

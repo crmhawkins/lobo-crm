@@ -7,6 +7,8 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Alertas;
+use App\Models\Delegacion;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class CreateComponent extends Component
@@ -36,21 +38,26 @@ class CreateComponent extends Component
     public $provinciaenvio;
     public $localidadenvio;
     public $codPostalenvio;
-    public $vencimiento_factura_pref = 0;
+    public $vencimiento_factura_pref = "";
     public $porcentaje_bloq = 10;
     public $cuenta_contable;
+    public $cuenta;
+    public $delegacion_COD="";
+    public $delegaciones;
+    public $comercial_id="";
+    public $comerciales;
 
     public function mount()
     {
         $this->clientes = Clients::all();
+        $this->comerciales = User::where('role','3')->get();
+        $this->delegaciones = Delegacion::all();
     }
 
     public function crearClientes()
     {
         return Redirect::to(route("clientes.create"));
     }
-
-
 
     public function render()
     {
@@ -88,7 +95,10 @@ class CreateComponent extends Component
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
                 'porcentaje_bloq'=> 'nullable',
-                'cuenta_contable'=> 'nullable'
+                'cuenta_contable'=> 'nullable',
+                'delegacion_COD'=> 'nullable',
+                'comercial_id'=> 'nullable',
+                'cuenta'=> 'nullable',
 
 
             ],

@@ -81,7 +81,7 @@
                                         wire:key='{{ rand() }}'>
                                         <thead>
                                             <tr>
-                                                <th>Lote/Pallet</th>
+                                                <th>Nº Interno</th>
                                                 <th>Nº Orden</th>
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en cajas)</th>

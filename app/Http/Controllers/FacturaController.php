@@ -46,6 +46,12 @@ class FacturaController extends Controller
         return view('factura.create', compact('id'));
 
     }
+    public function create1()
+    {
+
+        return view('factura.create',);
+
+    }
 
     /**
      * Store a newly created resource in storage.

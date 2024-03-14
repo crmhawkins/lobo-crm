@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Proveedores;
 use App\Models\Proveedores;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,12 +25,15 @@ class CreateComponent extends Component
     public $telefono;
     public $email;
     public $cuenta_contable;
+    public $delegacion_COD="";
+    public $delegaciones;
 
     public $nota;
 
     public function mount()
     {
         $this->proveedores = Proveedores::all();
+        $this->delegaciones = Delegacion::all();
     }
 
     public function crearProveedores()
@@ -61,7 +65,8 @@ class CreateComponent extends Component
                 'telefono' => 'required',
                 'email' => 'required',
                 'nota' => 'nullable',
-                'cuenta_contable'=> 'nullable'
+                'cuenta_contable'=> 'nullable',
+                'delegacion_COD'=> 'nullable'
 
             ],
             // Mensajes de error

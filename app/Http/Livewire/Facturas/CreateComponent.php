@@ -27,21 +27,30 @@ class CreateComponent extends Component
     public $descripcion;
     public $estado = "Pendiente";
     public $metodo_pago = "No Pagado";
-    public $pedidos;
+
     public $pedido;
+    public $precio;
     public $pedido_id;
     public $cliente;
+    public $clientes;
+    public $cliente_id;
 
     public function mount()
     {
-        $this->pedido = Pedido::find($this->idpedido);
-        $this->cliente = Clients::find($this->pedido->cliente_id);
-        $this->pedido_id = $this->idpedido;
+
+            if (isset($this->idpedido)){
+            $this->pedido_id = $this->idpedido;
+            $this->pedido = Pedido::find($this->idpedido);
+            $this->cliente_id = $this->pedido->cliente_id;
+            $this->cliente = Clients::find($this->cliente_id);
+            $diasVencimiento = $this->cliente->vencimiento_factura_pref;
+            $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
+            $this->metodo_pago = $this->cliente->forma_pago_pref;
+            $this->precio = $this->pedido->precio;
+            }
+        $this->clientes = Clients::where('estado', 2)->get();
         $this->numero_factura = Facturas::count() + 1;
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
-        $diasVencimiento = $this->cliente->vencimiento_factura_pref;
-        $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
-        $this->metodo_pago = $this->cliente->forma_pago_pref;
     }
 
     public function render()
@@ -57,11 +66,13 @@ class CreateComponent extends Component
         $validatedData = $this->validate(
             [
                 'numero_factura' => 'required',
-                'pedido_id' => 'required|numeric|min:1',
+                'cliente_id' => 'required',
+                'pedido_id' => 'nullable',
                 'fecha_emision' => 'required',
                 'fecha_vencimiento' => '',
                 'descripcion' => '',
-                'estado' => 'required',
+                'estado' => 'nullable',
+                'precio' => 'nullable',
                 'metodo_pago' => '',
 
             ],
@@ -76,18 +87,22 @@ class CreateComponent extends Component
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
-
+        $pedidosSave =false;
         // Alertas de guardado exitoso
+        if (isset($this->idpedido)){
         $pedidosSave = $this->pedido->update(['estado' => 5]);
-        if ($facturasSave && $pedidosSave) {
-            Alertas::create([
-                'user_id' => 13,
-                'stage' => 3,
-                'titulo' => 'Estado del Pedido: Entregado ',
-                'descripcion' => 'El pedido nº ' . $this->pedido->id . ' ha sido entregado',
-                'referencia_id' => $this->pedido->id,
-                'leida' => null,
-            ]);
+        }
+        if ($facturasSave) {
+            if($pedidosSave){
+                Alertas::create([
+                    'user_id' => 13,
+                    'stage' => 3,
+                    'titulo' => 'Estado del Pedido: Entregado ',
+                    'descripcion' => 'El pedido nº ' . $this->pedido->id . ' ha sido entregado',
+                    'referencia_id' => $this->pedido->id,
+                    'leida' => null,
+                ]);
+            }
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

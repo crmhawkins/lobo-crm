@@ -13,8 +13,13 @@
 @endsection
 
 @section('content-principal')
-<div>
-    @livewire('facturas.create-component', ['idpedido'=>$id])
-</div>
+@if (isset($id))
+    <div>
+        @livewire('facturas.create-component', ['idpedido'=>$id])
+    </div>
+@else
+@livewire('facturas.create-component')
+@endif
+
 
 @endsection

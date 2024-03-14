@@ -6,6 +6,8 @@ use App\Models\Clients;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Delegacion;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class EditComponent extends Component
@@ -39,13 +41,22 @@ class EditComponent extends Component
     public $vencimiento_factura_pref;
     public $porcentaje_bloq;
     public $cuenta_contable;
+    public $delegacion_COD;
+    public $delegaciones;
+    public $comercial_id;
+    public $comerciales;
+    public $cuenta;
 
     public function mount()
     {
         $cliente = Clients::find($this->identificador);
-
-
+        $this->comerciales = User::where('role',3)->get();
+        $this->delegaciones = Delegacion::all();
+        $this->comercial_id = $cliente->comercial_id;
+        $this->delegacion_COD = $cliente->delegacion_COD;
         $this->tipo_cliente = $cliente->tipo_cliente;
+        $this->cuenta = $cliente->cuenta;
+        $this->cuenta_contable = $cliente->cuenta_contable;
         $this->porcentaje_bloq = $cliente->porcentaje_bloq;
         $this->nombre = $cliente->nombre;
         $this->dni_cif = $cliente->dni_cif;
@@ -101,7 +112,10 @@ class EditComponent extends Component
                 'vencimiento_factura_pref' => 'required',
                 'nota' => 'nullable',
                 'porcentaje_bloq'=> 'nullable',
-                'cuenta_contable'=> 'nullable'
+                'cuenta_contable'=> 'nullable',
+                'delegacion_COD'=> 'nullable',
+                'comercial_id'=> 'nullable',
+                'cuenta'=> 'nullable'
 
             ],
             // Mensajes de error
@@ -149,6 +163,10 @@ class EditComponent extends Component
             'precio_vodka3l'=> $this->precio_vodka3l,
             'nota'=> $this->nota,
             'porcentaje_bloq'=> $this->porcentaje_bloq,
+            'delegacion_COD'=> $this->delegacion_COD,
+            'comercial_id'=> $this->comercial_id,
+            'cuenta_contable'=> $this->cuenta_contable,
+            'cuenta'=> $this->cuenta,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 

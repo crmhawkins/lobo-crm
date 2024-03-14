@@ -200,7 +200,20 @@
                             <div class="form-group col-sm-1">
                                 &nbsp;
                             </div>
-                            <div class="col-sm-5">
+                            <div class="form-group col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Delegacion</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD">
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        @foreach ($delegaciones as $delegacion )
+                                            <option value="{{$delegacion->COD}}">{{$delegacion->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                            <div class="col-sm-11">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"
@@ -215,7 +228,7 @@
                                         </style>
                                     @enderror
                                 </div>
-                            </div>
+                             </div>
                         </div>
                     </form>
                 </div>

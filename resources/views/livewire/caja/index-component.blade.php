@@ -34,6 +34,7 @@
                                     <th scope="col">Concepto</th>
                                     <th scope="col">Asociado</th>
                                     <th scope="col">Desglose</th>
+                                    <th scope="col">Estado</th>
                                     <th scope="col">(+)</th>
                                     <th scope="col">(-)</th>
                                     <th scope="col">Saldo</th>
@@ -56,6 +57,23 @@
                                         @endif
                                         <td>{{$tipo->tipo_movimiento}}</td>
                                         <td>
+                                            @if ($tipo->tipo_movimiento == 'Gasto')
+                                                @switch($tipo->estado)
+                                                    @case('Pendiente')
+                                                    <span class="badge badge-warning">{{ $tipo->estado }}</span>
+                                                        @break
+                                                    @case("Pagado")
+                                                    <span class="badge badge-success">{{ $tipo->estado }}</span>
+                                                        @break
+                                                    @case('Vencido')
+                                                    <span class="badge badge-danger">{{ $tipo->estado }}</span>
+                                                        @break
+                                                    @default
+                                                    <span class="badge badge-info">{{ $tipo->estado }}</span>
+                                                @endswitch
+                                            @endif
+                                        </td>
+                                        <td>
                                             @if ($tipo->tipo_movimiento == 'Ingreso')
                                                 {{ $tipo->importe }} €
                                             @endif
@@ -65,6 +83,7 @@
                                                 {{ $tipo->importe }} €
                                             @endif
                                         </td>
+
                                         <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>
 
 
@@ -81,11 +100,10 @@
         <div class="col-md-3">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h5>Elige un año</h5>
+                    <h5>Elige una semana</h5>
                     <div class="row">
                         <div class="col-12">
-                            <input type="number" class="form-control" wire:model="semana"
-                                wire:change="cambioSemana">
+                            <input type="month" class="form-control" wire:model="mes" wire:change="cambioMes">
                         </div>
                     </div>
                     <h5>Acciones</h5>

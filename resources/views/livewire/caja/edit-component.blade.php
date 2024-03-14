@@ -72,6 +72,16 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="mb-3 row d-flex align-items-center">
+                            <label for="nombre" class="col-sm-12 col-form-label">Estado</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="estado" id="estado"  wire:model.lazy="estado">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Pagado">Pagado</option>
+                                    <option value="Vencido">Vencido</option>
+                                </select>
+                            </div>
+                        </div>
                         @endif
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Importe</label>

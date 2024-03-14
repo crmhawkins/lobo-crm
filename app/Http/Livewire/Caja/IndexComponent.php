@@ -17,7 +17,7 @@ class IndexComponent extends Component
     public $proceedor;
     public $fechas;
     public $dias;
-    public $semana;
+    public $mes;
     public $saldo_inicial= 0;
     public $saldo_array = [];
     public $clientes;
@@ -27,10 +27,10 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        $this->semana = Carbon::now()->year;
+        $this->mes = Carbon::now()->format('Y-m'); // Año-mes actual
         $this->caja = Caja::all();
         $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
-        $this->cambioSemana();
+        $this->cambioMes();
         $this->proceedor = Proveedores::all();
         $this->clientes = Clients::all();
         $this->facturas = Facturas::all();
@@ -43,10 +43,13 @@ class IndexComponent extends Component
     }
     public function getCliente($id)
     {
-        $id_pedido = $this->facturas->firstWhere('id', $id)->id_pedido;
-        $this->pedido = Pedido::find($id_pedido);
+        $id_pedido = $this->facturas->firstWhere('id', $id)->pedido_id;
+        $pedido = Pedido::find($id_pedido);
 
-         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
+        if( isset($pedido)){
+
+         return $this->clientes->firstWhere('id', $pedido->cliente_id)->nombre;
+        }else{ return "cliente no encontrado";}
     }
     public function calcular_saldo($index, $id)
     {
@@ -67,15 +70,21 @@ class IndexComponent extends Component
         return $this->saldo_array[$index];
     }
 
-    public function cambioSemana()
+    public function cambioMes()
     {
+        list($year, $month) = explode('-', $this->mes);
+        $fechaInicio  = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $fechaFin = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
-        $fecha = Carbon::now()->setISODate($this->semana, 1, 1);
-        $fechaInicio = $fecha->startOfYear()->format('Y-m-d'); // El 1 al final establece el día de inicio de la semana a lunes
-        $fechaFin = $fecha->endOfYear()->format('Y-m-d');
+        // Formato de las fechas para comparación en la base de datos
+        $fechaInicio = $fechaInicio->format('Y-m-d');
+        $fechaFin = $fechaFin->format('Y-m-d');
+
+        // Obtener registros de la tabla Caja que están entre fechaInicio y fechaFin
         $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->get();
-        $this->saldo_array = [];
 
+        // Reiniciar saldo_array
+        $this->saldo_array = [];
     }
     public function proveedorNombre($id)
     {

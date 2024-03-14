@@ -24,6 +24,7 @@ class Caja extends Model
         'importe',
         'metodo_pago',
         'tipo_movimiento',
+        'estado',
     ];
 
     /**

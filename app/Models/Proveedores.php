@@ -26,6 +26,7 @@ class Proveedores extends Model
         "email",
         "nota",
         "cuenta_contable",
+        "delegacion_COD",
     ];
 
     /**
@@ -36,4 +37,9 @@ class Proveedores extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function delegacion()
+    {
+        return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
+    }
 }

@@ -30,21 +30,24 @@ class EditComponent extends Component
     public $descripcion;
     public $estado;
     public $metodo_pago;
-
-    public $alumnosSinEmpresa;
-    public $alumnosConEmpresa;
-    public $cursos;
-    public $presupuestos;
     public $facturas;
-
+    public $precio;
     public $pedido;
     public $pedido_id;
+    public $cliente;
+    public $clientes;
+    public $cliente_id;
 
 
     public function mount()
     {
+
         $this->facturas = Facturas::find($this->identificador);
+        $this->clientes = Clients::where('estado', 2)->get();
+        $this->cliente_id = $this->facturas->cliente_id;
+        $this->cliente = Clients::find($this->cliente_id);
         $this->pedido = Pedido::find($this->facturas->pedido_id);
+        $this->precio = $this->facturas->precio;
         $this->pedido_id = $this->facturas->pedido_id;
         $this->numero_factura = $this->facturas->numero_factura;
         $this->fecha_emision = $this->facturas->fecha_emision;
@@ -71,10 +74,13 @@ class EditComponent extends Component
         $this->validate(
             [
                 'numero_factura' => 'required',
+                'cliente_id' => 'required',
+                'pedido_id' => 'nullable',
                 'fecha_emision' => 'required',
                 'fecha_vencimiento' => '',
                 'descripcion' => '',
-                'estado' => 'required',
+                'estado' => 'nullable',
+                'precio' => 'nullable',
                 'metodo_pago' => '',
             ],
             // Mensajes de error
@@ -88,14 +94,24 @@ class EditComponent extends Component
         // Guardar datos validados
         $facturasSave = $this->facturas->update([
             'numero_factura' => $this->numero_factura,
-
+            'cliente_id' => $this->cliente_id,
+            'pedido_id'  => $this->pedido_id,
             'fecha_emision' => $this->fecha_emision,
             'fecha_vencimiento' => $this->fecha_vencimiento,
             'descripcion' => $this->descripcion,
             'estado' => $this->estado,
+            'precio' => $this->precio,
             'metodo_pago' => $this->metodo_pago,
 
+
         ]);
+
+        if($this->facturas->estado == "Pagado"){
+            $pedido=Pedido::find($this->pedido_id);
+            if (isset($this->pedido_id) && isset($pedido)){
+                 $pedido->update(['estado' => 6]);
+                }
+        }
 
         if ($facturasSave) {
             $this->alert('success', 'Factura actualizada correctamente!', [

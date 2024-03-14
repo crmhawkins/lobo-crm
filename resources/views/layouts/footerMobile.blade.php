@@ -104,7 +104,7 @@
         <button id="closeMenuBtn">&times;</button>
         <nav>
             <div class="row">
-                @if ($user_rol != 4 && $user_rol != 3 && $user_rol != 6)
+                @if ($user_rol != 4 && $user_rol != 3 )
                     <div class="col-6"><a class="footer-button" href="{{ route('productos.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="icon icon-tabler icon-tabler-brand-codesandbox" width="44" height="44"
@@ -134,6 +134,8 @@
                             </svg>
                             <span>NUEVO PEDIDO</span>
                         </a></div>
+                @endif
+                @if ($user_rol != 4 && $user_rol != 5)
                     <div class="col-6"><a class="footer-button" href="{{ route('pedidos.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0"
@@ -158,7 +160,7 @@
                         <span>CLIENTES</span>
                     </a></div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 6)
+                @if ($user_rol == 1 || $user_rol == 6 || $user_rol == 7)
                     <div class="col-6">
                         <a class="footer-button" href="{{ route('facturas.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice"
@@ -174,6 +176,8 @@
                             <span>FACTURAS</span>
                         </a>
                     </div>
+                @endif
+                @if ($user_rol == 1 || $user_rol == 6)
                     <div class="col-6">
                         <a class="footer-button" href="{{ route('proveedores.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="44"
@@ -188,8 +192,23 @@
                             <span>PROVEEDORES</span>
                         </a>
                     </div>
+                    <div class="col-6">
+                        <a class="footer-button" href="{{ route('caja.index') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-safe" width="44"
+                                height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <rect x="3" y="7" width="18" height="14" rx="2" />
+                                <path d="M7 7v-1a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v1" />
+                                <path d="M12 10v4" />
+                                <circle cx="12" cy="14" r="2" />
+                                <path d="M10 14h4" />
+                              </svg>
+                            <span>CAJA</span>
+                        </a>
+                    </div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5)
+                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5|| $user_rol == 7)
                     <div class="col-6"><a class="footer-button" href="{{ route('almacen.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5"
@@ -221,7 +240,7 @@
                             <span>STOCK</span>
                         </a></div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 5)
+                @if ($user_rol == 1 || $user_rol == 5 || $user_rol == 7)
                     <div class="col-6">
                         <a class="footer-button" href="{{ route('mercaderia.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sticker" width="44"

@@ -79,8 +79,13 @@
             <td style="text-align: left !important" width="10%"></td>
             <td style="text-align: left !important" width="30%">
                 <span style="font-weight: bold; color:#0196eb">Dirección de envío</span><br>
+                @if(isset($pedido))
                 {{$pedido->direccion_entrega}}<br>
                 {{$pedido->cod_postal_entrega}} - {{$pedido->localidad_entrega}} ({{$pedido->provincia_entrega}})<br><br>
+                @else
+                {{$cliente->direccionenvio}}<br>
+                {{$cliente->codPostalenvio}} - {{$cliente->localidadenvio}} ({{$cliente->provinciaenvio}})<br><br>
+                @endif
             </td>
             <td style="text-align: left !important" width="20%"></td>
         </tr>
@@ -99,6 +104,7 @@
         <tr style="background-color:#fff; color: #fff;">
             <th style="padding: 0px !important; height: 10px !important;"></th>
         </tr>
+
         @foreach ($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
             <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
@@ -110,6 +116,7 @@
 
         </tr>
         @endforeach
+        @if(isset($pedido))
         @if ($pedido->descuento )
         <tr>
             <td></td>
@@ -120,6 +127,7 @@
             <td>{{$pedido->porcentaje_descuento}}%<</td>
         </tr>
         @endif
+        @endif
     </table>
 
     @if($conIva)
@@ -127,17 +135,17 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
-            <td>{{ number_format($pedido->precio, 2) }}€</td>
+            <td>{{ number_format($factura->precio, 2) }}€</td>
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>IVA 21%</td>
-            <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
+            <td>{{number_format($factura->precio * 0.21, 2)}}€</td>
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>TOTAL</td>
-            <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
+            <td>{{number_format($factura->precio * 1.21, 2)}}€</td>
         </tr>
     </table>
     @else
@@ -145,7 +153,7 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>Total</td>
-            <td>{{ number_format($pedido->precio, 2) }}€</td>
+            <td>{{ number_format($factura->precio, 2) }}€</td>
         </tr>
     </table>
 

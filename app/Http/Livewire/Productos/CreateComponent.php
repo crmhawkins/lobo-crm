@@ -50,10 +50,10 @@ class CreateComponent extends Component
         $validatedData = $this->validate(
             [
                 'nombre' => 'required',
-                'tipo_precio' => 'required',
+                'tipo_precio' => 'nullable',
                 'foto_ruta' => 'nullable',
-                'unidades_por_caja' => 'required',
-                'cajas_por_pallet' => 'required',
+                'unidades_por_caja' => 'nullable',
+                'cajas_por_pallet' => 'nullable',
                 'descripcion' => 'nullable',
                 'materiales' => 'nullable',
                 'medidas_botella' => 'nullable',
@@ -77,11 +77,12 @@ class CreateComponent extends Component
                 'cajas_por_pallet.required' => 'La descripción es obligatoria.',
             ]
         );
-        $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
+
+        if(isset($this->foto_ruta)){$name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
 
         $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
 
-        $validatedData['foto_ruta'] = $name;
+        $validatedData['foto_ruta'] = $name;}
 
         // Guardar datos validados
         $productosSave = Productos::create($validatedData);

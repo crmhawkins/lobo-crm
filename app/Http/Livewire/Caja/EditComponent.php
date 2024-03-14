@@ -30,7 +30,7 @@ class EditComponent extends Component
     public $pedido_id;
     public $pedido;
     public $facturas;
-
+    public $estado;
 
 
 
@@ -46,6 +46,7 @@ class EditComponent extends Component
         $this->poveedor_id = $caja->poveedor_id;
         $this->pedido_id = $caja->pedido_id;
         $this->fecha = $caja->fecha;
+        $this->estado = $caja->estado;
         $this->tipo_movimiento = $caja->tipo_movimiento;
 
     }
@@ -72,6 +73,8 @@ class EditComponent extends Component
             'fecha' => 'required',
             'tipo_movimiento' => 'required',
             'descripcion' => 'required',
+            'estado' => 'nullable',
+
 
         ],
             // Mensajes de error
@@ -90,7 +93,8 @@ class EditComponent extends Component
             'poveedor_id' => $this->poveedor_id,
             'fecha' => $this->fecha,
             'tipo_movimiento' => $this->tipo_movimiento,
-            'descripcion' => $this->descripcion
+            'descripcion' => $this->descripcion,
+            'estado' => $this->estado
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));

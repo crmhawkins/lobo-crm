@@ -21,7 +21,7 @@
                     <form wire:submit.prevent="update">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <div class="form-group row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="numero_factura" class="col-sm-12 col-form-label">Número de Factura</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="numero_factura" class="form-control"
@@ -31,50 +31,81 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-9">
-                                <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
-                                <input type="text" wire:model="pedido_id" class="form-control" disabled>
+                            <div class="col-md-4">
+                                <div class="col-sm-12">
+                                    <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
+                                    <input type="text" wire:model="pedido_id" class="form-control" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                            <label for="Cliente" class="col-sm-12 col-form-label">Estado</label>
+                                <div class="col-sm-12">
+                                    <select class="form-control" name="estado" id="estado"
+                                    wire:model="estado" >
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Cancelado">Cancelado</option>
+                                        <option value="Pagado">Pagado</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="Cliente" class="col-sm-12 col-form-label">Cliente</label>
+                                <div class="col-sm-12">
+                                    @if(isset($this->pedido))
+                                        <select class="form-control" name="cliente_id" id="cliente_id"
+                                            wire:model="cliente_id" disabled>
+                                    @else
+                                        <select class="form-control" name="cliente_id" id="cliente_id"
+                                        wire:model="cliente_id" >
+                                    @endif
+                                            <option value="">---SELECCIONE UN CLIENTE---</option>
+                                            @foreach ($clientes as $cliente)
+                                                <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Fecha de emisión</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model.defer="fecha_emision" class="form-control"
-                                        placeholder="15/02/2023" id="datepicker">
+                                    <input type="date" wire:model="fecha_emision" class="form-control"
+                                        placeholder="15/02/2023">
                                     @error('fecha_emision')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de
-                                    vencimiento</label>
+                            <div class="col-md-4">
+                                <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de vencimiento</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model.defer="fecha_vencimiento" class="form-control"
-                                        placeholder="18/02/2023" id="datepicker2">
+                                    <input type="date" wire:model="fecha_vencimiento" class="form-control"
+                                        placeholder="18/02/2023">
                                     @error('fecha_vencimiento')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group row">
-                            <div class="col-md-12">
-                                <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
+                            <div class="col-md-6">
+                                <label for="fecha_emision" class="col-sm-12 col-form-label">Total</label>
                                 <div class="col-sm-12">
-                                    <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"
-                                        placeholder="Factura para el cliente Dani..."></textarea>
-                                    @error('descripcion')
+                                    @if(isset($this->pedido))
+                                    <input type="number" wire:model="precio" class="form-control"
+                                        placeholder="Precio" disabled>
+                                    @else
+                                    <input type="number" wire:model="precio" class="form-control"
+                                        placeholder="Precio">
+                                    @endif
+                                    @error('precio')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
                                     <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
@@ -85,6 +116,18 @@
                                             <option value="otros">Otros</option>
                                         </select>
                                     @error('denominacion')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
+                                <div class="col-sm-12">
+                                    <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"
+                                        placeholder="Factura para el cliente Dani..."></textarea>
+                                    @error('descripcion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>

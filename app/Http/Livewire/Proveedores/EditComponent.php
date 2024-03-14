@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Proveedores;
 use App\Models\Proveedores;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
+use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,14 +25,18 @@ class EditComponent extends Component
     public $email;
     public $nota;
     public $cuenta_contable;
+    public $delegacion_COD="";
+    public $delegaciones;
 
 
     public function mount()
     {
         $proveedor = Proveedores::find($this->identificador);
-
+        $this->delegaciones = Delegacion::all();
         $this->nombre = $proveedor->nombre;
         $this->dni_cif = $proveedor->dni_cif;
+        $this->cuenta_contable = $proveedor->cuenta_contable;
+        $this->delegacion_COD = $proveedor->delegacion_COD;
         $this->direccion = $proveedor->direccion;
         $this->provincia = $proveedor->provincia;
         $this->localidad = $proveedor->localidad;
@@ -65,7 +70,8 @@ class EditComponent extends Component
                 'telefono' => 'required',
                 'email' => 'required',
                 'nota' => 'nullable',
-                'cuenta_contable'=> 'nullable'
+                'cuenta_contable'=> 'nullable',
+                'delegacion_COD'=> 'nullable'
 
             ],
             // Mensajes de error
@@ -94,6 +100,8 @@ class EditComponent extends Component
             'telefono' => $this->telefono,
             'email' => $this->email,
             'nota'=> $this->nota,
+            'delegacion_COD'=> $this->delegacion_COD,
+            'cuenta_contable'=> $this->cuenta_contable,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $proveedor->id));
 

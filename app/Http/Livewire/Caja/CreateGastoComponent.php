@@ -24,6 +24,7 @@ class CreateGastoComponent extends Component
     public $poveedor_id;
     public $poveedores;
     public $facturas;
+    public $estado ='Pendiente';
 
 
     public function mount()
@@ -47,6 +48,7 @@ class CreateGastoComponent extends Component
                 'descripcion' => 'required',
                 'poveedor_id' => 'nullable',
                 'fecha' => 'required',
+                'estado' => 'nullable',
 
 
             ],

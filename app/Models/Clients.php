@@ -45,6 +45,9 @@ class Clients extends Model
         "precio_vodka3l",
         "nota",
         "cuenta_contable",
+        "delegacion_COD",
+        "comercial_id",
+        "cuenta",
     ];
 
     /**
@@ -55,4 +58,9 @@ class Clients extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function delegacion()
+    {
+        return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
+    }
 }

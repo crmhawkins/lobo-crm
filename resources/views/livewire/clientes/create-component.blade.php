@@ -32,25 +32,41 @@
                             <div class="form-group col-sm-1">
                                 &nbsp;
                             </div>
-                            <div class="col-sm-10">
+                            <div class="col-sm-3">
                                 <div class="row">
-                                    <div class="col-sm-1 d-inline-flex align-items-center">
+                                    <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
                                             value="1" id="check1">
                                         <label for="check1" class=" col-form-label">Empresa</label>
                                     </div>
-                                    <div class="form-group col-sm-11">
-                                        &nbsp;
-                                    </div>
-                                    <div class="col-sm-1 d-inline-flex align-items-center">
+                                    <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
                                             value="0" id="check2">
                                         <label for="check2" class=" col-form-label">Particular</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
-                                &nbsp;
+                            <div class="form-group col-sm-4">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Delegacion</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD">
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        @foreach ($delegaciones as $delegacion )
+                                            <option value="{{$delegacion->COD}}">{{$delegacion->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Comercial</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="comercial_id" class="form-control" name="comercial_id" id="comercial_id">
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        @foreach ($comerciales as $comercial )
+                                            <option value="{{$comercial->id}}">{{$comercial->name}} {{$comercial->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row justify-content-center">
@@ -405,6 +421,8 @@
                                 <div class="col-sm-12">
                                     <select wire:model="vencimiento_factura_pref" class="form-control" name="vencimiento_factura_pref" id="vencimiento_factura_pref">
                                         <option value="" disabled selected>Selecciona una opción</option>
+                                        <option value="7">7 días</option>
+                                        <option value="15">15 días</option>
                                         <option value="30">30 días</option>
                                         <option value="45">45 días</option>
                                         <option value="60">60 días</option>
@@ -423,6 +441,25 @@
                         </div>
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Nº de cuenta</label>
+                                <div class="col-sm-12">
+                                    <input type="text" wire:model="cuenta" class="form-control" name="cuenta"
+                                        id="cuenta" placeholder="Cuenta bancaria">
+                                    @error('cuenta')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .cuenta {
+                                                    color: red;
+                                                }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta contable</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta_contable" class="form-control" name="cuenta_contable"
@@ -438,9 +475,8 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
-                                &nbsp;
-                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Porcentaje de botellas sin cargo </label>
                                 <div class="col-sm-12">
@@ -457,9 +493,10 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row justify-content-center">
-                            <div class="col-sm-11">
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"
