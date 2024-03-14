@@ -82,7 +82,7 @@ class CreateComponent extends Component
 
     public function getUnidadesTabla($id)
     {
-        $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
+        $producto = Productos::find($this->productos_pedido[$id]['producto_id']);
         $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
         $pallets = floor($cajas / $producto->cajas_por_pallet);
         $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
