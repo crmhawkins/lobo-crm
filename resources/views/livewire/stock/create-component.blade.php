@@ -68,10 +68,9 @@
                             });">
                                 <label for="fechaVencimiento">Estado</label>
                                 <select class="form-control" name="estado" id="select2-estado"
-                                    value="{{ $estado }}" disabled>
+                                    value="{{ $estado }}" >
                                     <option value="0">Stock completo</option>
                                     <option value="1">Stock parcial</option>
-                                    <option value="2">Sin stock</option>
                                 </select>
                             </div>
                         </div>
