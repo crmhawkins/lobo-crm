@@ -84,7 +84,7 @@ class CreateComponent extends Component
         $this->productos_pedido = array_values($this->productos_pedido);
     }
 
-    /*public function addProducto($id)
+    public function addProducto($id)
     {
         $producto_existe = false;
         $producto_id = $id;
@@ -103,22 +103,22 @@ class CreateComponent extends Component
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
         $this->emit('refreshComponent');
-    }*/
-    public function addProducto($id)
-{
-    // Limpiar cualquier producto existente
-    $this->productos_pedido = [];
+    }
+//     public function addProducto($id)
+// {
+//     // Limpiar cualquier producto existente
+//     $this->productos_pedido = [];
 
-    // Añadir el producto seleccionado con una cantidad fija de 1 palet
-    $this->productos_pedido[] = ['producto_id' => $id, 'cantidad' => 1];
+//     // Añadir el producto seleccionado con una cantidad fija de 1 palet
+//     $this->productos_pedido[] = ['producto_id' => $id, 'cantidad' => ""];
 
-    // Restablecer selecciones
-    $this->producto_seleccionado = 0;
-    $this->unidades_producto = 0;
+//     // Restablecer selecciones
+//     $this->producto_seleccionado = 0;
+//     $this->unidades_producto = 0;
 
-    // Refrescar el componente
-    $this->emit('refreshComponent');
-}
+//     // Refrescar el componente
+//     $this->emit('refreshComponent');
+// }
 
     public function submit()
     {
