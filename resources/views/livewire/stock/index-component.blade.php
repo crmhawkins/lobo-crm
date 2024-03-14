@@ -73,12 +73,23 @@
                                         searching: false,
                                         paging: false,
                                         info: false,
+                                        dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
+                                        buttons: [
+                                            {
+                                                extend: 'excelHtml5',
+                                                text: 'Exportar a Excel',
+                                                titleAttr: 'Excel'
+                                            },
+                                            {
+                                                extend: 'pdfHtml5',
+                                                text: 'Exportar a PDF',
+                                                titleAttr: 'PDF'
+                                            }
+                                        ]
                                     });
                                 })"
                                     wire:key='{{ rand() }}'>
-                                    <table id="tabla-stock"
-                                        class="table table-striped table-bordered dt-responsive nowrap"
-                                        wire:key='{{ rand() }}'>
+                                    <table id="tabla-stock"  class="table table-striped table-bordered dt-responsive nowrap"  wire:key='{{ rand() }}'>
                                         <thead>
                                             <tr>
                                                 <th>Nº Interno</th>
