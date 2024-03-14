@@ -78,11 +78,15 @@ class CreateComponent extends Component
             ]
         );
 
-        if(isset($this->foto_ruta)){$name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
+        if(isset($this->foto_ruta))
+        {
 
-        $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
+            $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->extension();
 
-        $validatedData['foto_ruta'] = $name;}
+            $this->foto_ruta->storePubliclyAs('public', 'photos/' . $name);
+
+            $validatedData['foto_ruta'] = $name;
+        }
 
         // Guardar datos validados
         $productosSave = Productos::create($validatedData);

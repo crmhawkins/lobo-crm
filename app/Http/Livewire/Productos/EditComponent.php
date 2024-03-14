@@ -10,6 +10,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
 
+use function PHPUnit\Framework\isNull;
+
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -76,13 +78,7 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
-        if (file_exists('storage/photos/' . $this->foto_rutaOld)) {
-            $this->foto_ruta = $this->foto_rutaOld;
-        } else {
-            $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->getClientOriginalExtension();
-            $this->foto_ruta->storeAs('photos', $name, 'public'); // Guarda en storage/app/public/photos
-            $validatedData['foto_ruta'] = $name; // Actualiza la base de datos con el nuevo nombre de archivo
-        }
+
 
         // Validación de datos
         $validatedData = $this->validate(
@@ -116,16 +112,25 @@ class EditComponent extends Component
             ]
         );
 
-
+        if (file_exists('storage/photos/' . $this->foto_rutaOld) && isNull($this->foto_ruta)) {
+            $this->foto_ruta = $this->foto_rutaOld;
+        } else {
+            if(isset($this->foto_ruta))
+            {
+                $name = md5($this->foto_ruta . microtime()) . '.' . $this->foto_ruta->getClientOriginalExtension();
+                $this->foto_ruta->storeAs('photos', $name, 'public'); // Guarda en storage/app/public/photos
+                $validatedData['foto_ruta'] = $name; // Actualiza la base de datos con el nuevo nombre de archivo
+            }
+        }
         // Encuentra el producto identificado
         $product = Productos::find($this->identificador);
 
         // Guardar datos validados
         $productSave = $product->update($validatedData);
 
-        if ($this->foto_ruta === $this->foto_rutaOld) {
-            unset($this->foto_ruta);
-        }
+        // if ($this->foto_ruta === $this->foto_rutaOld) {
+        //     unset($this->foto_ruta);
+        // }
 
         if ($productSave) {
             $this->alert('success', '¡Producto actualizado correctamente!', [
