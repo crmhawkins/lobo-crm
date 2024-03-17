@@ -27,6 +27,8 @@ class CreateComponent extends Component
     public $cuenta_contable;
     public $delegacion_COD="";
     public $delegaciones;
+    public $cuenta;
+    public $forma_pago_pref = "";
 
     public $nota;
 
@@ -66,7 +68,9 @@ class CreateComponent extends Component
                 'email' => 'required',
                 'nota' => 'nullable',
                 'cuenta_contable'=> 'nullable',
-                'delegacion_COD'=> 'nullable'
+                'delegacion_COD'=> 'nullable',
+                'cuenta'=> 'nullable',
+                'forma_pago_pref' => 'nullable',
 
             ],
             // Mensajes de error

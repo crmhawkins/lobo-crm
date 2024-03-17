@@ -27,6 +27,8 @@ class EditComponent extends Component
     public $cuenta_contable;
     public $delegacion_COD="";
     public $delegaciones;
+    public $cuenta;
+    public $forma_pago_pref = "";
 
 
     public function mount()
@@ -36,6 +38,8 @@ class EditComponent extends Component
         $this->nombre = $proveedor->nombre;
         $this->dni_cif = $proveedor->dni_cif;
         $this->cuenta_contable = $proveedor->cuenta_contable;
+        $this->cuenta = $proveedor->cuenta;
+        $this->forma_pago_pref = $proveedor->forma_pago_pref;
         $this->delegacion_COD = $proveedor->delegacion_COD;
         $this->direccion = $proveedor->direccion;
         $this->provincia = $proveedor->provincia;
@@ -71,7 +75,9 @@ class EditComponent extends Component
                 'email' => 'required',
                 'nota' => 'nullable',
                 'cuenta_contable'=> 'nullable',
-                'delegacion_COD'=> 'nullable'
+                'delegacion_COD'=> 'nullable',
+                'cuenta'=> 'nullable',
+                'forma_pago_pref' => 'nullable',
 
             ],
             // Mensajes de error
@@ -102,6 +108,8 @@ class EditComponent extends Component
             'nota'=> $this->nota,
             'delegacion_COD'=> $this->delegacion_COD,
             'cuenta_contable'=> $this->cuenta_contable,
+            'cuenta'=> $this->cuenta,
+            'forma_pago_pref' => $this->forma_pago_pref,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $proveedor->id));
 

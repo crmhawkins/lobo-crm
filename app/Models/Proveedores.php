@@ -27,6 +27,8 @@ class Proveedores extends Model
         "nota",
         "cuenta_contable",
         "delegacion_COD",
+        "cuenta",
+        "forma_pago_pref",
     ];
 
     /**

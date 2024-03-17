@@ -36,7 +36,6 @@
 
 <body>
     <div class="container">
-        <h2>Códigos QR para asignación de stock (Productos)</h2>
         @foreach ($qrcodes as $qr)
             <div class="qr-code">
                 <img src="data:image/png;base64, {!! base64_encode($qr) !!}">

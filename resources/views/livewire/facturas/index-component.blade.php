@@ -50,10 +50,12 @@
                                 <tr>
                                     <th scope="col">Número</th>
                                     <th scope="col">Pedido asociado</th>
-                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Cliente</th>
                                     <th scope="col">Fecha de emisión</th>
                                     <th scope="col">Fecha de vencimiento</th>
-                                    <th scope="col">Total</th>
+                                    <th scope="col">Importe</th>
+                                    <th scope="col">IVA</th>
+                                    <th scope="col">Total(Con IVA)</th>
                                     <th scope="col">Método de pago</th>
                                     <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>
@@ -70,7 +72,7 @@
                                                     class="btn btn-primary" target="_blank"> &nbsp;Pedido
                                                     {{ $fact->pedido_id }}</a></td>
                                         @endif
-                                        <td>{{ $fact->descripcion }}</td>
+                                        <td>{{ $this->getCliente($fact->cliente_id)}}</td>
                                         <td>{{ $fact->fecha_emision }}</td>
                                         <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()))
                                             <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
@@ -79,6 +81,10 @@
                                             @endif
                                         </td>
                                         <td>{{ $fact->precio }}€
+                                        </td>
+                                        <td>{{number_format($fact->precio * 0.21, 2)}}€
+                                        </td>
+                                        <td>{{number_format($fact->precio * 1.21, 2)}}€
                                         </td>
                                         <td>{{ $fact->metodo_pago }}</td>
                                         <td>@switch($fact->estado)

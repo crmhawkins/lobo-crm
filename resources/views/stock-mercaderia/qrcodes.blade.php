@@ -2,28 +2,44 @@
 <html>
 
 <head>
-    <title>Códigos QR para asignación de stock (Mercadería)</title>
+    <title>Códigos QR para asignación de stock (Productos)</title>
     <style>
-        .qr-code {
-            display: inline-block;
-            margin: 10px;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center; /* Alinear el texto al centro */
         }
-
+        .container {
+            margin: 20px auto; /* Centrar horizontalmente el contenedor */
+            padding: 20px;
+            max-width: 800px; /* Ajustar según tus necesidades */
+        }
+        .qr-code {
+            display: inline-flex;
+            margin: 10px;
+            justify-content: center;
+            align-items: center;
+            width: 300px; /* Ajustar según tus necesidades */
+            height: 300px; /* Ajustar según tus necesidades */
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
         @page {
-            margin-left: 4% !important;
-            margin-right: 3% !important;
-            margin-bottom: 0 !important;
-            padding: 0 !important;
+            margin: 10mm;
+        }
+        h2 {
+            margin-bottom: 40px;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <h2 style="text-align: center">Códigos QR para asignación de stock (Mercadería)</h2>
-        <br>
+    <div class="container">
         @foreach ($qrcodes as $qr)
-            <img class="qr-code" src="data:image/png;base64, {!! base64_encode($qr) !!}">
+            <div class="qr-code">
+                <img src="data:image/png;base64, {!! base64_encode($qr) !!}">
+            </div>
         @endforeach
     </div>
 </body>

@@ -63,6 +63,7 @@
                                 <div class="col-sm-12">
                                     <select wire:model="comercial_id" class="form-control" name="comercial_id" id="comercial_id">
                                         <option value="" disabled selected>Selecciona una opción</option>
+                                        <option value="0">Otro</option>
                                         @foreach ($comerciales as $comercial )
                                             <option value="{{$comercial->id}}">{{$comercial->name}} {{$comercial->surname}}</option>
                                         @endforeach

@@ -219,6 +219,12 @@ class CreateComponent extends Component
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
         $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
     }
+    public function updateUnidad()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+    }
 
     public function deleteArticulo($id)
     {

@@ -50,7 +50,7 @@ class EditComponent extends Component
     public function mount()
     {
         $cliente = Clients::find($this->identificador);
-        $this->comerciales = User::where('role',3)->get();
+        $this->comerciales = User::whereIn('role', [2, 3])->get();
         $this->delegaciones = Delegacion::all();
         $this->comercial_id = $cliente->comercial_id;
         $this->delegacion_COD = $cliente->delegacion_COD;

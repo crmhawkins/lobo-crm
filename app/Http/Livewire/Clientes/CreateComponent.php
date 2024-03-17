@@ -50,7 +50,7 @@ class CreateComponent extends Component
     public function mount()
     {
         $this->clientes = Clients::all();
-        $this->comerciales = User::where('role','3')->get();
+        $this->comerciales = User::whereIn('role', [2, 3])->get();
         $this->delegaciones = Delegacion::all();
     }
 

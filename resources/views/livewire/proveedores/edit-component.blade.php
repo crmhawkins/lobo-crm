@@ -182,6 +182,48 @@
                         </div>
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
+                                <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
+                                <div class="col-sm-12">
+                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref">
+                                        <option value="" disabled selected>Selecciona una opción</option>
+                                        <option value="giro_bancario">Giro Bancario</option>
+                                        <option value="pagare">Pagare</option>
+                                        <option value="confirming">Confirming</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                    @error('forma_pago_pref')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .forma_pago_pref {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group col-sm-1">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Nº de cuenta</label>
+                                <div class="col-sm-12">
+                                    <input type="text" wire:model="cuenta" class="form-control" name="cuenta"
+                                        id="cuenta" placeholder="Cuenta bancaria">
+                                    @error('cuenta')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .cuenta {
+                                                    color: red;
+                                                }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                            <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta contable</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta_contable" class="form-control" name="cuenta_contable"

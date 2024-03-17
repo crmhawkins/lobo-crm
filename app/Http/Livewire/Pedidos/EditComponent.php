@@ -356,6 +356,9 @@ class EditComponent extends Component
 
     public function aceptarPedido()
     {
+        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+            $this->bloqueado=true;
+        }else{$this->bloqueado=false;}
 
         $validatedData = $this->validate(
             [
@@ -373,6 +376,8 @@ class EditComponent extends Component
                 'cod_postal_entrega' => 'nullable',
                 'orden_entrega' => 'nullable',
                 'descuento' => 'nullable',
+                'porcentaje_descuento'=> 'nullable',
+                'bloqueado'=> 'nullable',
             ],
             // Mensajes de error
             [
@@ -384,6 +389,9 @@ class EditComponent extends Component
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
+        if($this->bloqueado=true){
+            return;
+        }
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
             Alertas::create([
@@ -482,6 +490,12 @@ class EditComponent extends Component
         $producto = Productos::find($this->producto_seleccionado);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
         $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateUnidad()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
     }
     public function alertaAlmacen()
     {

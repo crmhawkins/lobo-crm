@@ -17,11 +17,12 @@ class IndexComponent extends Component
     // public $search;
     public $pedidos;
     public $facturas;
-
+    public $clientes;
 
     public function mount()
     {
         $this->pedidos = Pedido::all();
+        $this->clientes = Clients::all();
         $this->facturas = Facturas::all();
     }
 
@@ -31,6 +32,14 @@ class IndexComponent extends Component
         return view('livewire.facturas.index-component');
     }
 
+    public function getCliente($id)
+    {
+        $cliente=$this->clientes->find($id);
+        if(isset($cliente)){
+        return $cliente->nombre;
+        }
+        return "Cliente no definido";
+    }
     public function pdf($id,$iva)
     {
 

@@ -346,16 +346,13 @@ $canEdit = $EsAdmin || $estado == 1;
                                     </div>
                                     <div class="row justify-content-center mt-1">
                                         <div class="col-md-3">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                                            <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
                                         </div>
                                         <div class="col-md-3">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                                            <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
                                         </div>
                                         <div class="col-md-3">
-                                            <input type="number" class="form-control" wire:model="unidades_producto"
-                                                disabled>
+                                            <input type="number" class="form-control" wire:model="unidades_producto" wire:change='updateUnidad()'>
                                         </div>
                                         <div class="col-md-3" style="justify-content: start !important"
                                             style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
