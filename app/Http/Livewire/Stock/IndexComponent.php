@@ -54,7 +54,7 @@ class IndexComponent extends Component
         $stock_id = StockEntrante::where('id', $id)->first()->stock_id;
         $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
         if(isset($codigo)){
-            $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
+            $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('500')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
             $pdf = PDF::loadView('stock.qrindividual', compact('Qrcode'))->setPaper('a4')->output();
             // Guardar el PDF generado en el almacenamiento local
             $pdfBase64 = base64_encode($pdf);
