@@ -90,6 +90,8 @@ class StockController extends Controller
         $pdf = PDF::loadView('stock.qrcodes', compact('qrcodes'))->setPaper('a4');
         return $pdf->stream('qrcodes.pdf');
     }
+
+
     /**
      * Update the specified resource in storage.
      *

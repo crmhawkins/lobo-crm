@@ -51,6 +51,7 @@
                                     <tr>
                                         <th>Producto</th>
                                         <td>Cantidad</td>
+                                        <td>Codigo Qr asociado</td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -58,6 +59,8 @@
                                         <tr>
                                             <th>{{ $mercaderia->nombre }}</th>
                                             <td>{{ $this->getCantidad($mercaderia->id) }}</td>
+                                            <td><button type="button" wire:click.prevent="generarQRIndividual({{$mercaderia->id}})"
+                                                class="btn btn-lg btn-primary w-50 mt-2">GENERAR CÓDIGOS QR</button></td>
                                         </tr>
                                     @endforeach
                             </table>
@@ -162,7 +165,7 @@
 
                 if (code) {
                     console.log("Código QR encontrado", code.data);
-                    // Manejar el resultado del escaneo del QR
+                    window.location.href = '/admin/stock-mercaderia-create/' + code.data;
                     scanning = false;
                     video.srcObject.getTracks().forEach(track => track.stop());
                     canvasElement.style.display = "none";

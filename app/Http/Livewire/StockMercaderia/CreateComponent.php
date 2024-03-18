@@ -4,6 +4,7 @@ namespace App\Http\Livewire\StockMercaderia;
 
 use App\Models\Mercaderia;
 use App\Models\StockMercaderia;
+use App\Models\StockMercaderiaEntrante;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,11 @@ class CreateComponent extends Component
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 0;
         $this->qr_id = $this->identificador;
+        $stockAsignado = StockMercaderia::where('qr_id', $this->qr_id)->first();
+        if(isset($stockAsignado)){
+            $material_id = StockMercaderiaEntrante ::where('stock_id', $stockAsignado->id)->orderBy('created_at', 'desc')->first()->mercaderia_id;
+            $this->mercaderias_ordenadas[] = ['mercaderia_id' => $material_id, "cantidad" => 0];
+        }
         $this->lote_id = "Selecciona un producto";
         $this->mercaderias = Mercaderia::all();
     }

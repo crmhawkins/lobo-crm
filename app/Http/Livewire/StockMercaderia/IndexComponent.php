@@ -7,7 +7,8 @@ use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\StockMercaderia;
 use App\Models\StockMercaderiaEntrante;
-use PDF;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class IndexComponent extends Component
@@ -32,6 +33,20 @@ class IndexComponent extends Component
     public function getCantidad($id)
     {
         return StockMercaderiaEntrante::where('mercaderia_id', $id)->get()->sum('cantidad');
+    }
+
+
+    public function generarQRIndividual($id)
+    {
+        $stock_id = StockMercaderiaEntrante::where('mercaderia_id', $id)->first()->stock_id;
+        $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        if(isset($codigo)){
+        $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
+        $pdf = PDF::loadView('stock.qrcodes', compact('Qrcode'))->setPaper('a4');
+        return $pdf->stream('qrindividual.pdf');}else{
+            return;
+        }
+
     }
 
     public function getListeners()

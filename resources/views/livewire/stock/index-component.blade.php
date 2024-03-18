@@ -97,7 +97,7 @@
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en Botellas)</th>
                                                 <th>Cantidad (en Cajas)</th>
-                                                {{--<th>Accion</th>--}}
+                                                <th>Accion</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -108,9 +108,9 @@
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
-                                                    {{--<td>
-                                                        <button class="btn btn-primary" wire:click.prevent="generarPDFConQRCode({{ $lote->id }})">Generar QR</button>
-                                                    </td>--}}
+                                                    <td>
+                                                        <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote['id']}})">QR</button>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                     </table>
@@ -233,7 +233,6 @@
             } else if (currentAction === 'salida') {
                 window.location.href = '/admin/stock-edit/' + data;
             }
-            // Agrega más condiciones según sea necesario
         }
 
         function cerrarEscaneo() {

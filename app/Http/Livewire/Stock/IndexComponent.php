@@ -48,6 +48,19 @@ class IndexComponent extends Component
             $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->whereIn('stock_id', $entradas_almacen)->get();
         }
     }
+
+    public function generarQRIndividual($id)
+    {
+        $stock_id = StockEntrante::where('id', $id)->first()->stock_id;
+        $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        if(isset($codigo)){
+        $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
+        $pdf = PDF::loadView('stock.qrcodes', compact('Qrcode'))->setPaper('a4');
+        return $pdf->stream('qrindividual.pdf');}else{
+            return;
+        }
+
+    }
     public function getUnidadeCaja($id)
     {
         $producto = Productos::find($id);

@@ -42,7 +42,12 @@ class StockMercaderiaController extends Controller
         $pdf = PDF::loadView('stock-mercaderia.qrcodes', compact('qrcodes'))->setPaper('a4');
         return $pdf->stream('qrcodes.pdf');
     }
-
+    public function generarQRIndividual($codigo)
+    {
+        $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
+        $pdf = PDF::loadView('stock-mercaderia.qrindividual', compact('Qrcode'))->setPaper('a4');
+        return $pdf->stream('qrindividual.pdf');
+    }
     public function mostrarQR()
     {
         $response = '';
