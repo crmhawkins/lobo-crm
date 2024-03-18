@@ -109,7 +109,7 @@
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
                                                     <td>
-                                                        <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote['id']}})"> QR</button>
+                                                        <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote}})"> QR</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -181,14 +181,15 @@
         });
     </script> --}}
     <script>
-        window.addEventListener('downloadPdfBase64', event => {
-            const pdfBase64 = event.detail.pdfBase64;
-            const link = document.createElement('a');
-            link.href = `data:application/pdf;base64,${pdfBase64}`;
-            link.download = 'qrindividual.pdf'; // Nombre del archivo para descargar
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+       window.addEventListener('downloadPdfBase64', event => {
+        const pdfBase64 = event.detail.pdfBase64;
+        const nombreArchivo = event.detail.nombreArchivo; // Usa el nombre de archivo enviado desde el servidor
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${pdfBase64}`;
+        link.download = nombreArchivo; // Utiliza el nombre de archivo dinámico
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         });
         </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>

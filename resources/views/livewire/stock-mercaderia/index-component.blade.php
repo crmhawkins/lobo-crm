@@ -59,7 +59,7 @@
                                         <tr>
                                             <th>{{ $mercaderia->nombre }}</th>
                                             <td>{{ $this->getCantidad($mercaderia->id) }}</td>
-                                            <td><button type="button" wire:click.prevent="generarQRIndividual({{$mercaderia->id}})"
+                                            <td><button type="button" wire:click.prevent="generarQRIndividual({{$mercaderia}})"
                                                 class="btn btn-lg btn-primary w-50 mt-2">GENERAR CÓDIGOS QR</button></td>
                                         </tr>
                                     @endforeach
@@ -135,15 +135,16 @@
     </script> --}}
     <script>
         window.addEventListener('downloadPdfBase64', event => {
-            const pdfBase64 = event.detail.pdfBase64;
-            const link = document.createElement('a');
-            link.href = `data:application/pdf;base64,${pdfBase64}`;
-            link.download = 'qrindividual.pdf'; // Nombre del archivo para descargar
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-        </script>
+         const pdfBase64 = event.detail.pdfBase64;
+         const nombreArchivo = event.detail.nombreArchivo; // Usa el nombre de archivo enviado desde el servidor
+         const link = document.createElement('a');
+         link.href = `data:application/pdf;base64,${pdfBase64}`;
+         link.download = nombreArchivo; // Utiliza el nombre de archivo dinámico
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+         });
+         </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
     <script>
         let video = document.createElement("video");
