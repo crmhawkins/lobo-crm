@@ -38,7 +38,8 @@ class IndexComponent extends Component
 
     public function generarQRIndividual($mercaderia)
     {
-        $id = $mercaderia->id;
+        $id = $mercaderia['id'];
+
         $stock_id = StockMercaderiaEntrante::where('mercaderia_id', $id)->first()->stock_id;
         $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
         if(isset($codigo)){
@@ -48,7 +49,7 @@ class IndexComponent extends Component
             $pdfBase64 = base64_encode($pdf);
 
            // Suponiendo que quieres incluir el ID en el nombre del archivo
-            $nombreArchivo = "QR_" . $mercaderia->nombre . ".pdf";
+            $nombreArchivo = "QR_" . $mercaderia['nombre'] . ".pdf";
 
             // Enviar el PDF en Base64 al frontend junto con el nombre del archivo
             $this->dispatchBrowserEvent('downloadPdfBase64', ['pdfBase64' => $pdfBase64, 'nombreArchivo' => $nombreArchivo]);

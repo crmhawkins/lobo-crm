@@ -61,7 +61,7 @@ class IndexComponent extends Component
             $pdfBase64 = base64_encode($pdf);
 
           // Suponiendo que quieres incluir el ID en el nombre del archivo
-          $nombreArchivo = "QR_Orden" . $lote['orden_numero'] . ".pdf";
+          $nombreArchivo = "QR_Orden_" . $lote['orden_numero'] . ".pdf";
 
           // Enviar el PDF en Base64 al frontend junto con el nombre del archivo
           $this->dispatchBrowserEvent('downloadPdfBase64', ['pdfBase64' => $pdfBase64, 'nombreArchivo' => $nombreArchivo]);
