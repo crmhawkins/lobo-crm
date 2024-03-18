@@ -40,8 +40,10 @@ class IndexComponent extends Component
     {
         $id = $mercaderia['id'];
 
-        $stock_id = StockMercaderiaEntrante::where('mercaderia_id', $id)->first()->stock_id;
-        $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        $stock = StockMercaderiaEntrante::where('mercaderia_id', $id)->first();
+        if(isset( $stock)){
+            $stock_id = $stock->stock_id;
+            $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;}
         if(isset($codigo)){
             $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('500')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
             $pdf = PDF::loadView('stock-mercaderia.qrindividual', compact('Qrcode'))->setPaper('a4')->output();

@@ -52,8 +52,12 @@ class IndexComponent extends Component
     public function generarQRIndividual($lote)
     {
         $id = $lote['id'];
-        $stock_id = StockEntrante::where('id', $id)->first()->stock_id;
-        $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        $stock = StockEntrante::where('id', $id)->first();
+        if(isset( $stock)){
+            $stock_id = $stock->stock_id;
+            $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        }
+
         if(isset($codigo)){
             $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('500')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
             $pdf = PDF::loadView('stock.qrindividual', compact('Qrcode'))->setPaper('a4')->output();
