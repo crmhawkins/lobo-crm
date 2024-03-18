@@ -100,7 +100,6 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock-create/{id}', [StockController::class, 'create'])->name('stock.create');
     Route::get('/stock-edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
     Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock.crear-qr');
-    Route::get('/stock/qrindividual/{id}', [StockController::class, 'generarQRIndividual'])->name('stock.qrindividual');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios-create', [UsuarioController::class, 'create'])->name('usuarios.create');
@@ -118,7 +117,6 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock-mercaderia-create/{id}', [StockMercaderiaController::class, 'create'])->name('stock-mercaderia.create');
     Route::get('/stock-mercaderia-edit/{id}', [StockMercaderiaController::class, 'edit'])->name('stock-mercaderia.edit');
     Route::get('/stock-mercaderia/crear-qr', [StockMercaderiaController::class, 'crearQR'])->name('stock-mercaderia.crear-qr');
-    Route::get('/stock-mercaderia/qrindividual/{id}', [StockMercaderiaController::class, 'generarQRIndividual'])->name('stock-mercaderia.qrindividual');
     Route::get('/stock-mercaderia/mostrar-qr', [StockMercaderiaController::class, 'mostrarQR'])->name('stock-mercaderia.mostrar-qr');
 
     Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');

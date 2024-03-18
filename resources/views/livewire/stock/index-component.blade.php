@@ -108,7 +108,9 @@
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
-                                                    <td><a href="/stock/qrindividual/{{$lote['id']}}" class="btn btn-primary">QR</a></td>
+                                                    <td>
+                                                        <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote['id']}})"> QR</button>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                     </table>
