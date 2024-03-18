@@ -42,8 +42,8 @@ class IndexComponent extends Component
         $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
         if(isset($codigo)){
         $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
-        dd($Qrcode);
         $pdf = PDF::loadView('stock-mercaderia.qrindividual', compact('Qrcode'))->setPaper('a4');
+        dd($pdf);
         return $pdf->stream('qrindividual.pdf');}else{
             return;
         }
