@@ -59,8 +59,8 @@
                                         <tr>
                                             <th>{{ $mercaderia->nombre }}</th>
                                             <td>{{ $this->getCantidad($mercaderia->id) }}</td>
-                                            <td><button type="button" wire:click.prevent="generarQRIndividual({{$mercaderia->id}})"
-                                                class="btn btn-lg btn-primary w-50 mt-2">GENERAR CÓDIGOS QR</button></td>
+                                            <td><a href="/stock-mercaderia/qrindividual/{{$mercaderia->id}}" class="btn btn-primary">QR</a></td>
+
                                         </tr>
                                     @endforeach
                             </table>

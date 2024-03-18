@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Mercaderia;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\StockMercaderia;
+use App\Models\StockMercaderiaEntrante;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use App\Models\Settings;
@@ -42,11 +44,19 @@ class StockMercaderiaController extends Controller
         $pdf = PDF::loadView('stock-mercaderia.qrcodes', compact('qrcodes'))->setPaper('a4');
         return $pdf->stream('qrcodes.pdf');
     }
-    public function generarQRIndividual($codigo)
+    public function generarQRIndividual($id)
     {
+        $stock_id = StockMercaderiaEntrante::where('mercaderia_id', $id)->first()->stock_id;
+        $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        if(isset($codigo)){
         $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
         $pdf = PDF::loadView('stock-mercaderia.qrindividual', compact('Qrcode'))->setPaper('a4');
         return $pdf->stream('qrindividual.pdf');
+
+        }else{
+            return;
+        }
+
     }
     public function mostrarQR()
     {

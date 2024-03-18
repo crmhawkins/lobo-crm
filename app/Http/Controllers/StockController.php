@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Stock;
+use App\Models\StockEntrante;
+
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use App\Models\Settings;
@@ -91,6 +93,21 @@ class StockController extends Controller
         return $pdf->stream('qrcodes.pdf');
     }
 
+    public function generarQRIndividual($id)
+    {
+        $stock_id = StockEntrante::where('id', $id)->first()->stock_id;
+        $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        if(isset($codigo)){
+        $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
+
+        $pdf = PDF::loadView('stock.qrindividual', compact('Qrcode'))->setPaper('a4');
+
+        return $pdf->stream('qrindividual.pdf');
+
+    }else{
+            return;
+        }
+    }
 
     /**
      * Update the specified resource in storage.
