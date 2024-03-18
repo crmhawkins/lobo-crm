@@ -133,6 +133,17 @@
             })
         });
     </script> --}}
+    <script>
+        window.addEventListener('downloadPdfBase64', event => {
+            const pdfBase64 = event.detail.pdfBase64;
+            const link = document.createElement('a');
+            link.href = `data:application/pdf;base64,${pdfBase64}`;
+            link.download = 'qrindividual.pdf'; // Nombre del archivo para descargar
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
     <script>
         let video = document.createElement("video");
