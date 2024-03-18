@@ -32,20 +32,21 @@ class EditComponent extends Component
     public $productos_pedido = [];
     public $productos_disponibles = [];
     public $productos;
+    public $almacenDestino;
     public function mount()
     {
-        $stock = Stock::where('qr_id', $this->identificador)->first();
-        $this->fecha = $stock->fecha;
+        $stockentrante = StockEntrante::find( $this->identificador);
+        $stock = Stock::find( $stockentrante->stock_id);
         $this->estado = $stock->estado;
-        $this->qr_id = $this->identificador;
+        $this->qr_id = $stock->qr_id;
         $this->productos = Productos::all();
         $this->almacenes = Almacen::all();
         $user = Auth::user();
         $this->almacen_id = $stock->almacen_id;
         $stock_disponible = StockEntrante::where('stock_id', $stock->id)->get();
         foreach ($stock_disponible as $productoIndex => $producto) {
-            $this->productos_disponibles[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => $producto->cantidad];
-            $this->productos_pedido[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => 0];
+            $this->productos_disponibles[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => $producto->cantidad, 'orden_numero' => $producto->orden_numero];
+            $this->productos_pedido[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'orden_numero' => $producto->orden_numero, 'cantidad' => 0];
         }
     }
 
@@ -108,8 +109,6 @@ class EditComponent extends Component
     // Elimina el producto
     public function destroy()
     {
-        // $product = Productos::find($this->identificador);
-        // $product->delete();
 
         $this->alert('warning', '¿Seguro que desea borrar el producto? No hay vuelta atrás', [
             'position' => 'center',
@@ -175,24 +174,5 @@ class EditComponent extends Component
         $this->productos_pedido = array_values($this->productos_pedido);
     }
 
-   /* public function addProducto($id)
-    {
-        $producto_existe = false;
-        $producto_id = $id;
-        foreach ($this->productos_pedido as $productos) {
-            if ($productos['producto_id'] == $id) {
-                $producto_existe = true;
-                $producto_id = $productos['producto_id'];
-            }
-        }
-        if ($producto_existe == true) {
-            $producto = array_search($producto_id, array_column($this->productos_pedido, 'producto_id'));
-            $this->productos_pedido[$producto]['cantidad'] = $this->productos_pedido[$producto]['cantidad'] + $this->unidades_producto;
-        } else {
-            $this->productos_pedido[] = ['producto_id' => $id, "cantidad" => $this->unidades_producto];
-        }
-        $this->producto_seleccionado = 0;
-        $this->unidades_producto = 0;
-        $this->emit('refreshComponent');
-    }*/
+
 }

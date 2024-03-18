@@ -16,7 +16,9 @@
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
-
+    @php
+    $mostrarElemento = Auth::user()->isAdmin();
+    @endphp
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -33,7 +35,7 @@
                             <div class="form-group col-sm-1">
                                 &nbsp;
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="row">
                                     <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
@@ -47,7 +49,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-sm-4">
+                            <div class="form-group col-sm-3">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Delegacion</label>
                                 <div class="col-sm-12">
                                     <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD">
@@ -58,7 +60,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group col-sm-4">
+                            <div class="form-group col-sm-3">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Comercial</label>
                                 <div class="col-sm-12">
                                     <select wire:model="comercial_id" class="form-control" name="comercial_id" id="comercial_id">
@@ -70,6 +72,23 @@
                                     </select>
                                 </div>
                             </div>
+                            @if ($mostrarElemento)
+                            <div class="form-group col-md-3" wire:ignore>
+                                <div x-data="" x-init="$('#select2-estado').select2();
+                                    $('#select2-estado').on('change', function(e) {
+                                    var data = $('#select2-estado').select2('val');
+                                    @this.set('estado', data);
+                                    });">
+                                    <label for="Estado">Estado</label>
+                                        <select class="form-control" wire:model="estado" name="estado" id="select2-estado"
+                                        value="{{ $estado }}">
+                                            <option value="1">Pendiente</option>
+                                            <option value="2">Aceptado</option>
+                                            <option value="3">Rechazado</option>
+                                        </select>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-12">

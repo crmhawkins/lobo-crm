@@ -110,6 +110,7 @@
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
                                                     <td>
                                                         <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote}})"> QR</button>
+                                                        <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Traspaso de lote</a>
                                                     </td>
                                                 </tr>
                                             @endforeach

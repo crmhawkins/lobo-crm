@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-11">
-                            <h4> Almacén de destino: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
+                            <h4> Almacén de origen: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
                             </h4>
                         </div>
                     </div>
@@ -35,11 +35,7 @@
                             <label for="fecha">Identificador del QR</label>
                             <input type="text" wire:model="qr_id" class="form-control" disabled>
                         </div>
-                        <div class="form-group col-md-2">
-                            <label for="fecha">Fecha</label>
-                            <input type="date" wire:model="fecha" class="form-control" disabled>
-                        </div>
-                        <div class="form-group col-md-4" wire:ignore>
+                        <div class="form-group col-md-3" wire:ignore>
                             <div x-data="" x-init="$('#select2-estado').select2();
                             $('#select2-estado').on('change', function(e) {
                                 var data = $('#select2-estado').select2('val');
@@ -47,12 +43,20 @@
                             });">
                                 <label for="fechaVencimiento">Estado</label>
                                 <select class="form-control" name="estado" id="select2-estado"
-                                    value="{{ $estado }}" disabled>
+                                    value="{{ $estado }}">
                                     <option value="0">Stock completo</option>
                                     <option value="1">Stock parcial</option>
-                                    <option value="2">Sin stock</option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="form-group col-md-3" wire:ignore>
+                                <label for="fechaVencimiento">Estado</label>
+                                <select class="form-control" name="almacenDestino" id="almacenDestino" wire:model="almacenDestino">
+                                    <option value="0">---SELECCIONE ALMADEN DE DESTINO---</option>
+                                    @foreach ($almacenes as $almacen)
+                                    <option value="{{$almacen->id}}">{{$almacen->almacen}}</option>
+                                    @endforeach
+                                </select>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
@@ -77,19 +81,23 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Lote</th>
+                                                <th>Orden</th>
                                                 <th>Cantidad</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($productos_disponibles as $productoIndex => $producto)
                                                 <tr>
-                                                    <td width="33%">
+                                                    <td width="25%">
                                                         {{ $this->getNombreTabla($producto['producto_id']) }}
                                                     </td>
-                                                    <td width="33%">
+                                                    <td width="25%">
                                                         {{ $producto['lote_id'] }}
                                                     </td>
-                                                    <td width="34%">
+                                                    <td width="25%">
+                                                        {{ $producto['orden_numero'] }}
+                                                    </td>
+                                                    <td width="25%">
                                                         {{ $producto['cantidad'] }} cajas
                                                         </div>
                                                     </td>
@@ -112,19 +120,23 @@
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Lote</th>
+                                                <th>Orden</th>
                                                 <th>Cantidad</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($productos_pedido as $productoIndex => $producto)
                                                 <tr>
-                                                    <td width="35%">
+                                                    <td width="25%">
                                                         {{ $this->getNombreTabla($producto['producto_id']) }}
                                                     </td>
-                                                    <td width="25%">
+                                                    <td width="20%">
                                                         {{ $producto['lote_id'] }}
                                                     </td>
-                                                    <td width="40%">
+                                                    <td width="20%">
+                                                        {{ $producto['orden_numero'] }}
+                                                    </td>
+                                                    <td width="35%">
                                                         <div class="row align-items-center">
                                                             <div class="col-6 text-end"><input type="number"
                                                                     class="form-control"
@@ -299,198 +311,10 @@
     </div>
 
     @section('scripts')
-        {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
-        {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
-        <script>
-            // In your Javascript (external .js resource or <script> tag)
 
-            $("#alertaGuardar").on("click", () => {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    icon: 'warning',
-                    showConfirmButton: true,
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.livewire.emit('submitEvento');
-                    }
-                });
-            });
-
-            $.datepicker.regional['es'] = {
-                closeText: 'Cerrar',
-                prevText: '< Ant',
-                nextText: 'Sig >',
-                currentText: 'Hoy',
-                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-                    'Octubre', 'Noviembre', 'Diciembre'
-                ],
-                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb'],
-                dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
-                weekHeader: 'Sm',
-                dateFormat: 'yy-mm-dd',
-                firstDay: 1,
-                isRTL: false,
-                showMonthAfterYear: false,
-                yearSuffix: ''
-            };
-            $.datepicker.setDefaults($.datepicker.regional['es']);
-            // document.addEventListener('livewire:load', function() {
-
-
-            // })
-            document.addEventListener("livewire:load", () => {
-                Livewire.hook('message.processed', (message, component) => {
-                    $('.js-example-basic-single').select2();
-                });
-
-                // $('#id_cliente').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // // var data = $('.js-example-basic-single').select2("val");
-                // })
-            });
-
-
-
-            $(document).ready(function() {
-                $('.js-example-basic-single').select2();
-                // $('.js-example-basic-single').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // var data = $('.js-example-basic-single').select2("val");
-
-                // @this.set('foo', data);
-                //     livewire.emit('selectedCompanyItem', e.target.value)
-                // });
-                // $('#tableServicios').DataTable({
-                //     responsive: true,
-                //     dom: 'Bfrtip',
-                //     buttons: [
-                //         'copy', 'csv', 'excel', 'pdf', 'print'
-                //     ],
-                //     buttons: [{
-                //         extend: 'collection',
-                //         text: 'Export',
-                //         buttons: [{
-                //                 extend: 'pdf',
-                //                 className: 'btn-export'
-                //             },
-                //             {
-                //                 extend: 'excel',
-                //                 className: 'btn-export'
-                //             }
-                //         ],
-                //         className: 'btn btn-info text-white'
-                //     }],
-                //     "language": {
-                //         "lengthMenu": "Mostrando _MENU_ registros por página",
-                //         "zeroRecords": "Nothing found - sorry",
-                //         "info": "Mostrando página _PAGE_ of _PAGES_",
-                //         "infoEmpty": "No hay registros disponibles",
-                //         "infoFiltered": "(filtrado de _MAX_ total registros)",
-                //         "search": "Buscar:",
-                //         "paginate": {
-                //             "first": "Primero",
-                //             "last": "Ultimo",
-                //             "next": "Siguiente",
-                //             "previous": "Anterior"
-                //         },
-                //         "zeroRecords": "No se encontraron registros coincidentes",
-                //     }
-
-            });
-
-
-
-            // $("#fechaEmision").datepicker();
-
-
-            // $("#fechaEmision").on('change', function(e) {
-            //     @this.set('fechaEmision', $('#fechaEmision').val());
-            // });
-
-
-
-            function togglePasswordVisibility() {
-                var passwordInput = document.getElementById("password");
-                var eyeIcon = document.getElementById("eye-icon");
-                if (passwordInput.type === "password") {
-                    passwordInput.type = "text";
-                    eyeIcon.className = "fas fa-eye-slash";
-                } else {
-                    passwordInput.type = "password";
-                    eyeIcon.className = "fas fa-eye";
-                }
-            }
-            //observer para aplicar el datepicker de evento
-            // const observer = new MutationObserver((mutations, observer) => {
-            //     console.log(mutations, observer);
-            // });
-            // observer.observe(document, {
-            //     subtree: true,
-            //     attributes: true
-            // });
-
-
-
-            document.addEventListener('DOMSubtreeModified', (e) => {
-                $("#diaEvento").datepicker();
-
-                // $("#diaEvento").on('focus', function(e) {
-                //     document.getElementById("guardar-evento").style.visibility = "hidden";
-                // })
-                // $("#diaEvento").on('focusout', function(e) {
-                //     if ($('#diaEvento').val() != "") {
-                //         document.getElementById("guardar-evento").style.visibility = "visible";
-                //     }
-
-                // })
-                // $("#diaFinal").on('focus', function(e) {
-                //     document.getElementById("guardar-evento").style.visibility = "hidden";
-                // })
-                // $("#diaFinal").on('focusout', function(e) {
-                //     if ($('#diaFinal').val() != "") {
-                //         document.getElementById("guardar-evento").style.visibility = "visible";
-                //     }
-
-                // })
-
-                $("#diaFinal").datepicker();
-
-                $("#diaFinal").on('change', function(e) {
-                    @this.set('diaFinal', $('#diaFinal').val());
-
-                });
-
-                $("#diaEvento").on('change', function(e) {
-                    @this.set('diaEvento', $('#diaEvento').val());
-                    @this.set('diaFinal', $('#diaEvento').val());
-
-                });
-
-                $('#id_cliente').on('change', function(e) {
-                    console.log('change')
-                    console.log(e.target.value)
-                    var data = $('#id_cliente').select2("val");
-                    @this.set('id_cliente', data);
-                    Livewire.emit('selectCliente')
-
-                    // livewire.emit('selectedCompanyItem', data)
-                })
-            })
-
-            function OpenSecondPage() {
-                var id = @this.id_cliente
-                window.open(`/admin/clientes-edit/` + id, '_blank'); // default page
-            };
         </script>
     @endsection
