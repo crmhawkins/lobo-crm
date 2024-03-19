@@ -29,7 +29,8 @@ class Productos extends Model
         'info_nutricional',
         'grad_alcohol',
         'domicilio_fabricante',
-        'stock_seguridad'
+        'stock_seguridad',
+        'precio'
 
     ];
 

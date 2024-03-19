@@ -33,6 +33,7 @@ class CreateComponent extends Component
     public $grad_alcohol;
     public $domicilio_fabricante;
     public $stock_seguridad;
+    public $precio;
     public function mount()
     {
     }
@@ -67,6 +68,7 @@ class CreateComponent extends Component
                 'grad_alcohol' => 'nullable',
                 'domicilio_fabricante' => 'nullable',
                 'stock_seguridad' => 'nullable',
+                'precio' => 'nullable'
             ],
             // Mensajes de error
             [

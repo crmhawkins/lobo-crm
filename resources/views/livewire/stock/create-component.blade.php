@@ -57,7 +57,7 @@
                         </div>
                         <div class="form-group col-md-2">
 
-                            <label for="fecha">Nº de Orden</label>
+                            <label for="fecha">N.º Lote</label>
                             <input type="string" wire:model="orden_numero" class="form-control">
                         </div>
                         <div class="form-group col-md-4" wire:ignore>

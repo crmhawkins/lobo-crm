@@ -20,34 +20,26 @@ class EditComponent extends Component
 
     public $identificador;
     public $qr_id;
-    public $numero;
-    public $precio = 0;
     public $estado;
-    public $fecha;
-    public $observaciones;
     public $producto_seleccionado;
-    public $unidades_producto;
     public $almacenes;
     public $almacen_id;
-    public $productos_pedido = [];
-    public $productos_disponibles = [];
     public $productos;
     public $almacenDestino;
+    public $cantidad;
+    public $stockentrante;
+    public $stock;
     public function mount()
     {
-        $stockentrante = StockEntrante::find( $this->identificador);
-        $stock = Stock::find( $stockentrante->stock_id);
-        $this->estado = $stock->estado;
-        $this->qr_id = $stock->qr_id;
+        $this->stockentrante = StockEntrante::find( $this->identificador);
+        $this->stock = Stock::find(  $this->stockentrante->stock_id);
+        $this->estado =  $this->stock->estado;
+        $this->qr_id =  $this->stock->qr_id;
         $this->productos = Productos::all();
         $this->almacenes = Almacen::all();
         $user = Auth::user();
-        $this->almacen_id = $stock->almacen_id;
-        $stock_disponible = StockEntrante::where('stock_id', $stock->id)->get();
-        foreach ($stock_disponible as $productoIndex => $producto) {
-            $this->productos_disponibles[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'cantidad' => $producto->cantidad, 'orden_numero' => $producto->orden_numero];
-            $this->productos_pedido[] = ['producto_id' => $producto->producto_id, 'lote_id' => $producto->lote_id, 'orden_numero' => $producto->orden_numero, 'cantidad' => 0];
-        }
+        $this->almacen_id =  $this->stock->almacen_id;
+
     }
 
     public function render()
@@ -58,33 +50,30 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
+         $oldCantidad = $this->stockentrante->cantidad;
+         if($this->cantidad <= $oldCantidad){
+            $nuevaCantidad = $oldCantidad - $this->cantidad;
+         }else{
+            $this->alert('error', '¡No se puede mandar una cantidad mayor a la disponible!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+         }
 
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'lote_id' => 'required',
-                'producto_id' => 'required',
-                'cantidad_actual' => 'required',
-                'cantidad_inicial' => 'required',
-                'fecha_entrada' => 'required',
-                'estado' => 'required',
-            ],
-            // Mensajes de error
-            [
-                'lote_id.required' => 'La identificación del lote es obligatoria.',
-                'producto_id.required' => 'El ID de producto es obligatorio.',
-                'cantidad_actual.required' => 'La cantidad de unidades del producto es obligatoria.',
-                'cantidad_inicial.required' => 'La cantidad de unidades del producto es obligatoria.',
-                'fecha_entrada.required' => 'La fecha de entrada del lote es obligatorio.',
-                'estado.required' => 'El estado del lote es obligatoria.',
-            ]
-        );
-
-        $productSave = $this->lote->update($validatedData);
+         if ($nuevaCantidad == 0){
+            $this->stock->update([
+                'estado' => 2,
+            ]);
+         }
+        $productSave =$this->stockentrante->update([
+            'cantidad' => $nuevaCantidad,
+        ]);
 
 
         if ($productSave) {
-            $this->alert('success', '¡Producto actualizado correctamente!', [
+            $this->alert('success', '¡Stock actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -94,16 +83,13 @@ class EditComponent extends Component
                 'timerProgressBar' => true,
             ]);
         } else {
-            $this->alert('error', '¡No se ha podido guardar la información del producto!', [
+            $this->alert('error', '¡No se ha podido guardar la información del Stock!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
             ]);
         }
 
-        session()->flash('message', 'Product updated successfully.');
-
-        $this->emit('productUpdated');
     }
 
     // Elimina el producto
@@ -168,11 +154,6 @@ class EditComponent extends Component
         return $nombre_producto;
     }
 
-    public function deleteArticulo($id)
-    {
-        unset($this->productos_pedido[$id]);
-        $this->productos_pedido = array_values($this->productos_pedido);
-    }
 
 
 }

@@ -2,13 +2,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">REGISTRAR SALIDA DE STOCK</span></h4>
+                <h4 class="page-title">REGISTRAR TRASPASO DE STOCK</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Stock</a></li>
-                    <li class="breadcrumb-item active">Registrar salida de stock</li>
+                    <li class="breadcrumb-item active">Registrar traspaso de stock</li>
                 </ol>
             </div>
         </div>
@@ -21,7 +21,7 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
-                                básicos del pedido</h5>
+                                básicos </h5>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="form-group col-md-3" wire:ignore>
-                                <label for="fechaVencimiento">Estado</label>
+                                <label for="fechaVencimiento">Almacen de destino</label>
                                 <select class="form-control" name="almacenDestino" id="almacenDestino" wire:model="almacenDestino">
                                     <option value="0">---SELECCIONE ALMADEN DE DESTINO---</option>
                                     @foreach ($almacenes as $almacen)
@@ -75,37 +75,35 @@
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
                                 Stock disponible</h5>
                             <div class="form-group col-md-12">
-                                @if (count($productos_disponibles) > 0)
-                                    <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                        <thead>
+                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>N.º interno</th>
+                                            <th>N.º Lote</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
                                             <tr>
-                                                <th>Producto</th>
-                                                <th>Lote</th>
-                                                <th>Orden</th>
-                                                <th>Cantidad</th>
+                                                <td width="25%">
+                                                    {{$this->getNombreTabla($this->stockentrante->producto_id) }}
+                                                </td>
+                                                <td width="25%">
+                                                    {{$this->stockentrante->lote_id  }}
+                                                </td>
+                                                <td width="25%">
+                                                    {{$this->stockentrante->orden_numero }}
+                                                </td>
+                                                <td width="25%">
+                                                    {{$this->stockentrante->cantidad  }} Unidades
+                                                    </div>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productos_disponibles as $productoIndex => $producto)
-                                                <tr>
-                                                    <td width="25%">
-                                                        {{ $this->getNombreTabla($producto['producto_id']) }}
-                                                    </td>
-                                                    <td width="25%">
-                                                        {{ $producto['lote_id'] }}
-                                                    </td>
-                                                    <td width="25%">
-                                                        {{ $producto['orden_numero'] }}
-                                                    </td>
-                                                    <td width="25%">
-                                                        {{ $producto['cantidad'] }} cajas
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                @endif
+
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="form-group col-md-6">
@@ -114,130 +112,40 @@
                                 Stock saliente
                             </h5>
                             <div class="form-group col-md-12">
-                                @if (count($productos_pedido) > 0)
-                                    <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                        <thead>
-                                            <tr>
-                                                <th>Producto</th>
-                                                <th>Lote</th>
-                                                <th>Orden</th>
-                                                <th>Cantidad</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productos_pedido as $productoIndex => $producto)
-                                                <tr>
-                                                    <td width="25%">
-                                                        {{ $this->getNombreTabla($producto['producto_id']) }}
-                                                    </td>
-                                                    <td width="20%">
-                                                        {{ $producto['lote_id'] }}
-                                                    </td>
-                                                    <td width="20%">
-                                                        {{ $producto['orden_numero'] }}
-                                                    </td>
-                                                    <td width="35%">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-6 text-end"><input type="number"
-                                                                    class="form-control"
-                                                                    wire:model="productos_pedido.{{ $productoIndex }}.cantidad">
-                                                            </div>
-                                                            <div class="col-6 text-start">
-                                                                <p class="my-auto">cajas</p>
-                                                            </div>
-                                                        </div>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Lote</th>
+                                            <th>Orden</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                <div wire:ignore.self class="modal fade" id="addProductModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog"
-                        style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Añadir Producto</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                @if ($producto_seleccionado != null)
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-12">
-                                            <div class="card border border-dark border-1"
-                                                style="margin-bottom: 5px !important">
-                                                <div class="card-body"
-                                                    style="
-                                                display: flex;
-                                                flex-direction: column;
-                                                flex-wrap: wrap;
-                                                align-items: center;
-                                                justify-content: center;
-                                            ">
-                                                    <img src="{{ asset('storage/photos/' . $this->getProductoImagen()) }}"
-                                                        width="45%">
-                                                    <h2 class="card-title mt-0 font-32"
-                                                        style="text-align: center; margin-bottom: -0.25rem !important;">
-                                                        {{ $this->getProductoNombre() }}</h2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                                <div class="row justify-content-center">
-                                    <div class="col-md-10" style="text-align: center !important;">
-                                        <label for="fechaVencimiento">Producto seleccionado</label>
-                                    </div>
-                                    <div class="col-md-10" wire:ignore>
-                                        <div x-data="" x-init="$('#select2-producto').select2();
-                                        $('#select2-producto').on('change', function(e) {
-                                            var data = $('#select2-producto').select2('val');
-                                            @this.set('producto_seleccionado', data);
-                                            console.log('data');
-                                        });">
-                                            <select name="producto" id="select2-producto"
-                                                wire:model="producto_seleccionado" style="width: 100% !important">
-                                                <option value="{{ null }}">-- Selecciona un producto --
-                                                </option>
-                                                @foreach ($productos as $presup)
-                                                    <option value="{{ $presup->id }}">{{ $presup->nombre }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                @if ($producto_seleccionado != null)
-                                    <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7" style="text-align: center !important;">
-                                            <label for="unidades">Unidades (pallets)</label>
-                                        </div>
-                                        <div class="col-md-3" style="text-align: center !important;">
-                                            <label for="unidades">&nbsp; </label>
-                                        </div>
-                                    </div>
-                                    <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_producto">
-                                        </div>
-                                        <div class="col-md-3" style="justify-content: start !important"
-                                            style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
-                                            <button type="button" class="btn btn-primary w-100"
-                                                wire:click.prevent="addProducto('{{ $producto_seleccionado }}')"
-                                                data-dismiss="modal" aria-label="Close">+</a>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                            <tr>
+                                                <td width="25%">
+                                                    {{ $this->getNombreTabla($this->stockentrante->producto_id) }}
+                                                </td>
+                                                <td width="20%">
+                                                    {{$this->stockentrante->lote_id}}
+                                                </td>
+                                                <td width="20%">
+                                                    {{ $this->stockentrante->orden_numero  }}
+                                                </td>
+                                                <td width="35%">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-6 text-end">
+                                                            <input type="number" class="form-control" wire:model="cantidad">
+                                                        </div>
+                                                        <div class="col-6 text-start">
+                                                            <p class="my-auto">cajas</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -250,7 +158,7 @@
                     <h5>Opciones </h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Confirmar
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="update">Confirmar
                                 salida de stock</button>
                         </div>
                     </div>

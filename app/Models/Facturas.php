@@ -26,6 +26,8 @@ class Facturas extends Model
         'metodo_pago',
         'cliente_id',
         'precio',
+        'producto_id',
+        'cantidad',
 
     ];
 

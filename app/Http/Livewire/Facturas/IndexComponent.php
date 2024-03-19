@@ -48,11 +48,12 @@ class IndexComponent extends Component
         if($factura != null){
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
-            $cliente = Clients::find($pedido->cliente_id);
-            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
-            // Preparar los datos de los productos del pedido
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact= Productos::find($factura->producto_id);
             $productos = [];
+            if(isset($pedido)){
+            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+            // Preparar los datos de los productos del pedido
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
                 if ($producto) {
@@ -66,7 +67,7 @@ class IndexComponent extends Component
                         'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
                     ];
                 }
-            }
+            }}
 
             $datos = [
                 'conIva' => $iva,
@@ -74,15 +75,8 @@ class IndexComponent extends Component
                 'factura' => $factura,
                 'pedido' => $pedido,
                 'cliente' => $cliente,
-                'localidad_entrega' => $pedido->localidad_entrega,
-                'direccion_entrega' => $pedido->direccion_entrega,
-                'cod_postal_entrega' => $pedido->cod_postal_entrega,
-                'provincia_entrega' => $pedido->provincia_entrega,
-                'fecha' => $pedido->fecha,
-                'observaciones' => $pedido->observaciones,
-                'precio' => $pedido->precio,
-                'descuento' => $pedido->descuento,
                 'productos' => $productos,
+                'producto' => $productofact,
             ];
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF

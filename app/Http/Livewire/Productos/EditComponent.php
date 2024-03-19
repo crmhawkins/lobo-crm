@@ -41,11 +41,13 @@ class EditComponent extends Component
     public $grad_alcohol;
     public $domicilio_fabricante;
     public $stock_seguridad;
+    public $precio;
     public function mount()
     {
         $product = Productos::find($this->identificador);
         $this->nombre = $product->nombre;
         $this->tipo_precio = $product->tipo_precio;
+        $this->precio = $product->precio;
         $this->unidades_por_caja = $product->unidades_por_caja;
         $this->cajas_por_pallet = $product->cajas_por_pallet;
         $this->stock_seguridad = $product->stock_seguridad;
@@ -103,6 +105,7 @@ class EditComponent extends Component
                 'grad_alcohol' => 'nullable',
                 'domicilio_fabricante' => 'nullable',
                 'stock_seguridad' => 'nullable',
+                'precio' => 'nullable'
             ],
             // Mensajes de error
             [

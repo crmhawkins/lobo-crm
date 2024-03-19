@@ -4,7 +4,7 @@ namespace App\Http\Livewire\Facturas;
 
 use App\Models\Alumno;
 use App\Models\Cursos;
-use App\Models\Empresa;
+use App\Models\Productos;
 use App\Models\Pedido;
 use App\Models\Clients;
 use App\Models\Facturas;
@@ -34,6 +34,9 @@ class CreateComponent extends Component
     public $cliente;
     public $clientes;
     public $cliente_id;
+    public $producto_id;
+    public $productos;
+    public $cantidad;
 
     public function mount()
     {
@@ -48,6 +51,7 @@ class CreateComponent extends Component
             $this->metodo_pago = $this->cliente->forma_pago_pref;
             $this->precio = $this->pedido->precio;
             }
+        $this->productos = Productos::where('tipo_precio',5)->get();
         $this->clientes = Clients::where('estado', 2)->get();
         $this->numero_factura = Facturas::count() + 1;
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
@@ -58,6 +62,13 @@ class CreateComponent extends Component
         return view('livewire.facturas.create-component');
     }
 
+    public function calculoPrecio()
+    {
+        if(isset($this->cantidad) && isset($this->producto_id)){
+           $producto = $this->productos->find($this->producto_id);
+           $this->precio = $producto->precio * $this->cantidad;
+        }
+    }
 
     // Al hacer submit en el formulario
     public function submit()
@@ -73,7 +84,9 @@ class CreateComponent extends Component
                 'descripcion' => '',
                 'estado' => 'nullable',
                 'precio' => 'nullable',
-                'metodo_pago' => '',
+                'metodo_pago' => 'nullable',
+                'producto_id' => 'nullable',
+                'cantidad' => 'nullable',
 
             ],
             // Mensajes de error

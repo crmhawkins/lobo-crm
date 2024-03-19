@@ -93,6 +93,7 @@
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     <table>
+        @if(isset($pedido))
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th style="text-align: left !important">CONCEPTO</th>
             <th>LOTE</th>
@@ -116,6 +117,32 @@
 
         </tr>
         @endforeach
+        @elseif(isset($producto))
+        <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
+            <th style="text-align: left !important">CONCEPTO</th>
+            <th>UNIDADES</th>
+            <th>PRECIO POR UNIDAD</th>
+        </tr>
+        <tr style="background-color:#fff; color: #fff;">
+            <th style="padding: 0px !important; height: 10px !important;"></th>
+        </tr>
+        <tr class="left-aligned" style="background-color:#ececec;">
+            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto->nombre }}</td>
+            <td>{{ $factura->cantidad }}</td>
+            <td>{{ $producto->precio}}</td>
+        </tr>
+        @else
+        <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
+            <th style="text-align: left !important">Servicio</th>
+        </tr>
+        <tr style="background-color:#fff; color: #fff;">
+            <th style="padding: 0px !important; height: 10px !important;"></th>
+        </tr>
+        <tr class="left-aligned" style="background-color:#ececec;">
+            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $factura->descripcion }}</td>
+        </tr>
+        @endif
+
         @if(isset($pedido))
         @if ($pedido->descuento )
         <tr>
@@ -129,6 +156,7 @@
         @endif
         @endif
     </table>
+
 
     @if($conIva)
     <table style="margin-top: 5% !important">

@@ -37,6 +37,9 @@ class EditComponent extends Component
     public $cliente;
     public $clientes;
     public $cliente_id;
+    public $producto_id;
+    public $productos;
+    public $cantidad;
 
 
     public function mount()
@@ -47,6 +50,9 @@ class EditComponent extends Component
         $this->cliente_id = $this->facturas->cliente_id;
         $this->cliente = Clients::find($this->cliente_id);
         $this->pedido = Pedido::find($this->facturas->pedido_id);
+        $this->productos = Productos::where('tipo_precio',5)->get();
+        $this->producto_id = $this->facturas->producto_id;
+        $this->cantidad = $this->facturas->cantidad;
         $this->precio = $this->facturas->precio;
         $this->pedido_id = $this->facturas->pedido_id;
         $this->numero_factura = $this->facturas->numero_factura;
@@ -67,6 +73,16 @@ class EditComponent extends Component
         return view('livewire.facturas.edit-component');
     }
 
+    public function calculoPrecio()
+    {
+        if(isset($this->cantidad) && isset($this->producto_id)){
+           $producto = $this->productos->find($this->producto_id);
+           if(isset($producto)){
+           $this->precio = $producto->precio * $this->cantidad;
+        }
+        }
+    }
+
     // Al hacer update en el formulario
     public function update()
     {
@@ -81,7 +97,9 @@ class EditComponent extends Component
                 'descripcion' => '',
                 'estado' => 'nullable',
                 'precio' => 'nullable',
-                'metodo_pago' => '',
+                'metodo_pago' => 'nullable',
+                'producto_id' => 'nullable',
+                'cantidad' => 'nullable'
             ],
             // Mensajes de error
             [
@@ -102,7 +120,8 @@ class EditComponent extends Component
             'estado' => $this->estado,
             'precio' => $this->precio,
             'metodo_pago' => $this->metodo_pago,
-
+            'cantidad' => $this->cantidad,
+            'producto_id' =>$this->producto_id,
 
         ]);
 
@@ -251,41 +270,37 @@ class EditComponent extends Component
         if($factura != null){
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
-            $cliente = Clients::find($pedido->cliente_id);
-            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
-            // Preparar los datos de los productos del pedido
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact= Productos::find($factura->producto_id);
             $productos = [];
-            foreach ($productosPedido as $productoPedido) {
-                $producto = Productos::find($productoPedido->producto_pedido_id);
-                if ($producto) {
-                    $productos[] = [
-                        'nombre' => $producto->nombre,
-                        'cantidad' => $productoPedido->unidades,
-                        'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' => $productoPedido->precio_total,
-                        'iva' => $producto->iva,
-                        'lote_id' => $productoPedido->lote_id,
-                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
-                    ];
-                }
-            }
+            if(isset($pedido)){
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    if ($producto) {
+                        $productos[] = [
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $productoPedido->lote_id,
+                            'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                        ];
+                    }
+                }}
             $iva=true;
+
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
                 'factura' => $factura,
                 'pedido' => $pedido,
                 'cliente' => $cliente,
-                'localidad_entrega' => $pedido->localidad_entrega,
-                'direccion_entrega' => $pedido->direccion_entrega,
-                'cod_postal_entrega' => $pedido->cod_postal_entrega,
-                'provincia_entrega' => $pedido->provincia_entrega,
-                'fecha' => $pedido->fecha,
-                'observaciones' => $pedido->observaciones,
-                'precio' => $pedido->precio,
-                'descuento' => $pedido->descuento,
                 'productos' => $productos,
+                'producto' => $productofact,
             ];
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -309,41 +324,37 @@ class EditComponent extends Component
         if($factura != null){
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
-            $cliente = Clients::find($pedido->cliente_id);
-            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
-            // Preparar los datos de los productos del pedido
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact= Productos::find($factura->producto_id);
             $productos = [];
-            foreach ($productosPedido as $productoPedido) {
-                $producto = Productos::find($productoPedido->producto_pedido_id);
-                if ($producto) {
-                    $productos[] = [
-                        'nombre' => $producto->nombre,
-                        'cantidad' => $productoPedido->unidades,
-                        'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' => $productoPedido->precio_total,
-                        'iva' => $producto->iva,
-                        'lote_id' => $productoPedido->lote_id,
-                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
-                    ];
-                }
-            }
+            if(isset($pedido)){
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    if ($producto) {
+                        $productos[] = [
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $productoPedido->lote_id,
+                            'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                        ];
+                    }
+                }}
             $iva=false;
+
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
                 'factura' => $factura,
                 'pedido' => $pedido,
                 'cliente' => $cliente,
-                'localidad_entrega' => $pedido->localidad_entrega,
-                'direccion_entrega' => $pedido->direccion_entrega,
-                'cod_postal_entrega' => $pedido->cod_postal_entrega,
-                'provincia_entrega' => $pedido->provincia_entrega,
-                'fecha' => $pedido->fecha,
-                'observaciones' => $pedido->observaciones,
-                'precio' => $pedido->precio,
-                'descuento' => $pedido->descuento,
                 'productos' => $productos,
+                'producto' => $productofact,
             ];
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -356,7 +367,6 @@ class EditComponent extends Component
         }else{
             return redirect('admin/facturas');
         }
-
     }
 
 }

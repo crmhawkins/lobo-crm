@@ -31,12 +31,17 @@
                                     @enderror
                                 </div>
                             </div>
+                            @if(isset($this->pedido_id))
                             <div class="col-md-4">
                                 <div class="col-sm-12">
                                     <label for="pedido_id" class="col-sm-12 col-form-label">Nº del pedido</label>
                                     <input type="text" wire:model="pedido_id" class="form-control" disabled>
                                 </div>
                             </div>
+                            @else
+
+                            @endif
+
                             <div class="col-md-4">
                             <label for="Cliente" class="col-sm-12 col-form-label">Estado</label>
                                 <div class="col-sm-12">
@@ -48,12 +53,11 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
+
                             <div class="col-md-4">
                                 <label for="Cliente" class="col-sm-12 col-form-label">Cliente</label>
                                 <div class="col-sm-12">
-                                    @if(isset($this->pedido))
+                                    @if(isset($this->pedido_id))
                                         <select class="form-control" name="cliente_id" id="cliente_id"
                                             wire:model="cliente_id" disabled>
                                     @else
@@ -88,12 +92,40 @@
                                     @enderror
                                 </div>
                             </div>
+                            @if(is_null($this->pedido_id))
+                            <div class="col-md-4">
+                                <label for="Cliente" class="col-sm-12 col-form-label">Producto</label>
+                                <div class="col-sm-12">
+                                    <select class="form-control" name="producto_id" id="producto_id" wire:model="producto_id" wire:change='calculoPrecio()'>
+                                        <option value="0">---SELECCIONE UN PRODUCTO---</option>
+                                        @foreach ($productos as $producto)
+                                            <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="fecha_emision" class="col-sm-12 col-form-label">Cantidad</label>
+                                <div class="col-sm-12">
+                                    @if(isset($this->pedido_id))
+                                    <input type="number" wire:model="cantidad" class="form-control"
+                                        placeholder="cantidad" disabled>
+                                    @else
+                                    <input type="number" wire:model="cantidad" class="form-control"
+                                        placeholder="cantidad" wire:change='calculoPrecio()'>
+                                    @endif
+                                    @error('cantidad')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Total</label>
                                 <div class="col-sm-12">
-                                    @if(isset($this->pedido))
+                                    @if(isset($this->pedido_id))
                                     <input type="number" wire:model="precio" class="form-control"
                                         placeholder="Precio" disabled>
                                     @else
@@ -105,7 +137,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
                                     <select id="metodo_pago" class="form-control" wire:model="metodo_pago">

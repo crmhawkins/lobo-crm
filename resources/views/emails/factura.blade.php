@@ -42,8 +42,9 @@
         </div>
 
         <p>Hola {{ $cliente->nombre }},</p>
-        <p>Gracias por su pedido. Aquí están los detalles de su pedido realizado el {{ $pedido->fecha }}:</p>
-
+        @if(isset($pedido))
+            <p>Gracias por su pedido. Aquí están los detalles de su pedido realizado el {{ $pedido->fecha }}:</p>
+        @endif
         <table>
             <tr>
                 <th>Producto</th>
@@ -51,6 +52,7 @@
                 <th>Precio por unidad</th>
                 <th>Subtotal</th>
             </tr>
+            @if(isset($pedido))
             @foreach ($productos as $producto)
                 <tr>
                     <td>{{ $producto['nombre'] }}</td>
@@ -59,42 +61,49 @@
                     <td>{{ number_format($producto['precio_total'], 2) }}€</td>
                 </tr>
             @endforeach
+            @else
+            <td>{{ $producto->nombre }}</td>
+            <td>{{ $factura->cantidad }}</td>
+            <td>{{ $producto->precio}}€</td>
+            <td>{{ number_format($factura->precio, 2) }}€</td>
+            @endif
         </table>
         @if($datos['conIva'])
-        <table style="margin-top: 5% !important">
-            <tr style="background-color:#ececec;">
-                <td colspan="3"></td>
-                <td>BASE IMPONIBLE</td>
-                <td>{{ number_format($pedido->precio, 2) }}€</td>
-            </tr>
-            <tr style="background-color:#ececec;">
-                <td colspan="3"></td>
-                <td>IVA 21%</td>
-                <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
-            </tr>
-            <tr style="background-color:#ececec;">
-                <td colspan="3"></td>
-                <td>TOTAL</td>
-                <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
-            </tr>
-        </table>
+            <table style="margin-top: 5% !important">
+                <tr style="background-color:#ececec;">
+                    <td colspan="3"></td>
+                    <td>BASE IMPONIBLE</td>
+                    <td>{{ number_format($factura->precio, 2) }}€</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td colspan="3"></td>
+                    <td>IVA 21%</td>
+                    <td>{{number_format($factura->precio * 0.21, 2)}}€</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td colspan="3"></td>
+                    <td>TOTAL</td>
+                    <td>{{number_format($factura->precio * 1.21, 2)}}€</td>
+                </tr>
+            </table>
         @else
-        <table style="margin-top: 5% !important">
-            <tr style="background-color:#ececec;">
-                <td colspan="3"></td>
-                <td>Total</td>
-                <td>{{ number_format($pedido->precio, 2) }}€</td>
-            </tr>
-        </table>
-
+            <table style="margin-top: 5% !important">
+                <tr style="background-color:#ececec;">
+                    <td colspan="3"></td>
+                    <td>Total</td>
+                    <td>{{ number_format($factura->precio, 2) }}€</td>
+                </tr>
+            </table>
         @endif
-        @if ($pedido->descuento)
-            <p>Se ha aplicado un descuento en su pedido.</p>
+        @if(isset($pedido))
+            @if ($pedido->descuento)
+                <p>Se ha aplicado un descuento en su pedido.</p>
+            @endif
         @endif
-
-        <p>Observaciones:</p>
-        <p>{{ $pedido->observaciones }}</p>
-
+        @if(isset($pedido))
+            <p>Observaciones:</p>
+            <p>{{ $pedido->observaciones }}</p>
+        @endif
         <div class="footer">
             <p>Si tiene alguna pregunta acerca de su pedido, no dude en contactarnos.</p>
             <p>Saludos cordiales,</p>

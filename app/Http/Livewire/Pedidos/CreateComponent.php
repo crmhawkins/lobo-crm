@@ -45,8 +45,7 @@ class CreateComponent extends Component
     public $precio_crema;
     public $precio_vodka07l;
     public $precio_vodka175l;
-    public $precio_vodka3l;
-    public $bloqueado;
+    public $precio_vodka3l;    public $bloqueado;
     public $porcentaje_bloq;
 
 
@@ -89,7 +88,7 @@ class CreateComponent extends Component
 
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
-            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
 
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto) {
@@ -269,7 +268,7 @@ class CreateComponent extends Component
             return;
         }
 
-        $precioUnitario = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+        $precioUnitario = $this->obtenerPrecioPorTipo($producto);
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
@@ -306,8 +305,9 @@ class CreateComponent extends Component
         }
         $this->setPrecioEstimado();
     }
-    private function obtenerPrecioPorTipo($tipoPrecio)
+    private function obtenerPrecioPorTipo($producto)
     {
+        $tipoPrecio = $producto->tipo_precio;
         switch ($tipoPrecio) {
             case 1:
                 return $this->precio_crema;
@@ -317,6 +317,8 @@ class CreateComponent extends Component
                 return $this->precio_vodka175l;
             case 4:
                 return $this->precio_vodka3l;
+            case 5:
+                return $producto->precio;
             default:
                 return 0;
         }

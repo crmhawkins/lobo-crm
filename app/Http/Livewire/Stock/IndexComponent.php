@@ -21,7 +21,7 @@ class IndexComponent extends Component
     public $productos;
     public $almacen_id;
     public $almacenes;
-    public $producto_seleccionado;
+    public $producto_seleccionado ;
     public $producto_lotes;
 
     public function mount()
@@ -29,8 +29,9 @@ class IndexComponent extends Component
         $this->almacenes = Almacen::all();
         $this->almacen_id = auth()->user()->almacen_id;
         $this->productos = Productos::all();
-        $this->producto_seleccionado = 1;
+        $this->producto_seleccionado =  0;
         $this->setLotes();
+
     }
     public function render()
     {
@@ -42,10 +43,21 @@ class IndexComponent extends Component
     public function setLotes()
     {
         if($this->almacen_id == null){
-            $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->get();
+            if($this->producto_seleccionado == 0){
+                $this->producto_lotes = StockEntrante::all();
+            }else{
+                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->get();
+            }
         }else{
-            $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
-            $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->whereIn('stock_id', $entradas_almacen)->get();
+            if($this->producto_seleccionado == 0){
+
+                $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
+                $this->producto_lotes = StockEntrante::whereIn('stock_id', $entradas_almacen)->get();
+            }else{
+                $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
+                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->whereIn('stock_id', $entradas_almacen)->get();
+            }
+
         }
     }
 

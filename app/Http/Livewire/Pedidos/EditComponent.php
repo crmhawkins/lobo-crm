@@ -141,7 +141,7 @@ class EditComponent extends Component
 
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
-            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
 
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto) {
@@ -567,7 +567,7 @@ class EditComponent extends Component
             return;
         }
 
-        $precioUnitario = $this->obtenerPrecioPorTipo($producto->tipo_precio);
+        $precioUnitario = $this->obtenerPrecioPorTipo($producto);
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
@@ -593,8 +593,9 @@ class EditComponent extends Component
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }
-    private function obtenerPrecioPorTipo($tipoPrecio)
+    private function obtenerPrecioPorTipo($producto)
     {
+        $tipoPrecio = $producto->tipo_precio;
         switch ($tipoPrecio) {
             case 1:
                 return $this->precio_crema;
@@ -604,6 +605,8 @@ class EditComponent extends Component
                 return $this->precio_vodka175l;
             case 4:
                 return $this->precio_vodka3l;
+            case 5:
+                return $producto->precio;
             default:
                 return 0;
         }
