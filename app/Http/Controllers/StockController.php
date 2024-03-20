@@ -33,12 +33,7 @@ class StockController extends Controller
      */
     public function create($id)
     {
-        $stock_existente = Stock::find($id);
-        if ($stock_existente != null) {
-            $this->edit($id);
-        } else {
-            return view('stock.create', compact('id'));
-        }
+        return view('stock.create', compact('id'));
     }
 
     /**
