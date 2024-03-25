@@ -16,7 +16,7 @@ class CreateComponent extends Component
     use WithFileUploads;
 
     public $nombre;
-    public $tipo_precio;
+    public $tipo_precio=1;
     public $foto_ruta;
     public $unidades_por_caja = 0;
     public $cajas_por_pallet = 0;
