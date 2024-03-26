@@ -389,9 +389,7 @@ class EditComponent extends Component
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
-        if($this->bloqueado=true){
-            return;
-        }
+
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
             Alertas::create([
