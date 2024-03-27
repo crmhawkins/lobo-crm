@@ -2,13 +2,13 @@
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
-                <h4 class="page-title">EDITAR STOCK</span></h4>
+                <h4 class="page-title">REGISTRAR TRASPASO DE STOCK</span></h4>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Stock</a></li>
-                    <li class="breadcrumb-item active">Editar stock</li>
+                    <li class="breadcrumb-item active">Registrar traspaso de stock</li>
                 </ol>
             </div>
         </div>
@@ -26,13 +26,13 @@
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-11">
-                            <h4> Almacén: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
+                            <h4> Almacén de origen: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
                             </h4>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
-                        <div class="form-group col-md-3">
-                            <label for="Qr">Identificador del QR</label>
+                        <div class="form-group col-md-2">
+                            <label for="fecha">Identificador del QR</label>
                             <input type="text" wire:model="qr_id" class="form-control" disabled>
                         </div>
                         <div class="form-group col-md-3" wire:ignore>
@@ -41,16 +41,21 @@
                                 var data = $('#select2-estado').select2('val');
                                 @this.set('estado', data);
                             });">
-                                <label for="Estado">Estado</label>
-                                <select class="form-control" name="estado" id="select2-estado" wire:model="estado">
+                                <label for="fechaVencimiento">Estado</label>
+                                <select class="form-control" name="estado" id="select2-estado"  wire:model="estado">
                                     <option value="0">Stock completo</option>
                                     <option value="1">Stock parcial</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="fecha">Fecha</label>
-                            <input type="date" wire:model="fecha" class="form-control" disabled>
+                                <label for="fechaVencimiento">Almacen de destino</label>
+                                <select class="form-control" name="almacenDestino" id="almacenDestino" wire:model="almacenDestino">
+                                    <option value="0">---SELECCIONE ALMADEN DE DESTINO---</option>
+                                    @foreach ($almacenes as $almacen)
+                                    <option value="{{$almacen->id}}">{{$almacen->almacen}}</option>
+                                    @endforeach
+                                </select>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
@@ -67,7 +72,7 @@
                         <div class="form-group col-md-12">
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
-                                Stock</h5>
+                                Stock disponible</h5>
                             <div class="form-group col-md-12">
                                 <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
                                     <thead>
@@ -91,6 +96,43 @@
                                                     {{$this->stockentrante->orden_numero }}
                                                 </td>
                                                 <td width="35%">
+                                                    {{$this->stockentrante->cantidad  }} Unidades
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
+                                Stock saliente
+                            </h5>
+                            <div class="form-group col-md-12">
+                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Lote</th>
+                                            <th>Orden</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                            <tr>
+                                                <td width="25%">
+                                                    {{ $this->getNombreTabla($this->stockentrante->producto_id) }}
+                                                </td>
+                                                <td width="20%">
+                                                    {{$this->stockentrante->lote_id}}
+                                                </td>
+                                                <td width="20%">
+                                                    {{ $this->stockentrante->orden_numero  }}
+                                                </td>
+                                                <td width="35%">
                                                     <div class="row align-items-center">
                                                         <div class="col-8 text-end">
                                                             <input type="number" class="form-control" wire:model="cantidad">
@@ -101,7 +143,6 @@
                                                     </div>
                                                 </td>
                                             </tr>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -116,7 +157,8 @@
                     <h5>Opciones </h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="update">Actualizar stock</button>
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="update">Confirmar
+                                salida de stock</button>
                         </div>
                     </div>
                 </div>

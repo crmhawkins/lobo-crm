@@ -54,7 +54,8 @@ class EditComponent extends Component
     public $precio_vodka3l;
     public $almacen_id;
     public $almacenes;
-    public $bloqueado;
+    public $bloqueado
+    ;
     public $porcentaje_bloq;
 
     public function mount()
@@ -381,7 +382,7 @@ class EditComponent extends Component
             ],
             // Mensajes de error
             [
-                'precio.required' => 'El precio del pedido es obligatorio.',
+                'precio.requi0red' => 'El precio del pedido es obligatorio.',
                 'cliente_id.required' => 'El cliente es obligatorio.',
                 'estado.required' => 'El estado del pedido es obligatoria.',
                 'fecha.required' => 'La fecha es obligatoria.',
@@ -389,7 +390,9 @@ class EditComponent extends Component
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
-
+        if($this->bloqueado){
+            return;
+        }
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
             Alertas::create([

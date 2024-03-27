@@ -44,23 +44,82 @@ class IndexComponent extends Component
     {
         if($this->almacen_id == null){
             if($this->producto_seleccionado == 0){
-                $this->producto_lotes = StockEntrante::all();
+                $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
             }else{
-                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->get();
+                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
+                ->where('cantidad','>', 0)
+                ->get();
             }
         }else{
             if($this->producto_seleccionado == 0){
 
                 $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
-                $this->producto_lotes = StockEntrante::whereIn('stock_id', $entradas_almacen)->get();
+                $this->producto_lotes = StockEntrante::whereIn('stock_id', $entradas_almacen)
+                ->where('cantidad','>', 0)
+                ->get();
             }else{
                 $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
-                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)->whereIn('stock_id', $entradas_almacen)->get();
+                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
+                ->whereIn('stock_id', $entradas_almacen)
+                ->where('cantidad','>', 0)
+                ->get();
             }
 
         }
     }
+    public function qrAsignado($lote){
+        $id = $lote['id'];
+        $stock = StockEntrante::where('id', $id)->first();
+        if(isset( $stock)){
+            $stock_id = $stock->stock_id;
+            $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
+        }
+        if(isset($codigo)){
+            return true;
+        }else{
+            return false;
+        }
 
+    }
+
+    public function asignarQr($datos){
+        $qr_id = $datos['qrData'];
+        $lote = $datos['lote'];
+        $id = $lote['id'];
+        $stock = StockEntrante::where('id', $id)->first();
+        if(isset( $stock)){
+            $stock_id = $stock->stock_id;
+            $Stockqr = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first();
+        }
+        if(isset($Stockqr)){
+            $Qrasignado = $Stockqr->update([
+                'qr_id' => $qr_id,
+            ]);       }
+        if($Qrasignado){
+            $this->alert('success', '¡Qr signado correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido asignar el qr!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+
+    }
+
+    public function editar($qr)
+    {
+        $stock = Stock::where('qr_id', $qr)->first();
+        $stockentrante = StockEntrante::where('stock_id', $stock->id)->first();
+        return redirect()->route('stock.edit' ,$stockentrante->id);
+    }
     public function generarQRIndividual($lote)
     {
         $id = $lote['id'];
@@ -97,7 +156,9 @@ class IndexComponent extends Component
         return [
             'confirmed',
             'submit',
-            'setLotes'
+            'setLotes',
+            'asignarQr',
+            'editar',
         ];
     }
     public function formatFecha($id)

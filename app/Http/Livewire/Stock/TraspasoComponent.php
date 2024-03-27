@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
 
-class EditComponent extends Component
+class TraspasoComponent extends Component
 {
     use LivewireAlert;
     use WithFileUploads;
@@ -26,7 +26,7 @@ class EditComponent extends Component
     public $almacenes;
     public $almacen_id;
     public $productos;
-    public $fecha;
+    public $almacenDestino;
     public $cantidad;
     public $stockentrante;
     public $stock;
@@ -34,11 +34,8 @@ class EditComponent extends Component
     {
         $this->stockentrante = StockEntrante::find( $this->identificador);
         $this->stock = Stock::find(  $this->stockentrante->stock_id);
-        $this->estado = $this->stock->estado;
-        $this->cantidad = $this->stockentrante->cantidad;
-        $this->qr_id = $this->stock->qr_id;
-        $this->fecha = $this->stock->fecha;
-        $this->observaciones = $this->stock->observaciones;
+        $this->estado =  $this->stock->estado;
+        $this->qr_id =  $this->stock->qr_id;
         $this->productos = Productos::all();
         $this->almacenes = Almacen::all();
         $user = Auth::user();
@@ -48,27 +45,50 @@ class EditComponent extends Component
 
     public function render()
     {
-        return view('livewire.stock.edit-component');
+        return view('livewire.stock.traspaso-component');
     }
 
     // Al hacer update en el formulario
     public function update()
     {
-         if ($this->cantidad == 0){
+         $oldCantidad = $this->stockentrante->cantidad;
+         if($this->cantidad <= $oldCantidad){
+            $nuevaCantidad = $oldCantidad - $this->cantidad;
+         }else{
+            $this->alert('error', '¡No se puede mandar una cantidad mayor a la disponible!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+         }
+
+         if ($nuevaCantidad == 0){
             $this->stock->update([
                 'estado' => 2,
             ]);
          }
 
+        $mercaderiaSave = Stock::create(
+            [
+                'estado' =>  $this->estado,
+                'fecha' => Carbon::now(),
+                'almacen_id' => $this->almacenDestino,
+                'observaciones' => $this->observaciones,
+            ]);
+        $mercaderiaproductoSave = StockEntrante::create([
+                'producto_id' => $this->stockentrante->producto_id,
+                'lote_id' => $this->stockentrante->lote_id ,
+                'stock_id' => $mercaderiaSave->id,
+                'cantidad' => $this->cantidad,
+                'orden_numero' => $this->stockentrante->orden_numero,
+            ]);
 
-        $productUpdate = $this->stockentrante->update([
-            'cantidad' => $this->cantidad,
-        ]);
 
-        $this->stock->update([
-            'estado' =>  $this->estado,
-            'observaciones' => $this->observaciones,
-        ]);
+        if($mercaderiaproductoSave){
+            $productUpdate =$this->stockentrante->update([
+                'cantidad' => $nuevaCantidad,
+        ]);}
 
 
         if ($productUpdate) {

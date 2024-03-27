@@ -99,6 +99,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock-create/{id}', [StockController::class, 'create'])->name('stock.create');
     Route::get('/stock-edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
+    Route::get('/stock-traspaso/{id}', [StockController::class, 'traspaso'])->name('traspaso.edit');
     Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock.crear-qr');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');

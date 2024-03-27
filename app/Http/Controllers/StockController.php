@@ -68,6 +68,10 @@ class StockController extends Controller
     {
         return view('stock.edit', compact('id'));
     }
+    public function traspaso($id)
+    {
+        return view('stock.traspaso', compact('id'));
+    }
     public function crearQR()
     {
         $count_qrs = Settings::find(1)->qr_creados_productos;

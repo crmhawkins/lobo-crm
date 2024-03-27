@@ -26,6 +26,7 @@
                         </div>
                         <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100 mt-2" style="display: none;">CERRAR ESCÁNER</button>
                         <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
+                        <button type="button" onclick="iniciarEscaneo('editar')" class="btn btn-lg btn-primary w-100 mt-2">EDITAR LOTE</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                     </div>
                     @if (auth()->user()->role == 1)
@@ -116,8 +117,13 @@
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
                                                     <td>
+                                                        @if($this->qrAsignado($lote))
                                                         <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote}})"> QR</button>
-                                                        <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Traspaso de lote</a>
+                                                        @else
+                                                        <button class="btn btn-primary" onclick="iniciarEscaneo('asignar',{{$lote}})">Asignar Qr</button>
+                                                        @endif
+                                                        <a class="btn btn-primary" href="/admin/stock-traspaso/{{$lote['id']}}"> Traspaso de lote</a>
+                                                        <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -156,9 +162,12 @@
         let canvas = canvasElement.getContext("2d", { willReadFrequently: true });
         let scanning = false;
         let currentAction = '';
-
-        function iniciarEscaneo(action) {
+        let lotestock = '';
+        function iniciarEscaneo(action, lote = null) {
             currentAction = action; // Guardamos la acción actual
+            if (lote !== null) {
+                lotestock = lote; // Guarda la ID del lote si se proporcionó
+                }
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
                 scanning = true;
                 video.srcObject = stream;
@@ -186,6 +195,7 @@
                     scanning = false;
                     video.srcObject.getTracks().forEach(track => track.stop());
                     canvasElement.style.display = "none";
+                    botoncerrar.style.display = "none";
                 }
             }
             if (scanning) {
@@ -197,8 +207,11 @@
             // Aquí manejas las diferentes acciones basadas en el código QR y la acción actual
             if (currentAction === 'añadir') {
                 window.location.href = '/admin/stock-create/' + data;
-            } else if (currentAction === 'salida') {
-                window.location.href = '/admin/stock-edit/' + data;
+            } else if (currentAction === 'asignar') {
+                // window.location.href = '/admin/stock-edit/' + data;
+                Livewire.emit('asignarQr', { qrData: data, lote: lotestock });
+            }else if (currentAction === 'editar') {
+                Livewire.emit('editar', data);
             }
         }
 
