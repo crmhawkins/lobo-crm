@@ -173,6 +173,7 @@ class IndexComponent extends Component
         $productos = [];
         foreach ($productosPedido as $productoPedido) {
             $producto = Productos::find($productoPedido->producto_pedido_id);
+            $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
             if ($producto) {
                 $productos[] = [
                     'nombre' => $producto->nombre,
@@ -180,7 +181,7 @@ class IndexComponent extends Component
                     'precio_ud' => $productoPedido->precio_ud,
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
-                    'lote_id' => $productoPedido->lote_id,
+                    'lote_id' => $stockEntrante->orden_numero,
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
                 ];
             }
