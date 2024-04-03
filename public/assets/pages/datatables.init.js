@@ -8,17 +8,14 @@
 $(document).ready(function() {
     $('#datatable').DataTable();
 
-    $('#datatable-res').DataTable({
-        searching: false,
-        ordering: false,
-        responsive: true,
-        paging: false,
-
-    });
     var tableEnviados = $('#datatable-buttons_enviados').DataTable({
+        layout: {
+            topStart: 'buttons'
+        },
         lengthChange: false,
         pageLength: 30,
         buttons: ['copy', 'excel', 'pdf', 'colvis'],
+        responsive: true,
         "language": {
             "lengthMenu": "Mostrando _MENU_ registros por página",
             "zeroRecords": "Nothing found - sorry",
@@ -36,30 +33,13 @@ $(document).ready(function() {
         }
     });
     var tablePreparacion = $('#datatable-buttons_preparacion').DataTable({
+        layout: {
+            topStart: 'buttons'
+        },
         lengthChange: false,
         pageLength: 30,
         buttons: ['copy', 'excel', 'pdf', 'colvis'],
-        "language": {
-            "lengthMenu": "Mostrando _MENU_ registros por página",
-            "zeroRecords": "Nothing found - sorry",
-            "info": "Mostrando página _PAGE_ of _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ total registros)",
-            "search": "Buscar:",
-            "paginate": {
-                "first": "Primero",
-                "last": "Ultimo",
-                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
-                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
-            },
-            "zeroRecords": "No se encontraron registros coincidentes",
-        }
-    });
-    //Buttons examples
-    var table = $('#datatable-buttons').DataTable({
-        lengthChange: false,
-        pageLength: 30,
-        buttons: ['copy', 'excel', 'pdf', 'colvis'],
+        responsive: true,
         "language": {
             "lengthMenu": "Mostrando _MENU_ registros por página",
             "zeroRecords": "Nothing found - sorry",
@@ -77,12 +57,34 @@ $(document).ready(function() {
         }
     });
 
-    table.buttons().container()
-        .appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
-    tableEnviados.buttons().container()
-        .appendTo('#datatable-buttons_enviados_wrapper .col-md-6:eq(0)');
-    tablePreparacion.buttons().container()
-        .appendTo('#datatable-buttons_preparacion_wrapper .col-md-6:eq(0)');
+    var table = $('#datatable-buttons').DataTable({
+        layout: {
+        topStart: 'buttons'
+    },
+        lengthChange: false,
+        pageLength: 30,
+        buttons: ['copy', 'excel', 'pdf', 'colvis'],
+        responsive: true,
+        "language": {
+            "lengthMenu": "Mostrando _MENU_ registros por página",
+            "zeroRecords": "Nothing found - sorry",
+            "info": "Mostrando página _PAGE_ of _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ total registros)",
+            "search": "Buscar:",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
+                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
+            },
+            "zeroRecords": "No se encontraron registros coincidentes",
+        }
+    });
+
+    table.buttons().container().appendTo('#datatable-buttons_wrapper .col-md-6:eq(0)');
+    tableEnviados.buttons().container().appendTo('#datatable-buttons_enviados_wrapper .col-md-6:eq(0)');
+    tablePreparacion.buttons().container().appendTo('#datatable-buttons_preparacion_wrapper .col-md-6:eq(0)');
 
 
 
