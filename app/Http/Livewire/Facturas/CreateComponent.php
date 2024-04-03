@@ -53,7 +53,17 @@ class CreateComponent extends Component
             }
         $this->productos = Productos::where('tipo_precio',5)->get();
         $this->clientes = Clients::where('estado', 2)->get();
-        $this->numero_factura = Facturas::count() + 1;
+        $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
+        $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->max('numero_factura');
+        if ($lastInvoice) {
+            // Extrae el número secuencial de la última factura del año y lo incrementa
+            $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
+        } else {
+            // Si no hay facturas para el año, comienza con 1
+            $lastNumber = 1;
+        }
+        // Genera el nuevo número de factura con relleno para asegurar 4 dígitos
+        $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
     }
 

@@ -114,6 +114,9 @@
 
                 </div>
             </div>
+        </div>
+    </div>
+</div>
             @section('scripts')
                {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
                 <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
