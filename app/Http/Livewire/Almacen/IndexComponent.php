@@ -180,7 +180,7 @@ class IndexComponent extends Component
                     'precio_ud' => $productoPedido->precio_ud,
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
-                    'lote_id' => $productoPedido->orden_numero,
+                    'lote_id' => $productoPedido->lote_id,
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
                 ];
             }
