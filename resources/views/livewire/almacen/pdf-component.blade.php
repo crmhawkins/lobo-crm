@@ -94,7 +94,7 @@
         @foreach($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
             <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span><br></td>
-            <td>{{ $producto['lote_id'] }}</td>
+            <td>{{ $producto['orden_numero'] }}</td>
             <td>{{ $producto['cantidad'] }}</td>
 			@php
 			$pesoTotal += $producto['peso_kg'];

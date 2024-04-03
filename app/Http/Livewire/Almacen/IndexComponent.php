@@ -197,7 +197,7 @@ class IndexComponent extends Component
         ];
 
         // Generar y mostrar el PDF
-        $pdf = PDF::loadView('livewire.almacen.pdf-albaran-component', $datos)->setPaper('a4', 'vertical');
+        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         return response()->streamDownload(
             fn () => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"

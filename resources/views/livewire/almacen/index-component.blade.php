@@ -211,8 +211,7 @@
                                         @endswitch
                                         </td>
                                         <td>
-                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},true)" class="btn btn-primary"  style="color: white;">Descargar albarán Con IVA</a>
-                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},false)" class="btn btn-primary"  style="color: white;">Descargar albarán Sin IVA</a>
+                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
                                                 @if ($pedido->estado ==8)
                                                 <a href="facturas-create/{{ $pedido->id }}" class="btn btn-primary">Crear Factura</a>
                                                 @else
@@ -293,9 +292,10 @@
 <!-- Buttons examples -->
 <script src="../plugins/datatables/dataTables.buttons.min.js"></script>
 <script src="../plugins/datatables/buttons.bootstrap4.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="../plugins/datatables/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="../plugins/datatables/pdfmake.min.js"></script>
 <script src="../plugins/datatables/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
 <script src="../plugins/datatables/buttons.colVis.min.js"></script>
 <!-- Responsive examples -->
