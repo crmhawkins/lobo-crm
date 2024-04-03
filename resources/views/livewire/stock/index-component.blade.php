@@ -244,7 +244,7 @@
     <script src="../plugins/datatables/responsive.bootstrap4.min.js"></script>
     <script src="../assets/pages/datatables.init.js"></script>
     <!-- test examples -->
-     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
     <script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.dataTables.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
