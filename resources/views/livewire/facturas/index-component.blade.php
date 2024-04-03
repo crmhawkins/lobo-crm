@@ -34,10 +34,10 @@
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" href="#" data-column="0">Número</a>
-                                <a class="dropdown-item" href="#" data-column="1">Pedido asociado</a>
+                                <a class="dropdown-item" href="#" data-column="1">P.asociado</a>
                                 <a class="dropdown-item" href="#" data-column="2">Descripción</a>
                                 <a class="dropdown-item" href="#" data-column="3">Total</a>
-                                <a class="dropdown-item" href="#" data-column="4">Método de pago<</a>
+                                <a class="dropdown-item" href="#" data-column="4">M.pago<</a>
                                 <!-- Agrega más ítems según las columnas de tu tabla -->
                             </div>
                             <!-- Aquí termina el botón desplegable -->
@@ -49,14 +49,14 @@
                         <thead>
                                 <tr>
                                     <th scope="col">Número</th>
-                                    <th scope="col">Pedido asociado</th>
+                                    <th scope="col">P.asociado</th>
                                     <th scope="col">Cliente</th>
-                                    <th scope="col">Fecha de emisión</th>
-                                    <th scope="col">Fecha de vencimiento</th>
+                                    <th scope="col">F.emisión</th>
+                                    <th scope="col">F.vencimiento</th>
                                     <th scope="col">Importe</th>
                                     <th scope="col">IVA</th>
                                     <th scope="col">Total(Con IVA)</th>
-                                    <th scope="col">Método de pago</th>
+                                    <th scope="col">M.pago</th>
                                     <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
