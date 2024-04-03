@@ -47,7 +47,7 @@ class CreateComponent extends Component
     public $precio_vodka175l;
     public $precio_vodka3l;    public $bloqueado;
     public $porcentaje_bloq;
-
+	public $sinCargo = false;
 
     public function mount()
     {
@@ -214,9 +214,25 @@ class CreateComponent extends Component
     }
     public function updateCaja()
     {
-        $producto = Productos::find($this->producto_seleccionado);
+        /*$producto = Productos::find($this->producto_seleccionado);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
-        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;*/
+		 $producto = Productos::find($this->producto_seleccionado);
+
+		// Ensure that $this->unidades_caja_producto and $producto->cajas_por_pallet are treated as integers.
+		$cajasPorPallet = (int)$producto->cajas_por_pallet;
+		$unidadesCajaProducto = (int)$this->unidades_caja_producto;
+
+		// Calculate unidades_pallet_producto by dividing unidades_caja_producto by cajas_por_pallet.
+		// Both operands are cast to integers to prevent type mismatch errors.
+		$this->unidades_pallet_producto = floor($unidadesCajaProducto / $cajasPorPallet);
+
+		// Ensure that $producto->unidades_por_caja is treated as an integer.
+		$unidadesPorCaja = (int)$producto->unidades_por_caja;
+
+		// Calculate unidades_producto by multiplying unidades_caja_producto by unidades_por_caja.
+		// The operands are cast to integers to ensure proper arithmetic operation.
+		$this->unidades_producto = $unidadesCajaProducto * $unidadesPorCaja;
     }
     public function updateUnidad()
     {
@@ -278,20 +294,31 @@ class CreateComponent extends Component
                 break;
             }
         }
-
-        if ($producto_existe) {
-            $key = array_search($id, array_column($this->productos_pedido, 'producto_pedido_id'));
-            $this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
-            $this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
-            $this->productos_pedido[$key]['precio_total'] += $precioTotal;
-        } else {
-            $this->productos_pedido[] = [
+		if($this->sinCargo == true){
+			$this->productos_pedido[] = [
                 'producto_pedido_id' => $id,
                 'unidades' => $this->unidades_producto,
-                'precio_ud' => $precioUnitario,
-                'precio_total' => $precioTotal
+                'precio_ud' => 0,
+                'precio_total' => 0
             ];
-        }
+		} else{
+			if ($producto_existe) {
+				$key = array_search($id, array_column($this->productos_pedido, 'producto_pedido_id'));
+				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+				$this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
+				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
+			} else {
+				$this->productos_pedido[] = [
+					'producto_pedido_id' => $id,
+					'unidades' => $this->unidades_producto,
+					'precio_ud' => $precioUnitario,
+					'precio_total' => $precioTotal
+				];
+			}
+
+		}
+
+        $this->sinCargo = false;
 
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');

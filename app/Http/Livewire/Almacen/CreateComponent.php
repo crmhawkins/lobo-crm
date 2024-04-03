@@ -200,7 +200,7 @@ class CreateComponent extends Component
     }
 
 
-    public function GenerarAlbaran($Iva)
+    public function GenerarAlbaran()
     {
     $pedido = Pedido::find($this->identificador);
     if (!$pedido) {
@@ -235,11 +235,12 @@ class CreateComponent extends Component
     foreach ($productosPedido as $productoPedido) {
         $producto = Productos::find($productoPedido->producto_pedido_id);
         $stockSeguridad =  $producto->stock_seguridad;
-        $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();;
-        $almacen = Almacen::find($this->almacen_id);
+        $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+        $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
+        $almacen = Almacen::find($almacen_id);
 
         if ($stockEntrante) {
-            $stockEntrante->cantidad -= $productoPedido->unidades / $producto->unidades_por_caja;
+            $stockEntrante->cantidad -= $productoPedido->unidades;
             $stockEntrante->update();
         }
         $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
@@ -247,19 +248,19 @@ class CreateComponent extends Component
         $sumatorioCantidad = $productoLotes->sum('cantidad');
 
         if ($sumatorioCantidad < $stockSeguridad) {
-            $alertaExistente = Alertas::where('referencia_id', $producto->id.$almacen->id )->where('stage', 7)->first();
+            $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
             if (!$alertaExistente) {
                 Alertas::create([
                     'user_id' => 13,
                     'stage' => 7,
                     'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
                     'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
-                    'referencia_id' =>$producto->id.$almacen->id ,
+                    'referencia_id' =>$producto->id . $almacen->id ,
                     'leida' => null,
                 ]);
             }
 
-        }
+         }
         if ($producto) {
             $productos[] = [
                 'nombre' => $producto->nombre,
@@ -268,7 +269,7 @@ class CreateComponent extends Component
                 'precio_total' => $productoPedido->precio_total,
                 'iva' => $producto->iva,
                 'lote_id' => $productoPedido->lote_id,
-                'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
             ];
         }
     }
@@ -277,7 +278,6 @@ class CreateComponent extends Component
     $fecha_albaran = Carbon::now()->format('Y-m-d');
 
     $datos = [
-        'conIva' => $Iva,
         'pedido' => $pedido,
         'cliente' => $cliente,
         'observaciones' => $pedido->observaciones,

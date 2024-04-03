@@ -251,8 +251,7 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(true)">Generar Albarán Con IVA</button>
-                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(false)">Generar Albarán Sin IVA</button>
+                            <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(true)">Generar Albarán de Envio</button>
                     </div>
 
                 </div>

@@ -82,8 +82,8 @@
             <th>LOTE</th>
             <th>UNIDADES</th>
             <th>PESO TOTAL</th>
-            <!-- <th>PRECIO</th>
-            <th>SUBTOTAL</th> -->
+            <th>PRECIO</th>
+            <th>SUBTOTAL</th>
         </tr>
         <tr style="background-color:#fff; color: #fff;">
             <th style="padding: 0px !important; height: 10px !important;"></th>
@@ -100,8 +100,8 @@
 			$pesoTotal += $producto['peso_kg'];
 			@endphp
             <td>{{ number_format($producto['peso_kg'], 2) }} Kg</td>
-            <!-- <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-            <td>{{ number_format($producto['precio_total'], 2) }}€</td> -->
+            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+            <td>{{ number_format($producto['precio_total'], 2) }}€</td>
         </tr>
         @endforeach
         @if ($pedido->descuento )
@@ -110,8 +110,8 @@
             <td></td>
             <td></td>
             <td></td>
-           <!-- <td>Descuento Aplicado:</td>
-            <td>{{$pedido->porcentaje_descuento}}%<</td>-->
+           <td>Descuento Aplicado:</td>
+            <td>{{$pedido->porcentaje_descuento}}%<</td>
         </tr>
         @endif
     </table>
@@ -121,7 +121,7 @@
                     <td>PESO TOTAL</td>
                     <td>{{ number_format($pesoTotal, 2)}} Kg.</td>
                 </tr>
-                <!--<tr style="background-color:#ececec;">
+                <tr style="background-color:#ececec;">
                     <td></td>
                     <td>IVA 21%</td>
                     <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
@@ -130,7 +130,7 @@
                     <td></td>
                     <td>TOTAL</td>
                     <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
-                </tr>-->
+                </tr>
             </table>
 
 </body>
