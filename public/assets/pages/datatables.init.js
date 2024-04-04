@@ -87,14 +87,13 @@ $(document).ready(function() {
     tablePreparacion.buttons().container().appendTo('#datatable-buttons_preparacion_wrapper .col-md-6:eq(0)');
 
 
-
     // Variable para almacenar el índice de la columna actual para el filtrado
     var currentFilterColumn = -1;
     var currentFilterColumnEnviados = -1;
     var currentFilterColumnPreparacion = -1;
 
     // Escuchar los cambios en el buscador de DataTables
-    $('#datatable-buttons_preparacion_filter input[type="search"]').on('input', function() {
+    $('#datatable-buttons_preparacion_wrapper').on('input', 'input[type="search"]', function() {
         var searchTermpre = this.value;
 
         // Reinicia la búsqueda en todas las columnas
@@ -107,7 +106,7 @@ $(document).ready(function() {
             tablePreparacion.search(searchTermpre).draw();
         }
     });
-    $('#datatable-buttons_enviados_filter input[type="search"]').on('input', function() {
+    $('#datatable-buttons_enviados_wrapper').on('input', 'input[type="search"]', function() {
         var searchTermenv = this.value;
 
         // Reinicia la búsqueda en todas las columnas
@@ -125,7 +124,7 @@ $(document).ready(function() {
 
 
     });
-    $('#datatable-buttons_filter input[type="search"]').on('input', function() {
+    $('#datatable-buttons_wrapper').on('input', 'input[type="search"]', function() {
         var searchTerm = this.value;
 
         // Reinicia la búsqueda en todas las columnas
