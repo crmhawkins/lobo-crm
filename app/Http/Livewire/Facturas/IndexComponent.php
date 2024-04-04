@@ -7,6 +7,7 @@ use App\Models\Albaran;
 use App\Models\Clients;
 use App\Models\Facturas;
 use App\Models\Productos;
+use App\Models\StockEntrante;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -40,6 +41,12 @@ class IndexComponent extends Component
         }
         return "Cliente no definido";
     }
+    public function getListeners()
+    {
+        return [
+            'pdf',
+        ];
+    }
     public function pdf($id,$iva)
     {
 
@@ -56,6 +63,12 @@ class IndexComponent extends Component
             // Preparar los datos de los productos del pedido
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
+                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+                if ($stockEntrante){
+                    $lote=$stockEntrante->orden_numero;
+                }else{
+                    $lote = "";
+                }
                 if ($producto) {
                     $productos[] = [
                         'nombre' => $producto->nombre,
@@ -63,7 +76,7 @@ class IndexComponent extends Component
                         'precio_ud' => $productoPedido->precio_ud,
                         'precio_total' => $productoPedido->precio_total,
                         'iva' => $producto->iva,
-                        'lote_id' => $productoPedido->lote_id,
+                        'lote_id' => $lote,
                         'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
                     ];
                 }

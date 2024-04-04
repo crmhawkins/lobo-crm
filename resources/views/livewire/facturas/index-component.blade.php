@@ -98,11 +98,12 @@
                                             <span class="badge badge-danger">{{ $fact->estado }}</span>
                                                 @break
                                             @default
-                                            <span class="badge badge-info">{{ $fact->estado }}</span>
+                                            <span class="badge badge-infos">{{ $fact->estado }}</span>
                                         @endswitch</td>
                                         <td> <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">Ver/Editar</a>
-                                            <a wire:click="pdf({{ $fact->id }},true)"  class="btn btn-primary" style="color: white;">Factura Con IVA</a>
-                                            <a wire:click="pdf({{ $fact->id }},false)"  class="btn btn-primary" style="color: white;">Factura Sin IVA</a>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Factura Con IVA</button>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary" style="color: white;">Factura Sin IVA</button>
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -118,6 +119,15 @@
     </div>
 </div>
 @section('scripts')
+    <script>
+    function descargarFactura(id, conIva) {
+        // Suponiendo que tu descarga se realiza aquí
+        window.livewire.emit('pdf', id, conIva);
+        setTimeout(() => {
+            location.reload()
+        }, 100);
+    }
+    </script>
 <script src="../assets/js/jquery.slimscroll.js"></script>
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
