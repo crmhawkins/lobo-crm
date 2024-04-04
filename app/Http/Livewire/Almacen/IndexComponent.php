@@ -59,6 +59,10 @@ class IndexComponent extends Component
     {
         return [
             'prepararPedido',
+            'enRuta',
+            'mostrarAlbaran',
+            'comprobarStockPedido',
+            'recarga'
         ];
     }
     public function prepararPedido($identificador)
@@ -238,10 +242,18 @@ class IndexComponent extends Component
             'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
-            'onConfirmed' => '',
+            'allowOutsideClick'=> false,
+
+            'onConfirmed' => 'recarga',
             'confirmButtonText' => 'Entendido',
         ]);
+
     }
+    public function recarga()
+    {
+        return redirect()->route('almacen.index');
+    }
+
 }
 
 

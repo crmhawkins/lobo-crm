@@ -76,7 +76,7 @@
                                         @endswitch
                                         </td>
                                         <td>
-                                            <a wire:click="prepararPedido({{ $pedido->id }})"  class="btn btn-primary"  style="color: white;">Preparar pedido</a>
+                                            <a onclick="prepararPedido({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Preparar pedido</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -142,7 +142,7 @@
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
-                                        <td> <a href="#" wire:click.prevent="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary">Comprobar pedido</a>
+                                        <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Comprobar pedido</a>
                                             <a href="almacen-create/{{ $pedido->id }}" class="btn btn-primary">Generar albarán</a>
 
                                         </td>
@@ -211,12 +211,12 @@
                                         @endswitch
                                         </td>
                                         <td>
-                                            <a wire:click.prevent="mostrarAlbaran({{ $pedido->id }},true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
-                                                @if ($pedido->estado ==8)
+                                                <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
+                                            @if ($pedido->estado ==8)
                                                 <a href="facturas-create/{{ $pedido->id }}" class="btn btn-primary">Crear Factura</a>
-                                                @else
-                                                <a  wire:click.prevent="enRuta({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Pedido En Ruta</a>
-                                                @endif
+                                            @else
+                                                <a onclick="enRuta({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Pedido En Ruta</a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -231,17 +231,47 @@
             </div>
         </div>
     </div>
-   @section('scripts')
-        <script src="../assets/js/jquery.slimscroll.js"></script>
-<link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
-<!-- Responsive examples -->
-<script src="../assets/pages/datatables.init.js"></script>
-
-
-
-    @endsection
-
 </div>
+@section('scripts')
+    <script>
+    function enRuta(id) {
+        // Suponiendo que tu descarga se realiza aquí
+        window.livewire.emit('enRuta', id);
+        setTimeout(() => {
+            location.reload()
+        }, 1000);
+    }
+    </script>
+    <script>
+        function mostrarAlbaran(id, conIva) {
+            // Suponiendo que tu descarga se realiza aquí
+            window.livewire.emit('mostrarAlbaran', id, conIva);
+            setTimeout(() => {
+                location.reload()
+            }, 2000);
+        }
+    </script>
+    <script>
+        function prepararPedido(id) {
+            // Suponiendo que tu descarga se realiza aquí
+            window.livewire.emit('prepararPedido', id);
+            setTimeout(() => {
+                location.reload()
+            }, 1000);
+        }
+    </script>
+    <script>
+        function comprobarStockPedido(id) {
+            // Suponiendo que tu descarga se realiza aquí
+            window.livewire.emit('comprobarStockPedido', id);
+        }
+    </script>
+    <script src="../assets/js/jquery.slimscroll.js"></script>
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
+    <!-- Responsive examples -->
+    <script src="../assets/pages/datatables.init.js"></script>
+@endsection
+

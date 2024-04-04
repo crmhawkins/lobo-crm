@@ -120,7 +120,7 @@
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
                                                     <td>
                                                         @if($this->qrAsignado($lote))
-                                                        <button class="btn btn-primary" wire:click.prevent="generarQRIndividual({{$lote}})"> QR</button>
+                                                        <button class="btn btn-primary" onclick="generarQRIndividual({{$lote}})"> QR</button>
                                                         @else
                                                         <button class="btn btn-primary" onclick="iniciarEscaneo('asignar',{{$lote}})">Asignar Qr</button>
                                                         @endif
@@ -154,6 +154,15 @@
         link.click();
         document.body.removeChild(link);
         });
+        </script>
+        <script>
+            function generarQRIndividual(id) {
+                // Suponiendo que tu descarga se realiza aquí
+                window.livewire.emit('generarQRIndividual', id);
+                setTimeout(() => {
+                    location.reload()
+                }, 2000);
+            }
         </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
     <script>

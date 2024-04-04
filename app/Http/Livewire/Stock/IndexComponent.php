@@ -159,6 +159,7 @@ class IndexComponent extends Component
             'setLotes',
             'asignarQr',
             'editar',
+            'generarQRIndividual',
         ];
     }
     public function formatFecha($id)
