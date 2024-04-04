@@ -159,9 +159,7 @@
             function generarQRIndividual(id) {
                 // Suponiendo que tu descarga se realiza aquí
                 window.livewire.emit('generarQRIndividual', id);
-                setTimeout(() => {
-                    location.reload()
-                }, 2000);
+
             }
         </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr"></script>
