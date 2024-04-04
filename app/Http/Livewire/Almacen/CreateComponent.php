@@ -351,10 +351,18 @@ class CreateComponent extends Component
 
             if ($entradaStock && isset($this->productos_pedido[$rowIndex])) {
                 // Comprobar si el producto_id de StockEntrante coincide con producto_pedido_id de productos_pedido
-                if ($this->productos_pedido[$rowIndex]['producto_pedido_id'] == $entradaStock->producto_id) {
-                    // Actualizar el lote_id en productos_pedido
-                    $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->lote_id;
-
+                if ($this->productos_pedido[$rowIndex]['producto_pedido_id'] == $entradaStock->producto_id ) {
+                    if ($this->productos_pedido[$rowIndex]['unidades'] >= $entradaStock->cantidad) {
+                        // Actualizar el lote_id en productos_pedido
+                        $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->lote_id;
+                    }else{
+                        $this->alert('error', 'Lote con stock insuficiente', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                        'showConfirmButton' => true,
+                        'confirmButtonText' => 'Aceptar',
+                    ]);}
                 }else{
                     // Alerta de error si se intenta leer el QR de un producto diferente
                      $this->alert('error', 'Intentando leer el QR de un producto diferente.', [

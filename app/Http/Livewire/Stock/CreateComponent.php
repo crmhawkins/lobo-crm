@@ -179,6 +179,7 @@ class CreateComponent extends Component
         );
 
 
+
         $mercaderiaSave = Stock::create($validatedData);
         $dia = Carbon::now();
         foreach ($this->productos_pedido as $productosIndex => $productos) {

@@ -74,7 +74,7 @@ class IndexComponent extends Component
             $stock_id = $stock->stock_id;
             $codigo = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;
         }
-        if(isset($codigo)){
+        if(isset($codigo) && $codigo != ''){
             return true;
         }else{
             return false;
@@ -86,6 +86,15 @@ class IndexComponent extends Component
         $qr_id = $datos['qrData'];
         $lote = $datos['lote'];
         $id = $lote['id'];
+        $qrenuso = Stock::where('qr_id', $qr_id)->first();
+        if (isset($qrenuso)){
+            $this->alert('error', '¡El qr ya esta asignado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
         $stock = StockEntrante::where('id', $id)->first();
         if(isset( $stock)){
             $stock_id = $stock->stock_id;
@@ -119,6 +128,24 @@ class IndexComponent extends Component
         $stock = Stock::where('qr_id', $qr)->first();
         $stockentrante = StockEntrante::where('stock_id', $stock->id)->first();
         return redirect()->route('stock.edit' ,$stockentrante->id);
+    }
+
+    public function anadir($qr)
+    {
+        $stock = Stock::where('qr_id', $qr)->first();
+        if (isset($stock)){
+            $this->alert('error', '¡El qr ya esta asignado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+
+        }else{
+
+            return redirect()->route('stock.create' ,$qr);
+
+        }
+
     }
     public function generarQRIndividual($lote)
     {
@@ -160,6 +187,7 @@ class IndexComponent extends Component
             'asignarQr',
             'editar',
             'generarQRIndividual',
+            'anadir',
         ];
     }
     public function formatFecha($id)

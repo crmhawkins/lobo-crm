@@ -217,7 +217,7 @@
         function handleQRCodeAction(data) {
             // Aquí manejas las diferentes acciones basadas en el código QR y la acción actual
             if (currentAction === 'añadir') {
-                window.location.href = '/admin/stock-create/' + data;
+                Livewire.emit('anadir', data);
             } else if (currentAction === 'asignar') {
                 // window.location.href = '/admin/stock-edit/' + data;
                 Livewire.emit('asignarQr', { qrData: data, lote: lotestock });
