@@ -352,7 +352,7 @@ class CreateComponent extends Component
             if ($entradaStock && isset($this->productos_pedido[$rowIndex])) {
                 // Comprobar si el producto_id de StockEntrante coincide con producto_pedido_id de productos_pedido
                 if ($this->productos_pedido[$rowIndex]['producto_pedido_id'] == $entradaStock->producto_id ) {
-                    if ($this->productos_pedido[$rowIndex]['unidades'] >= $entradaStock->cantidad) {
+                    if ($this->productos_pedido[$rowIndex]['unidades'] <= $entradaStock->cantidad) {
                         // Actualizar el lote_id en productos_pedido
                         $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->lote_id;
                     }else{
