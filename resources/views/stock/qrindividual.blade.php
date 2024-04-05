@@ -44,6 +44,7 @@
         <h2>Código QR para asignación de stock (Productos)</h2>
         <div class="qr-code">
             <img src="data:image/png;base64, {!! base64_encode($Qrcode) !!}" alt="Código QR">
+            <div class="code-text">{{ $codigo }}</div>
         </div>
     </div>
 </body>

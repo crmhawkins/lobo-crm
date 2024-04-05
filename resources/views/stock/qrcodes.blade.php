@@ -15,15 +15,18 @@
         }
         .qr-code {
             display: inline-flex;
+            flex-direction: column; /* Organizar verticalmente */
             margin: 10px;
             justify-content: center;
             align-items: center;
             width: 300px; /* Ajustar según tus necesidades */
-            height: 300px; /* Ajustar según tus necesidades */
         }
         img {
             max-width: 100%;
             max-height: 100%;
+        }
+        .code-text {
+            margin-top: 10px; /* Ajustar el espaciado según tus necesidades */
         }
         @page {
             margin: 10mm;
@@ -36,9 +39,10 @@
 
 <body>
     <div class="container">
-        @foreach ($qrcodes as $qr)
+        @foreach ($qrcodes as $index => $qr)
             <div class="qr-code">
                 <img src="data:image/png;base64, {!! base64_encode($qr) !!}">
+                <div class="code-text">{{ $codigos[$index] }}</div> <!-- Imprimir el código debajo del QR -->
             </div>
         @endforeach
     </div>

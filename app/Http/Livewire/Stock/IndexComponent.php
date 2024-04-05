@@ -82,6 +82,7 @@ class IndexComponent extends Component
 
     }
 
+
     public function asignarQr($datos){
         $qr_id = $datos['qrData'];
         $lote = $datos['lote'];
@@ -158,7 +159,7 @@ class IndexComponent extends Component
 
         if(isset($codigo)){
             $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('500')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
-            $pdf = PDF::loadView('stock.qrindividual', compact('Qrcode'))->setPaper('a4')->output();
+            $pdf = PDF::loadView('stock.qrindividual', compact('Qrcode','codigo'))->setPaper('a4')->output();
             // Guardar el PDF generado en el almacenamiento local
             $pdfBase64 = base64_encode($pdf);
 
@@ -167,6 +168,22 @@ class IndexComponent extends Component
 
           // Enviar el PDF en Base64 al frontend junto con el nombre del archivo
           $this->dispatchBrowserEvent('downloadPdfBase64', ['pdfBase64' => $pdfBase64, 'nombreArchivo' => $nombreArchivo]);
+        }else{
+            return;
+        }
+    }
+
+    public function borrar($lote)
+    {
+        $id = $lote['id'];
+        $stock = StockEntrante::where('id', $id)->first();
+        if(isset( $stock)){
+            $stock_id = $stock->stock_id;
+            $stockqr = Stock::where('id', $stock_id)->orderBy('created_at', 'desc')->first();
+        }
+
+        if(isset($stockqr)){
+            $stockqr->update(['qr_id' => null]);
         }else{
             return;
         }

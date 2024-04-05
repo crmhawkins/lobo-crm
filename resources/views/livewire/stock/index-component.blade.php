@@ -126,6 +126,9 @@
                                                         @endif
                                                         <a class="btn btn-primary" href="/admin/stock-traspaso/{{$lote['id']}}"> Traspaso de lote</a>
                                                         <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
+                                                        @if($this->qrAsignado($lote))
+                                                        <button class="btn btn-danger" onclick="borrar({{$lote}})">Eliminar QR</button>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -159,6 +162,15 @@
             function generarQRIndividual(id) {
                 // Suponiendo que tu descarga se realiza aquí
                 window.livewire.emit('generarQRIndividual', id);
+                setTimeout(() => {
+                    location.reload()
+                }, 2000);
+            }
+        </script>
+        <script>
+            function borrar(id) {
+                // Suponiendo que tu descarga se realiza aquí
+                window.livewire.emit('borrar', id);
                 setTimeout(() => {
                     location.reload()
                 }, 2000);
