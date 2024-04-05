@@ -183,7 +183,27 @@ class IndexComponent extends Component
         }
 
         if(isset($stockqr)){
-            $stockqr->update(['qr_id' => null]);
+
+            $qrborrado=$stockqr->update(['qr_id' => null]);
+            if( $qrborrado)
+            {
+                $mensaje="Qr eliminado correctamente.\n";
+
+            }else{ $mensaje="No se pudo eliminar el Qr.\n";}
+
+
+
+        $this->alert('info', $mensaje, [
+            'position' => 'center',
+            'timer' => null,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'allowOutsideClick'=> false,
+
+            'onConfirmed' => 'recarga',
+            'confirmButtonText' => 'Entendido',
+        ]);
+
         }else{
             return;
         }
@@ -228,5 +248,9 @@ class IndexComponent extends Component
     {
         // Do something
         return redirect()->route('stock.crear-qr');
+    }
+    public function recarga()
+    {
+        return redirect()->route('stock.index');
     }
 }

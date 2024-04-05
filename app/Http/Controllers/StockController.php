@@ -81,12 +81,12 @@ class StockController extends Controller
         // Generar códigos QR
         $qrcodes = [];
         $codigos=[];
-        for ($i = 0; $i < 6; $i++) { // Ajusta este número según la cantidad que desees
+        for ($i = 0; $i < 4; $i++) { // Ajusta este número según la cantidad que desees
             $codigoAleatorio = $year . '-' . $qr_type . "-" . sprintf('%08d', $count_qrs + $i);
             $qrcodes[] = QrCode::errorCorrection('H')->format('png')->eye('circle')->size('300')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigoAleatorio);
             $codigos[] = $codigoAleatorio;
         }
-        $new_count = Settings::find(1)->update(['qr_creados_productos' => ($count_qrs + 6)]);
+        $new_count = Settings::find(1)->update(['qr_creados_productos' => ($count_qrs + 4)]);
 
 
         // Generar y transmitir PDF
