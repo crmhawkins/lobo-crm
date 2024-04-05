@@ -59,8 +59,12 @@ class CreateComponent extends Component
             // Extrae el número secuencial de la última factura del año y lo incrementa
             $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
         } else {
-            // Si no hay facturas para el año, comienza con 1
-            $lastNumber = 1;
+            if($year = 24 ){
+                $lastNumber = 150;
+            }else{
+                $lastNumber = 1;
+            }
+
         }
         // Genera el nuevo número de factura con relleno para asegurar 4 dígitos
         $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
