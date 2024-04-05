@@ -225,6 +225,7 @@ class IndexComponent extends Component
             'editar',
             'generarQRIndividual',
             'anadir',
+            'borrar',
         ];
     }
     public function formatFecha($id)
