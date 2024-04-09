@@ -73,7 +73,7 @@ class Kernel extends ConsoleKernel
                     ]);
                 }
             }
-        })->daily();
+        })->everyMinute();
 
     }
 
