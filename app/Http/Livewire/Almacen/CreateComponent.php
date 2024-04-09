@@ -235,7 +235,7 @@ class CreateComponent extends Component
     foreach ($productosPedido as $productoPedido) {
         $producto = Productos::find($productoPedido->producto_pedido_id);
         $stockSeguridad =  $producto->stock_seguridad;
-        $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+        $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
         $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
         $almacen = Almacen::find($almacen_id);
 
@@ -354,7 +354,7 @@ class CreateComponent extends Component
                 if ($this->productos_pedido[$rowIndex]['producto_pedido_id'] == $entradaStock->producto_id ) {
                     if ($this->productos_pedido[$rowIndex]['unidades'] <= $entradaStock->cantidad) {
                         // Actualizar el lote_id en productos_pedido
-                        $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->lote_id;
+                        $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
                     }else{
                         $this->alert('error', 'Lote con stock insuficiente', [
                         'position' => 'center',
