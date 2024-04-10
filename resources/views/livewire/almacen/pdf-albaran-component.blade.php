@@ -45,7 +45,7 @@
     </table>
 <table class="header">
         <tr width="100%">
-            <td width="10%"><img src="{{ public_path('images/logo_head.png') }}" alt="logo" width="100"></td>
+            <td width="10%"><img src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100"></td>
             <td width="40%" style="text-align: left !important">
                 <span style="display: inline; color:#0196eb"><b>LOBO DEL SUR S.L.</b></span><br>
                 B16914285<br>
