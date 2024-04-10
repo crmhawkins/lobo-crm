@@ -90,6 +90,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/facturas-create', [FacturaController::class, 'create1'])->name('facturas.create');
     Route::get('/facturas-edit/{id}', [FacturaController::class, 'edit'])->name('facturas.edit');
     Route::get('/facturas-pdf/{id}', [FacturaController::class, 'pdf'])->name('facturas.pdf');
+    Route::get('/facturas-pdf-preview/{id}', [FacturaController::class, 'pdfPreview'])->name('facturas.pdfpreview');
 
     Route::get('/almacen', [AlmacenController::class, 'index'])->name('almacen.index');
     Route::get('/almacen-create/{id}', [AlmacenController::class, 'create'])->name('almacen.create');
