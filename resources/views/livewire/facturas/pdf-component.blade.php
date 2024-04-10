@@ -39,7 +39,7 @@
 <body>
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
-            <td width="20%" style="background-color: #fff !important; margin: -10%; padding: 0;"><img src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto"></td>
+            <td width="20%" style="background-color: #fff !important; margin: -50%; padding: 0;"><img src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto"></td>
             <td width="40%" style="background-color: #fff !important"></td>
             <th width="40%">Administracion@serlobo.com</th>
         </tr>
