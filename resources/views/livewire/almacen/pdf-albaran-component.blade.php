@@ -37,6 +37,12 @@
 </head>
 
 <body>
+    <table class="header-1" style="margin-bottom: 5%">
+        <tr width="100%">
+            <td width="50%" style="background-color: #fff !important"></td>
+            <th width="50%">Administracion@serlobo.com</th>
+        </tr>
+    </table>
 <table class="header">
         <tr width="100%">
             <td width="10%"><img src="{{ public_path('images/logo_head.png') }}" alt="logo" width="100"></td>
@@ -44,8 +50,7 @@
                 <span style="display: inline; color:#0196eb"><b>LOBO DEL SUR S.L.</b></span><br>
                 B16914285<br>
                 AVD. CAETARIA 4.5 P.I LA MENACHA<br>
-                ALGECIRAS (CÁDIZ) 11205, España<br>
-                Administracion@serlobo.com
+                ALGECIRAS (CÁDIZ) 11205, España
             </td>
             <td width="10%">&nbsp;</td>
             <td class="bold" width="40%" style="text-align: right !important">
