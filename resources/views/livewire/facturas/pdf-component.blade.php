@@ -39,9 +39,8 @@
 <body>
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
-            <td width="20%" style="background-color: #fff !important"></td>
-            <th width="40%">administracion@serlobo.com</th>
-            <th width="40%">654183607</th>
+            <td width="50%" style="background-color: #fff !important"></td>
+            <th width="50%">Administracion@serlobo.com</th>
         </tr>
     </table>
     <!-- Parte superior: Logo, Dirección, Factura -->
@@ -51,8 +50,8 @@
             <td width="40%" style="text-align: left !important">
                 <span style="display: inline; color:#0196eb"><b>LOBO DEL SUR S.L.</b></span><br>
                 B16914285<br>
-                PLAZA DEL VILLAR 8, PLANTA 1-A<br>
-                LOS BARRIOS (11370), Cádiz, España
+                AVD. CAETARIA 4.5 P.I LA MENACHA<br>
+                ALGECIRAS (CÁDIZ) 11205
             </td>
             <td width="10%">&nbsp;</td>
             <td class="bold" width="40%" style="text-align: right !important">
