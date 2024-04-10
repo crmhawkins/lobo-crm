@@ -63,7 +63,10 @@ class IndexComponent extends Component
             // Preparar los datos de los productos del pedido
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
-                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+                $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
+                if (!isset( $stockEntrante)){
+                    $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+                }
                 if ($stockEntrante){
                     $lote=$stockEntrante->orden_numero;
                 }else{

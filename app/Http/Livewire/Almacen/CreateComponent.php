@@ -236,6 +236,9 @@ class CreateComponent extends Component
         $producto = Productos::find($productoPedido->producto_pedido_id);
         $stockSeguridad =  $producto->stock_seguridad;
         $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
+        if (!isset( $stockEntrante)){
+            $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+        }
         $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
         $almacen = Almacen::find($almacen_id);
 
