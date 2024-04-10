@@ -192,7 +192,7 @@ class FacturaController extends Controller
                 }
             }
             $iva = "";
-            $coniva = "";
+            $conIva = "";
             $localidad_entrega = $pedido->localidad_entrega;
             $direccion_entrega = $pedido->direccion_entrega;
             $cod_postal_entrega = $pedido->cod_postal_entrega;
