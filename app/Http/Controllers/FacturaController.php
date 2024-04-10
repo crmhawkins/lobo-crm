@@ -164,7 +164,7 @@ class FacturaController extends Controller
 
 
     }
-    public function pdfPreview($id,$iva)
+    public function pdfPreview($id)
     {
 
         $factura = Facturas::find($id);
@@ -191,7 +191,7 @@ class FacturaController extends Controller
                     ];
                 }
             }
-
+            $iva = false;
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
