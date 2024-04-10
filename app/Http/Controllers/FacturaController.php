@@ -192,6 +192,15 @@ class FacturaController extends Controller
                 }
             }
             $iva = "";
+            $coniva = "";
+            $localidad_entrega = $pedido->localidad_entrega;
+            $direccion_entrega = $pedido->direccion_entrega;
+            $cod_postal_entrega = $pedido->cod_postal_entrega;
+            $provincia_entrega = $pedido->provincia_entrega;
+            $fecha = $pedido->fecha;
+            $observaciones = $pedido->observaciones;
+            $precio = $pedido->precio;
+            $descuento = $pedido->descuento;
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
