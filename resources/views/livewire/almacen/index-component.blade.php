@@ -248,7 +248,7 @@
             window.livewire.emit('mostrarAlbaran', id, conIva);
             setTimeout(() => {
                 location.reload()
-            }, 2000);
+            }, 5000);
         }
     </script>
     <script>

@@ -125,7 +125,7 @@
         window.livewire.emit('pdf', id, conIva);
         setTimeout(() => {
             location.reload()
-        }, 1000);
+        }, 5000);
     }
     </script>
 <script src="../assets/js/jquery.slimscroll.js"></script>
