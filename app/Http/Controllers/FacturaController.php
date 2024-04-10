@@ -191,7 +191,7 @@ class FacturaController extends Controller
                     ];
                 }
             }
-            $iva = false;
+            $iva = "";
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
