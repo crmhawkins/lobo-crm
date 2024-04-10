@@ -212,7 +212,7 @@ class FacturaController extends Controller
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
 
 
-        return view('livewire.facturas.pdf-component', compact('datos'));
+        return view('livewire.facturas.pdf-component', compact('datos', 'factura'));
         }else{
             return redirect('admin/facturas');
         }
