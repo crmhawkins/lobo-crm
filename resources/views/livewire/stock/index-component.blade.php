@@ -104,6 +104,7 @@
                                             <tr>
                                                 <th>Nº Interno</th>
                                                 <th>N.º Lote</th>
+                                                <th>Producto</th>
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en Botellas)</th>
                                                 <th>Cantidad (en Cajas)</th>
@@ -115,6 +116,7 @@
                                                 <tr>
                                                     <th>{{ $lote['lote_id'] }}</th>
                                                     <th>{{ $lote['orden_numero'] }}</th>
+                                                    <th>{{ $this->getProducto($lote['producto_id']) }}</th>
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>

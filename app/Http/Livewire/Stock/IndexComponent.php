@@ -39,6 +39,10 @@ class IndexComponent extends Component
             'productos' => $this->productos,
         ]);
     }
+    public function getProducto($id)
+    {
+        return $this->productos->find($id)->nombre;
+    }
 
     public function setLotes()
     {
