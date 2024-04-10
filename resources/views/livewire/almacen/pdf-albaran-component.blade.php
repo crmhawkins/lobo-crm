@@ -39,20 +39,20 @@
 <body>
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
-            <td width="50%" style="background-color: #fff !important"></td>
-            <th width="50%">Administracion@serlobo.com</th>
+            <td width="50%"><img src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100"></td>
+            <td width="10%" style="background-color: #fff !important"></td>
+            <th width="40%">Administracion@serlobo.com</th>
         </tr>
     </table>
 <table class="header">
         <tr width="100%">
-            <td width="10%"><img src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100"></td>
             <td width="40%" style="text-align: left !important">
                 <span style="display: inline; color:#0196eb"><b>LOBO DEL SUR S.L.</b></span><br>
                 B16914285<br>
                 AVD. CAETARIA 4.5 P.I LA MENACHA<br>
                 ALGECIRAS (CÁDIZ) 11205, España
             </td>
-            <td width="10%">&nbsp;</td>
+            <td width="20%">&nbsp;</td>
             <td class="bold" width="40%" style="text-align: right !important">
                 <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">ALBARÁN</h1><br>
                 <span style="font-size: 80%"><span style="font-weight: bold;">#{{$num_albaran}}</span><br>
