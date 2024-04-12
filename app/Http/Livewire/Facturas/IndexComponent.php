@@ -73,6 +73,11 @@ class IndexComponent extends Component
                     $lote = "";
                 }
                 if ($producto) {
+                    if(!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <=0){
+                        $peso ="Peso no definido";
+                    }else{
+                    $peso = 1000 / $producto->peso_neto_unidad * $productoPedido->unidades;
+                    }
                     $productos[] = [
                         'nombre' => $producto->nombre,
                         'cantidad' => $productoPedido->unidades,
@@ -80,7 +85,7 @@ class IndexComponent extends Component
                         'precio_total' => $productoPedido->precio_total,
                         'iva' => $producto->iva,
                         'lote_id' => $lote,
-                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                        'peso_kg' =>  $peso,
                     ];
                 }
             }}
