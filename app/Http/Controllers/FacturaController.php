@@ -126,6 +126,11 @@ class FacturaController extends Controller
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
                 if ($producto) {
+                    if(!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <=0){
+                        $peso ="Peso no definido";
+                    }else{
+                    $peso =($producto->peso_neto_unidad * $productoPedido->unidades) /1000;
+                    }
                     $productos[] = [
                         'nombre' => $producto->nombre,
                         'cantidad' => $productoPedido->unidades,
@@ -133,7 +138,7 @@ class FacturaController extends Controller
                         'precio_total' => $productoPedido->precio_total,
                         'iva' => $producto->iva,
                         'lote_id' => $productoPedido->lote_id,
-                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                        'peso_kg' => $peso,
                     ];
                 }
             }
@@ -180,6 +185,11 @@ class FacturaController extends Controller
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
                 if ($producto) {
+                    if(!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <=0){
+                        $peso ="Peso no definido";
+                    }else{
+                    $peso =($producto->peso_neto_unidad * $productoPedido->unidades) /1000;
+                    }
                     $productos[] = [
                         'nombre' => $producto->nombre,
                         'cantidad' => $productoPedido->unidades,
@@ -187,7 +197,7 @@ class FacturaController extends Controller
                         'precio_total' => $productoPedido->precio_total,
                         'iva' => $producto->iva,
                         'lote_id' => $productoPedido->lote_id,
-                        'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                        'peso_kg' => $peso,
                     ];
                 }
             }

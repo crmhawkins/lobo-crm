@@ -76,7 +76,7 @@ class IndexComponent extends Component
                     if(!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <=0){
                         $peso ="Peso no definido";
                     }else{
-                    $peso = 1000 / $producto->peso_neto_unidad * $productoPedido->unidades;
+                    $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) /1000;
                     }
                     $productos[] = [
                         'nombre' => $producto->nombre,

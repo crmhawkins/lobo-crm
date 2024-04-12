@@ -287,7 +287,7 @@ class EditComponent extends Component
                             'precio_total' => $productoPedido->precio_total,
                             'iva' => $producto->iva,
                             'lote_id' => $productoPedido->lote_id,
-                            'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                            'peso_kg' =>($producto->peso_neto_unidad * $productoPedido->unidades) /1000,
                         ];
                     }
                 }}
@@ -341,7 +341,7 @@ class EditComponent extends Component
                             'precio_total' => $productoPedido->precio_total,
                             'iva' => $producto->iva,
                             'lote_id' => $productoPedido->lote_id,
-                            'peso_kg' => 1000 / $producto->peso_neto_unidad * $productoPedido->unidades,
+                            'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000,
                         ];
                     }
                 }}
