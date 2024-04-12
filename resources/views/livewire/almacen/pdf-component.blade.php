@@ -6,7 +6,7 @@
         body{
             font-size: 80% !important;
         }
-        table {
+        span,table {
             width: 100%;
             border-collapse: collapse;
             font-family: Arial, Helvetica, sans-serif;
@@ -80,7 +80,12 @@
             </td>
         </tr>
     </table>
-
+    <div style="margin-top: 2%; margin-bottom: 2%;">
+        <span style="font-weight: bold; color:#0196eb">Observaciones:</span><br>
+        <div style="background-color: #ececec; padding: 10px;">
+            {{$pedido->observaciones}}
+        </div>
+    </div>
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     <table>
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
@@ -121,23 +126,23 @@
         </tr>
         @endif
     </table>
-            <table style="margin-top: 5% !important">
-                <tr style="background-color:#ececec;">
-                    <td></td>
-                    <td>PESO TOTAL</td>
-                    <td>{{ number_format($pesoTotal, 2)}} Kg.</td>
-                </tr>
-                <!--<tr style="background-color:#ececec;">
-                    <td></td>
-                    <td>IVA 21%</td>
-                    <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
-                </tr>
-                <tr style="background-color:#ececec;">
-                    <td></td>
-                    <td>TOTAL</td>
-                    <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
-                </tr>-->
-            </table>
+    <table style="margin-top: 1% !important">
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>PESO TOTAL</td>
+            <td>{{ number_format($pesoTotal, 2)}} Kg.</td>
+        </tr>
+        <!--<tr style="background-color:#ececec;">
+            <td></td>
+            <td>IVA 21%</td>
+            <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
+        </tr>
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>TOTAL</td>
+            <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
+        </tr>-->
+    </table>
 
 </body>
 

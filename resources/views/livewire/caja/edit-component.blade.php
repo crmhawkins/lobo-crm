@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                        @if ($this->pedido_id)
+                        @if ($this->tipo_movimiento == "Ingreso")
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Factura</label>
                             <div class="col-sm-10">
@@ -38,7 +38,7 @@
                                         <option value="0">-- ELIGE UNA FACTURA --</option>
                                         @foreach ($facturas as $factura)
                                             <option value="{{ $factura->id }}">
-                                                (#{{ $factura->id }}) - {{ $this->getCliente($factura->pedido_id) }}
+                                                ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -47,7 +47,7 @@
                                 @enderror
                             </div>
                         </div>
-                        @elseif($this->poveedor_id)
+                        @elseif($this->tipo_movimiento == "Gasto")
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Proveedor</label>
                             <div class="col-sm-10">
@@ -104,8 +104,9 @@
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Método de pago</label>
+                            <label for="pago" class="col-sm-12 col-form-label">Método de pago</label>
                             <div class="col-sm-10" wire:ignore.self>
+                                @if ($this->tipo_movimiento == "Ingreso")
                                 <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="giro_bancario">Giro Bancario</option>
@@ -116,8 +117,24 @@
                                 @error('denominacion')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
+                                @elseif($this->tipo_movimiento == "Gasto")
+                                <input type="text" class="form-control" wire:model="metodo_pago" nombre="metodo_pago"
+                                id="metodo_pago" placeholder="Nombre de la categoría...">
+                                @endif
                             </div>
                         </div>
+                        @if($this->tipo_movimiento == "Gasto")
+                        <div class="mb-3 row d-flex align-items-center">
+                            <label for="banco" class="col-sm-12 col-form-label">Banco</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="banco" wire:model="banco">
+                                <option value="0">-- ELIGE UN BANCO --</option>
+                                <option value="1">Santander</option>
+                                <option value="2">CaixaBank</option>
+                            </select>
+                            </div>
+                        </div>
+                        @endif
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Descripción</label>
                             <div class="col-sm-10">

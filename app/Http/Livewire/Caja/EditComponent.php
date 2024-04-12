@@ -31,6 +31,8 @@ class EditComponent extends Component
     public $pedido;
     public $facturas;
     public $estado;
+    public $banco;
+
 
 
 
@@ -48,13 +50,13 @@ class EditComponent extends Component
         $this->fecha = $caja->fecha;
         $this->estado = $caja->estado;
         $this->tipo_movimiento = $caja->tipo_movimiento;
+        $this->banco = $caja->banco;
+
 
     }
     public function getCliente($id)
     {
-        $this->pedido = Pedido::find($id);
-
-         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
+         return $this->clientes->firstWhere('id', $id)->nombre;
     }
     public function render()
     {

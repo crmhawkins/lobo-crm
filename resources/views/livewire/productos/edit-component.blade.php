@@ -225,6 +225,10 @@
                             <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
                                 producto </button>
                         </div>
+                        <div class="col-12">
+                            <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Borrar
+                                producto </button>
+                        </div>
                     </div>
                 </div>
             </div>

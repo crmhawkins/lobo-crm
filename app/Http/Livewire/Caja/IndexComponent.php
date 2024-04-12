@@ -41,15 +41,18 @@ class IndexComponent extends Component
     {
         return view('livewire.caja.index-component');
     }
-    public function getCliente($id)
+    public function getFactura($id)
     {
-        $id_pedido = $this->facturas->firstWhere('id', $id)->pedido_id;
-        $pedido = Pedido::find($id_pedido);
+        $factura = $this->facturas->firstWhere('id', $id);
 
-        if( isset($pedido)){
+        if( isset( $factura)){
 
-         return $this->clientes->firstWhere('id', $pedido->cliente_id)->nombre;
-        }else{ return "cliente no encontrado";}
+        $cliente = $this->clientes->firstWhere('id',  $factura->cliente_id)->nombre;
+
+
+        return $factura ->numero_factura . "-" . $cliente ;
+
+        }else{ return "Factura no encontrada";}
     }
     public function calcular_saldo($index, $id)
     {

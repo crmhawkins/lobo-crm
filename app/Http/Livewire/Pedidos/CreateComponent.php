@@ -320,6 +320,10 @@ class CreateComponent extends Component
 
         $this->sinCargo = false;
 
+        $this->producto_seleccionado = 0;
+        $this->unidades_producto = 0;
+        $this->unidades_caja_producto = 0;
+        $this->unidades_pallet_producto = 0;
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }

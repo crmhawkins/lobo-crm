@@ -22,7 +22,7 @@
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
 
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Proveedor</label>
+                            <label for="Proveedor" class="col-sm-12 col-form-label">Proveedor</label>
                             <div class="col-sm-10">
                                 <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
                                 $('#select2-monitor').on('change', function(e) {
@@ -40,13 +40,11 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                </div> @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Estado</label>
+                            <label for="estado" class="col-sm-12 col-form-label">Estado</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="estado" id="estado"  wire:model.lazy="estado">
                                     <option value="Pendiente">Pendiente</option>
@@ -56,42 +54,40 @@
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
+                            <label for="importe" class="col-sm-12 col-form-label">Importe</label>
                             <div class="col-sm-10">
-                                <input type="number" class="form-control" wire:model="importe" nombre="importe"
-                                    id="importe" placeholder="Nombre de la categoría...">
-                                @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                <input type="number"  step="0.1" class="form-control" wire:model="importe" nombre="importe"
+                                    id="importe" placeholder="Importe">
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Fecha</label>
+                            <label for="fecha" class="col-sm-12 col-form-label">Fecha</label>
                             <div class="col-sm-10">
                                 <input type="date" class="form-control" wire:model="fecha" nombre="fecha"
                                     id="fecha" placeholder="Nombre de la categoría...">
-                                @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Método de pago</label>
+                            <label for="pago" class="col-sm-12 col-form-label">Método de pago</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" wire:model="metodo_pago" nombre="metodo_pago"
                                     id="metodo_pago" placeholder="Nombre de la categoría...">
-                                @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                            </div>
+                        </div>
+                        <div class="mb-3 row d-flex align-items-center">
+                            <label for="banco" class="col-sm-12 col-form-label">Banco</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="banco" wire:model="banco">
+                                <option value="0">-- ELIGE UN BANCO --</option>
+                                <option value="1">Santander</option>
+                                <option value="2">CaixaBank</option>
+                            </select>
                             </div>
                         </div>
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Descripción</label>
                             <div class="col-sm-10">
                                 <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre de la categoría..." rows="4" cols="150"></textarea>
-                                @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </div>
                         </div>
 

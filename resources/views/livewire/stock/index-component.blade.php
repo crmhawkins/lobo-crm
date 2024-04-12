@@ -70,7 +70,7 @@
                                     </select>
                                 </div>
                             </div>
-                            @if ($producto_seleccionado != null)
+
                                 <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
                                     $('#tabla-stock').DataTable({
                                         responsive: true,
@@ -136,7 +136,7 @@
                                             @endforeach
                                     </table>
                                 </div>
-                            @endif
+
                         @else
                             <h6 class="text-center">No se encuentran productos disponibles</h6>
                     @endif

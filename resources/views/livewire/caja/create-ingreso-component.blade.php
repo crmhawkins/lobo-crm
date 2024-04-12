@@ -36,7 +36,7 @@
                                         </option>
                                         @foreach ($facturas as $factura)
                                             <option value="{{ $factura->id }}">
-                                                (#{{ $factura->id }}) - {{ $this->getCliente($factura->pedido_id) }}
+                                                ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
                                             </option>
                                         @endforeach
                                     </select>

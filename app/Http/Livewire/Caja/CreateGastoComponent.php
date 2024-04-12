@@ -24,6 +24,7 @@ class CreateGastoComponent extends Component
     public $poveedor_id;
     public $poveedores;
     public $facturas;
+    public $banco;
     public $estado ='Pendiente';
 
 
@@ -49,7 +50,7 @@ class CreateGastoComponent extends Component
                 'poveedor_id' => 'nullable',
                 'fecha' => 'required',
                 'estado' => 'nullable',
-
+                'banco' => 'nullable',
 
             ],
             // Mensajes de error

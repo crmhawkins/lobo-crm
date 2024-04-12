@@ -48,8 +48,8 @@
                                     <tr>
                                         <td>{{ $tipo->fecha }}</td>
                                         <td>{{ $tipo->descripcion }}</td>
-                                        @if ($tipo->pedido_id)
-                                        <td>Factura Nº {{ $tipo->pedido_id }} - {{ $this->getCliente($tipo->pedido_id) }}</td>
+                                        @if (isset($tipo->pedido_id))
+                                        <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
                                         @elseif($tipo->poveedor_id)
                                         <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
                                         @else
@@ -100,7 +100,7 @@
         <div class="col-md-3">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <h5>Elige una semana</h5>
+                    <h5>Elige un mes</h5>
                     <div class="row">
                         <div class="col-12">
                             <input type="month" class="form-control" wire:model="mes" wire:change="cambioMes">

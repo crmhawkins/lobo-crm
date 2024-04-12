@@ -96,27 +96,10 @@
                                         <tbody>
                                             @foreach ($productos_ordenados as $productoIndex => $producto)
                                                 <tr>
-                                                    <td width="25%">
-                                                        {{ $this->getNombreTabla($producto['producto_id']) }}
-                                                    </td>
-                                                    <td width="25%">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-6 text-end"><input type="number"
-                                                                    class="form-control"
-                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad"
-                                                                    wire:change='setPrecioEstimado'>
-                                                            </div>
-                                                            <div class="col-6 text-start">
-                                                                <p class="my-auto">pallets</p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td width="25%">
-                                                        {{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG
-                                                    </td>
-                                                    <td width="25%"><button type="button" class="btn btn-danger"
-                                                            wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                    </td>
+                                                    <td width>{{ $this->getNombreTabla($producto['producto_id']) }}</td>
+                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                    <td >{{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG</td>
+                                                    <td ><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -207,6 +190,9 @@
                                         $('#select2-producto').on('change', function(e) {
                                             var data = $('#select2-producto').select2('val');
                                             @this.set('producto_seleccionado', data);
+                                            @this.set('unidades_pallet_producto', 0);
+                                            @this.set('unidades_caja_producto', 0);
+                                            @this.set('unidades_producto', 0);
                                             console.log('data');
                                         });">
                                             <select name="producto" id="select2-producto"
@@ -223,17 +209,28 @@
                                 </div>
                                 @if ($producto_seleccionado != null)
                                     <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7" style="text-align: center !important;">
-                                            <label for="unidades">Unidades (pallets)</label>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Pallets</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Cajas</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">Uds.</label>
                                         </div>
                                         <div class="col-md-3" style="text-align: center !important;">
                                             <label for="unidades">&nbsp; </label>
                                         </div>
                                     </div>
                                     <div class="row justify-content-center mt-1">
-                                        <div class="col-md-7">
-                                            <input type="number" class="form-control"
-                                                wire:model="unidades_producto">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_producto"  wire:change='updateUnidad()'>
                                         </div>
                                         <div class="col-md-3" style="justify-content: start !important"
                                             style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">

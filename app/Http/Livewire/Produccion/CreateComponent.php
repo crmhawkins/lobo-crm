@@ -31,6 +31,8 @@ class CreateComponent extends Component
     public $productos;
     public $producto_seleccionado;
     public $unidades_producto;
+    public $unidades_pallet_producto;
+    public $unidades_caja_producto;
     public $productos_ordenados = [];
     public $mercaderias_gastadas = [];
     public $mercaderias;
@@ -64,10 +66,24 @@ class CreateComponent extends Component
             return $producto->nombre;
         }
     }
+    public function getUnidadesTabla($id)
+    {
+        $producto = Productos::find($this->productos_ordenados[$id]['producto_id']);
+        $cajas = ($this->productos_ordenados[$id]['cantidad'] / $producto->unidades_por_caja);
+        $pallets = floor($cajas / $producto->cajas_por_pallet);
+        $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+        $unidades = '';
+        if ($cajas_sobrantes > 0) {
+            $unidades = $this->productos_ordenados[$id]['cantidad'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+        } else {
+            $unidades = $this->productos_ordenados[$id]['cantidad'] . ' unidades (' . $pallets . ' pallets)';
+        }
+        return $unidades;
+    }
     public function getPesoTotal($id,$in)
     {
         $pesoUnidad = $this->productos->where('id', $id)->first()->peso_neto_unidad;
-        $cantidad = ($this->productos_ordenados[$in]['cantidad'])*($this->productos->where('id', $id)->first()->unidades_por_caja)*($this->productos->where('id', $id)->first()->cajas_por_pallet);
+        $cantidad = $this->productos_ordenados[$in]['cantidad'];
         $pesoTotal= ($pesoUnidad * $cantidad)/1000;
         return $pesoTotal;
 
@@ -132,6 +148,8 @@ class CreateComponent extends Component
 
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;
+        $this->unidades_caja_producto = 0;
+        $this->unidades_pallet_producto = 0;
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
     }
@@ -144,7 +162,7 @@ class CreateComponent extends Component
         $producto = Productos::where('id', $productoOrdenado['producto_id'])->first();
 
         foreach ($materiales as $material) {
-            $cantidadMaterialPorProducto = $material->cantidad * $productoOrdenado['cantidad'] * $producto->cajas_por_pallet;
+            $cantidadMaterialPorProducto = ($material->cantidad / $producto->unidades_por_caja) * $productoOrdenado['cantidad'];
 
             // Buscar si el material ya existe en mercaderias_gastadas
             $index = array_search($material->mercaderia_id, array_column($this->mercaderias_gastadas, 'mercaderia_id'));
@@ -338,5 +356,24 @@ class CreateComponent extends Component
     {
         // Do something
         return redirect()->route('produccion.index');
+    }
+
+    public function updatePallet()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = $this->unidades_pallet_producto * $producto->cajas_por_pallet;
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateCaja()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+        $this->unidades_producto = $this->unidades_caja_producto * $producto->unidades_por_caja;
+    }
+    public function updateUnidad()
+    {
+        $producto = Productos::find($this->producto_seleccionado);
+        $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
+        $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
     }
 }

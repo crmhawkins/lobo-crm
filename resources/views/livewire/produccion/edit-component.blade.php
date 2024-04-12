@@ -98,23 +98,9 @@
                                         <tbody>
                                             @foreach ($productos_ordenados as $productoIndex => $producto)
                                                 <tr>
-                                                    <td width="25%">
-                                                        {{ $this->getNombreTabla($producto['producto_id']) }}
-                                                    </td>
-                                                    <td width="25%">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-6 text-end"><input type="number"
-                                                                    class="form-control"
-                                                                    wire:model="productos_ordenados.{{ $productoIndex }}.cantidad" readonly>
-                                                            </div>
-                                                            <div class="col-6 text-start">
-                                                                <p class="my-auto">pallets</p>
-                                                            </div>
-                                                        </div>
-                                                     </td>
-                                                     <td width="25%">
-                                                        {{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG
-                                                    </td>
+                                                    <td >{{ $this->getNombreTabla($producto['producto_id']) }}</td>
+                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                     <td >{{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG</td>
                                                     {{--<td width="25%"><button type="button" class="btn btn-danger"
                                                             wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>--}}

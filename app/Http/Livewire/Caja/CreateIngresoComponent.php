@@ -96,8 +96,6 @@ class CreateIngresoComponent extends Component
 
     public function getCliente($id)
     {
-        $this->pedido = Pedido::find($id);
-
-         return $this->clientes->firstWhere('id', $this->pedido->cliente_id)->nombre;
+         return $this->clientes->firstWhere('id', $id)->nombre;
     }
 }

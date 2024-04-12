@@ -38,7 +38,11 @@ class IndexComponent extends Component
     }
     public function getAlmacen($id)
     {
-        return $this->almacenes->where('id', $id)->first()->almacen;
+        if($id > 0) {
+            return $this->almacenes->where('id', $id)->first()->almacen;
+        }else{
+            return "No especificado";
+        }
     }
 
   /*  public function getPesoTotal($id,$in)

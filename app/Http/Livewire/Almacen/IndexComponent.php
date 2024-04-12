@@ -15,7 +15,7 @@ use App\Models\Albaran;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Models\Alertas;
-
+use App\Models\Almacen;
 
 class IndexComponent extends Component
 {
@@ -54,6 +54,10 @@ class IndexComponent extends Component
 
     public function getNombreCliente($id){
         return Clients::where('id', $id)->first()->nombre;
+    }
+
+    public function getAlmacen($id){
+        return Almacen::find($id)->almacen;
     }
     public function getListeners()
     {
@@ -198,7 +202,6 @@ class IndexComponent extends Component
         'conIva' => $Iva,
         'pedido' => $pedido ,
         'cliente' => $cliente,
-        'observaciones' => $pedido->observaciones,
         'productos' => $productos,
         'num_albaran' => $num_albaran =  $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran =  $albaran->fecha,

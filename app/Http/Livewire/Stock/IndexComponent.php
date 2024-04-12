@@ -21,7 +21,7 @@ class IndexComponent extends Component
     public $productos;
     public $almacen_id;
     public $almacenes;
-    public $producto_seleccionado ;
+    public $producto_seleccionado = 0 ;
     public $producto_lotes;
 
     public function mount()
@@ -48,7 +48,9 @@ class IndexComponent extends Component
     {
         if($this->almacen_id == null){
             if($this->producto_seleccionado == 0){
+
                 $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
+
             }else{
                 $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
                 ->where('cantidad','>', 0)

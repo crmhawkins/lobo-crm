@@ -50,6 +50,7 @@
                                 <tr>
                                     <th scope="col">Pedido</th>
                                     <th scope="col">Cliente</th>
+                                    <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Precio</th>
                                     <th scope="col">Tipo de pedido</th>
@@ -61,6 +62,7 @@
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
+                                        <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
                                         <td>{{ $pedido->precio }}€</td>
                                         <td>
@@ -117,6 +119,7 @@
                                 <tr>
                                     <th scope="col">Pedido</th>
                                     <th scope="col">Cliente</th>
+                                    <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Precio</th>
                                     <th scope="col">Tipo de pedido</th>
@@ -128,6 +131,7 @@
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
+                                        <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
                                         <td>{{ $pedido->precio }}€</td>
                                         <td>
@@ -185,6 +189,7 @@
                                 <tr>
                                     <th scope="col">Pedido</th>
                                     <th scope="col">Cliente</th>
+                                    <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Precio</th>
                                     <th scope="col">Tipo de pedido</th>
@@ -196,6 +201,7 @@
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
+                                        <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
                                         <td>{{ $pedido->precio }}€</td>
                                         <td>
