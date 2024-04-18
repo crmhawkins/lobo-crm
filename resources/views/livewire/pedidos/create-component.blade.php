@@ -276,13 +276,13 @@
                                                 data-dismiss="modal" aria-label="Close">+</a>
                                         </div>
                                     </div>
-								<div class="row justify-content-center">
-									<div class="col-11 mt-3">
+                                    <div class="row justify-content-center">
+                                        <div class="col-11 mt-3">
 
-										<input name="sinCargo" class="form-check-input" type="checkbox" id="sinCargo" wire:model="sinCargo">
-										<label for="sinCargo" style="cursor:pointer"> Producto sin cargos.</label>
-									</div>
-								</div>
+                                            <input name="sinCargo" class="form-check-input" type="checkbox" id="sinCargo" wire:model="sinCargo">
+                                            <label for="sinCargo" style="cursor:pointer"> Producto sin cargos.</label>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                             <div class="modal-footer">

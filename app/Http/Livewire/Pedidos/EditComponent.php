@@ -54,9 +54,10 @@ class EditComponent extends Component
     public $precio_vodka3l;
     public $almacen_id;
     public $almacenes;
-    public $bloqueado
-    ;
+    public $bloqueado;
     public $porcentaje_bloq;
+    public $sinCargo = false;
+
 
     public function mount()
     {
@@ -558,6 +559,7 @@ class EditComponent extends Component
     {
         $producto = Productos::find($id);
         if (!$producto) {
+            // Muestra una alerta al usuario indicando que el producto no se encontró
             $this->alert('error', 'Producto no encontrado.', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -572,24 +574,61 @@ class EditComponent extends Component
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
-        foreach ($this->productos_pedido as &$productoPedido) {
+        $producto_existe_sincargo =false;
+        foreach ($this->productos_pedido as $productoPedido) {
             if ($productoPedido['producto_pedido_id'] == $id) {
+                if ($productoPedido['precio_ud'] !== 0) {
                 $producto_existe = true;
-                $productoPedido['unidades'] += $this->unidades_producto;  // Actualiza la cantidad
-                $productoPedido['precio_ud'] = $precioUnitario;
-                $productoPedido['precio_total'] += $precioTotal;  // Actualiza el precio total
                 break;
+                }else{
+                $producto_existe_sincargo = true;
+                }
             }
         }
-
-        if (!$producto_existe) {
-            $this->productos_pedido[] = [
+		if($this->sinCargo == true){
+            if ($producto_existe_sincargo) {
+                foreach ($this->productos_pedido as $index => $productoPedido) {
+                    if ($productoPedido['producto_pedido_id'] == $id) {
+                        if ($productoPedido['precio_ud'] == 0) {
+                        $key=$index;
+                        }
+                    }
+                }
+				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+			} else {
+			$this->productos_pedido[] = [
                 'producto_pedido_id' => $id,
                 'unidades' => $this->unidades_producto,
-                'precio_ud' => $precioUnitario,
-                'precio_total' => $precioTotal
-            ];
-        }
+                'precio_ud' => 0,
+                'precio_total' => 0
+            ];}
+
+		} else{
+
+
+			if ($producto_existe) {
+                foreach ($this->productos_pedido as $index => $productoPedido) {
+                    if ($productoPedido['producto_pedido_id'] == $id) {
+                        if ($productoPedido['precio_ud'] !== 0) {
+                        $key=$index;
+                        }
+                    }
+                }
+				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+				$this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
+				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
+			} else {
+				$this->productos_pedido[] = [
+					'producto_pedido_id' => $id,
+					'unidades' => $this->unidades_producto,
+					'precio_ud' => $precioUnitario,
+					'precio_total' => $precioTotal
+				];
+			}
+
+		}
+
+        $this->sinCargo = false;
 
         $this->producto_seleccionado = 0;
         $this->unidades_producto = 0;

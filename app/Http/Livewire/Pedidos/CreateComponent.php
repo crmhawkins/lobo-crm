@@ -45,7 +45,8 @@ class CreateComponent extends Component
     public $precio_crema;
     public $precio_vodka07l;
     public $precio_vodka175l;
-    public $precio_vodka3l;    public $bloqueado;
+    public $precio_vodka3l;
+    public $bloqueado;
     public $porcentaje_bloq;
 	public $sinCargo = false;
 
@@ -82,6 +83,7 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+
         if($this->porcentaje_descuento > $this->porcentaje_bloq){
             $this->bloqueado=true;
         }else{$this->bloqueado=false;}
@@ -288,22 +290,46 @@ class CreateComponent extends Component
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
+        $producto_existe_sincargo =false;
         foreach ($this->productos_pedido as $productoPedido) {
             if ($productoPedido['producto_pedido_id'] == $id) {
+                if ($productoPedido['precio_ud'] !== 0) {
                 $producto_existe = true;
                 break;
+                }else{
+                $producto_existe_sincargo = true;
+                }
             }
         }
 		if($this->sinCargo == true){
+            if ($producto_existe_sincargo) {
+                foreach ($this->productos_pedido as $index => $productoPedido) {
+                    if ($productoPedido['producto_pedido_id'] == $id) {
+                        if ($productoPedido['precio_ud'] == 0) {
+                        $key=$index;
+                        }
+                    }
+                }
+				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+			} else {
 			$this->productos_pedido[] = [
                 'producto_pedido_id' => $id,
                 'unidades' => $this->unidades_producto,
                 'precio_ud' => 0,
                 'precio_total' => 0
-            ];
+            ];}
+
 		} else{
+
+
 			if ($producto_existe) {
-				$key = array_search($id, array_column($this->productos_pedido, 'producto_pedido_id'));
+                foreach ($this->productos_pedido as $index => $productoPedido) {
+                    if ($productoPedido['producto_pedido_id'] == $id) {
+                        if ($productoPedido['precio_ud'] !== 0) {
+                        $key=$index;
+                        }
+                    }
+                }
 				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
 				$this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
 				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
