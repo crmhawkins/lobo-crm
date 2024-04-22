@@ -124,7 +124,7 @@ class EditComponent extends Component
     {
         $producto = $this->productos_pedido[$index];
 
-        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] *($producto['unidades'] + $producto['unidades_old']) ;
+        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] *($producto['unidades'] + isset($producto['unidades_old']) ? $producto['unidades_old'] : 0) ;
         $this->setPrecioEstimado();
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -195,7 +195,7 @@ class EditComponent extends Component
                     'precio_total' => $productos['precio_total']]);
             } else {
                 if ($productos['unidades'] > 0) {
-                    $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
+                    $unidades_finales = $productos['unidades'] + isset($productos['unidades_old']) ? $productos['unidades_old'] : 0;
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud']]);
                 } else {
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
@@ -297,7 +297,7 @@ class EditComponent extends Component
                 $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
             } else {
                 if ($productos['unidades'] > 0) {
-                    $unidades_finales = $productos['unidades_old'] + $productos['unidades'];
+                    $unidades_finales = $productos['unidades'] + isset($productos['unidades_old']) ? $productos['unidades_old'] : 0;
                     DB::table('productos_pedido')->find($productos['id'])->update(['unidades' => $unidades_finales]);
                    /* $producto_stock = ProductoLote::find($productos['producto_pedido_id']);
                     $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
