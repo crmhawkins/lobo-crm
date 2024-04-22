@@ -307,7 +307,7 @@ $canEdit = $EsAdmin || $estado == 1;
                                     <div class="col-md-10" style="text-align: center !important;">
                                         <label for="fechaVencimiento">Producto seleccionado</label>
                                     </div>
-                                    <div class="col-md-10" wire:ignore>
+                                    <div class="col-md-10">
                                         <div x-data="" x-init="$('#select2-producto').select2();
                                         $('#select2-producto').on('change', function(e) {
                                             var data = $('#select2-producto').select2('val');
