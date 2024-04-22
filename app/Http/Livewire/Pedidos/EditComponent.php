@@ -94,10 +94,9 @@ class EditComponent extends Component
             $this->productos_pedido[] = [
                 'id' => $producto->id,
                 'producto_pedido_id' => $producto->producto_pedido_id,
-                'unidades_old' => $producto->unidades,
+                'unidades' => $producto->unidades,
                 'precio_ud' => $producto->precio_ud,
                 'precio_total' => $producto->precio_total,
-                'unidades' => 0,
                 'borrar' => 0,
             ];
         }
@@ -124,7 +123,7 @@ class EditComponent extends Component
     {
         $producto = $this->productos_pedido[$index];
 
-        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] *($producto['unidades'] + isset($producto['unidades_old']) ? $producto['unidades_old'] : 0) ;
+        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] * $producto['unidades']  ;
         $this->setPrecioEstimado();
     }
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -195,7 +194,7 @@ class EditComponent extends Component
                     'precio_total' => $productos['precio_total']]);
             } else {
                 if ($productos['unidades'] > 0) {
-                    $unidades_finales = $productos['unidades'] + isset($productos['unidades_old']) ? $productos['unidades_old'] : 0;
+                    $unidades_finales = $productos['unidades'] ;
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud']]);
                 } else {
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
@@ -297,7 +296,7 @@ class EditComponent extends Component
                 $producto_stock->update(['cantidad_actual' => $cantidad_actual]);*/
             } else {
                 if ($productos['unidades'] > 0) {
-                    $unidades_finales = $productos['unidades'] + isset($productos['unidades_old']) ? $productos['unidades_old'] : 0;
+                    $unidades_finales = $productos['unidades'];
                     DB::table('productos_pedido')->find($productos['id'])->update(['unidades' => $unidades_finales]);
                    /* $producto_stock = ProductoLote::find($productos['producto_pedido_id']);
                     $cantidad_actual = $producto_stock->cantidad_actual - $productos['unidades'];
@@ -515,18 +514,18 @@ class EditComponent extends Component
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
-        if (isset($this->productos_pedido[$id]['unidades_old'])) {
-            $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
-            $cajas = ($uds_total / $producto->unidades_por_caja);
-            $pallets = floor($cajas / $producto->cajas_por_pallet);
-            $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
-            $unidades = '';
-            if ($cajas_sobrantes > 0) {
-                $unidades = $uds_total . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
-            } else {
-                $unidades = $uds_total . ' unidades (' . $pallets . ' pallets)';
-            }
-        } else {
+        // if (isset($this->productos_pedido[$id]['unidades_old'])) {
+        //     $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
+        //     $cajas = ($uds_total / $producto->unidades_por_caja);
+        //     $pallets = floor($cajas / $producto->cajas_por_pallet);
+        //     $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+        //     $unidades = '';
+        //     if ($cajas_sobrantes > 0) {
+        //         $unidades = $uds_total . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+        //     } else {
+        //         $unidades = $uds_total . ' unidades (' . $pallets . ' pallets)';
+        //     }
+        // } else {
             $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
             $pallets = floor($cajas / $producto->cajas_por_pallet);
             $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
@@ -536,7 +535,7 @@ class EditComponent extends Component
             } else {
                 $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
             }
-        }
+        // }
 
         return $unidades;
     }
