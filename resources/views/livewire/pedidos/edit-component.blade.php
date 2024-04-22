@@ -37,7 +37,7 @@ $canEdit = $EsAdmin || $estado == 1;
                                     @this.set('cliente_id', data);
                                     @this.call('selectCliente');
                                 });">
-                                <label for="Cliente">Cliente</label>
+                                <label for="select2-cliente">Cliente</label>
                                 @if ($canEdit)
                                 <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id">
                                     <option value=""></option>
@@ -560,7 +560,17 @@ $canEdit = $EsAdmin || $estado == 1;
                 // // var data = $('.js-example-basic-single').select2("val");
                 // })
             });
-
+            $('#addProductModal').on('shown.bs.modal', function () {
+                $('#select2-producto').select2();
+                // Asegurarse de que Livewire reconozca el cambio.
+                $('#select2-producto').on('change', function (e) {
+                    var data = $(this).select2('val');
+                    @this.set('producto_seleccionado', data);
+                    @this.set('unidades_pallet_producto', 0);
+                    @this.set('unidades_caja_producto', 0);
+                    @this.set('unidades_producto', 0);
+                });
+            });
 
 
             $(document).ready(function() {
