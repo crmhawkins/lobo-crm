@@ -307,7 +307,7 @@ $canEdit = $EsAdmin || $estado == 1;
                                     <div class="col-md-10" style="text-align: center !important;">
                                         <label for="fechaVencimiento">Producto seleccionado</label>
                                     </div>
-                                    <div class="col-md-10">
+                                    <div class="col-md-10" wire:ignore>
                                         <div x-data="" x-init="$('#select2-producto').select2();
                                         $('#select2-producto').on('change', function(e) {
                                             var data = $('#select2-producto').select2('val');
@@ -561,16 +561,12 @@ $canEdit = $EsAdmin || $estado == 1;
                 // })
             });
             $('#addProductModal').on('shown.bs.modal', function () {
-                $('#select2-producto').select2();
-                // Asegurarse de que Livewire reconozca el cambio.
-                $('#select2-producto').on('change', function (e) {
-                    var data = $(this).select2('val');
-                    @this.set('producto_seleccionado', data);
-                    @this.set('unidades_pallet_producto', 0);
-                    @this.set('unidades_caja_producto', 0);
-                    @this.set('unidades_producto', 0);
+
+                $('#select2-producto').select2({
+                    dropdownParent: $('#addProductModal') // asegurando que el dropdown de Select2 se adjunte dentro del modal
                 });
             });
+
 
 
             $(document).ready(function() {
