@@ -614,7 +614,8 @@ class EditComponent extends Component
                     }
                 }
 				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
-				$this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
+				$precioUnitario = $this->productos_pedido[$key]['precio_ud'];
+                $precioTotal = $precioUnitario * $this->unidades_producto;
 				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
 			} else {
 				$this->productos_pedido[] = [
