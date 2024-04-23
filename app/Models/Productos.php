@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Productos extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = "productos";
 
@@ -43,4 +45,5 @@ class Productos extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
 }
