@@ -202,15 +202,142 @@ class CreateComponent extends Component
 
     public function GenerarAlbaran()
     {
-    $pedido = Pedido::find($this->identificador);
-    if (!$pedido) {
-        abort(404, 'Pedido no encontrado');
+        $pedido = Pedido::find($this->identificador);
+        if (!$pedido) {
+            abort(404, 'Pedido no encontrado');
+        }
+
+            // Verificar que todos los productos tienen un lote_id asignado
+        foreach ($this->productos_pedido as $productoPedido) {
+            if (empty($productoPedido['lote_id'])) {
+                $this->alert('error', 'Todos los productos deben tener un lote asignado.', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Aceptar',
+                ]);
+                return;
+            }else{
+                DB::table('productos_pedido')
+                ->where('pedido_id',$this->identificador)
+                ->where('producto_pedido_id',$productoPedido['producto_pedido_id'])
+                ->update(['lote_id' => $productoPedido['lote_id']
+                ]);
+            }
+        }
+
+        $cliente = Clients::find($pedido->cliente_id);
+        $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+        // Preparar los datos de los productos del pedido
+        $productos = [];
+        foreach ($productosPedido as $productoPedido) {
+            $producto = Productos::find($productoPedido->producto_pedido_id);
+            $stockSeguridad =  $producto->stock_seguridad;
+            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
+            if (!isset( $stockEntrante)){
+                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+            }
+            $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
+            $almacen = Almacen::find($almacen_id);
+
+            if ($stockEntrante) {
+                $stockEntrante->cantidad -= $productoPedido->unidades;
+                $stockEntrante->update();
+            }
+            $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
+            $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+            $sumatorioCantidad = $productoLotes->sum('cantidad');
+
+            if ($sumatorioCantidad < $stockSeguridad) {
+                $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
+                if (!$alertaExistente) {
+                    Alertas::create([
+                        'user_id' => 13,
+                        'stage' => 7,
+                        'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
+                        'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
+                        'referencia_id' =>$producto->id . $almacen->id ,
+                        'leida' => null,
+                    ]);
+                }
+
+            }
+            if ($producto) {
+                $productos[] = [
+                    'nombre' => $producto->nombre,
+                    'cantidad' => $productoPedido->unidades,
+                    'precio_ud' => $productoPedido->precio_ud,
+                    'precio_total' => $productoPedido->precio_total,
+                    'iva' => $producto->iva,
+                    'lote_id' => $stockEntrante->orden_numero,
+                    'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
+                ];
+            }
+        }
+
+        $num_albaran = Albaran::count() + 1;
+        $fecha_albaran = Carbon::now()->format('Y-m-d');
+
+        $datos = [
+            'pedido' => $pedido,
+            'cliente' => $cliente,
+            'observaciones' => $pedido->observaciones,
+            'productos' => $productos,
+            'num_albaran' => $num_albaran,
+            'fecha_albaran' => $fecha_albaran
+        ];
+
+        // Crear una instancia del modelo Albaran
+        $albaran = new Albaran();
+        $albaran->pedido_id = $pedido->id;
+        $albaran->num_albaran = $num_albaran;
+        $albaran->fecha = $fecha_albaran;
+        $albaran ->observaciones = $pedido->observaciones;
+        $albaran ->total_factura = $pedido->precio;
+        // ... otros campos del albarán ...
+        $albaranSave = $albaran->save(); // Guardar el albarán en la base de datos
+        $pedidosSave = $pedido->update(['estado' => 4]);
+        if ($pedidosSave && $albaranSave) {
+            Alertas::create([
+                'user_id' => 13,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Albarán',
+                'descripcion' => 'Generado Albarán del pedido nº ' . $pedido->id,
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
+            $this->alert('success', '¡Albarán Generado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido generar el albarán!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+        return response()->streamDownload(
+            fn () => print($pdf),
+            "albaran_{$num_albaran}.pdf"
+        );
     }
 
-        // Verificar que todos los productos tienen un lote_id asignado
-    foreach ($this->productos_pedido as $productoPedido) {
-        if (empty($productoPedido['lote_id'])) {
-            $this->alert('error', 'Todos los productos deben tener un lote asignado.', [
+    public function handleQrScanned($qrCode, $rowIndex)
+    {
+        $stock = Stock::where('qr_id', $qrCode)->first();
+        if (!$stock) {
+            $this->alert('error', 'QR no asignado o inválido.', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
@@ -218,164 +345,51 @@ class CreateComponent extends Component
                 'confirmButtonText' => 'Aceptar',
             ]);
             return;
-        }else{
-            DB::table('productos_pedido')
-            ->where('pedido_id',$this->identificador)
-            ->where('producto_pedido_id',$productoPedido['producto_pedido_id'])
-            ->update(['lote_id' => $productoPedido['lote_id']
+        }
+
+        $entradaStock = StockEntrante::where('stock_id', $stock->id)->first();
+        if (!$entradaStock) {
+            $this->alert('error', 'Lote no encontrado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return;
+        }
+
+        if ($entradaStock->producto_id != $this->productos_pedido[$rowIndex]['producto_pedido_id']) {
+            $this->alert('error', 'El QR escaneado no corresponde al producto requerido.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return;
+        }
+
+        // Si el stock del lote es suficiente
+        if ($entradaStock->cantidad >= $this->productos_pedido[$rowIndex]['unidades']) {
+            $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
+        } else {
+            // Si no es suficiente, dividir la cantidad necesaria entre los lotes disponibles
+            $this->productos_pedido[$rowIndex]['unidades'] -= $entradaStock->cantidad; // Restar la cantidad que puede proporcionar este lote
+            $this->productos_pedido[] = [
+                'producto_pedido_id' => $this->productos_pedido[$rowIndex]['producto_pedido_id'],
+                'unidades' => $entradaStock->cantidad, // Asignar lo que este lote puede dar
+                'precio_ud' => $this->productos_pedido[$rowIndex]['precio_ud'],
+                'precio_total' => $entradaStock->cantidad * $this->productos_pedido[$rowIndex]['precio_ud'],
+                'lote_id' => $entradaStock->id
+            ];
+            $this->alert('warning', 'Cantidad insuficiente en este lote, por favor escanea otro lote para completar la cantidad.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
             ]);
         }
     }
-
-    $cliente = Clients::find($pedido->cliente_id);
-    $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
-    // Preparar los datos de los productos del pedido
-    $productos = [];
-    foreach ($productosPedido as $productoPedido) {
-        $producto = Productos::find($productoPedido->producto_pedido_id);
-        $stockSeguridad =  $producto->stock_seguridad;
-        $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-        if (!isset( $stockEntrante)){
-            $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
-        }
-        $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
-        $almacen = Almacen::find($almacen_id);
-
-        if ($stockEntrante) {
-            $stockEntrante->cantidad -= $productoPedido->unidades;
-            $stockEntrante->update();
-        }
-        $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
-        $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
-        $sumatorioCantidad = $productoLotes->sum('cantidad');
-
-        if ($sumatorioCantidad < $stockSeguridad) {
-            $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
-            if (!$alertaExistente) {
-                Alertas::create([
-                    'user_id' => 13,
-                    'stage' => 7,
-                    'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
-                    'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
-                    'referencia_id' =>$producto->id . $almacen->id ,
-                    'leida' => null,
-                ]);
-            }
-
-         }
-        if ($producto) {
-            $productos[] = [
-                'nombre' => $producto->nombre,
-                'cantidad' => $productoPedido->unidades,
-                'precio_ud' => $productoPedido->precio_ud,
-                'precio_total' => $productoPedido->precio_total,
-                'iva' => $producto->iva,
-                'lote_id' => $stockEntrante->orden_numero,
-                'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
-            ];
-        }
-    }
-
-    $num_albaran = Albaran::count() + 1;
-    $fecha_albaran = Carbon::now()->format('Y-m-d');
-
-    $datos = [
-        'pedido' => $pedido,
-        'cliente' => $cliente,
-        'observaciones' => $pedido->observaciones,
-        'productos' => $productos,
-        'num_albaran' => $num_albaran,
-        'fecha_albaran' => $fecha_albaran
-    ];
-
-     // Crear una instancia del modelo Albaran
-     $albaran = new Albaran();
-     $albaran->pedido_id = $pedido->id;
-     $albaran->num_albaran = $num_albaran;
-     $albaran->fecha = $fecha_albaran;
-     $albaran ->observaciones = $pedido->observaciones;
-     $albaran ->total_factura = $pedido->precio;
-     // ... otros campos del albarán ...
-     $albaranSave = $albaran->save(); // Guardar el albarán en la base de datos
-     $pedidosSave = $pedido->update(['estado' => 4]);
-     if ($pedidosSave && $albaranSave) {
-        Alertas::create([
-            'user_id' => 13,
-            'stage' => 3,
-            'titulo' => 'Estado del Pedido: Albarán',
-            'descripcion' => 'Generado Albarán del pedido nº ' . $pedido->id,
-            'referencia_id' => $pedido->id,
-            'leida' => null,
-        ]);
-        $this->alert('success', '¡Albarán Generado!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => false,
-            'showConfirmButton' => true,
-            'onConfirmed' => 'confirmed',
-            'confirmButtonText' => 'ok',
-            'timerProgressBar' => true,
-        ]);
-    } else {
-        $this->alert('error', '¡No se ha podido generar el albarán!', [
-            'position' => 'center',
-            'timer' => 3000,
-            'toast' => false,
-        ]);
-        return;
-    }
-
-    $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
-    return response()->streamDownload(
-        fn () => print($pdf),
-        "albaran_{$num_albaran}.pdf"
-    );
-}
-
-        public function handleQrScanned($qrCode, $rowIndex)
-        {
-            // Buscar en Stock con qrCode
-            $stock = Stock::where('qr_id', $qrCode)->first();
-                if (!$stock) {
-                // Alerta de error si no se encuentra el stock
-                    $this->alert('error', 'QR no asignado o inválido.', [
-                        'position' => 'center',
-                        'timer' => 3000,
-                        'toast' => false,
-                        'showConfirmButton' => true,
-                        'confirmButtonText' => 'Aceptar',
-                    ]);
-                    return;
-                }
-
-            // Buscar en StockEntrante con el stock_id obtenido
-            $entradaStock = StockEntrante::where('stock_id', $stock->id)->first();
-
-            if ($entradaStock && isset($this->productos_pedido[$rowIndex])) {
-                // Comprobar si el producto_id de StockEntrante coincide con producto_pedido_id de productos_pedido
-                if ($this->productos_pedido[$rowIndex]['producto_pedido_id'] == $entradaStock->producto_id ) {
-                    if ($this->productos_pedido[$rowIndex]['unidades'] <= $entradaStock->cantidad) {
-                        // Actualizar el lote_id en productos_pedido
-                        $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
-                    }else{
-                        $this->alert('error', 'Lote con stock insuficiente', [
-                        'position' => 'center',
-                        'timer' => 3000,
-                        'toast' => false,
-                        'showConfirmButton' => true,
-                        'confirmButtonText' => 'Aceptar',
-                    ]);}
-                }else{
-                    // Alerta de error si se intenta leer el QR de un producto diferente
-                     $this->alert('error', 'Intentando leer el QR de un producto diferente.', [
-                        'position' => 'center',
-                        'timer' => 3000,
-                        'toast' => false,
-                        'showConfirmButton' => true,
-                        'confirmButtonText' => 'Aceptar',
-                    ]);
-                }
-            }
-        }
 }
