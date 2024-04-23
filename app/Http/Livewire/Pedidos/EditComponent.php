@@ -64,10 +64,8 @@ class EditComponent extends Component
         $pedido = Pedido::find($this->identificador);
         $this->productos = Productos::all();
         $this->clientes = Clients::where('estado', 2)->get();
-        $this->nombre = $pedido->nombre;
         $this->cliente_id = ltrim($pedido->cliente_id,0);
         $cliente = Clients::find($this->cliente_id);
-        $this->nombre = $pedido->nombre;
         $this->estado = $pedido->estado;
         $this->estado_old = $pedido->estado;
         $this->almacenes = Almacen::all();
@@ -551,8 +549,12 @@ class EditComponent extends Component
     }
     public function getNombreTabla($id)
     {
-        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
+        $nombre_producto = $this->productos->where('id', $id)->first();
+        if(!isset($nombre_producto)){
+            $nombre_producto = 'producto no encontrado';
+        }
         return $nombre_producto;
+
     }
     public function addProductos($id)
     {
