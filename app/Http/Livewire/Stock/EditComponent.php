@@ -57,6 +57,15 @@ class EditComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
+        if( 0 > $this->cantidad ){
+            $this->alert('error', '¡No se puede asignar una cantidad negativa!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+         }
+
          if ($this->cantidad == 0){
             $this->stock->update([
                 'estado' => 2,

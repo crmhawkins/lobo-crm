@@ -67,6 +67,15 @@ class TraspasoComponent extends Component
             return;
          }
 
+
+         if( 0 > $this->cantidad ){
+            $this->alert('error', '¡No se puede mandar una cantidad negativa!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+         }
          if ($nuevaCantidad == 0){
             $this->stock->update([
                 'estado' => 2,
