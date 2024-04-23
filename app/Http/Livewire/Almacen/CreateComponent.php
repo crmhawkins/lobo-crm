@@ -372,6 +372,7 @@ class CreateComponent extends Component
 
         // Si el stock del lote es suficiente
         if ($entradaStock->cantidad >= $this->productos_pedido[$rowIndex]['unidades']) {
+            dd($entradaStock->cantidad);
             $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
         } else {
             // Si no es suficiente, dividir la cantidad necesaria entre los lotes disponibles
