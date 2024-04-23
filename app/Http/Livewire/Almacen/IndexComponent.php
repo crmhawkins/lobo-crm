@@ -192,7 +192,7 @@ class IndexComponent extends Component
                     'precio_ud' => $productoPedido->precio_ud,
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
-                    'lote_id' => $stockEntrante->orden_numero,
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
                 ];
             }
