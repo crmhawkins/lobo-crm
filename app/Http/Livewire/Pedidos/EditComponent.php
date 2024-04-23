@@ -552,8 +552,10 @@ class EditComponent extends Component
         $nombre_producto = $this->productos->where('id', $id)->first();
         if(!isset($nombre_producto)){
             $nombre_producto = 'producto no encontrado';
+            return $nombre_producto;
+        }else{
+            return $nombre_producto->nombre;
         }
-        return $nombre_producto;
 
     }
     public function addProductos($id)
