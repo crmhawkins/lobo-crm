@@ -104,6 +104,7 @@
                                             <tr>
                                                 <th>Nº Interno</th>
                                                 <th>N.º Lote</th>
+                                                <th>Almacen</th>
                                                 <th>Producto</th>
                                                 <th>Fecha de entrada</th>
                                                 <th>Cantidad (en Botellas)</th>
@@ -116,6 +117,7 @@
                                                 <tr>
                                                     <th>{{ $lote['lote_id'] }}</th>
                                                     <th>{{ $lote['orden_numero'] }}</th>
+                                                    <th>{{ $this->almacen($lote) }}</th>
                                                     <th>{{ $this->getProducto($lote['producto_id']) }}</th>
                                                     <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
                                                     <td>{{ $lote['cantidad'] }}</td>

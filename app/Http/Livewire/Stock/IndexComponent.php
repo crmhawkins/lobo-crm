@@ -73,6 +73,18 @@ class IndexComponent extends Component
 
         }
     }
+
+    public function almacen($lote){
+
+        $almacenId = Stock::where('id', $lote->stock_id)->first()->almacen_id;
+
+        $almace = Almacen::find($almacenId);
+        if(isset($almace)){
+            return $almace->almacen;
+        }else{
+            return 'Almacen no asignado';
+        }
+        }
     public function qrAsignado($lote){
         $id = $lote['id'];
         $stock = StockEntrante::where('id', $id)->first();
