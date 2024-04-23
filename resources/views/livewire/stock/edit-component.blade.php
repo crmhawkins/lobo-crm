@@ -26,7 +26,11 @@
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-11">
-                            <h4> Almacén: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
+                            @if (isset($almacenActual))
+                            <h4> Almacén: {{ $almacenActual->almacen }}
+                            @else
+                            <h4> Almacén: No asignado
+                            @endif
                             </h4>
                         </div>
                     </div>

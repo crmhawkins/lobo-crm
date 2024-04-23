@@ -30,6 +30,7 @@ class EditComponent extends Component
     public $cantidad;
     public $stockentrante;
     public $stock;
+    public $almacenActual;
     public function mount()
     {
         $this->stockentrante = StockEntrante::find( $this->identificador);
@@ -42,7 +43,9 @@ class EditComponent extends Component
         $this->productos = Productos::all();
         $this->almacenes = Almacen::all();
         $user = Auth::user();
-        $this->almacen_id =  $this->stock->almacen_id;
+        $this->almacen_id = $this->stock->almacen_id;
+        $this->almacenActual = $this->almacenes->find($this->stock->almacen_id);
+
 
     }
 
