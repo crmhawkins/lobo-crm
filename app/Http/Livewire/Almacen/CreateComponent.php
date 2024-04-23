@@ -378,6 +378,7 @@ class CreateComponent extends Component
             $this->productos_pedido[$rowIndex]['unidades_old'] -= $entradaStock->cantidad; // Restar la cantidad que puede proporcionar este lote
             $this->productos_pedido[] = [
                 'producto_pedido_id' => $this->productos_pedido[$rowIndex]['producto_pedido_id'],
+                'unidades' => 0, // Asignar lo que este lote puede dar
                 'unidades_old' => $entradaStock->cantidad, // Asignar lo que este lote puede dar
                 'precio_ud' => $this->productos_pedido[$rowIndex]['precio_ud'],
                 'precio_total' => $entradaStock->cantidad * $this->productos_pedido[$rowIndex]['precio_ud'],
