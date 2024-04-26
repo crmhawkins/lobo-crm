@@ -271,6 +271,7 @@ class CreateComponent extends Component
                     'precio_ud' => $productoPedido->precio_ud,
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
+                    'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
                     'lote_id' => $stockEntrante->orden_numero,
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
                 ];

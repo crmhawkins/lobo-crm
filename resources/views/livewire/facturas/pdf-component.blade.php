@@ -162,17 +162,29 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
+            @if (isset($factura->descuento))
+            <td>{{ number_format($factura->precio * (1 -(($factura->descuento) / 100)), 2) }}€</td>
+            @else
             <td>{{ number_format($factura->precio, 2) }}€</td>
+            @endif
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>IVA 21%</td>
+            @if (isset($factura->descuento))
+            <td>{{number_format(($factura->precio * (1 -(($factura->descuento) / 100))) * 0.21, 2)}}€</td>
+            @else
             <td>{{number_format($factura->precio * 0.21, 2)}}€</td>
+            @endif
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>TOTAL</td>
+            @if (isset($factura->descuento))
+            <td>{{number_format(($factura->precio * (1 -(($factura->descuento) / 100)))* 1.21, 2)}}€</td>
+            @else
             <td>{{number_format($factura->precio * 1.21, 2)}}€</td>
+            @endif
         </tr>
     </table>
     @else
@@ -180,10 +192,13 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>Total</td>
+            @if (isset($factura->descuento))
+            <td>{{ number_format($factura->precio * (1 -(($factura->descuento) / 100)), 2) }}€</td>
+            @else
             <td>{{ number_format($factura->precio, 2) }}€</td>
+            @endif
         </tr>
     </table>
-
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->

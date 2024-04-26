@@ -86,6 +86,7 @@
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th style="text-align: left !important">CONCEPTO</th>
             <th>LOTE</th>
+            <th>CAJAS</th>
             <th>UNIDADES</th>
             <th>PESO TOTAL</th>
             <th>PRECIO</th>
@@ -101,6 +102,13 @@
         <tr class="left-aligned" style="background-color:#ececec;">
             <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span><br></td>
             <td>{{ $producto['lote_id'] }}</td>
+            <td>
+                @if(isset($producto['productos_caja']))
+                {{ ceil($producto['cantidad']/$producto['productos_caja']) }}
+                @else
+                /
+                @endif
+            </td>
             <td>{{ $producto['cantidad'] }}</td>
 			@php
 			$pesoTotal += $producto['peso_kg'];

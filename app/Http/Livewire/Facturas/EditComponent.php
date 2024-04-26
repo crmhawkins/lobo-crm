@@ -40,6 +40,7 @@ class EditComponent extends Component
     public $producto_id;
     public $productos;
     public $cantidad;
+    public $descuento;
 
 
     public function mount()
@@ -61,9 +62,13 @@ class EditComponent extends Component
         $this->descripcion = $this->facturas->descripcion;
         $this->estado = $this->facturas->estado;
         $this->metodo_pago = $this->facturas->metodo_pago;
-
-
-
+        if(!$this->facturas->descuento){
+            if($this->pedido->descuento){
+                $this->descuento = $this->pedido->porcentaje_descuento;
+            }
+        }else{
+            $this->descuento = $this->facturas->descuento;
+        }
     }
 
     public function render()
@@ -122,6 +127,7 @@ class EditComponent extends Component
             'metodo_pago' => $this->metodo_pago,
             'cantidad' => $this->cantidad,
             'producto_id' =>$this->producto_id,
+            'descuento' =>$this->descuento,
 
         ]);
 

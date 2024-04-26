@@ -37,6 +37,7 @@ class CreateComponent extends Component
     public $producto_id;
     public $productos;
     public $cantidad;
+    public $descuento;
 
     public function mount()
     {
@@ -50,6 +51,9 @@ class CreateComponent extends Component
             $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
             $this->metodo_pago = $this->cliente->forma_pago_pref;
             $this->precio = $this->pedido->precio;
+            if($this->pedido->descuento){
+                $this->descuento = $this->pedido->porcentaje_descuento;
+            }
             }
         $this->productos = Productos::where('tipo_precio',5)->get();
         $this->clientes = Clients::where('estado', 2)->get();
@@ -101,6 +105,7 @@ class CreateComponent extends Component
                 'metodo_pago' => 'nullable',
                 'producto_id' => 'nullable',
                 'cantidad' => 'nullable',
+                'descuento' => 'nullable',
 
             ],
             // Mensajes de error

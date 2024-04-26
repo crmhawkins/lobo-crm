@@ -155,6 +155,18 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label for="descuento" class="col-sm-12 col-form-label">Descuento </label>
+                                <div class="col-sm-12">
+                                    <input type="number" wire:model="descuento" class="form-control"
+                                        placeholder="descuento" >
+                                        @error('precio')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
                                 <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
                                 <div class="col-sm-12">
                                     <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"

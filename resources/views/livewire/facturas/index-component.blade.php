@@ -80,12 +80,21 @@
                                             <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $fact->precio }}€
+                                        @if(isset($fact->descuento))
+                                        <td>{{number_format( $fact->precio * (1 + (-($fact->descuento) /100)),2) }}€
                                         </td>
-                                        <td>{{number_format($fact->precio * 0.21, 2)}}€
+                                        <td>{{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 0.21, 2)}}€
+                                        </td>
+                                        <td>{{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 1.21, 2)}}€
+                                        </td>
+                                        @else
+                                        <td>{{$fact->precio }}€
+                                        </td>
+                                        <td>{{number_format($fact->precio *  0.21, 2)}}€
                                         </td>
                                         <td>{{number_format($fact->precio * 1.21, 2)}}€
                                         </td>
+                                        @endif
                                         <td>{{ $fact->metodo_pago }}</td>
                                         <td>@switch($fact->estado)
                                             @case('Pendiente')
