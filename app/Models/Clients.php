@@ -65,4 +65,8 @@ class Clients extends Model
     {
         return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
     }
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class, 'cliente_id');
+    }
 }

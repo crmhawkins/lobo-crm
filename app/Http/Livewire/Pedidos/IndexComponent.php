@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Pedidos;
 use App\Models\Clients;
 use App\Models\Pedido;
 use App\Models\PedidosStatus;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 class IndexComponent extends Component
 {
@@ -13,7 +14,14 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        $this->pedidos = Pedido::all();
+        if(Auth::user()->role != 3){
+            $this->pedidos = Pedido::all();
+        }else{
+            $this->pedidos = Clients::with('pedidos')->where('comercial_id', Auth::user()->id)
+                        ->get()
+                        ->pluck('pedidos')
+                        ->flatten();
+        }
         $this->clientes = Clients::all();
     }
 

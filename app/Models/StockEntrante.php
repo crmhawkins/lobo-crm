@@ -35,4 +35,9 @@ class StockEntrante extends Model
     {
         return $this->belongsTo(Stock::class, 'stock_id');
     }
+
+    public function salidas()
+    {
+        return $this->hasMany(StockSaliente::class, 'stock_entrante_id');
+    }
 }

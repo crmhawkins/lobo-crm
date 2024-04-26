@@ -42,4 +42,8 @@ class Pedido extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+    public function cliente()
+    {
+        return $this->belongsTo(Clients::class, 'cliente_id');
+    }
 }

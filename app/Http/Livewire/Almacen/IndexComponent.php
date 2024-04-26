@@ -203,8 +203,8 @@ class IndexComponent extends Component
         'pedido' => $pedido ,
         'cliente' => $cliente,
         'productos' => $productos,
-        'num_albaran' => $num_albaran =  $albaran->num_albaran,
-        'fecha_albaran' => $fecha_albaran =  $albaran->fecha,
+        'num_albaran' => $num_albaran = $albaran->num_albaran,
+        'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         ];
 
         // Generar y mostrar el PDF

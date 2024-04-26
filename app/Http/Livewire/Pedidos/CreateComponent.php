@@ -48,6 +48,7 @@ class CreateComponent extends Component
     public $precio_vodka3l;
     public $bloqueado;
     public $porcentaje_bloq;
+    public $porcentaje_sincargo = 0;
 	public $sinCargo = false;
 
     public function mount()
@@ -83,21 +84,33 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+        $totalUnidades = 0;
+        $totalUnidadesSinCargo = 0;
+        foreach ($this->productos_pedido as $productoPedido) {
+            $totalUnidades += $productoPedido['unidades'];
+            if ($productoPedido['precio_ud'] == 0) {
+                $totalUnidadesSinCargo += $productoPedido['unidades'];
+            }
+        }
 
-        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+        if ($totalUnidades > 0) {
+            $this->porcentaje_sincargo = ($totalUnidadesSinCargo / $totalUnidades) * 100;
+        }
+
+        if($this->porcentaje_sincargo > $this->porcentaje_bloq){
             $this->bloqueado=true;
         }else{$this->bloqueado=false;}
 
-        foreach ($this->productos_pedido as $productoPedido) {
-            $producto = Productos::find($productoPedido['producto_pedido_id']);
-            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
+         foreach ($this->productos_pedido as $productoPedido) {
+             $producto = Productos::find($productoPedido['producto_pedido_id']);
+             $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
 
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
-            if ($productoPedido['precio_ud'] != $precioBaseProducto) {
+            if ($productoPedido['precio_ud'] != $precioBaseProducto && $productoPedido['precio_ud'] != 0) {
                 $this->bloqueado = true;
                 break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
-        }
+         }
 
 
         // Validación de datos

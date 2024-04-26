@@ -61,26 +61,30 @@
                                 <td>{{ $presup->fecha }}</td>
                                 <td>{{ $this->getClienteNombre($presup->cliente_id) }}</td>
                                 <td>{{ $presup->precio }} €</td>
-                                <td>@if($this->getEstadoNombre($presup->estado) == "Recibido")
-                                    <span class="badge badge-warning">Recibido</span>
+                                <td>
+                                    @if($this->getEstadoNombre($presup->estado) == "Recibido")
+                                        <span class="badge badge-warning">Recibido</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Aceptado en Almacén")
-                                    <span class="badge badge-primary">Aceptado en Almacén</span>
+                                        <span class="badge badge-primary">Aceptado en Almacén</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Preparación")
-                                    <span class="badge badge-info">Preparación</span>
+                                        <span class="badge badge-info">Preparación</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Albarán")
-                                    <span class="badge badge-secondary">Albarán</span>
+                                        <span class="badge badge-secondary">Albarán</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Entregado")
-                                    <span class="badge badge-secondary">Entregado</span>
+                                        <span class="badge badge-secondary">Entregado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Facturado")
-                                    <span class="badge badge-success">Facturado</span>
+                                        <span class="badge badge-success">Facturado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "Rechazado")
-                                    <span class="badge badge-danger">Rechazado</span>
+                                        <span class="badge badge-danger">Rechazado</span>
                                     @elseif($this->getEstadoNombre($presup->estado) == "En Ruta")
-                                    <span class="badge badge-secondary">En Ruta</span>
-
+                                        <span class="badge badge-secondary">En Ruta</span>
                                     @endif
                                 </td>
-                                <td> <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a> </td>
+                                @if(Auth::user()->role != 3 )
+                                <td><a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a></td>
+                                @else
+                                <td></td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>

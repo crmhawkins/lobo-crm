@@ -56,8 +56,11 @@
                                             <span class="badge badge-danger">Rechazado</span>
                                             @endif
                                         </td>
-                                        <td> <a href="clientes-edit/{{ $cliente->id }}"
-                                                class="btn btn-primary">Ver/Editar</a> </td>
+                                        @if(Auth::user()->role != 3 )
+                                        <td><a href="clientes-edit/{{ $cliente->id }}"class="btn btn-primary">Ver/Editar</a> </td>
+                                        @else
+                                        <td></td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

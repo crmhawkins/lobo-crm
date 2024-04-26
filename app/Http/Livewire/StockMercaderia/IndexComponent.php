@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\StockMercaderia;
 
 use App\Models\Mercaderia;
+use App\Models\Settings;
 use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\StockMercaderia;
@@ -44,6 +45,14 @@ class IndexComponent extends Component
         if(isset( $stock)){
             $stock_id = $stock->stock_id;
             $codigo = StockMercaderia::where('id', $stock_id)->orderBy('created_at', 'desc')->first()->qr_id;}
+            else{
+                $count_qrs = Settings::find(1)->qr_creados_mercaderia;
+                $year = Carbon::now()->format('y');
+                $qr_type = 'm';
+                $codigo = $year . '-' . $qr_type . "-" . sprintf('%08d', $count_qrs );
+                $new_count = Settings::find(1)->update(['qr_creados_mercaderia' => ($count_qrs + 1)]);
+            }
+
         if(isset($codigo)){
             $Qrcode= QrCode::errorCorrection('H')->format('png')->eye('circle')->size('500')->merge('/public/assets/images/lobo-qr.png')->errorCorrection('H')->generate($codigo);
             $pdf = PDF::loadView('stock-mercaderia.qrindividual', compact('Qrcode'))->setPaper('a4')->output();
@@ -85,6 +94,11 @@ class IndexComponent extends Component
             'denyButtonText' => 'No',
             'timerProgressBar' => false,
         ]);
+    }
+    public function stockIniciado($id)
+    {
+        $existe = StockMercaderiaEntrante::where('mercaderia_id', $id)->get();
+        return !$existe->isEmpty();
     }
     public function confirmed()
     {
