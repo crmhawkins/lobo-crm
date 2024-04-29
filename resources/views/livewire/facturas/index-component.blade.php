@@ -112,7 +112,7 @@
                                         <td> <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">Ver/Editar</a>
                                             <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Factura Con IVA</button>
                                             <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary" style="color: white;">Factura Sin IVA</button>
-
+                                            <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Albarán</button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -132,6 +132,13 @@
     function descargarFactura(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('pdf', id, conIva);
+        setTimeout(() => {
+            location.reload()
+        }, 5000);
+    }
+    function mostrarAlbaran(id, conIva) {
+        // Suponiendo que tu descarga se realiza aquí
+        window.livewire.emit('albaran', id, conIva);
         setTimeout(() => {
             location.reload()
         }, 5000);
