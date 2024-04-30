@@ -340,10 +340,10 @@
                         <div class="form-group row justify-content-center px-5">
                             <div style=" display: grid; grid-template-columns: repeat(5, 1fr) !important;">
                                 @foreach ($productos as $producto)
-                                    
-                            
+
+
                                     <div >
-                                        <label for="example-text-input" class="col-sm-12 col-form-label">{{ $producto->nombre }}}</label>
+                                        <label for="example-text-input" class="col-sm-12 col-form-label">{{ $producto->nombre }}</label>
                                         <div class="col-sm-12">
                                             <input type="number" step=".01" wire:model="arrProductos.{{ $producto->id }}" class="form-control" name="{{ $producto->nombre }}"
                                                 id="{{ $producto->nombre }}" placeholder="8.34">

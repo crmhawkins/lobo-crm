@@ -5,9 +5,11 @@ namespace App\Http\Livewire\Facturas;
 use App\Models\Pedido;
 use App\Models\Albaran;
 use App\Models\Clients;
+use App\Models\Delegacion;
 use App\Models\Facturas;
 use App\Models\Productos;
 use App\Models\StockEntrante;
+use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -25,6 +27,7 @@ class IndexComponent extends Component
         $this->pedidos = Pedido::all();
         $this->clientes = Clients::all();
         $this->facturas = Facturas::all();
+
     }
 
     public function render()
@@ -40,6 +43,32 @@ class IndexComponent extends Component
         return $cliente->nombre;
         }
         return "Cliente no definido";
+    }
+    public function getComercial($id)
+    {
+        $comerciales = User::whereIn('role', [2, 3])->get();
+
+        $cliente=$this->clientes->find($id);
+        if(isset($cliente)){
+        $comercial=$comerciales->where('id',$cliente->comercial_id)->first();
+        if(isset($comercial)){
+            return $comercial->name;
+        }else{
+            return "no definido";
+        }
+        }else{
+
+            return "no definido";
+        }
+    }
+    public function getDelegacion($id)
+    {
+        $delegaciones = Delegacion::all();
+        $cliente=$this->clientes->find($id);
+        if(isset($cliente)){
+        return $delegaciones->where('COD',$cliente->delegacion_COD)->first()->nombre;
+        }
+        return "no definido";
     }
     public function getListeners()
     {

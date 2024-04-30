@@ -50,6 +50,8 @@
                                 <tr>
                                     <th scope="col">Número</th>
                                     <th scope="col">P.asociado</th>
+                                    <th scope="col">Comercial</th>
+                                    <th scope="col">Delegacion</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">F.emisión</th>
                                     <th scope="col">F.vencimiento</th>
@@ -72,6 +74,8 @@
                                                     class="btn btn-primary" target="_blank"> &nbsp;Pedido
                                                     {{ $fact->pedido_id }}</a></td>
                                         @endif
+                                        <td>{{ $this->getComercial($fact->cliente_id)}}</td>
+                                        <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
                                         <td>{{ $this->getCliente($fact->cliente_id)}}</td>
                                         <td>{{ $fact->fecha_emision }}</td>
                                         <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()))
