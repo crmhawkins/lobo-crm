@@ -218,8 +218,10 @@
                                         </td>
                                         <td>
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
-                                            @if ($pedido->estado ==8)
-                                                <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
+                                            @if ($pedido->estado ==8 )
+                                                @if($pedido->tipo_pedido_id == 0)
+                                                    <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
+                                                @endif
                                             @else
                                                 <a onclick="enRuta({{ $pedido->id }})" class="btn btn-secondary" style="color: white;">Pedido En Ruta</a>
                                             @endif

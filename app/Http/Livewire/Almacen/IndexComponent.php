@@ -36,6 +36,7 @@ class IndexComponent extends Component
             $this->pedidos_pendientes = Pedido::where('estado', 2)->get();
             $this->pedidos_preparacion = Pedido::where('estado', 3)->get();
             $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->get();
+            // $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->where('tipo_pedido_id', 0)->get();
         } else {
             // El usuario solo puede ver los pedidos de su almacén
             $this->pedidos_pendientes = Pedido::where('estado', 2)->where('almacen_id', $userAlmacenId)->get();
@@ -43,6 +44,10 @@ class IndexComponent extends Component
             $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
             ->where('almacen_id', $userAlmacenId)
             ->get();
+            // $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
+            // ->where('almacen_id', $userAlmacenId)
+            // ->where('tipo_pedido_id', 0)
+            // ->get();
         }
     }
 
