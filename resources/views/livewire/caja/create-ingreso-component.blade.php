@@ -50,7 +50,7 @@
                             <div class="col-sm-10">
                                 <input type="number" class="form-control" wire:model="importe" nombre="importe"
                                     id="importe" placeholder="Importe...">
-                                @error('nombre')
+                                @error('importe')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -60,7 +60,7 @@
                             <div class="col-sm-10">
                                 <input type="date" class="form-control" wire:model="fecha" nombre="fecha"
                                     id="fecha" placeholder="dd/mm/aaaa">
-                                @error('nombre')
+                                @error('fecha')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -80,6 +80,34 @@
                                 @enderror
                             </div>
                         </div>
+                        @if(count($bancos) > 0)
+                            <div class="mb-3 row d-flex align-items-center">
+                                <label for="nombre" class="col-sm-12 col-form-label">Cuenta Bancaria</label>
+                                <div class="col-sm-10" wire:ignore.self>
+                                    <select id="banco" class="form-control" wire:model="banco">
+                                            <option value="" selected>Selecciona una opción</option>
+                                            @foreach ($bancos as $banco)
+                                                <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>     
+                                            @endforeach
+                                        </select>
+                                    @error('banco')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endif
+                        <div class="mb-3 row d-flex align-items-center">
+                            <label for="nombre" class="col-sm-12 col-form-label">Cuenta Bancaria</label>
+                            <div class="col-sm-10" wire:ignore.self>
+                                <label >
+                                    <input type="checkbox" wire:model="compensacion" nombre="compensacion" id="compensacion">
+                                    ¿Compensación?
+                                </label>
+                            </div>
+                        </div>
+                        @if($compensacion === 1)
+                            <!-- Si la compensación está activada, se muestra ... -->
+                        @endif
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Descripción</label>
                             <div class="col-sm-10">

@@ -9,6 +9,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
+use App\Models\ProductoPrecioCliente;
 
 use function PHPUnit\Framework\isNull;
 
@@ -198,6 +199,13 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $product = Productos::find($this->identificador);
+        if($product){
+            $productos = ProductoPrecioCliente::where('producto_id', $this->identificador)->get();
+            foreach ($productos as $producto) {
+                $producto->delete();
+            }
+        }
+
         $product->delete();
         return redirect()->route('productos.index');
     }

@@ -10,6 +10,8 @@ use App\Models\Alertas;
 use App\Models\Delegacion;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Productos;
+use App\Models\ProductoPrecioCliente;
 
 class CreateComponent extends Component
 {
@@ -46,12 +48,22 @@ class CreateComponent extends Component
     public $delegaciones;
     public $comercial_id="";
     public $comerciales;
+    public $productos;
+    public $arrProductos;
 
     public function mount()
     {
         $this->clientes = Clients::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
         $this->delegaciones = Delegacion::all();
+        $this->productos =  Productos::all();
+
+        //array asociativo donde cada producto es una clave y el precio es el valor
+        $this->arrProductos = [];
+        foreach ($this->productos as $producto) {
+            $this->arrProductos[$producto->id] = 0;
+        }
+
     }
 
     public function crearClientes()
@@ -119,6 +131,18 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $clienteSave = Clients::create($validatedData);
+        
+       
+        if($clienteSave){
+            foreach ($this->arrProductos as $key => $value) {
+                   $precioProductosSave =  ProductoPrecioCliente::create([
+                        'cliente_id' => $clienteSave->id,
+                        'producto_id' => $key,
+                        'precio' => $value
+                    ]);
+                    
+            }
+        }
 
         event(new \App\Events\LogEvent(Auth::user(), 8, $clienteSave->id));
 

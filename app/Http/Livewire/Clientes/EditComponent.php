@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\Delegacion;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ProductoPrecioCliente;
+use App\Models\Productos;
 
 class EditComponent extends Component
 {
@@ -47,6 +49,11 @@ class EditComponent extends Component
     public $comerciales;
     public $cuenta;
 
+
+    public $productos;
+    public $productosAsignados;
+    public $arrProductos;
+
     public function mount()
     {
         $cliente = Clients::find($this->identificador);
@@ -79,6 +86,13 @@ class EditComponent extends Component
         $this->localidadenvio = $cliente->localidadenvio;
         $this->codPostalenvio = $cliente->codPostalenvio;
         $this->vencimiento_factura_pref = $cliente->vencimiento_factura_pref;
+        $this->productos =  Productos::all();
+        $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
+        $this->arrProductos = [];
+        foreach ($this->productos as $producto) {
+
+            $this->arrProductos[$producto->id] = $this->productosAsignados->where('producto_id', $producto->id)->first() ? $this->productosAsignados->where('producto_id', $producto->id)->first()->precio : 0;
+        }
     }
 
 
@@ -138,6 +152,8 @@ class EditComponent extends Component
         // Encuentra el identificador
         $cliente = Clients::find($this->identificador);
 
+        
+
         // Guardar datos validados
         $clienteSave = $cliente->update([
             'tipo_cliente' => $this->tipo_cliente,
@@ -170,6 +186,23 @@ class EditComponent extends Component
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
+        if($clienteSave){
+            foreach ($this->arrProductos as $key => $value) {
+                   
+                $productoPrecioCliente = ProductoPrecioCliente::where('cliente_id', $cliente->id)->where('producto_id', $key)->first();
+                if($productoPrecioCliente){
+                    $productoPrecioCliente->update([
+                        'precio' => $value
+                    ]);
+                }else{
+                    $precioProductosSave =  ProductoPrecioCliente::create([
+                        'cliente_id' => $cliente->id,
+                        'producto_id' => $key,
+                        'precio' => $value
+                    ]);
+                }
+            }
+            }
         if ($clienteSave) {
             $this->alert('success', '¡Cliente actualizado correctamente!', [
                 'position' => 'center',
@@ -231,8 +264,17 @@ class EditComponent extends Component
     // Función para cuando se llama a la alerta
     public function confirmDelete()
     {
+        
         $cliente = Clients::find($this->identificador);
         event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
+
+        if ($cliente){
+             $productos = ProductoPrecioCliente::where('cliente_id', $cliente->id)->get();
+                foreach ($productos as $producto) {
+                    $producto->delete();
+                }
+        }
+
         $cliente->delete();
         return redirect()->route('clientes.index');
 

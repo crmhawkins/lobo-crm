@@ -166,7 +166,8 @@ class IndexComponent extends Component
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');;
         return response()->streamDownload(
             fn () => print($pdf->output()),
-            "factura_{$factura->id}.pdf");
+            // "factura_{$factura->numero_factura}.pdf");
+            "{$factura->numero_factura}.pdf");
         }else{
             return redirect('admin/facturas');
         }

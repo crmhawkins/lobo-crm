@@ -9,12 +9,14 @@ use App\Models\Facturas;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Bancos;
+
 class CreateIngresoComponent extends Component
 {
     use LivewireAlert;
 
     public $tipo_movimiento = 'Ingreso';
-    public $metodo_pago;
+    public $metodo_pago = "giro_bancario";
     public $importe;
     public $descripcion;
     public $pedido_id;
@@ -22,6 +24,10 @@ class CreateIngresoComponent extends Component
     public $clientes;
     public $pedido;
     public $facturas;
+    public $bancos;
+    public $banco; //banco_id
+    public $bancoSeleccionado;
+    public $compensacion;
 
 
     public function mount()
@@ -29,33 +35,76 @@ class CreateIngresoComponent extends Component
 
         $this->facturas = Facturas::all();
         $this->clientes = Clients::all();
+        $this->bancos = Bancos::all();
     }
     public function render()
     {
+        if($this->banco){
+            $this->bancoSeleccionado = Bancos::find($this->banco);
+        }
+
         return view('livewire.caja.create-ingreso-component');
+
     }
     public function submit()
     {
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'tipo_movimiento' => 'required',
-                'metodo_pago' => 'required',
-                'importe' => 'required',
-                'descripcion' => 'required',
-                'pedido_id' => 'required',
-                'fecha' => 'required',
+        if(count($this->bancos) > 0){
+            // Validación de datos
+            $validatedData = $this->validate(
+                [
+                    'tipo_movimiento' => 'required',
+                    'metodo_pago' => 'required',
+                    'importe' => 'required',
+                    'descripcion' => 'required',
+                    'pedido_id' => 'required',
+                    'fecha' => 'required',
 
 
-            ],
-            // Mensajes de error
-            [
-                'nombre.required' => 'El nombre es obligatorio.',
-            ]
-        );
+                ],
+                // Mensajes de error
+                [
+                    'tipo_movimiento.required' => 'El tipo de movimiento es obligatorio.',
+                    'metodo_pago.required' => 'El método de pago es obligatorio.',
+                    'importe.required' => 'El importe es obligatorio.',
+                    'descripcion.required' => 'La descripción es obligatoria.',
+                    'pedido_id.required' => 'El pedido es obligatorio.',
+                    'fecha.required' => 'La fecha es obligatoria.',
+                ]
+            );
+        }else{
+            $validatedData = $this->validate(
+                [
+                    'tipo_movimiento' => 'required',
+                    'metodo_pago' => 'required',
+                    'importe' => 'required',
+                    'descripcion' => 'required',
+                    'pedido_id' => 'required',
+                    'fecha' => 'required',
+                    'banco' => 'required',
+                ],
+                // Mensajes de error
+                [
+                    'tipo_movimiento.required' => 'El tipo de movimiento es obligatorio.',
+                    'metodo_pago.required' => 'El método de pago es obligatorio.',
+                    'importe.required' => 'El importe es obligatorio.',
+                    'descripcion.required' => 'La descripción es obligatoria.',
+                    'pedido_id.required' => 'El pedido es obligatorio.',
+                    'fecha.required' => 'La fecha es obligatoria.',
+                    'banco.required' => 'El banco es obligatorio.',
 
+                ]
+            );
+        }
         // Guardar datos validados
-        $usuariosSave = Caja::create($validatedData);
+        $usuariosSave = Caja::create([
+            'tipo_movimiento' => $this->tipo_movimiento,
+            'metodo_pago' => $this->metodo_pago,
+            'importe' => $this->importe,
+            'descripcion' => $this->descripcion,
+            'pedido_id' => $this->pedido_id,
+            'fecha' => $this->fecha,
+            'banco' => $this->banco,
+        ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
         // Alertas de guardado exitoso

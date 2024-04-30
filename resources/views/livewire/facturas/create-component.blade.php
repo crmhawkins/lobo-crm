@@ -143,7 +143,7 @@
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
                                     <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
-                                            <option value="" disabled selected>Selecciona una opción</option>
+                                            <option value="No pagado"  selected>Selecciona una opción</option>
                                             <option value="giro_bancario">Giro Bancario</option>
                                             <option value="pagare">Pagare</option>
                                             <option value="confirming">Confirming</option>
