@@ -204,7 +204,24 @@
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
  <table class="footer" >
         <tr>
-            <td style="text-align: left !important"><span style="font-weight: bold">Forma de pago: </span>{{$factura->metodo_pago}}</td>
+            <td style="text-align: left !important"><span style="font-weight: bold">Forma de pago: </span>
+                @switch($factura->metodo_pago)
+                    @case('giro_bancario')
+                        Giro Bancario
+                        @break
+                    @case('pagare')
+                        Pagare
+                        @break
+                    @case('confirming')
+                        Confirming
+                        @break
+                    @case('otros')
+                        Otros
+                        @break
+                    @default
+                        ------------------
+                        @break
+                @endswitch</td>
         </tr>
         {{-- <tr>
             <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
