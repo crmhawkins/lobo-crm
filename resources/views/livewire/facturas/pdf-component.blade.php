@@ -158,7 +158,7 @@
 
 
     @if($conIva)
-    <table style="margin-top: 5% !important">
+    <table style="margin-top: 2% !important">
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
@@ -202,19 +202,20 @@
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
-   {{-- <table class="footer" >
+ <table class="footer" >
         <tr>
-            <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
+            <td style="text-align: left !important"><span style="font-weight: bold">Forma de pago: </span>{{$factura->metodo_pago}}</td>
         </tr>
-        <tr>
+        {{-- <tr>
+            <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
             <td style="text-align: left !important">Nº PEDIDO: {{$pedido->id}}</td>
         </tr>
         <tr>
             <td style="text-align: left !important">Pagar por transferencia bancaria al siguiente número de cuenta:<br>
                 <span style="font-weight: bold">LA CAIXA: ES31 2100 8508 5102 0019 7802</span>
             </td>
-        </tr>
-    </table>--}}
+        </tr> --}}
+    </table>
 </body>
 
 </html>
