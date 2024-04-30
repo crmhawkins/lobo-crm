@@ -147,7 +147,7 @@
                                         @endswitch
                                         </td>
                                         <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Comprobar pedido</a>
-                                            <a href="almacen-create/{{ $pedido->id }}" class="btn btn-primary">Generar albarán</a>
+                                            <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary">Generar albarán</a>
 
                                         </td>
                                     </tr>
@@ -219,9 +219,9 @@
                                         <td>
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8)
-                                                <a href="facturas-create/{{ $pedido->id }}" class="btn btn-primary">Crear Factura</a>
+                                                <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
                                             @else
-                                                <a onclick="enRuta({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Pedido En Ruta</a>
+                                                <a onclick="enRuta({{ $pedido->id }})" class="btn btn-secondary" style="color: white;">Pedido En Ruta</a>
                                             @endif
                                         </td>
                                     </tr>
