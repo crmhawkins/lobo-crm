@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use App\Models\Alertas;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Facturas;
 
 class EditComponent extends Component
 {
@@ -58,6 +59,18 @@ class EditComponent extends Component
     public $porcentaje_bloq;
     public $porcentaje_sincargo;
     public $sinCargo = false;
+
+    public $productoEditar;
+    public $productoEditarId;
+    public $productoEditarNombre;
+    public $productoEditarPrecio;
+    public $productoEditarUds;
+    public $productoEditarPallets;
+    public $productoEditarCajas;
+
+    public $arrProductosEditar = [];
+    public $indexPedidoProductoEditar;
+
 
 
     public function mount()
@@ -198,6 +211,7 @@ class EditComponent extends Component
 
 
         foreach ($this->productos_pedido as $productos) {
+            
             if (!isset($productos['id'])) {
                 DB::table('productos_pedido')->insert([
                     'producto_pedido_id' => $productos['producto_pedido_id'],
@@ -208,7 +222,7 @@ class EditComponent extends Component
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades'] ;
-                    DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud']]);
+                    DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud'], 'precio_total' => $productos['precio_total']]);
                 } else {
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
                 }
@@ -223,6 +237,12 @@ class EditComponent extends Component
 
         // Alertas de guardado exitoso
         if ($pedidosSave) {
+
+            //Update factura relacionada si existe
+            $factura = Facturas::where('pedido_id', $this->identificador)->first();
+            if($factura){
+                $factura->update(['precio' => $this->precio]);
+            }
 
             if( $this->bloqueado && $this->estado == 1){
                 Alertas::create([
@@ -573,6 +593,48 @@ class EditComponent extends Component
         }
 
     }
+
+
+    public function editProductos($id){
+        
+        // $this->arrProductosEditar = [];
+        
+        // //añadir al array el productoEditar junto a las unidades correspondientes
+        // $this->arrProductosEditar[$this->productoEditarId][] = [
+        //     'producto_pedido_id' => $this->productoEditarId,
+        //     'unidades' => $this->unidades_producto,
+        //     'precio_ud' => $this->productoEditarPrecio,
+        //     'precio_total' => $this->productoEditarUds * $this->productoEditarPrecio
+        // ];
+
+        //añadir a la tabla de productos_pedido, editando los valores si ya existe
+
+        foreach ($this->productos_pedido as $index => $productoPedido) {
+            if ($index == $id) {
+                $this->productos_pedido[$index]['unidades'] = $this->unidades_producto;
+                if($this->sinCargo == true){
+                    $this->productos_pedido[$index]['precio_ud'] = 0;
+                    $this->productos_pedido[$index]['precio_total'] = 0;
+                }else{
+                    $this->productos_pedido[$index]['precio_ud'] = $this->productoEditarPrecio;
+                    $this->productos_pedido[$index]['precio_total'] = $this->unidades_producto * $this->productoEditarPrecio;
+                }
+            }
+        }
+        $this->setPrecioEstimado();
+        $this->sinCargo = false;
+
+        $this->producto_seleccionado = 0;
+        $this->unidades_producto = 0;
+        $this->unidades_caja_producto = 0;
+        $this->unidades_pallet_producto = 0;
+        $this->emit('refreshComponent');
+
+
+
+    }
+
+
     public function addProductos($id)
     {
         $producto = Productos::find($id);
@@ -675,6 +737,29 @@ class EditComponent extends Component
         }
     }
 
+    public function selectProduct($id, $precio, $unidades, $idIndex){
+        //selecciona el producto para editarlo
+        $this->productoEditar = Productos::find($id);
+        $this->productoEditarId = $id;
+        $this->productoEditarNombre = $this->productoEditar->nombre;
+        $this->productoEditarUds = $unidades;
+        $this->productoEditarPrecio = $precio;
+        $this->productoEditarPallets = floor($unidades / $this->productoEditar->unidades_por_caja / $this->productoEditar->cajas_por_pallet);
+        $this->productoEditarCajas = floor($unidades / $this->productoEditar->unidades_por_caja);
+
+        $this->producto_seleccionado = $this->productoEditarId;
+        $this->unidades_producto = $this->productoEditarUds;
+        $this->unidades_pallet_producto = $this->productoEditarPallets;
+        $this->unidades_caja_producto = $this->productoEditarCajas;
+
+        $this->indexPedidoProductoEditar = $idIndex;
+
+        if($this->sinCargo == true){
+
+            $this->productoEditarPrecio = 0;    
+        }
+        
+    }
 
     public function setPrecioEstimado()
     {

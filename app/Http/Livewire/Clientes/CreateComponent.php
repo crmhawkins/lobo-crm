@@ -50,6 +50,7 @@ class CreateComponent extends Component
     public $comerciales;
     public $productos;
     public $arrProductos;
+    public $observaciones;
 
     public function mount()
     {
@@ -111,6 +112,7 @@ class CreateComponent extends Component
                 'delegacion_COD'=> 'nullable',
                 'comercial_id'=> 'nullable',
                 'cuenta'=> 'nullable',
+                'observaciones'=> 'nullable',
 
 
             ],

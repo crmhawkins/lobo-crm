@@ -525,6 +525,22 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Observaciones Descarga</label>
+                                <div class="col-sm-12">
+                                    <textarea type="textarea" wire:model="observaciones" class="form-control"
+                                        name="observaciones" id="observaciones" placeholder="Observaciones..."></textarea>
+                                    @error('observaciones')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .observaciones {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

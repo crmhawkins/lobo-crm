@@ -44,6 +44,7 @@ class CreateComponent extends Component
     public $almacen_id;
     public function mount()
     {
+        
         $this->almacen_id = auth()->user()->almacen_id;
         $this->pedido = Pedido::find($this->identificador);
         $this->pedido_id = $this->pedido->id;
@@ -67,6 +68,7 @@ class CreateComponent extends Component
                 'lote_id' => $producto->lote_id,
             ];
         }
+        
     }
 
     public function render()
@@ -143,14 +145,16 @@ class CreateComponent extends Component
     }
     public function getNombreTabla($id)
     {
-        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
+        $producto = $this->productos->where('id', $id)->first();
+        $nombre_producto = isset($producto) ? $producto->nombre : '';
         return $nombre_producto;
     }
 
 
     public function getPesoTotal($id,$In)
     {
-        $pesoUnidad = $this->productos->where('id', $id)->first()->peso_neto_unidad;
+        $producto = $this->productos->where('id', $id)->first();
+        $pesoUnidad = isset($producto) ? $producto->peso_neto_unidad : 0;
         $Cantidad = $this->productos_pedido[$In]['unidades_old'];
         $pesoTotal= ($pesoUnidad * $Cantidad)/1000;
         return $pesoTotal;
@@ -173,6 +177,10 @@ class CreateComponent extends Component
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
+        if($producto === null){
+            return '';
+           
+        }
         if (isset($this->productos_pedido[$id]['unidades_old'])) {
             $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
             $cajas = ($uds_total / $producto->unidades_por_caja);

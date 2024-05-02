@@ -49,6 +49,7 @@ class IndexComponent extends Component
             // ->where('tipo_pedido_id', 0)
             // ->get();
         }
+        
     }
 
     public function render()
@@ -62,6 +63,7 @@ class IndexComponent extends Component
     }
 
     public function getAlmacen($id){
+        
         return Almacen::find($id)->almacen;
     }
     public function getListeners()

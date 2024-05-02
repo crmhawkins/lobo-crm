@@ -41,6 +41,10 @@ class IndexComponent extends Component
     }
     public function getProducto($id)
     {
+        $producto = $this->productos->find($id);
+        if($producto == null){
+            return 'Producto no encontrado';
+        }
         return $this->productos->find($id)->nombre;
     }
 
@@ -230,6 +234,9 @@ class IndexComponent extends Component
     public function getUnidadeCaja($id)
     {
         $producto = Productos::find($id);
+        if($producto == null){
+            return 1;
+        }
         return  $producto->unidades_por_caja;
     }
 

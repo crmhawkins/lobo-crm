@@ -1,6 +1,6 @@
     <div class="row header_row" style="align-content: center !important">
         <div class="col-4 col-md-6 header_logo">
-            <img src="{{ asset('assets/images/logo_la_fabrica.png') }}" style="max-width: 10%" class="logo" onclick='window.location="/home"'>
+            <img src="{{ asset('assets/images/logo_la_fabrica.png') }}" style="max-width: 10%; cursor: pointer;" class="logo" onclick='window.location="/home"'>
             <span style="font-size: 10px; color: gray; position: absolute; top: 0; right: 0;">v1.5.8</span>
         </div>
         <div class="col-4 col-md-4 header_user">

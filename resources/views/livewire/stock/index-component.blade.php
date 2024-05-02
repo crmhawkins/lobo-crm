@@ -33,56 +33,56 @@
                     <div class="row justify-content-center">
                         <div class="form-group col-md-12 mt-1">
                             <label for="fechaVencimiento">Almacén</label>
-                                <select name="almacen" id="select2-almacen" wire:model="almacen_id"
-                                    wire:change='setLotes' style="width: 100% !important">
-                                    <option value="{{ null }}">-- Selecciona un almacén --
-                                    </option>
-                                    @foreach ($almacenes as $presup)
-                                        <option value="{{ $presup->id }}">{{ $presup->almacen }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                        </div>
+                            <select name="almacen" id="select2-almacen" wire:model="almacen_id"
+                            wire:change='setLotes' style="width: 100% !important">
+                            <option value="{{ null }}">-- Selecciona un almacén --
+                            </option>
+                            @foreach ($almacenes as $presup)
+                            <option value="{{ $presup->id }}">{{ $presup->almacen }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
-                    @endif
-                    @if (count($productos) > 0)
-                        <div class="row justify-content-center">
-                            <div class="col-md-12" wire:ignore>
-                                <div x-data="" x-init="
-                                    $('#select2-producto').select2();
-                                    $('#select2-producto').on('change', function(e) {
-                                        var data = $('#select2-producto').select2('val');
-                                        @this.set('producto_seleccionado', data);
-                                        @this.emit('setLotes');
-                                    });
-
-                                    // Establecer el valor seleccionado de Select2 para que coincida con Livewire al iniciar
-                                    $nextTick(() => {
-                                        $('#select2-producto').val(@this.producto_seleccionado).trigger('change');
-                                    });
-                                ">
-                                    <label for="fechaVencimiento">Producto</label>
-                                    <select class="form-control" name="producto" id="select2-producto">
-                                        <option value="0">Mostrar todo</option>
-                                        @foreach ($productos as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                                <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
-                                    $('#tabla-stock').DataTable({
-                                        responsive: true,
-                                        fixedHeader: {
-                                            header: true,
-                                            footer: true,
-                                        },
-                                        searching: false,
-                                        paging: false,
-                                        info: false,
-                                        dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
-                                        buttons: [
+                </div>
+                @endif
+                @if (count($productos) > 0)
+                <div class="row justify-content-center">
+                    <div class="col-md-12" wire:ignore>
+                        <div x-data="" x-init="
+                        $('#select2-producto').select2();
+                        $('#select2-producto').on('change', function(e) {
+                            var data = $('#select2-producto').select2('val');
+                            @this.set('producto_seleccionado', data);
+                            @this.emit('setLotes');
+                        });
+                        
+                        // Establecer el valor seleccionado de Select2 para que coincida con Livewire al iniciar
+                        $nextTick(() => {
+                            $('#select2-producto').val(@this.producto_seleccionado).trigger('change');
+                        });
+                        ">
+                        <label for="fechaVencimiento">Producto</label>
+                        <select class="form-control" name="producto" id="select2-producto">
+                            <option value="0">Mostrar todo</option>
+                            @foreach ($productos as $presup)
+                            <option value="{{ $presup->id }}">{{ $presup->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                    $('#tabla-stock').DataTable({
+                        responsive: true,
+                        fixedHeader: {
+                            header: true,
+                            footer: true,
+                        },
+                        searching: false,
+                        paging: false,
+                        info: false,
+                        dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
+                        buttons: [
                                             {
                                                 extend: 'excelHtml5',
                                                 text: 'Exportar a Excel',
@@ -95,9 +95,9 @@
                                                 titleAttr: 'PDF',
                                                 className: 'btn-secondary px-3 py-1 mb-2'
                                             }
-                                        ]
-                                    });
-                                })"
+                                            ]
+                                        });
+                                    })"
                                     wire:key='{{ rand() }}'>
                                     <table id="tabla-stock"  class="table table-striped table-bordered dt-responsive nowrap"  wire:key='{{ rand() }}'>
                                         <thead>
@@ -114,14 +114,17 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($producto_lotes as $loteIndex => $lote)
-                                                <tr>
-                                                    <th>{{ $lote['lote_id'] }}</th>
-                                                    <th>{{ $lote['orden_numero'] }}</th>
-                                                    <th>{{ $this->almacen($lote) }}</th>
-                                                    <th>{{ $this->getProducto($lote['producto_id']) }}</th>
-                                                    <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
+                                            <tr>
+                                                <th>{{ $lote['lote_id'] }}</th>
+                                                <th>{{ $lote['orden_numero'] }}</th>
+                                                <th>{{ $this->almacen($lote) }}</th>
+                                                <th>{{ $this->getProducto($lote['producto_id']) }}</th>
+                                                <td>{{ $this->formatFecha($lote['stock_id']) }}</td>
+
                                                     <td>{{ $lote['cantidad'] }}</td>
+                                                    
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
+
                                                     <td>
                                                         @if($this->qrAsignado($lote))
                                                         <button class="btn btn-primary" onclick="generarQRIndividual({{$lote}})"> QR</button>

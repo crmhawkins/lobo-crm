@@ -83,7 +83,9 @@
                                 @if(Auth::user()->role != 3 )
                                 <td>
                                     <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a>
-                                    <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                    @if($this->albaranExiste($presup->id))
+                                        <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                    @endif
                                 </td>
                                 @else
                                 <td></td>

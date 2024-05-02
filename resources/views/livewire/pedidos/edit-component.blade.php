@@ -207,12 +207,12 @@ $canEdit = $EsAdmin || $estado == 1;
                                                 <th>Cantidad</th>
                                                 <th>Precio unidad</th>
                                                  <th>Precio total</th>
-                                                <th>Eliminar</th>
+                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach ($productos_pedido as $productoIndex => $producto)
-                                                <tr>
+                                            <tr>
                                                     <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
                                                     </td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
@@ -223,9 +223,15 @@ $canEdit = $EsAdmin || $estado == 1;
                                                     @endif
                                                     <td>{{ $producto['precio_total']}} €</td>
                                                     @if ($canEdit)
-                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                        <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
+                                                    </td>
                                                     @else
-                                                    <td><button type="button" class="btn btn-secondary">X</button></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-secondary">X</button>
+                                                        <button class="btn btn-info">Editar</button>
+                                                    </td>
                                                     @endif
 
                                                 </tr>
@@ -359,6 +365,107 @@ $canEdit = $EsAdmin || $estado == 1;
                                             <button type="button" class="btn btn-primary w-100"
                                                 wire:click.prevent="addProductos('{{ $producto_seleccionado }}')"
                                                 data-dismiss="modal" aria-label="Close">+</a>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-11 mt-3">
+
+                                            <input name="sinCargo" class="form-check-input" type="checkbox" id="sinCargo" wire:model="sinCargo">
+                                            <label for="sinCargo" style="cursor:pointer"> Producto sin cargos.</label>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div wire:ignore.self class="modal fade" id="editProductModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog"
+                        style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Producto</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @if ($productoEditar != null)
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-12">
+                                            <div class="card border border-dark border-1"
+                                                style="margin-bottom: 5px !important">
+                                                <div class="card-body"
+                                                    style="
+                                                display: flex;
+                                                flex-direction: column;
+                                                flex-wrap: wrap;
+                                                align-items: center;
+                                                justify-content: center;
+                                            ">
+                                                    <h2 class="card-title mt-0 font-32"
+                                                        style="text-align: center; margin-bottom: -0.25rem !important;">
+                                                        {{ $this->getProductoNombre() }}</h2>
+                                                    <img class="mx-auto" src="{{ $this->getProductoImg() }}"
+                                                        style="max-width: 30%; text-align:center;"
+                                                        alt="Card image cap">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="row justify-content-center">
+                                    <div class="col-md-10" style="text-align: center !important;">
+                                        <label for="fechaVencimiento">Producto seleccionado</label>
+                                    </div>
+                                    <div class="col-md-10" wire:ignore>
+                                        <div x-data="" x-init="$('#select2-producto').select2();
+                                        $('#select2-producto').on('change', function(e) {
+                                            var data = $('#select2-producto').select2('val');
+                                            @this.set('producto_seleccionado', data);
+                                            @this.set('unidades_pallet_producto', 0);
+                                            @this.set('unidades_caja_producto', 0);
+                                            @this.set('unidades_producto', 0);
+                                            console.log('data');
+                                        });">
+                                            <input type="text" value="{{ $productoEditarNombre}}" class="form-control" disabled>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                @if ($productoEditar != null)
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Pallets</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="fechaVencimiento">Cajas</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">Uds.</label>
+                                        </div>
+                                        <div class="col-md-3" style="text-align: center !important;">
+                                            <label for="unidades">&nbsp; </label>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center mt-1">
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" wire:model="unidades_producto" wire:change='updateUnidad()'>
+                                        </div>
+                                        <div class="col-md-3" style="justify-content: start !important"
+                                            style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
+                                            <button type="button" class="btn btn-primary w-100"
+                                                wire:click.prevent="editProductos('{{ $indexPedidoProductoEditar }}')"
+                                                data-dismiss="modal" aria-label="Close">Editar</a>
                                         </div>
                                     </div>
                                     <div class="row justify-content-center">
@@ -564,6 +671,12 @@ $canEdit = $EsAdmin || $estado == 1;
 
                 $('#select2-producto').select2({
                     dropdownParent: $('#addProductModal') // asegurando que el dropdown de Select2 se adjunte dentro del modal
+                });
+            });
+
+            $('#editProductModal').on('shown.bs.modal', function () {
+                $('#select2-producto').select2({
+                    dropdownParent: $('#editProductModal') // asegurando que el dropdown de Select2 se adjunte dentro del modal
                 });
             });
 

@@ -58,11 +58,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                
                                 @foreach ($pedidos_pendientes as $pedido)
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
+
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
+
                                         <td>{{ $pedido->fecha }}</td>
                                         <td>{{ $pedido->precio }}€</td>
                                         <td>
@@ -81,6 +84,7 @@
                                             <a onclick="prepararPedido({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Preparar pedido</a>
                                         </td>
                                     </tr>
+
                                 @endforeach
                             </tbody>
                         </table>

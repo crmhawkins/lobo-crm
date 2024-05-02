@@ -14,6 +14,7 @@
             </div>
         </div> <!-- end row -->
     </div>
+    
     <!-- end page-title -->
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
@@ -207,7 +208,9 @@
 
                                         @foreach ($productos_pedido as $productoIndex => $producto)
                                             <tr>
+
                                                 <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
+                                                   
                                                 </td>
                                                 @if (is_null($producto['lote_id']))
                                                 <td>
@@ -216,8 +219,11 @@
                                                 @else
                                                 <td>{{ $producto['lote_id']}}
                                                 @endif
+
                                                 <td>{{$this->getPesoTotal($producto['producto_pedido_id'],$productoIndex)}} KG </td>
+
                                                 <td>{{ $this->getUnidadesTabla($productoIndex)}}</td>
+
                                                 <td>{{ $producto['precio_ud']}} €</td>
                                                 <td>{{ $producto['precio_total']}} €</td>
 

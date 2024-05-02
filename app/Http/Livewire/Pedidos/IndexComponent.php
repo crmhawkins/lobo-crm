@@ -51,6 +51,15 @@ class IndexComponent extends Component
     }
 
 
+    public function albaranExiste($pedidoId)
+    {
+        $albaran = Albaran::where('pedido_id', $pedidoId)->first();
+        if ($albaran) {
+            return true;
+        }
+        return false;
+    }
+
     public function albaran($pedidoId)
     {
         
@@ -58,7 +67,6 @@ class IndexComponent extends Component
         // Buscar el albarán asociado con el ID del pedido
 		//$factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();
-
         if (!$albaran) {
             $this->alert('error', 'Albarán no encontrado para el pedido especificado.', [
                 'position' => 'center',
