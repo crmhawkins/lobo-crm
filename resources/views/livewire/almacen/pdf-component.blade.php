@@ -77,6 +77,12 @@
                 <span style="font-weight: bold; color:#0196eb">Dirección de envío</span><br>
                 {{$pedido->direccion_entrega}}<br>
                 {{$pedido->cod_postal_entrega}} - {{$pedido->localidad_entrega}} ({{$pedido->provincia_entrega}})<br><br>
+                <br>
+                @if(isset($cliente->observaciones))
+                <span style="font-weight: bold; color:#0196eb">Observaciones Descarga </span>
+                    <br>
+                    {{$cliente->observaciones}}
+                @endif
             </td>
         </tr>
     </table>

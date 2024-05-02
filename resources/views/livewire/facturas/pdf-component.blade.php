@@ -85,8 +85,16 @@
                 {{$cliente->direccionenvio}}<br>
                 {{$cliente->codPostalenvio}} - {{$cliente->localidadenvio}} ({{$cliente->provinciaenvio}})<br><br>
                 @endif
+                <br>
+                @if(isset($cliente->observaciones))
+                <span style="font-weight: bold; color:#0196eb">Observaciones Descarga </span>
+                    <br>
+                    {{$cliente->observaciones}}
+                @endif
             </td>
-            <td style="text-align: left !important" width="20%"></td>
+            <td style="text-align: left !important" width="20%"> 
+                
+            </td>
         </tr>
     </table>
 
