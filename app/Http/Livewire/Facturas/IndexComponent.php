@@ -40,7 +40,11 @@ class IndexComponent extends Component
     {
         $cliente=$this->clientes->find($id);
         if(isset($cliente)){
-        return $cliente->nombre;
+            $clienteModel = Clients::find($id);
+            $cliente['delegacion'] = $clienteModel->delegacion->nombre;
+            $cliente['comercial'] = $clienteModel->comercial->name;
+            dd($cliente);
+        return $cliente;
         }
         return "Cliente no definido";
     }

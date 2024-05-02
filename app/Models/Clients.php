@@ -50,6 +50,7 @@ class Clients extends Model
         "delegacion_COD",
         "comercial_id",
         "cuenta",
+        "observaciones"
     ];
 
     /**
@@ -63,7 +64,11 @@ class Clients extends Model
 
     public function delegacion()
     {
-        return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
+        return $this->belongsTo(Delegacion::class, 'delegacion_COD');
+    }
+    public function comercial()
+    {
+        return $this->belongsTo(User::class, 'comercial_id');
     }
     public function pedidos()
     {

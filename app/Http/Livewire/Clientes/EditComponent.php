@@ -48,6 +48,7 @@ class EditComponent extends Component
     public $comercial_id;
     public $comerciales;
     public $cuenta;
+    public $observaciones;
 
 
     public $productos;
@@ -86,6 +87,7 @@ class EditComponent extends Component
         $this->localidadenvio = $cliente->localidadenvio;
         $this->codPostalenvio = $cliente->codPostalenvio;
         $this->vencimiento_factura_pref = $cliente->vencimiento_factura_pref;
+        $this->observaciones = $cliente->observaciones;
         $this->productos =  Productos::all();
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
@@ -129,7 +131,8 @@ class EditComponent extends Component
                 'cuenta_contable'=> 'nullable',
                 'delegacion_COD'=> 'nullable',
                 'comercial_id'=> 'nullable',
-                'cuenta'=> 'nullable'
+                'cuenta'=> 'nullable',
+                'observaciones'=> 'nullable',
 
             ],
             // Mensajes de error
@@ -151,8 +154,6 @@ class EditComponent extends Component
 
         // Encuentra el identificador
         $cliente = Clients::find($this->identificador);
-
-        
 
         // Guardar datos validados
         $clienteSave = $cliente->update([
@@ -183,6 +184,7 @@ class EditComponent extends Component
             'comercial_id'=> $this->comercial_id,
             'cuenta_contable'=> $this->cuenta_contable,
             'cuenta'=> $this->cuenta,
+            'observaciones'=> $this->observaciones
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
