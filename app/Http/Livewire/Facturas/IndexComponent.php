@@ -41,10 +41,9 @@ class IndexComponent extends Component
         $cliente=$this->clientes->find($id);
         if(isset($cliente)){
             $clienteModel = Clients::find($id);
-            $cliente['delegacion'] = $clienteModel->delegacion->nombre;
-            $cliente['comercial'] = $clienteModel->comercial->name;
-            dd($cliente);
-        return $cliente;
+            $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
+            $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
+            return $cliente;
         }
         return "Cliente no definido";
     }
@@ -70,7 +69,7 @@ class IndexComponent extends Component
         $delegaciones = Delegacion::all();
         $cliente=$this->clientes->find($id);
         if(isset($cliente)){
-        return $delegaciones->where('COD',$cliente->delegacion_COD)->first()->nombre;
+            return $delegaciones->where('COD',$cliente->delegacion_COD)->first()->nombre;
         }
         return "no definido";
     }
