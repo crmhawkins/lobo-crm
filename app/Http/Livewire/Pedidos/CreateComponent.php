@@ -13,6 +13,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\AnotacionesClientePedido;
 
 class CreateComponent extends Component
 {
@@ -50,6 +51,7 @@ class CreateComponent extends Component
     public $porcentaje_bloq;
     public $porcentaje_sincargo = 0;
 	public $sinCargo = false;
+    public $anotacionesProximoPedido = [];
 
     public function mount()
     {
@@ -74,7 +76,28 @@ class CreateComponent extends Component
         $this->precio_vodka3l = $cliente->precio_vodka3l;
         $this->porcentaje_bloq = $cliente->porcentaje_bloq;
 
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
+        //alert si hay anotaciones pendientes con botón para cerrar y boton para ver anotaciones
+        if (count($this->anotacionesProximoPedido) > 0) {
+            $this->alert('info', '¡El cliente tiene anotaciones pendientes!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Cerrar',
+                //'showDenyButton' => true,
+                //'denyButtonText' => 'Ver anotaciones',
+                'onConfirmed' => '',
+                //'onDenied' => 'verAnotaciones',
+                'timerProgressBar' => true,
+            ]);
+        }
+       
+
     }
+
+
+   
+
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function render()
@@ -203,7 +226,7 @@ class CreateComponent extends Component
             'confirmed',
             'submit',
             'alertaGuardar',
-            'checkLote'
+            'checkLote',
         ];
     }
 

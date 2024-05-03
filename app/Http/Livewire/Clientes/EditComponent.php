@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductoPrecioCliente;
 use App\Models\Productos;
+use App\Models\AnotacionesClientePedido;
 
 class EditComponent extends Component
 {
@@ -55,6 +56,10 @@ class EditComponent extends Component
     public $productosAsignados;
     public $arrProductos;
 
+    public $anotacionesProximoPedido = [];
+    public $anotacion;
+
+
     public function mount()
     {
         $cliente = Clients::find($this->identificador);
@@ -92,9 +97,9 @@ class EditComponent extends Component
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
         foreach ($this->productos as $producto) {
-
             $this->arrProductos[$producto->id] = $this->productosAsignados->where('producto_id', $producto->id)->first() ? $this->productosAsignados->where('producto_id', $producto->id)->first()->precio : 0;
         }
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
     }
 
 
@@ -103,6 +108,27 @@ class EditComponent extends Component
         return view('livewire.clientes.edit-component');
     }
 
+
+    public function completarAnotacion($id){
+        $anotacion = AnotacionesClientePedido::find($id);
+        $anotacion->update([
+            'estado' => 'completado'
+        ]);
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
+    }
+
+
+    public function addAnotacion(){
+        if($this->anotacion !== null){
+            $anotacion = AnotacionesClientePedido::create([
+                'cliente_id' => $this->identificador,
+                'anotacion' => $this->anotacion,
+                'estado' => 'pendiente'
+            ]);
+            $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
+            $this->anotacion = null;
+        }
+    }
 
     // Al hacer update en el formulario
     public function update()
@@ -206,6 +232,7 @@ class EditComponent extends Component
             }
             }
         if ($clienteSave) {
+
             $this->alert('success', '¡Cliente actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -275,6 +302,10 @@ class EditComponent extends Component
                 foreach ($productos as $producto) {
                     $producto->delete();
                 }
+            $anotaciones = AnotacionesClientePedido::where('cliente_id', $cliente->id)->get();
+            foreach ($anotaciones as $anotacion) {
+                $anotacion->delete();
+            }
         }
 
         $cliente->delete();

@@ -32,7 +32,7 @@
                             });">
                                 <label for="Cliente">Cliente</label>
                                 <select class="form-control" name="cliente_id" id="select2-cliente"
-                                    wire:model="cliente_id" >
+                                    wire:model="cliente_id" wire:change="onChangeCliente()" >
                                     <option value=""></option>
                                     @foreach ($clientes as $cliente)
                                         <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>

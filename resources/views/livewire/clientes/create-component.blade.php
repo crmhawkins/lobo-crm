@@ -541,6 +541,23 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Anotaciones Proximo Pedido</label>
+                                <div class="col-sm-12">
+                                    <textarea type="textarea" wire:model="anotacionesProximoPedido" class="form-control"
+                                        name="anotacionesProximoPedido" id="anotacionesProximoPedido" placeholder="Anotaciones próximo pedido..."></textarea>
+                                    @error('anotacionesProximoPedido')
+                                        <span class="text-danger">{{ $message }}</span>
+
+                                        <style>
+                                            .anotacionesProximoPedido {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

@@ -427,6 +427,65 @@
                                 </div>
                             </div>
                         </div> --}}
+
+                        <div wire:ignore.self class="modal fade" id="viewModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog"
+                                style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Anotaciones próximo pedido</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if (count($anotacionesProximoPedido) > 0)
+                                            <ul>
+                                                @foreach ($anotacionesProximoPedido as $anotacion)
+                                                    <li>{{ $anotacion->anotacion }} - <span class="badge badge-warning text-uppercase">{{ $anotacion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $anotacion->id }}')">Completar</button></li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div wire:ignore.self class="modal fade" id="addModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog"
+                                style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Añadir anotación</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea wire:model="anotacion" class="form-control" name="anotacion"
+                                            id="anotacion" placeholder="Anotación"></textarea>
+                                        <br>
+                                        @error('anotacion')
+                                            <span class="text-danger">{{ $message }}</span>
+
+                                            <style>
+                                                .anotacion {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                        <button class="btn btn-success" wire:click="addAnotacion" data-dismiss="modal">Añadir</button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
@@ -581,6 +640,18 @@
                         <div class="col-12">
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
                                 Cliente</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @if(count($anotacionesProximoPedido) > 0 )
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
+                                    Anotaciones próximo pedido</button>
+                            </div>
+                        @endif
+                        <div class="col-12">
+                            <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
+                                Anotación próximo pedido </button>
                         </div>
                     </div>
                 </div>

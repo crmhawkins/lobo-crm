@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Productos;
 use App\Models\ProductoPrecioCliente;
+use App\Models\AnotacionesClientePedido;
 
 class CreateComponent extends Component
 {
@@ -51,6 +52,7 @@ class CreateComponent extends Component
     public $productos;
     public $arrProductos;
     public $observaciones;
+    public $anotacionesProximoPedido;
 
     public function mount()
     {
@@ -150,6 +152,13 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($clienteSave) {
+
+            if(isset($this->anotacionesProximoPedido) && $this->anotacionesProximoPedido != ""){
+                $anotacion = new AnotacionesClientePedido();
+                $anotacion->cliente_id = $clienteSave->id;
+                $anotacion->anotacion = $this->anotacionesProximoPedido;
+                $anotacion->save();
+            }
 
             Alertas::create([
                 'user_id' => 13,
