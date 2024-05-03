@@ -146,6 +146,43 @@ class IndexComponent extends Component
 
     }
 
+
+    public function imprimirEntrante(){
+
+
+        $arrayProductosLotes = [];
+
+        foreach ($this->producto_lotes as $loteIndex => $lote) {
+            $arrayProductosLotes[] = [
+                'lote_id' => $lote['lote_id'],
+                'orden_numero' => $lote['orden_numero'],
+                'almacen' => $this->almacen($lote),
+                'producto' => $this->getProducto($lote['producto_id']),
+                'fecha' => $this->formatFecha($lote['stock_id']),
+                'cantidad' => $lote['cantidad'],
+                'cajas' => floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) ),
+            ];
+        }
+
+
+        $datos = [
+            'producto_lotes' => $arrayProductosLotes,
+        ];
+
+
+
+
+
+       
+
+        $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output(); 
+        return response()->streamDownload(
+            fn () => print($pdf),
+            'export_protocol.pdf'
+        );
+
+    }
+
     public function editar($qr)
     {
         $stock = Stock::where('qr_id', $qr)->first();

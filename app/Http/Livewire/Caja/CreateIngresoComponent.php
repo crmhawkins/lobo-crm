@@ -33,7 +33,7 @@ class CreateIngresoComponent extends Component
     public function mount()
     {
 
-        $this->facturas = Facturas::all();
+        $this->facturas = Facturas::where('estado', 'Pendiente')->get();
         $this->clientes = Clients::all();
         $this->bancos = Bancos::all();
     }
