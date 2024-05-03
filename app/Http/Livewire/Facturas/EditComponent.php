@@ -54,7 +54,7 @@ class EditComponent extends Component
         $this->productos = Productos::where('tipo_precio',5)->get();
         $this->producto_id = $this->facturas->producto_id;
         $this->cantidad = $this->facturas->cantidad;
-        $this->precio = $this->facturas->precio;
+        $this->precio = $this->pedido->precio;
         $this->pedido_id = $this->facturas->pedido_id;
         $this->numero_factura = $this->facturas->numero_factura;
         $this->fecha_emision = $this->facturas->fecha_emision;
