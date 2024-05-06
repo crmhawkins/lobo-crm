@@ -151,7 +151,6 @@ class IndexComponent extends Component
 
 
         $arrayProductosLotes = [];
-
         foreach ($this->producto_lotes as $loteIndex => $lote) {
             $arrayProductosLotes[] = [
                 'lote_id' => $lote['lote_id'],
@@ -162,7 +161,9 @@ class IndexComponent extends Component
                 'cantidad' => $lote['cantidad'],
                 'cajas' => floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) ),
             ];
+
         }
+        //dd($arrayProductosLotes);
 
 
         $datos = [
@@ -170,15 +171,10 @@ class IndexComponent extends Component
         ];
 
 
-
-
-
-       
-
         $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output(); 
         return response()->streamDownload(
             fn () => print($pdf),
-            'export_protocol.pdf'
+            'historial_stock_Entrante.pdf'
         );
 
     }

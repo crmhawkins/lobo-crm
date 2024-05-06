@@ -28,6 +28,9 @@ class CreateIngresoComponent extends Component
     public $banco; //banco_id
     public $bancoSeleccionado;
     public $compensacion;
+    public $facturaSeleccionada;
+    public $importeFactura;
+    public $ingresos_factura = [];
 
 
     public function mount()
@@ -43,9 +46,28 @@ class CreateIngresoComponent extends Component
             $this->bancoSeleccionado = Bancos::find($this->banco);
         }
 
+
         return view('livewire.caja.create-ingreso-component');
 
     }
+
+
+    public function onFacturaChange($id)
+    {
+        if(isset($id) && $id != null){
+            $this->facturaSeleccionada = Facturas::find($id);
+            $this->importeFactura = $this->facturaSeleccionada->precio;
+            $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
+            if(count($this->ingresos_factura) > 0){
+                $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+
+            }else{
+                $this->importe = $this->importeFactura;
+            }
+
+        }
+    }
+
     public function submit()
     {
         if(count($this->bancos) > 0){
@@ -132,7 +154,8 @@ class CreateIngresoComponent extends Component
     {
         return [
             'confirmed',
-            'submit'
+            'submit',
+            'onFacturaChange'
         ];
     }
 

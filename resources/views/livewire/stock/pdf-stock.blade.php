@@ -77,17 +77,14 @@
     </thead>
     <tbody>
         @foreach ($producto_lotes as $loteIndex => $lote)
-        <tr style="background-color:#ececec;">
-            <th>{{ $lote['lote_id'] }}</th>
-            <th>{{ $lote['orden_numero'] }}</th>
-            <th>{{ $lote['almacen'] }}</th>
-            <th>{{ $lote['producto'] }}</th>
-            <td>{{ $lote['fecha'] }}</td>
-
-                <td>{{ $lote['cantidad'] }}</td>
-                
-                <td>{{ floor($lote['cantidad']/ $lote['cajas'] )}}</td>
-
+            <tr style="background-color:#ececec;">
+                <th>{{ $lote['lote_id'] }}</th>
+                <th>{{ $lote['orden_numero'] }}</th>
+                <th>{{ $lote['almacen'] }}</th>
+                <th>{{ $lote['producto'] }}</th>
+                <td>{{ $lote['fecha'] }}</td>
+                <td>{{ $lote['cantidad'] }}</td>   
+                <td>{{ $lote['cajas']}}</td>
             </tr>
         @endforeach
 </table>

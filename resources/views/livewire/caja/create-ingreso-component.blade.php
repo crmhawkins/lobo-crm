@@ -30,7 +30,7 @@
                                     @this.set('pedido_id', data);
                                 });" wire:key='rand()'>
                                     <select class="form-control" name="pedido_id" id="select2-monitor"
-                                        wire:model.lazy="pedido_id">
+                                    wire:model.lazy="pedido_id"  >
                                         <option value="0">-- ELIGE UNA FACTURA
                                             --
                                         </option>
@@ -97,7 +97,6 @@
                             </div>
                         @endif
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Cuenta Bancaria</label>
                             <div class="col-sm-10" wire:ignore.self>
                                 <label >
                                     <input type="checkbox" wire:model="compensacion" nombre="compensacion" id="compensacion">
@@ -152,5 +151,21 @@
                 }
             });
         });
+
+        //on document ready with jquery
+        $(document).ready(function() {
+            //select2 monitor on change emit to livewire pedido_id with value and onchange event
+            $('#select2-monitor').on('change', function(e) {
+                console.log('change');
+                var data = $('#select2-monitor').select2('val');
+                console.log(data);
+                @this.set('pedido_id', data);
+                //emit function onFacturaChange
+                window.livewire.emit('onFacturaChange', data);
+            });
+
+        });
+       
+   
     </script>
 @endsection
