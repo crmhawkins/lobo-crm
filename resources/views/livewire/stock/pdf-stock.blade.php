@@ -56,7 +56,7 @@
             </td>
             <td width="20%">&nbsp;</td>
             <td class="bold" width="40%" style="text-align: right !important">
-                <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">Historial de Stock</h1><br>
+                <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">Historial de Stock @if(isset($tipo) && $tipo === "Saliente") Saliente @else Entrante @endif</h1><br>
             </td>
         </tr>
     </table>

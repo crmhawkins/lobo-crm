@@ -12,6 +12,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
+use App\Models\StockSaliente;
 
 class TraspasoComponent extends Component
 {
@@ -96,12 +97,22 @@ class TraspasoComponent extends Component
                 'cantidad' => $this->cantidad,
                 'orden_numero' => $this->stockentrante->orden_numero,
             ]);
-
+        
+        
 
         if($mercaderiaproductoSave){
             $productUpdate =$this->stockentrante->update([
                 'cantidad' => $nuevaCantidad,
-        ]);}
+            ]);
+    
+            $stockSaliente = StockSaliente::create([
+                'stock_entrante_id' => $mercaderiaproductoSave->id,
+                'producto_id' => $mercaderiaproductoSave->producto_id,
+                'cantidad_salida' => $this->cantidad,
+                'fecha_salida' => Carbon::now(),
+            ]);
+        
+        }
 
 
         if ($productUpdate) {
@@ -185,7 +196,5 @@ class TraspasoComponent extends Component
         $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
     }
-
-
 
 }

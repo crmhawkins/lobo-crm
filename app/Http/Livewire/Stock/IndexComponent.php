@@ -12,6 +12,7 @@ use App\Models\Almacen;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\StockSaliente;
 
 class IndexComponent extends Component
 
@@ -23,6 +24,7 @@ class IndexComponent extends Component
     public $almacenes;
     public $producto_seleccionado = 0 ;
     public $producto_lotes;
+    public $productos_lotes_salientes;
 
     public function mount()
     {
@@ -54,11 +56,16 @@ class IndexComponent extends Component
             if($this->producto_seleccionado == 0){
 
                 $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
+                $this->productos_lotes_salientes = StockSaliente::where('cantidad_salida', '>', 0)->get();
 
             }else{
                 $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
                 ->where('cantidad','>', 0)
                 ->get();
+
+                $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
+                ->where('cantidad_salida', '>', 0)->get();
+
             }
         }else{
             if($this->producto_seleccionado == 0){
@@ -67,12 +74,24 @@ class IndexComponent extends Component
                 $this->producto_lotes = StockEntrante::whereIn('stock_id', $entradas_almacen)
                 ->where('cantidad','>', 0)
                 ->get();
+                
+                //productos_lotes_salientes es igual a los productos salientes con el id de los productos Lote  que estan en el almacen, en este caso 
+                //los productos_lotes_salientes tienen en comun el stock_entrante_id con los productos_lotes
+                //dd($this->producto_lotes->pluck('id'));
+                $this->productos_lotes_salientes = StockSaliente::whereIn('stock_entrante_id', $this->producto_lotes->pluck('id'))->where('cantidad_salida', '>', 0)->get();
+
+
             }else{
                 $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
                 $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
                 ->whereIn('stock_id', $entradas_almacen)
                 ->where('cantidad','>', 0)
                 ->get();
+
+                $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
+                ->whereIn('stock_entrante_id', $this->producto_lotes->pluck('id'))
+                ->where('cantidad_salida', '>', 0)->get();
+                //dd($this->productos_lotes_salientes);
             }
 
         }
@@ -144,6 +163,40 @@ class IndexComponent extends Component
             ]);
         }
 
+    }
+
+
+    public function imprimirSaliente(){
+    
+        $arrayProductosLotes = [];
+        //dd($this->productos_lotes_salientes);
+    
+
+        foreach ($this->productos_lotes_salientes as $loteIndex => $lote) {
+            $stock_Entrante = StockEntrante::where('id', $lote['stock_entrante_id'])->first();
+            $arrayProductosLotes[] = [
+                'lote_id' => $stock_Entrante['lote_id'],
+                'orden_numero' => $stock_Entrante['orden_numero'],
+                'almacen' => $this->almacen($stock_Entrante),
+                'producto' => $this->getProducto($lote['producto_id']),
+                'fecha' => Carbon::parse($lote['fecha_salida'])->format('d/m/Y'),
+                'cantidad' => $lote['cantidad_salida'],
+                'cajas' => floor($lote['cantidad_salida']/ $this->getUnidadeCaja($lote['producto_id']) ),
+            ];
+
+        }
+
+        $datos = [
+            'producto_lotes' => $arrayProductosLotes,
+            'tipo' => 'Saliente',
+        ];
+        $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output();
+        return response()->streamDownload(
+            fn () => print($pdf),
+            'historial_stock_Saliente.pdf'
+        );
+
+    
     }
 
 

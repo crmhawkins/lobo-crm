@@ -29,6 +29,7 @@
                         <button type="button" onclick="iniciarEscaneo('editar')" class="btn btn-lg btn-primary w-100 mt-2">EDITAR LOTE</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                         <button type="button" wire:click.prevent="imprimirEntrante" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL ENTRANTE</button>
+                        <button type="button" wire:click.prevent="imprimirSaliente" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL SALIENTE</button>
 
                     </div>
                     @if (auth()->user()->role == 1)
