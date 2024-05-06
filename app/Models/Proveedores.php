@@ -29,6 +29,7 @@ class Proveedores extends Model
         "delegacion_COD",
         "cuenta",
         "forma_pago_pref",
+        "departamento_id",
     ];
 
     /**
