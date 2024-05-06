@@ -38,11 +38,13 @@ class CreateComponent extends Component
     public $productos;
     public $cantidad;
     public $descuento;
+    public $isFacturaRectificativa = false;
+    public $tipo;
 
     public function mount()
     {
 
-            if (isset($this->idpedido)){
+        if (isset($this->idpedido)){
             $this->pedido_id = $this->idpedido;
             $this->pedido = Pedido::find($this->idpedido);
             $this->cliente_id = $this->pedido->cliente_id;
@@ -54,7 +56,7 @@ class CreateComponent extends Component
             if($this->pedido->descuento){
                 $this->descuento = $this->pedido->porcentaje_descuento;
             }
-            }
+        }
         $this->productos = Productos::where('tipo_precio',5)->get();
         $this->clientes = Clients::where('estado', 2)->get();
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
@@ -75,10 +77,52 @@ class CreateComponent extends Component
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
     }
 
+    public function getNumeroFactura(){
+        $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
+        if($this->isFacturaRectificativa){
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
+
+            if ($lastInvoice) {
+                // Extrae el número secuencial de la última factura del año y lo incrementa
+                $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
+            } else {
+                $lastNumber = 1;
+            }
+        }else{
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->max('numero_factura');
+
+            if ($lastInvoice) {
+                // Extrae el número secuencial de la última factura del año y lo incrementa
+                $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
+            } else {
+                if($year = 24 ){
+                    $lastNumber = 150;
+                }else{
+                    $lastNumber = 1;
+                }
+            }
+           
+        }
+        
+        
+        if($this->isFacturaRectificativa){
+            $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+        }else{
+            $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+        }
+        //dd("prueba");
+
+    }
+
     public function render()
     {
+        
+        $this->getNumeroFactura();
         return view('livewire.facturas.create-component');
     }
+
+    
+
 
     public function calculoPrecio()
     {
@@ -91,32 +135,62 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'numero_factura' => 'required',
-                'cliente_id' => 'required',
-                'pedido_id' => 'nullable',
-                'fecha_emision' => 'required',
-                'fecha_vencimiento' => '',
-                'descripcion' => '',
-                'estado' => 'nullable',
-                'precio' => 'nullable',
-                'metodo_pago' => 'nullable',
-                'producto_id' => 'nullable',
-                'cantidad' => 'nullable',
-                'descuento' => 'nullable',
+        
+        if($this->isFacturaRectificativa){
+            $this->tipo = 2;
+            // Validación de datos
+            $validatedData = $this->validate(
+                [
+                    'numero_factura' => 'required',
+                    'cliente_id' => 'required',
+                    'pedido_id' => 'nullable',
+                    'fecha_emision' => 'required',
+                    'fecha_vencimiento' => '',
+                    'descripcion' => '',
+                    'estado' => 'nullable',
+                    'precio' => 'nullable',
+                    'metodo_pago' => 'nullable',
+                    'producto_id' => 'nullable',
+                    'cantidad' => 'nullable',
+                    'descuento' => 'nullable',
+                    'tipo' => 'required',
 
-            ],
-            // Mensajes de error
-            [
-                'numero_factura.required' => 'Indique un nº de factura.',
-                'fecha_emision.required' => 'Ingrese una fecha de emisión',
-                'id_pedido.min' => 'Seleccione un pedido',
-            ]
-        );
+                ],
+                // Mensajes de error
+                [
+                    'numero_factura.required' => 'Indique un nº de factura.',
+                    'fecha_emision.required' => 'Ingrese una fecha de emisión',
+                    'id_pedido.min' => 'Seleccione un pedido',
+                ]
+            );
+        }else{
+            // Validación de datos
+            $validatedData = $this->validate(
+                [
+                    'numero_factura' => 'required',
+                    'cliente_id' => 'required',
+                    'pedido_id' => 'nullable',
+                    'fecha_emision' => 'required',
+                    'fecha_vencimiento' => '',
+                    'descripcion' => '',
+                    'estado' => 'nullable',
+                    'precio' => 'nullable',
+                    'metodo_pago' => 'nullable',
+                    'producto_id' => 'nullable',
+                    'cantidad' => 'nullable',
+                    'descuento' => 'nullable',
 
-    
+                ],
+                // Mensajes de error
+                [
+                    'numero_factura.required' => 'Indique un nº de factura.',
+                    'fecha_emision.required' => 'Ingrese una fecha de emisión',
+                    'id_pedido.min' => 'Seleccione un pedido',
+                ]
+            );
+        }
+        
+
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));

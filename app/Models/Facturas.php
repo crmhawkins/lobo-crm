@@ -29,6 +29,7 @@ class Facturas extends Model
         'producto_id',
         'cantidad',
         'descuento',
+        'tipo',
 
     ];
 

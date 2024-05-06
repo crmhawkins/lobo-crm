@@ -21,7 +21,14 @@
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-
+                            <div class="col-md-4">
+                                <label for="rectificativa" class="col-sm-12 col-form-label">
+                                    <input type="checkbox" wire:model="isFacturaRectificativa" 
+                                        name="isFacturaRectificativa" id="isFacturaRectificativa">
+                                        ¿Es factura rectificativa?
+                                    
+                                </label>
+                            </div>
                         <div class="form-group row">
                             <div class="col-md-4">
                                 <label for="numero_factura" class="col-sm-12 col-form-label">Número de Factura</label>
