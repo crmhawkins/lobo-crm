@@ -14,6 +14,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Auth;
 
 class IndexComponent extends Component
 {
@@ -21,12 +22,25 @@ class IndexComponent extends Component
     public $pedidos;
     public $facturas;
     public $clientes;
-
+    
     public function mount()
     {
+        $user = Auth::user();
+        $user_rol = $user->role;
         $this->pedidos = Pedido::all();
         $this->clientes = Clients::all();
-        $this->facturas = Facturas::all();
+
+        if($user_rol == 3){
+            //comercial
+            $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
+
+            foreach ($clientes_comercial as $cliente) {
+                $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
+            }
+        }else{
+            $this->facturas = Facturas::all();
+        }
+        
 
     }
 

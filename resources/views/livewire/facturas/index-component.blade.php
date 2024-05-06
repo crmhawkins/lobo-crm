@@ -21,10 +21,13 @@
                     <p class="sub-title../plugins">Listado completo de todas nuestros facturas, para editar o ver la
                         informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
-                    <div class="col-12 mb-5">
-                        <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
-                    </div>
-                    @if (count($facturas) > 0)
+                    @if(Auth::user()->role != 3)
+                        <div class="col-12 mb-5">
+                            <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
+                        </div>
+                    @endif
+                    @if (isset($facturas) && count($facturas) > 0)
+                    
 
                         <!-- Aquí comienza el botón desplegable para filtrar por columna -->
                     <div id="Botonesfiltros">
@@ -118,7 +121,14 @@
                                             @default
                                             <span class="badge badge-infos">{{ $fact->estado }}</span>
                                         @endswitch</td>
-                                        <td> <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">Ver/Editar</a>
+                                        <td> 
+                                            <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">
+                                                @if(Auth::user()->role == 3)
+                                                    Ver
+                                                @else
+                                                    Ver/Editar
+                                                @endif
+                                            </a>
                                             <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Factura Con IVA</button>
                                             <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary" style="color: white;">Factura Sin IVA</button>
                                             <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Albarán</button>
@@ -129,9 +139,10 @@
                             </tbody>
                         </table>
                     @else
+                    
+
                         <h6 class="text-center">No tenemos ninguna factura</h6>
                     @endif
-
                 </div>
             </div>
         </div>

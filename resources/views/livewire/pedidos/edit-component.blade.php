@@ -1,7 +1,7 @@
 @php
 $mostrarElemento = Auth::user()->isdirectorcomercial();
 $EsAdmin = Auth::user()->isAdmin();
-$canEdit = $EsAdmin || $estado == 1;
+$canEdit = $EsAdmin; //|| $estado == 1;
 @endphp
 <div class="container-fluid">
     <div class="page-title-box">
@@ -224,8 +224,10 @@ $canEdit = $EsAdmin || $estado == 1;
                                                     <td>{{ $producto['precio_total']}} €</td>
                                                     @if ($canEdit)
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                        <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
+                                                        @if(Auth::user()->role != 3 && Auth::user()->role != 2)
+                                                            <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
+                                                        @endif
                                                     </td>
                                                     @else
                                                     <td>
@@ -493,11 +495,14 @@ $canEdit = $EsAdmin || $estado == 1;
                         <div class="col-12">
                             <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
                         </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                datos del
-                                pedido</button>
-                        </div>
+                        @if(Auth::user()->role != 3 && Auth::user()->role != 2)
+
+                            <div class="col-12">
+                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                    datos del
+                                    pedido</button>
+                            </div>
+                        @endif
 
                         @if ($bloqueado)
                             @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)

@@ -163,8 +163,6 @@ class IndexComponent extends Component
             ];
 
         }
-        //dd($arrayProductosLotes);
-
 
         $datos = [
             'producto_lotes' => $arrayProductosLotes,

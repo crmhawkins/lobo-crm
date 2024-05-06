@@ -80,7 +80,7 @@
                                         <span class="badge badge-secondary">En Ruta</span>
                                     @endif
                                 </td>
-                                @if(Auth::user()->role != 3 )
+                                @if(Auth::user()->role != 3 && Auth::user()->role != 2)
                                 <td>
                                     <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a>
                                     @if($this->albaranExiste($presup->id))
@@ -88,7 +88,12 @@
                                     @endif
                                 </td>
                                 @else
-                                <td></td>
+                                <td>
+                                    <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver</a>
+                                    @if($this->albaranExiste($presup->id))
+                                        <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                    @endif
+                                </td>
                                 @endif
                             </tr>
                             @endforeach

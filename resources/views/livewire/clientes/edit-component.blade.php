@@ -1,4 +1,7 @@
-
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
     <div class="page-title-box">
@@ -39,12 +42,12 @@
                                 <div class="row">
                                     <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
-                                            value="1" id="check1">
+                                            value="1" id="check1" @if(!$canEdit) disabled @endif>
                                         <label for="check1" class=" col-form-label">Empresa</label>
                                     </div>
                                     <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
-                                            value="0" id="check2">
+                                            value="0" id="check2" @if(!$canEdit) disabled @endif>
                                         <label for="check2" class=" col-form-label">Particular</label>
                                     </div>
                                 </div>
@@ -52,10 +55,10 @@
                             <div class="form-group col-sm-3">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Delegacion</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD">
+                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         @foreach ($delegaciones as $delegacion )
-                                            <option value="{{$delegacion->COD}}">{{$delegacion->nombre}}</option>
+                                            <option value="{{$delegacion->COD}}" @if(!$canEdit) disabled @endif>{{$delegacion->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -63,11 +66,11 @@
                             <div class="form-group col-sm-3">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Comercial</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="comercial_id" class="form-control" name="comercial_id" id="comercial_id">
+                                    <select wire:model="comercial_id" class="form-control" name="comercial_id" id="comercial_id" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="0">Otro</option>
                                         @foreach ($comerciales as $comercial )
-                                            <option value="{{$comercial->id}}">{{$comercial->name}} {{$comercial->surname}}</option>
+                                            <option value="{{$comercial->id}}" @if(!$canEdit) disabled @endif>{{$comercial->name}} {{$comercial->surname}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -81,7 +84,7 @@
                                     });">
                                     <label for="Estado">Estado</label>
                                         <select class="form-control" wire:model="estado" name="estado" id="select2-estado"
-                                        value="{{ $estado }}">
+                                        value="{{ $estado }}" @if(!$canEdit) disabled @endif>
                                             <option value="1">Pendiente</option>
                                             <option value="2">Aceptado</option>
                                             <option value="3">Rechazado</option>
@@ -100,7 +103,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="nombre" class="form-control" name="nombre"
-                                        id="nombre" placeholder="Nombre">
+                                        id="nombre" placeholder="Nombre" @if(!$canEdit) disabled @endif>
                                     @error('nombre')
                                         <span class="text-danger">{{ $message }}</span>
                                         <style>
@@ -118,7 +121,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">DNI/CIF</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="dni_cif" class="form-control" name="dni_cif"
-                                        id="dni_cif" placeholder="DNI o CIF">
+                                        id="dni_cif" placeholder="DNI o CIF" @if(!$canEdit) disabled @endif>
                                     @error('dni_cif')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -138,7 +141,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Dirección</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="direccion" class="form-control" name="direccion"
-                                        id="direccion" placeholder="Avenida/Plaza/Calle...">
+                                        id="direccion" placeholder="Avenida/Plaza/Calle..." @if(!$canEdit) disabled @endif>
                                     @error('direccion')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -157,7 +160,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Provincia</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="provincia" class="form-control" name="provincia"
-                                        id="provincia" placeholder="Provincia">
+                                        id="provincia" placeholder="Provincia" @if(!$canEdit) disabled @endif>
                                     @error('provincia')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -178,7 +181,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Localidad</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="localidad" class="form-control"
-                                        name="localidad" id="localidad" placeholder="Localidad">
+                                        name="localidad" id="localidad" placeholder="Localidad" @if(!$canEdit) disabled @endif>
                                     @error('localidad')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -197,7 +200,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cod_postal" class="form-control"
-                                        name="cod_postal" id="cod_postal" placeholder="Código postal">
+                                        name="cod_postal" id="cod_postal" placeholder="Código postal" @if(!$canEdit) disabled @endif>
                                     @error('cod_postal')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -213,7 +216,7 @@
                         <div class="form-group row justify-content-center pl-3">
                             <div class="col-sm-5">
                                 <div class="form-check ">
-                                 <input class="form-check-input" type="checkbox" wire:model="usarDireccionEnvio" id="usarDireccionEnvio">
+                                 <input class="form-check-input" type="checkbox" wire:model="usarDireccionEnvio" id="usarDireccionEnvio" @if(!$canEdit) disabled @endif>
                                     <label class="form-check-label" for="usarDireccionEnvio">Usar dirección de envío diferente</label>
                                 </div>
                             </div>
@@ -226,7 +229,7 @@
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Dirección de envio</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="direccionenvio" class="form-control" name="direccionenvio"
-                                            id="direccionenvio" placeholder="Avenida/Plaza/Calle...">
+                                            id="direccionenvio" placeholder="Avenida/Plaza/Calle..." @if(!$canEdit) disabled @endif>
                                         @error('direccion')
                                             <span class="text-danger">{{ $message }}</span>
                                             <style>
@@ -244,7 +247,7 @@
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Provincia de envio</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="provinciaenvio" class="form-control" name="provinciaenvio"
-                                            id="provinciaenvio" placeholder="Provincia">
+                                            id="provinciaenvio" placeholder="Provincia" @if(!$canEdit) disabled @endif>
                                         @error('provincia')
                                             <span class="text-danger">{{ $message }}</span>
 
@@ -265,7 +268,7 @@
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Localidad de envio</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="localidadenvio" class="form-control"
-                                            name="localidadenvio" id="localidadenvio" placeholder="Localidad">
+                                            name="localidadenvio" id="localidadenvio" placeholder="Localidad" @if(!$canEdit) disabled @endif>
                                         @error('localidad')
                                             <span class="text-danger">{{ $message }}</span>
 
@@ -284,7 +287,7 @@
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal de envio</label>
                                     <div class="col-sm-12">
                                         <input type="text" wire:model="codPostalenvio" class="form-control"
-                                            name="codPostalenvio" id="codPostalenvio" placeholder="Código postal">
+                                            name="codPostalenvio" id="codPostalenvio" placeholder="Código postal" @if(!$canEdit) disabled @endif>
                                         @error('cod_postal')
                                             <span class="text-danger">{{ $message }}</span>
 
@@ -304,7 +307,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="telefono" class="form-control" name="telefono"
-                                        id="telefono" placeholder="Teléfono">
+                                        id="telefono" placeholder="Teléfono" @if(!$canEdit) disabled @endif>
                                     @error('telefono')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -324,7 +327,7 @@
                                     electrónico</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="email" class="form-control" name="email"
-                                        id="email" placeholder="Correo electrónico">
+                                        id="email" placeholder="Correo electrónico" @if(!$canEdit) disabled @endif>
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -346,7 +349,7 @@
                                         <label for="example-text-input" class="col-sm-12 col-form-label">{{ $producto->nombre }}</label>
                                         <div class="col-sm-12">
                                             <input type="number" step=".01" wire:model="arrProductos.{{ $producto->id }}" class="form-control" name="{{ $producto->nombre }}"
-                                                id="{{ $producto->nombre }}" placeholder="8.34">
+                                                id="{{ $producto->nombre }}" placeholder="8.34" @if(!$canEdit) disabled @endif>
                                         </div>
                                     </div>
                                 @endforeach
@@ -490,7 +493,7 @@
                             <div class="col-sm-5">
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref">
+                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="giro_bancario">Giro Bancario</option>
                                         <option value="pagare">Pagare</option>
@@ -514,7 +517,7 @@
                             <div class="col-sm-5">
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Vencimiento de factura</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="vencimiento_factura_pref" class="form-control" name="vencimiento_factura_pref" id="vencimiento_factura_pref">
+                                    <select wire:model="vencimiento_factura_pref" class="form-control" name="vencimiento_factura_pref" id="vencimiento_factura_pref" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="7">7 días</option>
                                         <option value="15">15 días</option>
@@ -539,7 +542,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nº de cuenta</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta" class="form-control" name="cuenta"
-                                        id="cuenta" placeholder="Cuenta bancaria">
+                                        id="cuenta" placeholder="Cuenta bancaria" @if(!$canEdit) disabled @endif>
                                     @error('cuenta')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -558,7 +561,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta contable</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta_contable" class="form-control" name="cuenta_contable"
-                                        id="cuenta_contable" placeholder="Cuenta Contable">
+                                        id="cuenta_contable" placeholder="Cuenta Contable" @if(!$canEdit) disabled @endif>
                                     @error('cuenta_contable')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -576,7 +579,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Porcentaje de botellas sin cargo </label>
                                 <div class="col-sm-12">
                                     <input type="number" wire:model="porcentaje_bloq" class="form-control"
-                                        name="porcentaje_bloq" id="porcentaje_bloq" placeholder="10">
+                                        name="porcentaje_bloq" id="porcentaje_bloq" placeholder="10" @if(!$canEdit) disabled @endif>
                                     @error('porcentaje_bloq')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -595,7 +598,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"
-                                        name="nota" id="nota" placeholder="Nota">
+                                        name="nota" id="nota" placeholder="Nota" @if(!$canEdit) disabled @endif>
                                     @error('nota')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -611,7 +614,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Observaciones Descarga</label>
                                 <div class="col-sm-12">
                                     <textarea type="textarea" wire:model="observaciones" class="form-control"
-                                        name="observaciones" id="observaciones" placeholder="Observaciones..."></textarea>
+                                        name="observaciones" id="observaciones" placeholder="Observaciones..." @if(!$canEdit) disabled @endif></textarea>
                                     @error('observaciones')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -628,35 +631,37 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                Cliente</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
-                                Cliente</button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @if(count($anotacionesProximoPedido) > 0 )
+        @if($canEdit)
+            <div class="col-md-3">
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Acciones</h5>
+                        <div class="row">
                             <div class="col-12">
-                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
-                                    Anotaciones próximo pedido</button>
+                                <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
+                                    Cliente</button>
                             </div>
-                        @endif
-                        <div class="col-12">
-                            <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
-                                Anotación próximo pedido </button>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
+                                    Cliente</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @if(count($anotacionesProximoPedido) > 0 )
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
+                                        Anotaciones próximo pedido</button>
+                                </div>
+                            @endif
+                            <div class="col-12">
+                                <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
+                                    Anotación próximo pedido </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 

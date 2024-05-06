@@ -736,8 +736,23 @@
                         <span>CLIENTES</span>
                     </a>
                 </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('facturas.index') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                            <path d="M9 7l1 0"></path>
+                            <path d="M9 13l6 0"></path>
+                            <path d="M13 17l2 0"></path>
+                        </svg>
+                        <span>FACTURAS</span>
+                    </a>
+                </div>
             </div>
-
+            
             <div class="col-2 col-md-2 col-lg-1 exit-button-col">
                 <button class="footer-button" href="{{ route('logout') }}"
                     onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">

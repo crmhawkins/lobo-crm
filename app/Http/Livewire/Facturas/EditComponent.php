@@ -45,27 +45,39 @@ class EditComponent extends Component
 
     public function mount()
     {
-
+        
         $this->facturas = Facturas::find($this->identificador);
         $this->clientes = Clients::where('estado', 2)->get();
         $this->cliente_id = $this->facturas->cliente_id;
         $this->cliente = Clients::find($this->cliente_id);
         $this->pedido = Pedido::find($this->facturas->pedido_id);
-        $this->productos = Productos::where('tipo_precio',5)->get();
+        $this->productos = Productos::where('tipo_precio',5)->get();  
         $this->producto_id = $this->facturas->producto_id;
         $this->cantidad = $this->facturas->cantidad;
-        $this->precio = $this->pedido->precio;
+        if(isset($this->pedido)){
+            $this->precio = $this->pedido->precio;
+        }else{
+            $this->precio = 0;
+        }
         $this->pedido_id = $this->facturas->pedido_id;
+
         $this->numero_factura = $this->facturas->numero_factura;
+
         $this->fecha_emision = $this->facturas->fecha_emision;
         $this->fecha_vencimiento = $this->facturas->fecha_vencimiento;
+
         $this->descripcion = $this->facturas->descripcion;
         $this->estado = $this->facturas->estado;
         $this->metodo_pago = $this->facturas->metodo_pago;
+        
         if(!$this->facturas->descuento){
-            if($this->pedido->descuento){
-                $this->descuento = $this->pedido->porcentaje_descuento;
-            }
+            if(isset($this->pedido)){
+                if($this->pedido->descuento){
+                    $this->descuento = $this->pedido->porcentaje_descuento;
+                }
+            }else{
+                $this->descuento = 0;
+        }
         }else{
             $this->descuento = $this->facturas->descuento;
         }
