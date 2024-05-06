@@ -24,6 +24,9 @@ class IndexComponent extends Component
     public $pedidos_pendientes;
     public $pedidos_preparacion;
     public $pedidos_enviados;
+    public $fecha_salida;
+    public $empresa_transporte;
+    public $pedidoEnRutaId;
 
 
     public function mount()
@@ -78,6 +81,7 @@ class IndexComponent extends Component
     }
     public function prepararPedido($identificador)
     {
+
         $pedido = Pedido::find($identificador);
         $pedidosSave = $pedido->update(['estado' => 3]);
         if ($pedidosSave) {
@@ -119,10 +123,36 @@ class IndexComponent extends Component
         }
     }
 
-    public function enRuta($identificador)
+    public function asignarPedidoEnRutaId($pedidoId)
     {
+        $this->pedidoEnRutaId = $pedidoId;
+    }
+
+    public function enRuta()
+    {
+
+
+        // Validación de datos
+        $validatedData = $this->validate(
+            [   
+                'pedidoEnRutaId' => 'required',
+                'fecha_salida' => 'required',
+                'empresa_transporte' => 'required',
+            ],
+            // Mensajes de error
+            [
+                'pedidoEnRutaId.required' => 'No se ha podido identificar el pedido.',
+                'fecha_salida.required' => 'Indique fecha de salida.',
+                'empresa_transporte.required' => 'Ingrese empresa de transporte',
+            ]
+        );
+
+        $identificador = $this->pedidoEnRutaId;
         $pedido = Pedido::find($identificador);
-        $pedidosSave = $pedido->update(['estado' => 8]);
+        $pedidosSave = $pedido->update(['estado' => 8,
+                                        'fecha_salida' => $this->fecha_salida,
+                                        'empresa_transporte' => $this->empresa_transporte]);
+
         if ($pedidosSave) {
             Alertas::create([
                 'user_id' => 13,

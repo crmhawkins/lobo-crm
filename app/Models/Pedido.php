@@ -32,6 +32,8 @@ class Pedido extends Model
         'almacen_id',
         'porcentaje_descuento',
         'bloqueado',
+        'fecha_salida',
+        'empresa_transporte',
     ];
 
     /**

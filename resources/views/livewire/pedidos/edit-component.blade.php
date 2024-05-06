@@ -140,6 +140,23 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 de envío</h5>
                         </div>
+                    @if($estado == 8)
+                        <div class="form-group col-md-5">
+                            <label for="localidad_entrega">Fecha de Salida <span class="badge badge-warning">En ruta</span></label>
+                            <input type="date" wire:model="fecha_salida" class="form-control" readonly>
+                        </div>
+                        <div class="form-group col-md-1">
+                            &nbsp;
+                        </div>
+                        <div class="form-group col-md-5">
+                            <label for="localidad_entrega">Empresa de transporte <span class="badge badge-warning">En ruta</span></label>
+                            <input type="text" wire:model="empresa_transporte" class="form-control" readonly>
+                        </div>
+                    @endif
+                    </div>
+                    <div class="form-row justify-content-center">
+                       
+                        
                         <div class="form-group col-md-5">
                             <label for="localidad_entrega">Dirección</label>
                             <input type="text" wire:model="direccion_entrega" class="form-control" readonly>

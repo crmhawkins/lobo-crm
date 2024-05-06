@@ -186,6 +186,39 @@
                             <button class="btn btn-primary ml-2" id="clear-filter-enviados">Eliminar Filtro</button>
                         </div>
                     </div>
+                    <div wire:ignore.self class="modal fade" id="enRutaModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog"
+                            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Añadir Datos de Ruta</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fecha_salida" class="col-sm-4 col-form-label">Fecha de salida</label>
+                                        <div class="col-sm-8">
+                                            <input type="date" class="form-control" id="fecha_salida" wire:model="fecha_salida">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="empresa_transporte" class="col-sm-4 col-form-label">Empresa de transporte</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="empresa_transporte" wire:model="empresa_transporte">
+                                        </div>
+                                    </div>
+                                    
+                                   <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success">Pedido en Ruta</button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                         <table id="datatable-buttons_enviados" class="table table-striped table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -227,7 +260,8 @@
                                                     <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
                                                 @endif
                                             @else
-                                                <a onclick="enRuta({{ $pedido->id }})" class="btn btn-secondary" style="color: white;">Pedido En Ruta</a>
+                                                
+                                                <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary" style="color: white;">Pedido En Ruta</button>
                                             @endif
                                         </td>
                                     </tr>

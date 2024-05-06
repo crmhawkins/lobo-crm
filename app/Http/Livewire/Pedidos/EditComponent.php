@@ -70,6 +70,8 @@ class EditComponent extends Component
 
     public $arrProductosEditar = [];
     public $indexPedidoProductoEditar;
+    public $fecha_salida;
+    public $empresa_transporte;
 
 
 
@@ -101,6 +103,8 @@ class EditComponent extends Component
         $this->bloqueado = $pedido->bloqueado;
         $this->porcentaje_descuento = $pedido->porcentaje_descuento;
         $this->porcentaje_bloq = is_null($cliente->porcentaje_bloq) ? 10 : $cliente->porcentaje_bloq;
+        $this->fecha_salida = $pedido->fecha_salida;
+        $this->empresa_transporte = $pedido->empresa_transporte;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
