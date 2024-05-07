@@ -31,6 +31,7 @@ class CreateIngresoComponent extends Component
     public $facturaSeleccionada;
     public $importeFactura;
     public $ingresos_factura = [];
+    
 
 
     public function mount()

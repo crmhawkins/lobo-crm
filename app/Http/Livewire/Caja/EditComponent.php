@@ -10,6 +10,7 @@ use App\Models\Facturas;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Delegacion;
 
 
 
@@ -32,6 +33,16 @@ class EditComponent extends Component
     public $facturas;
     public $estado;
     public $banco;
+    public $delegaciones = [];
+    public $delegacion_id;
+    public $departamento;
+    public $iva;
+    public $descuento;
+    public $retencion;
+    public $importe_neto;
+    public $fecha_vencimiento;
+    public $fecha_pago;
+    public $cuenta;
 
 
 
@@ -51,6 +62,17 @@ class EditComponent extends Component
         $this->estado = $caja->estado;
         $this->tipo_movimiento = $caja->tipo_movimiento;
         $this->banco = $caja->banco;
+        $this->delegacion_id = $caja->delegacion_id;
+        $this->departamento = $caja->departamento;
+        $this->iva = $caja->iva;
+        $this->descuento = $caja->descuento;
+        $this->retencion = $caja->retencion;
+        $this->importe_neto = $caja->importe_neto;
+        $this->fecha_vencimiento = $caja->fechaVencimiento;
+        $this->fecha_pago = $caja->fechaPago;
+        
+        $this->cuenta = $caja->cuenta;
+        $this->delegaciones = Delegacion::all();
 
 
     }
@@ -86,7 +108,6 @@ class EditComponent extends Component
 
         // Encuentra el identificador
         $caja = Caja::find($this->identificador);
-
         // Guardar datos validados
         $tipoSave = $caja->update([
             'metodo_pago' => $this->metodo_pago,
@@ -96,7 +117,18 @@ class EditComponent extends Component
             'fecha' => $this->fecha,
             'tipo_movimiento' => $this->tipo_movimiento,
             'descripcion' => $this->descripcion,
-            'estado' => $this->estado
+            'estado' => $this->estado,
+            'banco' => $this->banco,
+            'delegacion_id' => $this->delegacion_id,
+            'departamento' => $this->departamento,
+            'iva' => $this->iva,
+            'descuento' => $this->descuento,
+            'retencion' => $this->retencion,
+            'importe_neto' => $this->importe_neto,
+            'fechaVencimiento' => $this->fecha_vencimiento,
+            'fechaPago' => $this->fecha_pago,
+            'cuenta' => $this->cuenta,
+
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));

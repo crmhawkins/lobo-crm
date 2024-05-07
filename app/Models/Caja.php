@@ -26,7 +26,20 @@ class Caja extends Model
         'tipo_movimiento',
         'banco',
         'estado',
+        'nFactura',
+        'nInterno',
+        'iva',
+        'descuento',
+        'retencion',
+        'fechaVencimiento',
+        'fechaPago',
+        'departamento',
+        'delegacion_id',
+        'cuenta',
+        'documento_pdf',
     ];
+
+    
 
     /**
      * Mutaciones de fecha.
