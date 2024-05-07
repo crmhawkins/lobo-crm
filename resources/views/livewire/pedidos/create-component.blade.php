@@ -13,6 +13,31 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="viewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Anotaciones próximo pedido</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (count($anotacionesProximoPedido) > 0)
+                        <ul>
+                            @foreach ($anotacionesProximoPedido as $anotacion)
+                                <li>{{ $anotacion->anotacion }} - <span class="badge badge-warning text-uppercase">{{ $anotacion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $anotacion->id }}')">Completar</button></li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -302,6 +327,15 @@
                             <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
                                 presupuesto</button>
                         </div>
+                    </div>
+                    <div class="row">
+                        @if(count($anotacionesProximoPedido) > 0 )
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
+                                    Anotaciones</button>
+                            </div>
+                        @endif
+                        
                     </div>
                 </div>
             </div>

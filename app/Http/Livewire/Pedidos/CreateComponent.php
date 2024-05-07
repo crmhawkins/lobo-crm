@@ -99,7 +99,13 @@ class CreateComponent extends Component
 
     }
 
-
+    public function completarAnotacion($id){
+        $anotacion = AnotacionesClientePedido::find($id);
+        $anotacion->update([
+            'estado' => 'completado'
+        ]);
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
+    }
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function render()
