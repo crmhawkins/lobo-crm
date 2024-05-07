@@ -79,6 +79,20 @@ class IndexComponent extends Component
             'recarga'
         ];
     }
+
+    public function completarPedido($id){
+        $this->alert('success', '¡Pedido completado!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'timerProgressBar' => true,
+        ]);
+
+        $pedido = Pedido::find($id);
+        $pedido->update(['estado' => 5]);
+        $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->get();
+    }
+
     public function prepararPedido($identificador)
     {
 

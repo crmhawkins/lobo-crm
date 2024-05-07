@@ -258,6 +258,8 @@
                                             @if ($pedido->estado ==8 )
                                                 @if($pedido->tipo_pedido_id == 0)
                                                     <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
+                                                @else
+                                                    <button class="btn btn-secondary" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
                                                 @endif
                                             @else
                                                 
