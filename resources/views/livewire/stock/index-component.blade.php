@@ -128,7 +128,7 @@
                                                     
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
 
-                                                    <td>
+                                                    <td class="botonesStock">
                                                         @if($this->qrAsignado($lote))
                                                         <button class="btn btn-primary" onclick="generarQRIndividual({{$lote}})"> QR</button>
                                                         @else

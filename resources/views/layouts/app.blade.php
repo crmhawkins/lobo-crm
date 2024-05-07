@@ -18,6 +18,17 @@
            .content-page .content{
                 padding: 0px !important;
            }
+            .precioProductoClientes{
+                display:grid;
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .tipoCliente{
+                padding-left: 30px;
+
+            }
+            .invisible{
+                display: none;
+            }
         }
     </style>
 

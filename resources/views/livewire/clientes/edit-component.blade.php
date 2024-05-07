@@ -35,11 +35,11 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
                                     Tipo de cliente</h5>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-2">
-                                <div class="row">
+                                <div class="row tipoCliente">
                                     <div class="col-sm-12 d-inline-flex align-items-center">
                                         <input class="form-check-input mt-0" wire:model="tipo_cliente" type="radio"
                                             value="1" id="check1" @if(!$canEdit) disabled @endif>
@@ -114,7 +114,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-md-1">
+                            <div class="form-group col-md-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-md-5">
@@ -153,7 +153,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-md-1">
+                            <div class="form-group col-md-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
@@ -193,7 +193,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
@@ -240,7 +240,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group col-md-1">
+                                <div class="form-group col-md-1 invisible">
                                     &nbsp;
                                 </div>
                                 <div class="col-sm-5">
@@ -280,7 +280,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group col-sm-1">
+                                <div class="form-group col-sm-1 invisible">
                                     &nbsp;
                                 </div>
                                 <div class="col-sm-5">
@@ -319,7 +319,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
@@ -341,7 +341,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                         </div>
                         <div class="form-group row justify-content-center px-5">
-                            <div style=" display: grid; grid-template-columns: repeat(5, 1fr) !important;">
+                            <div class="precioProductoClientes">
                                 @foreach ($productos as $producto)
 
 
@@ -511,7 +511,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
@@ -554,7 +554,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
@@ -591,7 +591,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-1">
+                            <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
                             <div class="col-sm-5">
