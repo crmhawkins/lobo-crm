@@ -254,6 +254,26 @@
                                 </div>
                             </div>
                         </div>
+                        @if(isset($departamentos) && count($departamentos) > 0)
+                            <div class="form-group row justify-content-center">
+                                <div class="form-group col-sm-5">
+                                    <label for="example-text-input" class="col-sm-12 col-form-label">Departamento</label>
+                                    <div class="col-sm-12">
+                                        <select wire:model="departamentoSeleccionadoId" class="form-control" name="departamentoSeleccionadoId" id="departamentoSeleccionadoId">
+                                            <option value=""  selected>Selecciona una opción</option>
+                                            @foreach ($departamentos as $departamento )
+                                                <option value="{{$departamento->id}}">{{$departamento->nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-1">
+                                    &nbsp;
+                                </div>
+                                <div class="form-group col-sm-5">
+                                </div>
+                            </div>
+                        @endif
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-11">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>

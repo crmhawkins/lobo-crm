@@ -8,6 +8,7 @@ use Livewire\Component;
 use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DepartamentosProveedores;
 
 class EditComponent extends Component
 {
@@ -29,7 +30,9 @@ class EditComponent extends Component
     public $delegaciones;
     public $cuenta;
     public $forma_pago_pref = "";
-
+    public $departamentos;
+    public $departamentoSeleccionado;
+    public $departamentoSeleccionadoId;
 
     public function mount()
     {
@@ -48,6 +51,11 @@ class EditComponent extends Component
         $this->telefono = $proveedor->telefono;
         $this->email = $proveedor->email;
         $this->nota = $proveedor->nota;
+        $this->departamentos = DepartamentosProveedores::all();
+        if($proveedor->departamento_id != null){
+            $this->departamentoSeleccionado = DepartamentosProveedores::find($proveedor->departamento_id)->first();
+            $this->departamentoSeleccionadoId = $proveedor->departamento_id;
+        }
 
     }
 
@@ -110,6 +118,7 @@ class EditComponent extends Component
             'cuenta_contable'=> $this->cuenta_contable,
             'cuenta'=> $this->cuenta,
             'forma_pago_pref' => $this->forma_pago_pref,
+            'departamento_id' => $this->departamentoSeleccionadoId,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $proveedor->id));
 

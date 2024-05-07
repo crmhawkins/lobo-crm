@@ -8,6 +8,7 @@ use Livewire\Component;
 use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DepartamentosProveedores;
 
 class CreateComponent extends Component
 {
@@ -32,10 +33,16 @@ class CreateComponent extends Component
 
     public $nota;
 
+    public $departamentos;
+    public $departamentoSeleccionado;
+    public $departamento_id;
+
+
     public function mount()
     {
         $this->proveedores = Proveedores::all();
         $this->delegaciones = Delegacion::all();
+        $this->departamentos = DepartamentosProveedores::all();
     }
 
     public function crearProveedores()
@@ -71,6 +78,7 @@ class CreateComponent extends Component
                 'delegacion_COD'=> 'nullable',
                 'cuenta'=> 'nullable',
                 'forma_pago_pref' => 'nullable',
+                'departamento_id' => 'nullable',
 
             ],
             // Mensajes de error
