@@ -125,6 +125,12 @@ class CreateComponent extends Component
 
     
 
+    public function selectCliente(){
+        $this->cliente = Clients::find($this->cliente_id);
+        $this->observacionesDescarga = $this->cliente->observaciones;
+        $this->metodo_pago = $this->cliente->forma_pago_pref;
+        //dd($this->cliente->forma_pago_pref);
+    }
 
     public function calculoPrecio()
     {

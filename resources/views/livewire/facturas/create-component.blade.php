@@ -71,7 +71,7 @@
                                             wire:model="cliente_id" disabled>
                                     @else
                                         <select class="form-control" name="cliente_id" id="cliente_id"
-                                        wire:model="cliente_id" >
+                                        wire:model="cliente_id"  wire:change="selectCliente()">
                                     @endif
                                             <option value="">---SELECCIONE UN CLIENTE---</option>
                                             @foreach ($clientes as $cliente)
@@ -149,12 +149,12 @@
                             <div class="col-md-4">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
-                                    <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
+                                    <select id="metodo_pago" class="form-control" wire:model="metodo_pago" >
                                             <option value="No pagado"  selected>Selecciona una opción</option>
                                             <option value="giro_bancario">Giro Bancario</option>
                                             <option value="pagare">Pagare</option>
                                             <option value="confirming">Confirming</option>
-                                            <option value="otros">Otros</option>
+                                            <option value="transferencia">Transferencia</option>
                                         </select>
                                     @error('denominacion')
                                         <span class="text-danger">{{ $message }}</span>

@@ -498,7 +498,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         <option value="giro_bancario">Giro Bancario</option>
                                         <option value="pagare">Pagare</option>
                                         <option value="confirming">Confirming</option>
-                                        <option value="otros">Transferencia</option>
+                                        <option value="transferencia">Transferencia</option>
                                     </select>
                                     @error('forma_pago_pref')
                                         <span class="text-danger">{{ $message }}</span>
