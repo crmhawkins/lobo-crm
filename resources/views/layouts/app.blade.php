@@ -9,6 +9,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>LOBO - @yield('title') </title>
+    <style>
+        .precioProductoClientes{
+            display:grid;
+            grid-template-columns: repeat(5, 1fr) !important;
+        } 
+        @media(max-width: 768px) {
+           .content-page .content{
+                padding: 0px !important;
+           }
+        }
+    </style>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.css"
         integrity="sha512-CaTMQoJ49k4vw9XO0VpTBpmMz8XpCWP5JhGmBvuBqCOaOHWENWO1CrVl09u4yp8yBVSID6smD4+gpzDJVQOPwQ=="
