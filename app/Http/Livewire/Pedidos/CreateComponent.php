@@ -14,6 +14,7 @@ use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\AnotacionesClientePedido;
+use App\Models\ProductoPrecioCliente;
 
 class CreateComponent extends Component
 {
@@ -43,16 +44,16 @@ class CreateComponent extends Component
     public $producto_seleccionado;
     public $unidades_pallet_producto;
     public $unidades_caja_producto;
-    public $precio_crema;
-    public $precio_vodka07l;
-    public $precio_vodka175l;
+   public $precio_crema;
+   public $precio_vodka07l;
+   public $precio_vodka175l;
     public $precio_vodka3l;
     public $bloqueado;
     public $porcentaje_bloq;
     public $porcentaje_sincargo = 0;
 	public $sinCargo = false;
     public $anotacionesProximoPedido = [];
-
+    public $productosPecioCliente = [];
     public function mount()
     {
 
@@ -76,6 +77,9 @@ class CreateComponent extends Component
         $this->precio_vodka3l = $cliente->precio_vodka3l;
         $this->porcentaje_bloq = $cliente->porcentaje_bloq;
 
+        $this->productosPecioCliente = ProductoPrecioCliente::where('cliente_id', $this->cliente_id)->get();
+        //dd($this->productosPecioCliente);
+
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
         //alert si hay anotaciones pendientes con botón para cerrar y boton para ver anotaciones
         if (count($this->anotacionesProximoPedido) > 0) {
@@ -95,8 +99,6 @@ class CreateComponent extends Component
 
     }
 
-
-   
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -400,6 +402,11 @@ class CreateComponent extends Component
     }
     private function obtenerPrecioPorTipo($producto)
     {
+
+        if($this->productosPecioCliente->where('producto_id', $producto->id)->first()){
+            return $this->productosPecioCliente->where('producto_id', $producto->id)->first()->precio;
+        }
+
         $tipoPrecio = $producto->tipo_precio;
         switch ($tipoPrecio) {
             case 1:
