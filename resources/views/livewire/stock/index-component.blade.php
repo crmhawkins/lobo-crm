@@ -26,7 +26,7 @@
                         </div>
                         <button id="btnCerrarEscaneo" onclick="cerrarEscaneo()" class="btn btn-lg btn-danger w-100 mt-2" style="display: none;">CERRAR ESCÁNER</button>
                         <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
-                        <button type="button" onclick="iniciarEscaneo('editar')" class="btn btn-lg btn-primary w-100 mt-2">EDITAR LOTE</button>
+                        <button type="button" onclick="iniciarEscaneo('editar')" class="btn btn-lg btn-primary w-100 mt-2">ROTURA</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
                         <button type="button" wire:click.prevent="imprimirEntrante" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL ENTRANTE</button>
                         <button type="button" wire:click.prevent="imprimirSaliente" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL SALIENTE</button>
