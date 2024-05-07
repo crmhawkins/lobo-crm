@@ -40,6 +40,7 @@ class CreateComponent extends Component
     public $descuento;
     public $isFacturaRectificativa = false;
     public $tipo;
+    public $observacionesDescarga;
 
     public function mount()
     {
@@ -49,6 +50,7 @@ class CreateComponent extends Component
             $this->pedido = Pedido::find($this->idpedido);
             $this->cliente_id = $this->pedido->cliente_id;
             $this->cliente = Clients::find($this->cliente_id);
+            $this->observacionesDescarga = $this->cliente->observaciones;
             $diasVencimiento = $this->cliente->vencimiento_factura_pref;
             $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
             $this->metodo_pago = $this->cliente->forma_pago_pref;

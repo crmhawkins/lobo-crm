@@ -186,6 +186,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="descripcion" class="col-sm-12 col-form-label">Observaciones Descarga </label>
+                                <div class="col-sm-12">
+                                    <textarea wire:model="observacionesDescarga" class="form-control" name="observacionesDescarga" id="observacionesDescarga"
+                                        placeholder="Observaciones..." disabled></textarea>
+                                    @error('observacionesDescarga')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

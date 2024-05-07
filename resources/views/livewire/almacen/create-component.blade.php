@@ -169,15 +169,20 @@
                                     class="form-control" disabled>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <label for="observaciones" class="col-sm-12 col-form-label">Observaciones</label>
-                            <div class="col-sm-12">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-md-5">
+                                <label for="observaciones" >Observaciones</label>
                                 <textarea wire:model="observaciones" class="form-control" name="observaciones" id="observaciones"></textarea>
-                                @error('descripcion')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                            </div>
+                            <div class="form-group col-md-1">
+                                &nbsp;
+                            </div>
+                            <div class="form-group col-md-5">
+                                <label for="observaciones" >Observaciones Descarga</label>
+                                <textarea wire:model="observacionesDescarga" class="form-control" name="observacionesDescarga" id="observacionesDescarga" disabled></textarea>
                             </div>
                         </div>
+                        
                 </div>
                 <div class="form-row justify-content-center">
                     <div class="form-group col-md-12">

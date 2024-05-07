@@ -42,6 +42,7 @@ class CreateComponent extends Component
     public $observaciones;
     public $descuento;
     public $almacen_id;
+    public $observacionesDescarga;
     public function mount()
     {
         
@@ -50,6 +51,7 @@ class CreateComponent extends Component
         $this->pedido_id = $this->pedido->id;
         $this->descuento = $this->pedido->descuento;
         $this->cliente = Clients::where('id', $this->pedido->cliente_id)->first();
+        $this->observacionesDescarga = $this->cliente->observaciones;
         $this->productos = Productos::all();
         $this->lotes = StockEntrante::all();
         $this->clientes = Clients::all();
