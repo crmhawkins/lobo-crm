@@ -223,13 +223,15 @@
                     @case('confirming')
                         Confirming
                         @break
-                    @case('otros')
-                        Otros
+                    @case('transferencia')
+                        Transferencia
                         @break
                     @default
                         ------------------
                         @break
                 @endswitch</td>
+
+            <td><span style="font-weight: bold">Fecha de vencimiento: </span>{{ $factura->fecha_vencimiento }}</td>
         </tr>
         {{-- <tr>
             <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
