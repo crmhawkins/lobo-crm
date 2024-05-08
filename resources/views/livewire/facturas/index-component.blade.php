@@ -86,10 +86,12 @@
                                         <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
 
                                         <td>{{ $fact->fecha_emision }}</td>
-                                        <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()))
-                                            <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
+                                        <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
+                                                <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
+                                            @elseif($fact->estado == 'Pagado')
+                                                <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
                                             @else
-                                            <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
+                                                <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
                                             @endif
                                         </td>
                                         @if(isset($fact->descuento))

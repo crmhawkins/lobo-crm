@@ -20,6 +20,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMercaderiaController;
 use App\Http\Controllers\MaterialesProductoController;
 use App\Http\Controllers\CajaController;
+use App\Http\Controllers\Test;
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
 
@@ -125,5 +126,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/caja-create-ingreso', [CajaController::class, 'createIngreso'])->name('caja.create-ingreso');
     Route::get('/caja-create-gasto', [CajaController::class, 'createGasto'])->name('caja.create-gasto');
     Route::get('/caja-edit/{id}', [CajaController::class, 'edit'])->name('caja.edit');
+
+    Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
 
 });
