@@ -66,9 +66,14 @@ class IndexComponent extends Component
     }
 
     public function getAlmacen($id){
-        
-        return Almacen::find($id)->almacen;
+        $almacen = Almacen::find($id);
+        if (!$almacen){
+            return 'Almacen no asignado';
+        }
+
+        return  $almacen->almacen;
     }
+    
     public function getListeners()
     {
         return [
