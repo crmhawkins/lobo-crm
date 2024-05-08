@@ -1,3 +1,7 @@
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -52,8 +56,13 @@
                                                 alt="Card image cap"></td>
                                         <td>{{ $presup->nombre }}</td>
                                         <td> &nbsp; {{ $tipoPrecioMap[$presup->tipo_precio] ?? 'Precio no definido' }}</td>
-                                        <td> &nbsp; <a href="productos-edit/{{ $presup->id }}"
-                                                class="btn btn-primary">Ver/Editar</a> </td>
+                                        <td> &nbsp; 
+                                            @if($canEdit)
+                                                <a href="productos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a> 
+                                            @else
+                                                <a href="productos-edit/{{ $presup->id }}" class="btn btn-primary">Ver</a>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

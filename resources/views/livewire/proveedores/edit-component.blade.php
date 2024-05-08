@@ -1,3 +1,7 @@
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
     <div class="page-title-box">
@@ -32,7 +36,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="nombre" class="form-control" name="nombre"
-                                        id="nombre" placeholder="Nombre">
+                                        id="nombre" placeholder="Nombre" @if(!$canEdit) disabled @endif>
                                     @error('nombre')
                                         <span class="text-danger">{{ $message }}</span>
                                         <style>
@@ -50,7 +54,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">DNI/CIF</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="dni_cif" class="form-control" name="dni_cif"
-                                        id="dni_cif" placeholder="DNI o CIF">
+                                        id="dni_cif" placeholder="DNI o CIF" @if(!$canEdit) disabled @endif>
                                     @error('dni_cif')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -70,7 +74,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Dirección</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="direccion" class="form-control" name="direccion"
-                                        id="direccion" placeholder="Avenida/Plaza/Calle...">
+                                        id="direccion" placeholder="Avenida/Plaza/Calle..." @if(!$canEdit) disabled @endif>
                                     @error('direccion')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -89,7 +93,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Provincia</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="provincia" class="form-control" name="provincia"
-                                        id="provincia" placeholder="Provincia">
+                                        id="provincia" placeholder="Provincia" @if(!$canEdit) disabled @endif>
                                     @error('provincia')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -110,7 +114,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Localidad</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="localidad" class="form-control"
-                                        name="localidad" id="localidad" placeholder="Localidad">
+                                        name="localidad" id="localidad" placeholder="Localidad" @if(!$canEdit) disabled @endif>
                                     @error('localidad')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -129,7 +133,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cod_postal" class="form-control"
-                                        name="cod_postal" id="cod_postal" placeholder="Código postal">
+                                        name="cod_postal" id="cod_postal" placeholder="Código postal" @if(!$canEdit) disabled @endif>
                                     @error('cod_postal')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -147,7 +151,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="telefono" class="form-control" name="telefono"
-                                        id="telefono" placeholder="Teléfono">
+                                        id="telefono" placeholder="Teléfono" @if(!$canEdit) disabled @endif>
                                     @error('telefono')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -167,7 +171,7 @@
                                     electrónico</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="email" class="form-control" name="email"
-                                        id="email" placeholder="Correo electrónico">
+                                        id="email" placeholder="Correo electrónico" @if(!$canEdit) disabled @endif>
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -184,7 +188,7 @@
                             <div class="col-sm-5">
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Forma de pago preferida</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref">
+                                    <select wire:model="forma_pago_pref" class="form-control" name="forma_pago_pref" id="forma_pago_pref" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         <option value="giro_bancario">Giro Bancario</option>
                                         <option value="pagare">Pagare</option>
@@ -209,7 +213,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nº de cuenta</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta" class="form-control" name="cuenta"
-                                        id="cuenta" placeholder="Cuenta bancaria">
+                                        id="cuenta" placeholder="Cuenta bancaria" @if(!$canEdit) disabled @endif>
                                     @error('cuenta')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -227,7 +231,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta contable</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cuenta_contable" class="form-control" name="cuenta_contable"
-                                        id="cuenta_contable" placeholder="Cuenta Contable">
+                                        id="cuenta_contable" placeholder="Cuenta Contable" @if(!$canEdit) disabled @endif>
                                     @error('cuenta_contable')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -245,7 +249,7 @@
                             <div class="form-group col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Delegacion</label>
                                 <div class="col-sm-12">
-                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD">
+                                    <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         @foreach ($delegaciones as $delegacion )
                                             <option value="{{$delegacion->COD}}">{{$delegacion->nombre}}</option>
@@ -259,7 +263,7 @@
                                 <div class="form-group col-sm-5">
                                     <label for="example-text-input" class="col-sm-12 col-form-label">Departamento</label>
                                     <div class="col-sm-12">
-                                        <select wire:model="departamentoSeleccionadoId" class="form-control" name="departamentoSeleccionadoId" id="departamentoSeleccionadoId">
+                                        <select wire:model="departamentoSeleccionadoId" class="form-control" name="departamentoSeleccionadoId" id="departamentoSeleccionadoId" @if(!$canEdit) disabled @endif>
                                             <option value=""  selected>Selecciona una opción</option>
                                             @foreach ($departamentos as $departamento )
                                                 <option value="{{$departamento->id}}">{{$departamento->nombre}}</option>
@@ -279,7 +283,7 @@
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nota</label>
                                 <div class="col-sm-12">
                                     <input type="textarea" wire:model="nota" class="form-control"
-                                        name="nota" id="nota" placeholder="Nota">
+                                        name="nota" id="nota" placeholder="Nota" @if(!$canEdit) disabled @endif>
                                     @error('nota')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -296,23 +300,25 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                Proveedor</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
-                                Proveedor</button>
+        @if($canEdit)
+            <div class="col-md-3">
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Acciones</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
+                                    Proveedor</button>
+                            </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar
+                                    Proveedor</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 

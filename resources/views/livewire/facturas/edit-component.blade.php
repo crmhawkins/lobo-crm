@@ -1,3 +1,7 @@
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -46,7 +50,7 @@
                             <label for="Cliente" class="col-sm-12 col-form-label">Estado</label>
                                 <div class="col-sm-12">
                                     <select class="form-control" name="estado" id="estado"
-                                    wire:model="estado" >
+                                    wire:model="estado" @if(!$canEdit) disabled @endif>
                                         <option value="Pendiente">Pendiente</option>
                                         <option value="Cancelado">Cancelado</option>
                                         <option value="Pagado">Pagado</option>
@@ -62,7 +66,7 @@
                                             wire:model="cliente_id" disabled>
                                     @else
                                         <select class="form-control" name="cliente_id" id="cliente_id"
-                                        wire:model="cliente_id" >
+                                        wire:model="cliente_id" @if(!$canEdit) disabled @endif>
                                     @endif
                                             <option value="">---SELECCIONE UN CLIENTE---</option>
                                             @foreach ($clientes as $cliente)
@@ -75,7 +79,7 @@
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Fecha de emisión</label>
                                 <div class="col-sm-12">
                                     <input type="date" wire:model="fecha_emision" class="form-control"
-                                        placeholder="15/02/2023">
+                                        placeholder="15/02/2023" @if(!$canEdit) disabled @endif>
                                     @error('fecha_emision')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -86,7 +90,7 @@
                                 <label for="fecha_vencimiento" class="col-sm-12 col-form-label">Fecha de vencimiento</label>
                                 <div class="col-sm-12">
                                     <input type="date" wire:model="fecha_vencimiento" class="form-control"
-                                        placeholder="18/02/2023">
+                                        placeholder="18/02/2023" @if(!$canEdit) disabled @endif>
                                     @error('fecha_vencimiento')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -96,7 +100,7 @@
                             <div class="col-md-4">
                                 <label for="Cliente" class="col-sm-12 col-form-label">Producto</label>
                                 <div class="col-sm-12">
-                                    <select class="form-control" name="producto_id" id="producto_id" wire:model="producto_id" wire:change='calculoPrecio()'>
+                                    <select class="form-control" name="producto_id" id="producto_id" wire:model="producto_id" wire:change='calculoPrecio()' @if(!$canEdit) disabled @endif>
                                         <option value="0">---SELECCIONE UN PRODUCTO---</option>
                                         @foreach ($productos as $producto)
                                             <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
@@ -115,7 +119,7 @@
                                         placeholder="cantidad" disabled>
                                     @else
                                     <input type="number" wire:model="cantidad" class="form-control"
-                                        placeholder="cantidad" wire:change='calculoPrecio()'>
+                                        placeholder="cantidad" wire:change='calculoPrecio()' @if(!$canEdit) disabled @endif>
                                     @endif
                                     @error('cantidad')
                                         <span class="text-danger">{{ $message }}</span>
@@ -130,7 +134,7 @@
                                         placeholder="Precio" disabled>
                                     @else
                                     <input type="number" wire:model="precio" class="form-control"
-                                        placeholder="Precio">
+                                        placeholder="Precio" @if(!$canEdit) disabled @endif>
                                     @endif
                                     @error('precio')
                                         <span class="text-danger">{{ $message }}</span>
@@ -140,12 +144,12 @@
                             <div class="col-md-4">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
-                                    <select id="metodo_pago" class="form-control" wire:model="metodo_pago">
+                                    <select id="metodo_pago" class="form-control" wire:model="metodo_pago" @if(!$canEdit) disabled @endif>
                                             <option value="" disabled selected>Selecciona una opción</option>
                                             <option value="giro_bancario">Giro Bancario</option>
                                             <option value="pagare">Pagare</option>
                                             <option value="confirming">Confirming</option>
-                                            <option value="otros">Otros</option>
+                                            <option value="transferencia">Transferencia</option>
                                         </select>
                                     @error('denominacion')
                                         <span class="text-danger">{{ $message }}</span>
@@ -158,7 +162,7 @@
                                 <label for="descuento" class="col-sm-12 col-form-label">Descuento </label>
                                 <div class="col-sm-12">
                                     <input type="number" wire:model="descuento" class="form-control"
-                                        placeholder="descuento" >
+                                        placeholder="descuento" @if(!$canEdit) disabled @endif>
                                         @error('precio')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -170,7 +174,7 @@
                                 <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
                                 <div class="col-sm-12">
                                     <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"
-                                        placeholder="Factura para el cliente Dani..."></textarea>
+                                        placeholder="Factura para el cliente Dani..." @if(!$canEdit) disabled @endif></textarea>
                                     @error('descripcion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -182,7 +186,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            @if (Auth::user()->role != 3)
+            @if ($canEdit)
                 <div class="card m-b-30">
                     <div class="card-body">
                         <h5>Opciones de guardado</h5>

@@ -1,3 +1,8 @@
+
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -22,9 +27,9 @@
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <div class="row d-flex align-items-center">
                             <div class="col-md-4">
-                                <label for="nombre" class="col-form-label">Nombre del producto</label>
+                                <label for="nombre" class="col-form-label" >Nombre del producto</label>
                                 <input type="text" class="form-control" wire:model="nombre" name="nombre"
-                                    id="nombre" placeholder="Nombre del producto...">
+                                    id="nombre" placeholder="Nombre del producto..."  @if(!$canEdit) disabled @endif>
                                 @error('nombre')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -32,7 +37,7 @@
                             <div class="col-md-4">
                             <label for="tipo_precio">Tipo de precio</label>
                                 <select class="form-control" name="tipo_precio" id="select-tipo_precio"
-                                    wire:model="tipo_precio">
+                                    wire:model="tipo_precio" @if(!$canEdit) disabled @endif>
                                         <option value="1">Crema</option>
                                         <option value="2">Vodka 0,7L</option>
                                         <option value="3">Vodka 1,75L</option>
@@ -43,7 +48,7 @@
                             <div class="col-md-4">
                                 <label for="iva" class="col-form-label">Precio para otros</label>
                                 <input type="number" class="form-control" wire:model="precio"
-                                    name="precio" id="precio" placeholder="Precio de productos con tipo de precio otros">
+                                    name="precio" id="precio" placeholder="Precio de productos con tipo de precio otros"  @if(!$canEdit) disabled @endif>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -53,7 +58,7 @@
                             <div class="col-md-4">
                                 <label for="iva" class="col-form-label">Unidades por caja</label>
                                 <input type="number" class="form-control" wire:model="unidades_por_caja"
-                                    name="unidades_por_caja" id="iva" placeholder="Porcentaje de IVA...">
+                                    name="unidades_por_caja" id="iva" placeholder="Porcentaje de IVA..."  @if(!$canEdit) disabled @endif>
                                 @error('unidades_por_caja')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -61,7 +66,7 @@
                             <div class="col-md-4">
                                 <label for="iva" class="col-form-label">Cajas por pallet</label>
                                 <input type="number" class="form-control" wire:model="cajas_por_pallet"
-                                    name="cajas_por_pallet" id="iva" placeholder="Porcentaje de IVA...">
+                                    name="cajas_por_pallet" id="iva" placeholder="Porcentaje de IVA..."  @if(!$canEdit) disabled @endif>
                                 @error('cajas_por_pallet')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -69,7 +74,7 @@
                             <div class="col-md-4">
                                 <label for="precio" class="col-form-label">Stock de seguridad (en cajas)</label>
                                 <input type="number" class="form-control" wire:model="stock_seguridad" name="stock_seguridad"
-                                    id="stock_seguridad" placeholder="Stock de seguridad">
+                                    id="stock_seguridad" placeholder="Stock de seguridad"  @if(!$canEdit) disabled @endif>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -79,7 +84,7 @@
                             <div class="col-md-4">
                                 <label for="descripcion" class="col-form-label">Descripción del producto</label>
                                 <textarea class="form-control" wire:model="descripcion" name="descripcion" id="descripcion"
-                                    placeholder="Descripción del producto"></textarea>
+                                    placeholder="Descripción del producto"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -88,7 +93,7 @@
                                 <label for="descripcion" class="col-form-label">Materiales usados para su
                                     producción</label>
                                 <textarea class="form-control" wire:model="materiales" name="materiales" id="materiales"
-                                    placeholder="Materiales del producto"></textarea>
+                                    placeholder="Materiales del producto"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -96,7 +101,7 @@
                             <div class="col-md-4">
                                 <label for="medidas_botella" class="col-form-label">Medidas de la botella</label>
                                 <textarea class="form-control" wire:model="medidas_botella" name="medidas_botella" id="medidas_botella"
-                                    placeholder="?? x ?? mm"></textarea>
+                                    placeholder="?? x ?? mm"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -107,7 +112,7 @@
                                 <label for="temp_conservacion" class="col-form-label">Temperatura de
                                     conservación</label>
                                 <textarea class="form-control" wire:model="temp_conservacion" name="temp_conservacion" id="temp_conservacion"
-                                    placeholder="??-?? ºC"></textarea>
+                                    placeholder="??-?? ºC"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -115,13 +120,13 @@
                             <div class="col-md-2 align-items-center">
                                 <label for="descripcion" class="col-form-label">Caducidad</label><br>
                                 <label for="caducidad" class="col-form-label"><input type="radio"
-                                        wire:model="caducidad" name="caducidad" id="caducidad" value="Sí tiene">
+                                        wire:model="caducidad" name="caducidad" id="caducidad" value="Sí tiene"  @if(!$canEdit) disabled @endif>
                                     Sí tiene</label>
                             </div>
                             <div class="col-md-2 align-items-center">
                                 <label for="descripcion" class="col-form-label">&nbsp;</label><br>
                                 <label for="caducidad" class="col-form-label"><input type="radio"
-                                        wire:model="caducidad" name="caducidad" id="caducidad" value="No tiene">
+                                        wire:model="caducidad" name="caducidad" id="caducidad" value="No tiene"  @if(!$canEdit) disabled @endif>
                                     No tiene</label>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
@@ -130,7 +135,7 @@
                             <div class="col-md-4">
                                 <label for="medidas_botella" class="col-form-label">Ingredientes del producto</label>
                                 <textarea class="form-control" wire:model="ingredientes" name="ingredientes" id="ingredientes"
-                                    placeholder="Ingredientes del producto"></textarea>
+                                    placeholder="Ingredientes del producto"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -140,7 +145,7 @@
                             <div class="col-md-4">
                                 <label for="alergenos" class="col-form-label">Alérgenos del producto</label>
                                 <textarea class="form-control" wire:model="alergenos" name="alergenos" id="alergenos"
-                                    placeholder="??-?? ºC"></textarea>
+                                    placeholder="??-?? ºC"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -148,7 +153,7 @@
                             <div class="col-md-4">
                                 <label for="proceso_elaboracion" class="col-form-label">Proceso de elaboración</label>
                                 <textarea class="form-control" wire:model="proceso_elaboracion" name="proceso_elaboracion" id="proceso_elaboracion"
-                                    placeholder="Proceso de elaboración"></textarea>
+                                    placeholder="Proceso de elaboración"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -156,7 +161,7 @@
                             <div class="col-md-4">
                                 <label for="info_nutricional" class="col-form-label">Información nutricional (por 100gr)</label>
                                 <textarea class="form-control" wire:model="info_nutricional" name="info_nutricional" id="info_nutricional"
-                                    placeholder="Ingredientes del producto"></textarea>
+                                    placeholder="Ingredientes del producto"  @if(!$canEdit) disabled @endif></textarea>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -166,7 +171,7 @@
                             <div class="col-md-3">
                                 <label for="peso_neto_unidad" class="col-form-label">Peso neto por unidad (en gramos)</label>
                                 <input type="number" class="form-control" wire:model="peso_neto_unidad"
-                                    name="peso_neto_unidad" id="peso_neto_unidad" placeholder="Porcentaje de IVA...">
+                                    name="peso_neto_unidad" id="peso_neto_unidad" placeholder="Porcentaje de IVA..."  @if(!$canEdit) disabled @endif>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -174,7 +179,7 @@
                             <div class="col-md-3">
                                 <label for="grad_alcohol" class="col-form-label">Grado de alcohol (% por volumen)</label>
                                 <input type="number" class="form-control" wire:model="grad_alcohol"
-                                    name="grad_alcohol" id="grad_alcohol" placeholder="Porcentaje de IVA...">
+                                    name="grad_alcohol" id="grad_alcohol" placeholder="Porcentaje de IVA..." @if(!$canEdit) disabled @endif>
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -182,7 +187,7 @@
                             <div class="col-md-6">
                                 <label for="domicilio_fabricante" class="col-form-label">Domicilio de fabricación</label>
                                 <input type="text" class="form-control" wire:model="domicilio_fabricante"
-                                name="domicilio_fabricante" id="domicilio_fabricante" placeholder="Porcentaje de IVA...">
+                                name="domicilio_fabricante" id="domicilio_fabricante" placeholder="Porcentaje de IVA..."  @if(!$canEdit) disabled @endif>
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -193,46 +198,50 @@
                 </form>
             </div>
         </div>
-        <div class="col-md-3 justify-content-center">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Imagen del producto</h5>
-                    <div class="row">
-                        <div class="col">
-                            @if ($foto_ruta || $foto_rutaOld)
-                                <img @if ($foto_ruta) src="{{ $foto_ruta->temporaryUrl() }}" @else src="{{ asset('storage/photos/' . $foto_rutaOld) }}" @endif
-                                    style="max-width: 100% !important; text-align: center">
-                            @endif
+        @if($canEdit)
+            <div class="col-md-3 justify-content-center">
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Imagen del producto</h5>
+                        <div class="row">
+                            <div class="col">
+                                @if ($foto_ruta || $foto_rutaOld)
+                                    <img @if ($foto_ruta) src="{{ $foto_ruta->temporaryUrl() }}" @else src="{{ asset('storage/photos/' . $foto_rutaOld) }}" @endif
+                                        style="max-width: 100% !important; text-align: center">
+                                @endif
 
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <input type="file" class="form-control" wire:model="foto_ruta" name="foto_ruta"
-                                wire:change='nuevaFoto' id="foto_ruta" placeholder="Imagen del producto...">
-                            @error('nombre')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                producto </button>
-                        </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Borrar
-                                producto </button>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <input type="file" class="form-control" wire:model="foto_ruta" name="foto_ruta"
+                                    wire:change='nuevaFoto' id="foto_ruta" placeholder="Imagen del producto...">
+                                @error('nombre')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Acciones</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
+                                    producto </button>
+                            </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Borrar
+                                    producto </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
             </div>
-        </div>
+        @endif
     </div>
 </div>
 

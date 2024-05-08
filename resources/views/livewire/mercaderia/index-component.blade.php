@@ -1,3 +1,7 @@
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -71,8 +75,11 @@
                                             <td>{{ $this->getCategoria($mercaderia->categoria_id) }}</td>
                                             <td>{{ $this->getCantidad($mercaderia->id)}}</td>
                                             <td>{{ $this->getCantidadProduccion($mercaderia->id) }}</td>
-                                            <td> <a href="mercaderia-edit/{{ $mercaderia->id }}"
-                                                    class="btn btn-primary">Ver/Editar</a> </td>
+                                            <td> 
+                                                @if($canEdit)
+                                                    <a href="mercaderia-edit/{{ $mercaderia->id }}" class="btn btn-primary">Ver/Editar</a> 
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

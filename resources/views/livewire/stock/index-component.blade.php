@@ -1,3 +1,8 @@
+
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -130,14 +135,16 @@
 
                                                     <td class="botonesStock">
                                                         @if($this->qrAsignado($lote))
-                                                        <button class="btn btn-primary" onclick="generarQRIndividual({{$lote}})"> QR</button>
+                                                            <button class="btn btn-primary" onclick="generarQRIndividual({{$lote}})"> QR</button>
                                                         @else
-                                                        <button class="btn btn-primary" onclick="iniciarEscaneo('asignar',{{$lote}})">Asignar Qr</button>
+                                                            <button class="btn btn-primary" onclick="iniciarEscaneo('asignar',{{$lote}})">Asignar Qr</button>
                                                         @endif
-                                                        <a class="btn btn-primary" href="/admin/stock-traspaso/{{$lote['id']}}"> Traspaso de lote</a>
-                                                        <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
+                                                            <a class="btn btn-primary" href="/admin/stock-traspaso/{{$lote['id']}}"> Traspaso de lote</a>
+                                                            @if($EsAdmin)
+                                                                <a class="btn btn-primary" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
+                                                            @endif
                                                         @if($this->qrAsignado($lote))
-                                                        <button class="btn btn-danger" onclick="borrar({{$lote}})">Eliminar QR</button>
+                                                            <button class="btn btn-danger" onclick="borrar({{$lote}})">Eliminar QR</button>
                                                         @endif
                                                     </td>
                                                 </tr>
