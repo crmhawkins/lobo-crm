@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\facturas;
+use App\Models\Facturas;
 use App\Models\Clients;
 
 class Test extends Controller
@@ -17,7 +17,7 @@ class Test extends Controller
     {
         $response = '';
 
-        $facturas = facturas::all();
+        $facturas = Facturas::all();
         $clientes = Clients::all();
 
         //modificar la fecha de vencimiento de las facturas para que coincidan con la fecha de vencimiento por defecto de los clientes, hay que 
@@ -37,6 +37,6 @@ class Test extends Controller
         //dd($facturas);
 
 
-        return '';
+        return 'ok';
     }
 }
