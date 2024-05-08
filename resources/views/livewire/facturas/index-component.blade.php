@@ -107,7 +107,25 @@
                                         <td>{{number_format($fact->precio * 1.21, 2)}}€
                                         </td>
                                         @endif
-                                        <td>{{ $fact->metodo_pago }}</td>
+                                        <td >
+                                            @switch($fact->metodo_pago)
+                                                @case("giro_bancario")
+                                                    Giro Bancario
+                                                    @break
+                                                @case("confirming")
+                                                    Confirming
+                                                    @break
+                                                @case("transferencia")
+                                                    Transferencia
+                                                    @break
+                                                @case("pagare")
+                                                    Pagaré
+                                                    @break
+                                                @default
+                                                {{ $fact->metodo_pago }}
+                                            @endswitch
+                                            
+                                        </td>
                                         <td>@switch($fact->estado)
                                             @case('Pendiente')
                                             <span class="badge badge-warning">{{ $fact->estado }}</span>
