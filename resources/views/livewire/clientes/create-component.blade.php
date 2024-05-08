@@ -434,8 +434,8 @@
                                 <label for="forma_pago_pref" class="col-sm-12 col-form-label">Vencimiento de factura</label>
                                 <div class="col-sm-12">
                                     <select wire:model="vencimiento_factura_pref" class="form-control" name="vencimiento_factura_pref" id="vencimiento_factura_pref">
-                                        <option value="" disabled selected>Selecciona una opción</option>
-                                        <option value="7">7 días</option>
+                                        <option value="" disabled >Selecciona una opción</option>
+                                        <option value="7" selected>7 días</option>
                                         <option value="15">15 días</option>
                                         <option value="30">30 días</option>
                                         <option value="45">45 días</option>

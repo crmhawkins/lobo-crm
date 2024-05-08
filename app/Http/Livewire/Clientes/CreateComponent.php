@@ -41,7 +41,7 @@ class CreateComponent extends Component
     public $provinciaenvio;
     public $localidadenvio;
     public $codPostalenvio;
-    public $vencimiento_factura_pref = "";
+    public $vencimiento_factura_pref = "7";
     public $porcentaje_bloq = 10;
     public $cuenta_contable;
     public $cuenta;
