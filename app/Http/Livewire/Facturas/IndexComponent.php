@@ -25,7 +25,7 @@ class IndexComponent extends Component
     public $totalIva;
     public $totalesConIva;
     public $totalImportes;
-    
+
     public $delegaciones;
     public $delegacionSeleccionadaCOD;
 
@@ -45,23 +45,22 @@ class IndexComponent extends Component
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
 
-        if($user_rol == 3){
+        if ($user_rol == 3) {
             //comercial
             $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
 
             foreach ($clientes_comercial as $cliente) {
                 $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
             }
-        }else{
+        } else {
             $this->facturas = Facturas::all();
             //por cada factura se calcula el total de iva y el total de importes y el totales con iva
             $this->calcularTotales($this->facturas);
-              
         }
-        
     }
 
-    public function filtrar($id, $filtro){
+    public function filtrar($id, $filtro)
+    {
 
         $filtros = [
             1 => 'comerciales',
@@ -70,9 +69,9 @@ class IndexComponent extends Component
         ];
 
         //si el filtro existe en el array de filtros, se actualiza con lo que se le pasa por parámetro
-        if(array_key_exists($filtro, $this->arrFiltrado)){
+        if (array_key_exists($filtro, $this->arrFiltrado)) {
             $this->arrFiltrado[$filtro] = $id;
-        }else{
+        } else {
             //si no existe, se añade al array de filtros
             $this->arrFiltrado[$filtro] = $id;
         }
@@ -81,143 +80,168 @@ class IndexComponent extends Component
         $this->filtrarFacturas($this->arrFiltrado);
     }
 
-    public function filtrarFacturas($filtros){
+    public function filtrarFacturas($filtros)
+    {
         $facturas = Facturas::all();
         $facturasFiltradas = [];
 
         //debe comprobar que filtros hay activos y buscar las facturas que cumplan con esos filtros que traen los ids, por lo que deberia
         //saber si estan los 3 filtros, 2 o 1
-        if(count($filtros) == 3){
+        if (count($filtros) == 3) {
             //si hay 3 filtros activos
             foreach ($facturas as $factura) {
                 //dd($factura);
-                if(isset($filtros[1]) && isset($filtros[2]) && isset($filtros[3])){
+                if (isset($filtros[1]) && isset($filtros[2]) && isset($filtros[3])) {
                     $cliente = Clients::find($factura->cliente_id);
-                    if($cliente->comercial_id == $filtros[1] && $cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]){
+                    if ($cliente->comercial_id == $filtros[1] && $cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]) {
                         $facturasFiltradas[] = $factura;
                     }
-                    
                 }
             }
-        }else if(count($filtros) == 2){
+        } else if (count($filtros) == 2) {
             //si hay 2 filtros activos
             foreach ($facturas as $factura) {
-                if(isset($filtros[3]) && isset($filtros[1])){
+                if (isset($filtros[3]) && isset($filtros[1])) {
                     $cliente = Clients::find($factura->cliente_id);
-                    if($cliente->comercial_id == $filtros[1] && $factura->cliente_id == $filtros[3]){
+                    if ($cliente->comercial_id == $filtros[1] && $factura->cliente_id == $filtros[3]) {
                         $facturasFiltradas[] = $factura;
                     }
-
-                }else if(isset($filtros[3]) && isset($filtros[2])){
+                } else if (isset($filtros[3]) && isset($filtros[2])) {
                     $cliente = Clients::find($factura->cliente_id);
-                    if($cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]){
+                    if ($cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]) {
                         $facturasFiltradas[] = $factura;
                     }
-                }else if(isset($filtros[1]) && isset($filtros[2])){
+                } else if (isset($filtros[1]) && isset($filtros[2])) {
                     //debe buscar clientes que tengan el cod de la delegacion y el id del comercial
                     $cliente = Clients::find($factura->cliente_id);
-                    if($cliente->delegacion_COD == $filtros[2] && $cliente->comercial_id == $filtros[1]){
+                    if ($cliente->delegacion_COD == $filtros[2] && $cliente->comercial_id == $filtros[1]) {
                         $facturasFiltradas[] = $factura;
                     }
-                    
                 }
             }
-        }else if(count($filtros) == 1){
+        } else if (count($filtros) == 1) {
             //si hay 1 filtro activo
             foreach ($facturas as $factura) {
-                if(isset($filtros[3])){
-                    if($factura->cliente_id == $filtros[3]){
+                if (isset($filtros[3])) {
+                    if ($factura->cliente_id == $filtros[3]) {
                         $facturasFiltradas[] = $factura;
                     }
-                }else if(isset($filtros[1])){
+                } else if (isset($filtros[1])) {
                     //el comercial id es el id que tiene asociado el cliente. Por lo que hay que ver que cliente tiene la factura y ver el comercial que tiene ese cliente.
                     $cliente = Clients::find($factura->cliente_id);
-                    if($cliente->comercial_id == $filtros[1]){
+                    if ($cliente->comercial_id == $filtros[1]) {
                         $facturasFiltradas[] = $factura;
                     }
-                }else if(isset($filtros[2]) ){
+                } else if (isset($filtros[2])) {
                     //debe hacer lo mismo que con el comercial, ver que cliente tiene la factura y ver la delegacion que tiene ese cliente
                     $cliente = Clients::find($factura->cliente_id);
                     //dd($cliente->delegacion_COD, $filtros[2]);
-                    if($cliente->delegacion_COD == $filtros[2]){
-                        $facturasFiltradas[] = $factura;                    
+                    if ($cliente->delegacion_COD == $filtros[2]) {
+                        $facturasFiltradas[] = $factura;
                     }
                 }
             }
-        }else{
+        } else {
             //si no hay filtros activos
             $facturasFiltradas = $facturas;
         }
 
-        $this->facturas = $facturasFiltradas;
-        $this->calcularTotales($this->facturas);
-        //$this->emit('actualizarTabla');
+        $this->updateFactura($facturasFiltradas);
     }
 
-    public function eliminarFiltro($filtro){
+    public function updating($property, $value)
+    {
+
+        if ($property == 'delegacionSeleccionadaCOD' || $property == 'comercialSeleccionadoId' || $property == 'clienteSeleccionadoId') {
+            $this->emit('actualizarTablaAntes');
+        }
+    }
+
+
+
+    public function updateFactura($facturasActualizadas)
+    {
+        $this->facturas = $facturasActualizadas;
+        $this->calcularTotales($this->facturas);
+        $this->emit('actualizarTablaDespues');
+    }
+
+    public function eliminarFiltro($filtro)
+    {
         //se elimina el filtro del array de filtros
         unset($this->arrFiltrado[$filtro]);
 
         //se filtran las facturas
+        //$this->emit('actualizarTablaAntes');
         $this->filtrarFacturas($this->arrFiltrado);
-        //$this->emit('actualizarTabla');
+        //$this->emit('actualizarTablaDespues');
     }
 
-    public function limpiarFiltros(){
+    public function limpiarFiltros()
+    {
         $this->arrFiltrado = [];
+
+        //hay que hacerlo de forma asíncrona
+
+        //se filtran las facturas
+
+
+        //$this->emit('actualizarTablaAntes');
         $this->facturas = Facturas::all();
         $this->calcularTotales($this->facturas);
+        //$this->emit('actualizarTablaDespues');
         $this->delegacionSeleccionadaCOD = null;
         $this->comercialSeleccionadoId = null;
         $this->clienteSeleccionadoId = null;
+        $this->emit('actualizarTablaDespues');
         //dd($this->facturas);
 
     }
 
-    public function onChangeFiltrado($filtro){
+    public function onChangeFiltrado($filtro)
+    {
         //dd($filtro);
-        if($filtro == 2 && $this->delegacionSeleccionadaCOD != null){
-            if($this->delegacionSeleccionadaCOD == -1){
+        if ($filtro == 2 && $this->delegacionSeleccionadaCOD != null) {
+            if ($this->delegacionSeleccionadaCOD == -1) {
                 $this->eliminarFiltro(2);
-            }else{
+            } else {
                 $this->filtrar($this->delegacionSeleccionadaCOD, $filtro);
             }
         }
 
-        if($filtro == 1 && $this->comercialSeleccionadoId != null){
-            if($this->comercialSeleccionadoId == -1){
+        if ($filtro == 1 && $this->comercialSeleccionadoId != null) {
+            if ($this->comercialSeleccionadoId == -1) {
                 $this->eliminarFiltro(1);
-            }else{
+            } else {
                 $this->filtrar($this->comercialSeleccionadoId, $filtro);
             }
         }
 
-        if($filtro == 3 && $this->clienteSeleccionadoId != null){
-            if($this->clienteSeleccionadoId == -1){
+        if ($filtro == 3 && $this->clienteSeleccionadoId != null) {
+            if ($this->clienteSeleccionadoId == -1) {
                 $this->eliminarFiltro(3);
-            }else{
+            } else {
                 $this->filtrar($this->clienteSeleccionadoId, $filtro);
             }
-           
         }
-
     }
 
-    public function calcularTotales($facturas){
+    public function calcularTotales($facturas)
+    {
         $this->totalIva = 0;
         $this->totalImportes = 0;
         $this->totalesConIva = 0;
         foreach ($facturas as $factura) {
-            if(isset($factura->descuento)){
-                $importe = $factura->precio * (1 + (-($factura->descuento) /100));
-                $iva = ($factura->precio*(1 + (-($factura->descuento) /100))) * 0.21;
-                $totalesIva = ($factura->precio*(1 + (-($factura->descuento) /100))) * 1.21;
+            if (isset($factura->descuento)) {
+                $importe = $factura->precio * (1 + (- ($factura->descuento) / 100));
+                $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
+                $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
                 //$this->totalImportes += number_format( $factura->precio * (1 + (-($factura->descuento) /100)),2);
                 $this->totalImportes += $importe;
                 $this->totalIva += $iva;
                 $this->totalesConIva += $totalesIva;
                 //dd($this->totalImportes);
-            }else{
+            } else {
                 $importe = $factura->precio;
                 $iva = $factura->precio * 0.21;
                 $totalesIva = $factura->precio * 1.21;
@@ -226,45 +250,23 @@ class IndexComponent extends Component
                 $this->totalesConIva += $totalesIva;
             }
 
-            $this->totalImportes = round($this->totalImportes , 2);
-            $this->totalIva = round($this->totalIva , 2);
+            $this->totalImportes = round($this->totalImportes, 2);
+            $this->totalIva = round($this->totalIva, 2);
             $this->totalesConIva = round($this->totalesConIva, 2);
         }
-
     }
 
 
 
     public function render()
     {
-
-        // Convertir el array $this->facturas a una colección
-        $facturasColeccion = collect($this->facturas);
-
-        // Tratar los datos antes de pasarlos al evento Livewire
-        $facturasTratadas = $facturasColeccion->map(function ($factura) {
-            return [
-                'numero_factura' => $factura['numero_factura'],
-                'pedido_id' => $factura['pedido_id'] == 0 ? 'Sin pedido' : $factura['pedido_id'],
-                'comercial' => $this->getComercial($factura['cliente_id']),
-                'delegacion' => $this->getDelegacion($factura['cliente_id']),
-                'cliente' => $this->getCliente($factura['cliente_id'])->nombre,
-                'fecha_emision' => $factura['fecha_emision'],
-                'fecha_vencimiento' => $factura['fecha_vencimiento'],
-                // Agrega más campos según sea necesario
-            ];
-        });
-
-
-        // Emitir el evento Livewire con los datos tratados
-        $this->emit('actualizarTabla', $facturasTratadas->toArray());
         return view('livewire.facturas.index-component');
     }
 
     public function getCliente($id)
     {
-        $cliente=$this->clientes->find($id);
-        if(isset($cliente)){
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
             $clienteModel = Clients::find($id);
             $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
             $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
@@ -276,15 +278,15 @@ class IndexComponent extends Component
     {
         $comerciales = User::whereIn('role', [2, 3])->get();
 
-        $cliente=$this->clientes->find($id);
-        if(isset($cliente)){
-        $comercial=$comerciales->where('id',$cliente->comercial_id)->first();
-        if(isset($comercial)){
-            return $comercial->name;
-        }else{
-            return "no definido";
-        }
-        }else{
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            $comercial = $comerciales->where('id', $cliente->comercial_id)->first();
+            if (isset($comercial)) {
+                return $comercial->name;
+            } else {
+                return "no definido";
+            }
+        } else {
 
             return "no definido";
         }
@@ -292,9 +294,9 @@ class IndexComponent extends Component
     public function getDelegacion($id)
     {
         $delegaciones = Delegacion::all();
-        $cliente=$this->clientes->find($id);
-        if(isset($cliente)){
-            return $delegaciones->where('COD',$cliente->delegacion_COD)->first()->nombre;
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre;
         }
         return "no definido";
     }
@@ -303,12 +305,14 @@ class IndexComponent extends Component
         return [
             'pdf',
             'albaran',
+            'actualizarTabla',
+            'limpiarFiltros',
         ];
     }
-    public function albaran($pedidoId,$iva)
+    public function albaran($pedidoId, $iva)
     {
         // Buscar el albarán asociado con el ID del pedido
-		$factura = Facturas::find($pedidoId);
+        $factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $factura->pedido_id)->first();
 
         if (!$albaran) {
@@ -332,9 +336,9 @@ class IndexComponent extends Component
         $productos = [];
         foreach ($productosPedido as $productoPedido) {
             $producto = Productos::find($productoPedido->producto_pedido_id);
-            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-            if (!isset( $stockEntrante)){
-                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+            $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+            if (!isset($stockEntrante)) {
+                $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
             }
             if ($producto) {
                 $productos[] = [
@@ -344,19 +348,19 @@ class IndexComponent extends Component
                     'precio_total' => $productoPedido->precio_total,
                     'iva' => $producto->iva,
                     'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
-                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------',
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
                 ];
             }
         }
 
         $datos = [
-        'conIva' => false,
-        'pedido' => $pedido ,
-        'cliente' => $cliente,
-        'productos' => $productos,
-        'num_albaran' => $num_albaran = $albaran->num_albaran,
-        'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+            'conIva' => false,
+            'pedido' => $pedido,
+            'cliente' => $cliente,
+            'productos' => $productos,
+            'num_albaran' => $num_albaran = $albaran->num_albaran,
+            'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         ];
 
         // Generar y mostrar el PDF
@@ -366,48 +370,49 @@ class IndexComponent extends Component
             "albaran_{$albaran->num_albaran}.pdf"
         );
     }
-    public function pdf($id,$iva)
+    public function pdf($id, $iva)
     {
 
         $factura = Facturas::find($id);
 
-        if($factura != null){
+        if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
-            $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
-            $productofact= Productos::find($factura->producto_id);
+            $productofact = Productos::find($factura->producto_id);
             $productos = [];
-            if(isset($pedido)){
-            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-            // Preparar los datos de los productos del pedido
-            foreach ($productosPedido as $productoPedido) {
-                $producto = Productos::find($productoPedido->producto_pedido_id);
-                $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-                if (!isset( $stockEntrante)){
-                    $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
-                }
-                if ($stockEntrante){
-                    $lote=$stockEntrante->orden_numero;
-                }else{
-                    $lote = "";
-                }
-                if ($producto) {
-                    if(!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <=0){
-                        $peso ="Peso no definido";
-                    }else{
-                    $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) /1000;
+            if (isset($pedido)) {
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
                     }
-                    $productos[] = [
-                        'nombre' => $producto->nombre,
-                        'cantidad' => $productoPedido->unidades,
-                        'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' => $productoPedido->precio_total,
-                        'iva' => $producto->iva,
-                        'lote_id' => $lote,
-                        'peso_kg' =>  $peso,
-                    ];
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
+                    if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
+                        $productos[] = [
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
+                        ];
+                    }
                 }
-            }}
+            }
 
             $datos = [
                 'conIva' => $iva,
@@ -419,18 +424,15 @@ class IndexComponent extends Component
                 'producto' => $productofact,
             ];
 
-        // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');;
-        return response()->streamDownload(
-            fn () => print($pdf->output()),
-            // "factura_{$factura->numero_factura}.pdf");
-            "{$factura->numero_factura}.pdf");
-        }else{
+            // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+            $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');;
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                // "factura_{$factura->numero_factura}.pdf");
+                "{$factura->numero_factura}.pdf"
+            );
+        } else {
             return redirect('admin/facturas');
         }
-
-
     }
-
-
 }

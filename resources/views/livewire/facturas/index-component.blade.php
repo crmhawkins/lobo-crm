@@ -33,7 +33,7 @@
                                 <label class=""  id="comerciales"  >
                                     Filtrar por Comerciales
                                     </label>
-                                <select class="text-white bg-secondary rounded p-1" wire:change="onChangeFiltrado(1)" wire:model="comercialSeleccionadoId">
+                                <select class="text-white bg-secondary rounded p-1" id="comercialesSelect" wire:change="onChangeFiltrado(1)" wire:model="comercialSeleccionadoId">
                                     <option value="-1">Todos</option>
                                     @foreach ( $comerciales as $comercial )
                                         <option value='{{ $comercial->id }}'>{{ $comercial->name }}</option>
@@ -45,7 +45,7 @@
                                 <label class=""  id="delegaciones"  >
                                 Filtrar por Delegaciones
                                 </label>
-                                <select class="text-white bg-secondary rounded p-1" wire:change="onChangeFiltrado(2)" wire:model="delegacionSeleccionadaCOD">
+                                <select class="text-white bg-secondary rounded p-1" id="delegacionesSelect" wire:change="onChangeFiltrado(2)" wire:model="delegacionSeleccionadaCOD">
                                     <option value='-1' >Todas</option>
                                     @foreach ( $delegaciones as $delegacion )
                                         <option value='{{  $delegacion->COD }}'>{{ $delegacion->nombre }}</option>
@@ -54,13 +54,13 @@
                                     </select>                            
                             </div>
                             <div class="filtro d-flex flex-column" >
-                                <label class=""  id="delegaciones"  >
+                                <label class=""  id="clientes"  >
                                 Filtrar por Clientes
                                 </label>
-                                <select class="text-white bg-secondary rounded p-1" wire:change="onChangeFiltrado(3)" wire:model="clienteSeleccionadoId">
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"  wire:change="onChangeFiltrado(3)" wire:model="clienteSeleccionadoId">
                                     <option value='-1' >Todos</option>
                                     @foreach ( $clientes as $cliente )
-                                        <option value='{{$cliente->id }}'>{{ $cliente->nombre }}</option>
+                                        <option value='{{$cliente->id }}' >{{ $cliente->nombre }}</option>
                                     @endforeach
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
                                     </select>                            
@@ -69,12 +69,12 @@
                         </div>
                         @if(count($arrFiltrado) > 0)
                             <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif</p>
-                            <button class="btn btn-primary" class="clear" wire:click="limpiarFiltros">Eliminar Filtros</button>
                         @endif
+                        <button class="btn btn-primary" id="clear"  @if(count($arrFiltrado) == 0) style="display:none" @endif>Eliminar Filtros</button>
 
                     </div>
-
                     @if (isset($facturas) && count($facturas) > 0)
+
                             <!-- Aquí comienza el botón desplegable para filtrar por columna -->
                         <div id="Botonesfiltros" class="d-flex gap-2">
                             <div class="dropdown ">
@@ -187,7 +187,7 @@
                                                 <span class="badge badge-danger">{{ $fact->estado }}</span>
                                                     @break
                                                 @default
-                                                <span class="badge badge-infos">{{ $fact->estado }}</span>
+                                                <span class="badge badge-info">{{ $fact->estado }}</span>
                                             @endswitch</td>
                                             <td> 
                                                 <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">
@@ -234,6 +234,47 @@
 @section('scripts')
     <script>
 
+        //ready
+        $(document).ready(function() {
+            
+            $('#clientesSelect').on('change', function() {
+                $('#datatable-buttons').DataTable().destroy();
+            });
+
+            $('#comercialesSelect').on('change', function() {
+                $('#datatable-buttons').DataTable().destroy();
+            });
+
+            $('#delegacionesSelect').on('change', function() {
+                $('#datatable-buttons').DataTable().destroy();
+            });
+
+            $('#clear').on('click', function() {
+                console.log('clear')
+                $('#datatable-buttons').DataTable().destroy();
+                window.livewire.emit('limpiarFiltros');
+            });
+
+        });
+
+     livewire.on('actualizarTablaAntes', ()=>{
+        
+        $('#datatable-buttons').DataTable().destroy();
+        console.log('destruido')
+
+     })
+
+     livewire.on('actualizarTablaDespues', () =>{
+        
+            $('#datatable-buttons').DataTable();
+            console.log('creado')
+        
+        
+        //$('#datatable-buttons').DataTable().destroy();
+       
+     })
+    
+  
     function descargarFactura(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('pdf', id, conIva);
