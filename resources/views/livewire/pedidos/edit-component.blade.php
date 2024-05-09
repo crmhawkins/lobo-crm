@@ -97,7 +97,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @this.set('almacen_id', data);
                                     });">
                                     <label for="fechaVencimiento">Almacen</label>
-                                    @if ($canEdit)
+                                    @if ($canEdit || $mostrarElemento)
                                     <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
                                         <option value="{{ null }}">-- Selecciona un almacén --</option>
                                         @foreach ($almacenes as $presup)
@@ -541,9 +541,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             @endif
                         @endif
                         @if ($canEdit)
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
-                        </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
+                            </div>
                         @endif
 
                     </div>

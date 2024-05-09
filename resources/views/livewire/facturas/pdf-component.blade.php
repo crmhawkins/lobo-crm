@@ -231,7 +231,7 @@
                         @break
                 @endswitch</td>
 
-            <td><span style="font-weight: bold">Fecha de vencimiento: </span>{{ $factura->fecha_vencimiento }}</td>
+            <td><span style="font-weight: bold">Vencimiento a {{ $cliente->vencimiento_factura_pref}} días </span></td>
         </tr>
         {{-- <tr>
             <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
@@ -243,6 +243,14 @@
             </td>
         </tr> --}}
     </table>
+    @if(isset($factura->descripcion))
+        <div style="margin-top: 20px ;">
+            <span style="font-weight: bold; color:#0196eb">Nota:</span><br>
+            <p style=" background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
+        </div>
+    @endif
+
+    
 </body>
 
 </html>

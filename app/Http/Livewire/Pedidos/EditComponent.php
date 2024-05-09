@@ -491,16 +491,29 @@ class EditComponent extends Component
 
     public function alertaAceptar()
     {
-        $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
-            'position' => 'center',
-            'toast' => false,
-            'showConfirmButton' => true,
-            'onConfirmed' => 'aceptarPedido',
-            'confirmButtonText' => 'Sí',
-            'showDenyButton' => true,
-            'denyButtonText' => 'No',
-            'timerProgressBar' => true,
-        ]);
+        if(isset($this->almacen_id) && $this->almacen_id != 0){
+            $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'aceptarPedido',
+                'confirmButtonText' => 'Sí',
+                'showDenyButton' => true,
+                'denyButtonText' => 'No',
+                'timerProgressBar' => true,
+            ]);
+        }else{
+            $this->alert('info', 'Debe seleccionar un almacén antes de proceder.', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        }
+        
+
+
     }
 
     public function alertaRechazar()
