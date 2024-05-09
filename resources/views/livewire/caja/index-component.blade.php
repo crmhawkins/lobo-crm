@@ -19,22 +19,26 @@
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
-                <div class="card-body">
-                    <h4 class="mt-0 header-title" wire:key='rand()' >Ver movimientos de caja</h4>
+                <div class="table-responsive card-body">
+                    <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
                     @if (count($caja) > 0)
                         <table class="table-sm table-striped table-bordered mt-5"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;" >
                             <thead>
                                 <tr>
-                                    <th colspan="6">Saldo inicial</th>
-                                    <th colspan="2">{{$saldo_inicial}}€</th>
+                                    <th colspan="9">Saldo inicial</th>
+                                    <th colspan="3">{{$saldo_inicial}}€</th>
                                 </tr>
                                 <tr>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Concepto</th>
                                     <th scope="col">Asociado</th>
                                     <th scope="col">Desglose</th>
-                                    <th scope="col">Estado</th>
+                                    <!--<th scope="col">Estado</th> -->
+                                    <th scope="col">Importe</th>
+                                    <th scope="col">% Iva</th>
+                                    <th scope="col">Retencion</th>
+                                    <th scope="col">Descuento</th>
                                     <th scope="col">(+)</th>
                                     <th scope="col">(-)</th>
                                     <th scope="col">Saldo</th>
@@ -56,7 +60,7 @@
                                         <td></td>
                                         @endif
                                         <td>{{$tipo->tipo_movimiento}}</td>
-                                        <td>
+                                        <!-- <td>
                                             @if ($tipo->tipo_movimiento == 'Gasto')
                                                 @switch($tipo->estado)
                                                     @case('Pendiente')
@@ -72,7 +76,17 @@
                                                     <span class="badge badge-info">{{ $tipo->estado }}</span>
                                                 @endswitch
                                             @endif
-                                        </td>
+                                        </td> -->
+                                        <td>{{ $tipo->importe }} €</td>
+                                        @if($tipo->tipo_movimiento == 'Gasto')
+                                            <td>{{ floatval($tipo->iva) }}%</td>
+                                            <td>{{ floatval($tipo->retencion) }}%</td>
+                                            <td>{{ floatval($tipo->descuento) }}%</td>
+                                        @else
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        @endif
                                         <td>
                                             @if ($tipo->tipo_movimiento == 'Ingreso')
                                                 {{ $tipo->importe }} €
@@ -80,7 +94,7 @@
                                         </td>
                                         <td>
                                             @if ($tipo->tipo_movimiento == 'Gasto')
-                                                {{ $tipo->importe }} €
+                                                {{ floatval($tipo->total) }} €
                                             @endif
                                         </td>
 

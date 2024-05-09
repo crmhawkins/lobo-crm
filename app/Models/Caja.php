@@ -37,6 +37,8 @@ class Caja extends Model
         'delegacion_id',
         'cuenta',
         'documento_pdf',
+        'importeIva',
+        'total',
     ];
 
     

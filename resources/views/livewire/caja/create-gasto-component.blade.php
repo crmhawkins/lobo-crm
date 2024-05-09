@@ -81,30 +81,31 @@
                         
 
                         <div class="mb-3 row d-flex align-items-center justify-content-center">
-                            
-                            <div class="col-sm-3">
-                                <label for="importe" class="col-sm-12 col-form-label">Iva</label>
-                                <input type="number"  step="0.1" class="form-control" wire:model="iva" nombre="iva"
-                                    id="iva" placeholder="iva">
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="importe" class="col-sm-12 col-form-label">Descuento</label>
-                                <input type="number"  step="0.1" class="form-control" wire:model="descuento" nombre="descuento"
-                                    id="descuento" placeholder="descuento">
-                            </div>
-                            <div class="col-sm-3">
-                                <label for="importe" class="col-sm-12 col-form-label">Retención</label>
-                                <input type="number"  step="0.1" class="form-control" wire:model="retencion" nombre="retencion"
-                                    id="retencion" placeholder="retencion">
-                            </div>
                             <div class="col-sm-3">
                                 <label for="importe" class="col-sm-12 col-form-label">Importe Neto</label>
                                 <input type="number"  step="0.1" class="form-control" wire:model="importe" nombre="importe"
-                                    id="importe" placeholder="Importe">
+                                    id="importe" placeholder="Importe" wire:change="calcularTotal()">
                             </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">% Iva</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="iva" nombre="iva"
+                                    id="iva" placeholder="iva" wire:change="calcularTotal()">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Importe Iva</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="importeIva" nombre="importeIva"
+                                    id="importeIva" placeholder="Importe Iva" wire:change="calcularTotal()">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">% Retención</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="retencion" nombre="retencion"
+                                    id="retencion" placeholder="retencion" wire:change="calcularTotal()">
+                            </div>
+                            
                         </div>
                         <div class="mb-3 row d-flex align-items-center justify-content-center">
                             <div class="col-sm-3">
+                                
                                 <label for="fecha" class="col-sm-12 col-form-label">Fecha vencimiento</label>
                                 <input type="date" class="form-control" wire:model="fecha_vencimiento" nombre="fecha_vencimiento"
                                     id="fecha_vencimiento" placeholder="fecha_vencimiento...">
@@ -126,14 +127,25 @@
                             </div>
 
                         </div>
-                        
-                        <div class="mb-3 row d-flex align-items-center">
-                            <label for="pago" class="col-sm-12 col-form-label">cuenta</label>
-                            <div class="col-sm-10">
+                        <div class="mb-3 row d-flex align-items-center ">
+
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">% Descuento</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="descuento" nombre="descuento"
+                                    id="descuento" placeholder="descuento" wire:change="calcularTotal()">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Total</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="total" nombre="total"
+                                    id="total" placeholder="total">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="pago" class="col-sm-12 col-form-label">Cuenta</label>
                                 <input type="text" class="form-control" wire:model="cuenta" nombre="cuenta"
                                     id="cuenta" placeholder="Cuenta...">
                             </div>
                         </div>
+                        
                         {{-- <div class="mb-3 row d-flex align-items-center">
                             <label for="banco" class="col-sm-12 col-form-label">Banco</label>
                             <div class="col-sm-10">

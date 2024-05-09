@@ -59,13 +59,13 @@ class IndexComponent extends Component
         $movimiento = $this->caja->where('id', $id)->first();
         if ($index == 0) {
             if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[] = $this->saldo_inicial - $movimiento->importe;
+                $this->saldo_array[] = $this->saldo_inicial - $movimiento->total;
             } else  if ($movimiento->tipo_movimiento == 'Ingreso') {
                 $this->saldo_array[] = $this->saldo_inicial + $movimiento->importe;
             }
         } else {
             if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[] = $this->saldo_array[$index - 1] - $movimiento->importe;
+                $this->saldo_array[] = $this->saldo_array[$index - 1] - $movimiento->total;
             } else if ($movimiento->tipo_movimiento == 'Ingreso') {
                 $this->saldo_array[] = $this->saldo_array[$index - 1] + $movimiento->importe;
             }

@@ -30,13 +30,15 @@ class CreateGastoComponent extends Component
     public $delegaciones = [];
     public $delegacion_id;
     public $departamento;
-    public $iva;
-    public $descuento;
-    public $retencion;
+    public $iva = 0;
+    public $descuento = 0;
+    public $retencion = 0;
     public $importe_neto;
     public $fecha_vencimiento;
     public $fecha_pago;
     public $cuenta;
+    public $importeIva;
+    public $total;
 
     public function mount()
     {
@@ -49,6 +51,31 @@ class CreateGastoComponent extends Component
     {
         return view('livewire.caja.create-gasto-component');
     }
+
+
+    public function calcularTotal(){
+        if($this->importe !== null && $this->importe !== ''){
+            if($this->iva === null || $this->iva === ''){
+                    $this->iva = 0;
+            }
+            if($this->retencion === null || $this->retencion === ''){
+                $this->retencion = 0;
+            }
+            if($this->descuento === null || $this->descuento === ''){
+                $this->descuento = 0;
+            }
+
+            $this->importeIva = $this->importe * $this->iva / 100;
+            
+            $retencionTotal = $this->importe * $this->retencion / 100;
+            $this->total = $this->importe + $this->importeIva + $retencionTotal;
+            if($this->descuento !== null){
+                $this->total = round($this->total - ($this->total * $this->descuento / 100) , 2);   
+            }
+        }
+
+    }
+
     public function submit()
     {
         // Validación de datos
@@ -71,6 +98,8 @@ class CreateGastoComponent extends Component
                 'fecha_vencimiento' => 'nullable',
                 'fecha_pago' => 'nullable',
                 'cuenta' => 'nullable',
+                'importeIva' => 'nullable',
+                'total' => 'nullable',
 
 
             ],
@@ -98,6 +127,8 @@ class CreateGastoComponent extends Component
             'fechaVencimiento' => $this->fecha_vencimiento,
             'fechaPago' => $this->fecha_pago,
             'cuenta' => $this->cuenta,
+            'importeIva' => $this->importeIva,
+            'total' => $this->total,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
