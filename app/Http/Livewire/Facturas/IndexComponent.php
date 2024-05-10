@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 
+
 class IndexComponent extends Component
 {
     // public $search;

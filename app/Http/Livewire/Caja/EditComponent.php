@@ -11,12 +11,14 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
+use Livewire\WithFileUploads;
 
 
 
 class EditComponent extends Component
 {
-	    use LivewireAlert;
+	use LivewireAlert;
+    use WithFileUploads;
 
     public $identificador;
     public $tipo_movimiento;
@@ -45,7 +47,9 @@ class EditComponent extends Component
     public $cuenta;
     public $importeIva;
     public $total;
-
+    public $documento;
+    public $documentoSubido;
+    public $documentoPath;
 
 
 
@@ -72,6 +76,7 @@ class EditComponent extends Component
         $this->importe_neto = $caja->importe_neto;
         $this->fecha_vencimiento = $caja->fechaVencimiento;
         $this->fecha_pago = $caja->fechaPago;
+        $this->documento = $caja->documento_pdf;
         
         $this->cuenta = $caja->cuenta;
         $this->delegaciones = Delegacion::all();
@@ -85,6 +90,22 @@ class EditComponent extends Component
          return $this->clientes->firstWhere('id', $id)->nombre;
     }
 
+
+    public function descargarDocumento()
+    {
+        if($this->documento === null || $this->documento === ''){
+            return;
+        }
+        return response()->download(storage_path('app/private/documentos_gastos/' . $this->documento));
+    }
+
+    public function updating($property , $value){
+        //dd($property, $value);
+        if($property === 'poveedor_id' && $value !== null && $value !== '0'){
+            $proveedor = Proveedores::find($value);
+            $this->cuenta = $proveedor->cuenta_contable;
+        }
+    }
 
 
     public function calcularTotal(){
@@ -138,6 +159,21 @@ class EditComponent extends Component
                 'nombre.required' => 'El nombre es obligatorio.',
             ]);
 
+            if($this->documentoSubido !== null){
+                
+                $this->documentoSubido->storeAs('documentos_gastos', $this->documentoSubido->hashName() , 'private');
+                $this->documentoPath = $this->documentoSubido->hashName();
+                //eliminar el documento anterior cuyo nombre es $documento
+                $caja = Caja::find($this->identificador);
+                $documentoAnterior = $caja->documento;
+                if($documentoAnterior !== null){
+                    unlink(storage_path('app/private/documentos_gastos/' . $documentoAnterior));
+                }
+
+            }else{
+                $this->documentoPath = $this->documento;
+            }
+
         // Encuentra el identificador
         $caja = Caja::find($this->identificador);
         // Guardar datos validados
@@ -162,8 +198,7 @@ class EditComponent extends Component
             'cuenta' => $this->cuenta,
             'importeIva' => $this->importeIva,
             'total' => $this->total,
-
-
+            'documento_pdf' => $this->documentoPath,
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));

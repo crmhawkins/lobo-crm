@@ -232,27 +232,47 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 @enderror
                             </div>
                         </div>
+                        <div >
+                            <label for="documento" class="col-sm-12 col-form-label">Documento Transportista</label>
+                            <input type="file" class="btn btn-info text-dark" wire:model="documentoSubido">
+                         
+                            @error('documento') <span class="error">{{ $message }}</span> @enderror
+                         
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        @if($canEdit)
+       
             <div class="col-md-3">
                 <div class="card m-b-30">
-                    <div class="card-body">
-                        <h5>Acciones</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Editar Movimiento </button>
+                    @if($canEdit)
+                        <div class="card-body">
+                        
+                            <h5>Acciones</h5>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Editar Movimiento </button>
+                                </div>
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Eliminar Movimiento </button>
+                                </div>
                             </div>
-                            <div class="col-12">
-                                <button class="w-100 btn btn-danger mb-2" wire:click="destroy">Eliminar Movimiento </button>
+                        
+                        </div>
+                    @endif
+                    @if($documento)
+                        <div class="card-body">
+                            <h5>Descarga</h5>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-success mb-2" wire:click="descargarDocumento">Documento Transportista</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif        
                 </div>
             </div>
-        @endif
     </div>
 </div>
 

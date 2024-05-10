@@ -162,7 +162,13 @@
                                 <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre de la categoría..." rows="4" cols="150"></textarea>
                             </div>
                         </div>
-
+                        <div >
+                            <label for="documento" class="col-sm-12 col-form-label">Documento Transportista</label>
+                            <input type="file" class="btn btn-info text-dark" wire:model="documento">
+                         
+                            @error('documento') <span class="error">{{ $message }}</span> @enderror
+                         
+                        </div>
 
                     </form>
                 </div>

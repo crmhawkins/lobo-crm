@@ -11,10 +11,13 @@ use Livewire\Component;
 use App\Models\Caja;;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
+use Livewire\WithFileUploads;
+
 
 class CreateGastoComponent extends Component
 {
     use LivewireAlert;
+    use WithFileUploads;
 
     public $tipo_movimiento = 'Gasto';
     public $metodo_pago;
@@ -39,6 +42,8 @@ class CreateGastoComponent extends Component
     public $cuenta;
     public $importeIva;
     public $total;
+    public $documento;
+    public $documentoPath;
 
     public function mount()
     {
@@ -46,12 +51,33 @@ class CreateGastoComponent extends Component
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
 
+
     }
     public function render()
     {
         return view('livewire.caja.create-gasto-component');
     }
 
+    public function updating($property , $value){
+        //dd($property, $value);
+        if($property === 'poveedor_id' && $value !== null && $value !== '0'){
+            $proveedor = Proveedores::find($value);
+            $this->cuenta = $proveedor->cuenta_contable;
+        }
+    }
+    // public function save(){
+
+    //     //validate pdf
+    //     $this->validate([
+    //         'documento' => 'required|mimes:pdf|max:1024',
+    //     ]);
+
+    //     //$this->documento->store('documentos_gastos', );
+    //     $this->documento->storeAs('documentos_gastos', $this->documento->hashName() , 'private');
+    //     //documentpath es la ruta donde se guarda el archivo
+    //     $this->documentoPath = $this->documento->hashName();
+    //     dd( $this->documentoPath);
+    // }
 
     public function calcularTotal(){
         if($this->importe !== null && $this->importe !== ''){
@@ -100,14 +126,16 @@ class CreateGastoComponent extends Component
                 'cuenta' => 'nullable',
                 'importeIva' => 'nullable',
                 'total' => 'nullable',
-
-
+                'documento' => 'required|mimes:pdf|max:1024',
             ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
             ]
         );
+
+        $this->documento->storeAs('documentos_gastos', $this->documento->hashName() , 'private');
+        $this->documentoPath = $this->documento->hashName();
 
         // Guardar datos validados
         $usuariosSave = Caja::create([
@@ -129,6 +157,7 @@ class CreateGastoComponent extends Component
             'cuenta' => $this->cuenta,
             'importeIva' => $this->importeIva,
             'total' => $this->total,
+            'documento_pdf' => $this->documentoPath,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
