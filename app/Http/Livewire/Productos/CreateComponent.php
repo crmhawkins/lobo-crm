@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Productos;
 
 use App\Models\Productos;
 use App\Models\ProductosCategories;
+use App\Models\Iva;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -34,8 +35,12 @@ class CreateComponent extends Component
     public $domicilio_fabricante;
     public $stock_seguridad;
     public $precio;
+    public $ivas;
+    public $iva_id = 1;
+
     public function mount()
     {
+        $this->ivas = Iva::all();
     }
 
     public function render()
@@ -68,7 +73,8 @@ class CreateComponent extends Component
                 'grad_alcohol' => 'nullable',
                 'domicilio_fabricante' => 'nullable',
                 'stock_seguridad' => 'nullable',
-                'precio' => 'nullable'
+                'precio' => 'nullable',
+                'iva_id' => 'required',
             ],
             // Mensajes de error
             [

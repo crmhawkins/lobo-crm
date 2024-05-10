@@ -16,6 +16,8 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
+use App\Models\Iva;
+
 
 class EditComponent extends Component
 {
@@ -151,6 +153,7 @@ class EditComponent extends Component
         }
 
         if ($facturasSave) {
+            $this->calcularTotales($this->facturas);
             $this->alert('success', 'Factura actualizada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -332,8 +335,42 @@ class EditComponent extends Component
             return redirect('admin/facturas');
         }
 
+    }
+
+    public function calcularTotales($factura){
+
+        $iva= 0;
+        $total = 0;
+        $productos = DB::table('productos_pedido')->where('pedido_id', $factura->pedido_id)->get();
+        foreach ($productos as $producto) {
+            $producto_almacen = Productos::find($producto->producto_pedido_id);
+           
+            $iva_id = $producto_almacen->iva_id;
+            $valor_iva = iva::find($iva_id)->iva;
+            //dd($producto);
+            //teniendo en cuenta que valor_iva es el porcentaje de iva, si el iva es 21% valor_iva = 21
+
+            $iva += (($producto->precio_total * $valor_iva) / 100);
+            
+            //total es la suma de los productos con el iva
+            $total += ($producto->precio_total + (($producto->precio_total * $valor_iva) / 100));
+        }
+
+        if($factura->descuento){
+            $iva = $iva - (($iva * $factura->descuento) / 100);
+            $total = $total - (($total * $factura->descuento) / 100);
+        }
+
+        //update de la factura
+        if($factura){
+            $factura->iva = $iva;
+            $factura->total = $total;
+            $factura->save();
+        }
+        
 
     }
+
     public function imprimirFactura()
     {
 

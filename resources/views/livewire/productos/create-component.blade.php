@@ -168,7 +168,7 @@
                             <div class="col-md-3">
                                 <label for="peso_neto_unidad" class="col-form-label">Peso neto por unidad (en gramos)</label>
                                 <input type="number" class="form-control" wire:model="peso_neto_unidad"
-                                    name="peso_neto_unidad" id="peso_neto_unidad" placeholder="Porcentaje de IVA...">
+                                    name="peso_neto_unidad" id="peso_neto_unidad" placeholder="Peso...">
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -176,19 +176,33 @@
                             <div class="col-md-3">
                                 <label for="grad_alcohol" class="col-form-label">Grado de alcohol (% por volumen)</label>
                                 <input type="number" class="form-control" wire:model="grad_alcohol"
-                                    name="grad_alcohol" id="grad_alcohol" placeholder="Porcentaje de IVA...">
+                                    name="grad_alcohol" id="grad_alcohol" placeholder="Grado de alcohol...">
                                 @error('iva')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="domicilio_fabricante" class="col-form-label">Domicilio de fabricación</label>
                                 <input type="text" class="form-control" wire:model="domicilio_fabricante"
-                                name="domicilio_fabricante" id="domicilio_fabricante" placeholder="Porcentaje de IVA...">
+                                name="domicilio_fabricante" id="domicilio_fabricante" placeholder="Domicilio...">
                                 @error('precio')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if($ivas)
+                                <div class="col-md-3">
+                                    <label for="iva" class="col-form-label">Seleccione Iva</label>
+                                    <select class="form-control" name="iva" id="select-iva"
+                                        wire:model="iva_id">
+                                        @foreach ($ivas as $iva)
+                                            <option value="{{ $iva->id }}">{{ $iva->iva }}%</option>
+                                        @endforeach
+                                    </select>
+                                    @error('IVA')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </form>
                 </div>

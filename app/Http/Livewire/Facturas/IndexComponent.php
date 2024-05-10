@@ -235,26 +235,44 @@ class IndexComponent extends Component
         foreach ($facturas as $factura) {
             if (isset($factura->descuento)) {
                 $importe = $factura->precio * (1 + (- ($factura->descuento) / 100));
-                $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
-                $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
-                //$this->totalImportes += number_format( $factura->precio * (1 + (-($factura->descuento) /100)),2);
-                $this->totalImportes += $importe;
-                $this->totalIva += $iva;
-                $this->totalesConIva += $totalesIva;
-                //dd($this->totalImportes);
+
+                if($factura->iva !== null){
+                    $iva = $factura->iva;
+                }else{
+                    $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
+                }
+
+                if($factura->total !== null){
+                    $totalesIva = $factura->total;
+                }else{
+                    $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
+                }
+                
             } else {
                 $importe = $factura->precio;
-                $iva = $factura->precio * 0.21;
-                $totalesIva = $factura->precio * 1.21;
-                $this->totalImportes += $importe;
-                $this->totalIva += $iva;
-                $this->totalesConIva += $totalesIva;
-            }
 
-            $this->totalImportes = round($this->totalImportes, 2);
-            $this->totalIva = round($this->totalIva, 2);
-            $this->totalesConIva = round($this->totalesConIva, 2);
+                if($factura->iva !== null){
+                    $iva = $factura->iva;
+                }else{
+                    $iva = $factura->precio * 0.21;
+                }
+
+                if($factura->total !== null){
+                    $totalesIva = $factura->total;
+                }else{
+                    $totalesIva = $factura->precio * 1.21;
+                }
+                
+            }
+            $this->totalImportes += $importe;
+            $this->totalIva += $iva;
+            $this->totalesConIva += $totalesIva;
+            
         }
+
+        $this->totalImportes = round($this->totalImportes, 2);
+        $this->totalIva = round($this->totalIva, 2);
+        $this->totalesConIva = round($this->totalesConIva, 2);
     }
 
 

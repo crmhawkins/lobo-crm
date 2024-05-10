@@ -143,19 +143,43 @@
                                                 @endif
                                             </td>
                                             @if(isset($fact->descuento))
-                                            <td>{{number_format( $fact->precio * (1 + (-($fact->descuento) /100)),2) }}€
-                                            </td>
-                                            <td>{{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 0.21, 2)}}€
-                                            </td>
-                                            <td>{{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 1.21, 2)}}€
-                                            </td>
+                                                    <td>{{number_format( $fact->precio * (1 + (-($fact->descuento) /100)),2) }}€
+                                                    </td>
+                                                    <td>
+                                                        @if($fact->iva !== null)
+                                                            {{ $fact->iva }}
+                                                        @else
+                                                            {{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 0.21, 2)}}
+                                                        @endif
+                                                        € 
+                                                    </td>
+                                                    <td>
+                                                        @if($fact->total !== null )
+                                                            {{ $fact->total }}
+                                                        @else
+                                                            {{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 1.21, 2)}}
+                                                        @endif
+                                                            €
+                                                    </td>
                                             @else
-                                            <td>{{$fact->precio }}€
-                                            </td>
-                                            <td>{{number_format($fact->precio *  0.21, 2)}}€
-                                            </td>
-                                            <td>{{number_format($fact->precio * 1.21, 2)}}€
-                                            </td>
+                                                <td>{{$fact->precio }}€
+                                                </td>
+                                                <td>
+                                                    @if($fact->iva !== null)
+                                                        {{ $fact->iva}}
+                                                    @else
+                                                        {{number_format($fact->precio *  0.21, 2)}}
+                                                    @endif    
+                                                    €
+                                                </td>
+                                                <td>
+                                                    @if($fact->total !== null )
+                                                        {{ $fact->total }}
+                                                    @else
+                                                        {{number_format($fact->precio * 1.21, 2)}}
+                                                    @endif
+                                                    €
+                                                </td>
                                             @endif
                                             <td >
                                                 @switch($fact->metodo_pago)

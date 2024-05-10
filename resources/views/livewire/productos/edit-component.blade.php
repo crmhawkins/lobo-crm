@@ -184,7 +184,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="domicilio_fabricante" class="col-form-label">Domicilio de fabricación</label>
                                 <input type="text" class="form-control" wire:model="domicilio_fabricante"
                                 name="domicilio_fabricante" id="domicilio_fabricante" placeholder="Porcentaje de IVA..."  @if(!$canEdit) disabled @endif>
@@ -192,6 +192,20 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if($ivas)
+                                <div class="col-md-3">
+                                    <label for="iva" class="col-form-label">Seleccione Iva</label>
+                                    <select class="form-control" name="iva" id="select-iva"
+                                        wire:model="iva_id" @if(!$canEdit) disabled  @endif>
+                                        @foreach ($ivas as $iva)
+                                            <option value="{{ $iva->id }}">{{ $iva->iva }}%</option>
+                                        @endforeach
+                                    </select>
+                                    @error('IVA')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
 
                 </div>

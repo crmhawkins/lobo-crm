@@ -87,7 +87,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 @endif
                             </div>
                         </div>
-                        @if($mostrarElemento)
+                        @if($mostrarElemento || $canEdit)
                             <!-- Si la condición es verdadera, muestra esto -->
                             <div class="form-group col-md-6" wire:ignore>
 

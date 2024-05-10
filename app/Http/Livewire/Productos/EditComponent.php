@@ -10,6 +10,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\Models\ProductoPrecioCliente;
+use App\Models\Iva;
 
 use function PHPUnit\Framework\isNull;
 
@@ -43,6 +44,8 @@ class EditComponent extends Component
     public $domicilio_fabricante;
     public $stock_seguridad;
     public $precio;
+    public $ivas;
+    public $iva_id;
     public function mount()
     {
         $product = Productos::find($this->identificador);
@@ -64,6 +67,8 @@ class EditComponent extends Component
         $this->info_nutricional = $product->info_nutricional;
         $this->grad_alcohol = $product->grad_alcohol;
         $this->domicilio_fabricante = $product->domicilio_fabricante;
+        $this->ivas = Iva::all();
+        $this->iva_id = $product->iva_id;
 
         $product->foto_ruta != null ? $this->foto_rutaOld = $product->foto_ruta : $this->foto_rutaOld = '';
 
@@ -106,7 +111,8 @@ class EditComponent extends Component
                 'grad_alcohol' => 'nullable',
                 'domicilio_fabricante' => 'nullable',
                 'stock_seguridad' => 'nullable',
-                'precio' => 'nullable'
+                'precio' => 'nullable',
+                'iva_id' => 'required',
             ],
             // Mensajes de error
             [
