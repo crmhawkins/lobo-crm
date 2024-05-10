@@ -30,6 +30,8 @@ class Facturas extends Model
         'cantidad',
         'descuento',
         'tipo',
+        'iva',
+        'total',
 
     ];
 

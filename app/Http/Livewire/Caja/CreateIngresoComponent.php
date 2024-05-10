@@ -57,7 +57,7 @@ class CreateIngresoComponent extends Component
     {
         if(isset($id) && $id != null){
             $this->facturaSeleccionada = Facturas::find($id);
-            $this->importeFactura = $this->facturaSeleccionada->precio;
+            $this->importeFactura = $this->facturaSeleccionada->total;
             $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
             if(count($this->ingresos_factura) > 0){
                 $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');

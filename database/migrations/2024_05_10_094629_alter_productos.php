@@ -13,8 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('facturas', function (Blueprint $table) {
-            $table->integer('tipo')->nullable();
+        Schema::table('productos', function (Blueprint $table) {
+            //iva_id
+            $table->unsignedBigInteger('iva_id')->nullable();
+            $table->foreign('iva_id')->references('id')->on('tipos_iva');
         });
     }
 
@@ -26,8 +28,9 @@ return new class extends Migration
     public function down()
     {
         //dropColumn
-        Schema::table('facturas', function (Blueprint $table) {
-            $table->dropColumn('tipo');
+        Schema::table('productos', function (Blueprint $table) {
+            $table->dropForeign(['iva_id']);
+            $table->dropColumn('iva_id');
         });
     }
 };

@@ -32,7 +32,8 @@ class Productos extends Model
         'grad_alcohol',
         'domicilio_fabricante',
         'stock_seguridad',
-        'precio'
+        'precio',
+        'iva_id'
 
     ];
 

@@ -96,14 +96,14 @@
                                 </div>
                             </div>
                         @endif
-                        <div class="mb-3 row d-flex align-items-center">
+                        {{-- <div class="mb-3 row d-flex align-items-center">
                             <div class="col-sm-10" wire:ignore.self>
                                 <label >
                                     <input type="checkbox" wire:model="compensacion" nombre="compensacion" id="compensacion">
                                     ¿Compensación?
                                 </label>
                             </div>
-                        </div>
+                        </div> --}}
                         @if($compensacion === 1)
                             <!-- Si la compensación está activada, se muestra ... -->
                         @endif

@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('facturas', function (Blueprint $table) {
-            $table->integer('tipo')->nullable();
+            //iva pero ya calculado
+            $table->decimal('iva', 10, 2)->nullable();
+            //total
+            $table->decimal('total', 10, 2)->nullable();
+
         });
     }
 
@@ -27,7 +31,8 @@ return new class extends Migration
     {
         //dropColumn
         Schema::table('facturas', function (Blueprint $table) {
-            $table->dropColumn('tipo');
+            $table->dropColumn('iva');
+            $table->dropColumn('total');
         });
     }
 };

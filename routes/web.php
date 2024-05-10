@@ -127,6 +127,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/caja-create-gasto', [CajaController::class, 'createGasto'])->name('caja.create-gasto');
     Route::get('/caja-edit/{id}', [CajaController::class, 'edit'])->name('caja.edit');
 
-    Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
-
+    //Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
+    Route::get('/test/ivaAProductos', [Test::class, 'ivaAProductos'])->name('test.ivaAProductos'); //ok
+    Route::get('/test/calcularIvayTotalFacturas', [Test::class, 'calcularIvayTotalFacturas'])->name('test.calcularIvayTotalFacturas'); //ok
 });

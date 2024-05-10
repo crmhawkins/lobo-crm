@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Facturas;
 use App\Models\Clients;
+use App\Models\Productos;
+use App\Models\Iva;
 
 class Test extends Controller
 {
@@ -37,6 +39,58 @@ class Test extends Controller
         //dd($facturas);
 
 
-        return 'ok';
+        return 'test ok';
     }
+
+
+    public function ivaAProductos()
+    {
+        $response = '';
+
+        $ivas = Iva::all();
+        $productos = Productos::all();
+
+        $iva = Iva::where('iva', 21)->first();
+
+        if (!$iva) {
+            $iva = new Iva();
+            $iva->name = '21%';
+            $iva->iva = 21;
+            $iva->save();
+        }
+
+        foreach ($productos as $producto) {
+            $producto->iva_id = $iva->id;
+            $producto->save();
+        } 
+
+        return 'test ok';
+    }
+
+
+    public function calcularIvayTotalFacturas(){
+        $facturas = Facturas::all();
+
+        foreach ($facturas as $factura) {
+            if (isset($factura->descuento)) {
+                $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
+                $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
+            } else {
+                $importe = $factura->precio;
+                $iva = $factura->precio * 0.21;
+                $totalesIva = $factura->precio * 1.21;
+            }
+
+            $factura = Facturas::find($factura->id);
+            $factura->iva = $iva;
+            $factura->total = $totalesIva;
+            $factura->save();
+        }
+
+        return 'test ok';
+
+    }
+
+
+
 }
