@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\AnotacionesClientePedido;
 use App\Models\ProductoPrecioCliente;
+use App\Models\Almacen;
 
 class CreateComponent extends Component
 {
@@ -54,6 +55,7 @@ class CreateComponent extends Component
 	public $sinCargo = false;
     public $anotacionesProximoPedido = [];
     public $productosPecioCliente = [];
+    public $almacenes = [];
     public function mount()
     {
 
@@ -62,6 +64,7 @@ class CreateComponent extends Component
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
         $this->cliente_id = null;
+        $this->almacenes = Almacen::all(); 
     }
 
     public function selectCliente()
@@ -98,6 +101,77 @@ class CreateComponent extends Component
        
 
     }
+
+    public function aceptarPedido($id)
+    {
+        //si el rol es 2 , directamente se acepta el pedido
+
+        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+            $this->bloqueado=true;
+        }else{$this->bloqueado=false;
+        }
+
+        $validatedData = $this->validate(
+            [
+                'cliente_id' => 'required',
+                'nombre' => 'nullable',
+                'precio' => 'required',
+                'estado' => 'required',
+                'fecha' => 'required',
+                'tipo_pedido_id' => 'required',
+                'observaciones' => 'nullable',
+                'almacen_id' => 'required',
+                'direccion_entrega' => 'nullable',
+                'provincia_entrega' => 'nullable',
+                'localidad_entrega' => 'nullable',
+                'cod_postal_entrega' => 'nullable',
+                'orden_entrega' => 'nullable',
+                'descuento' => 'nullable',
+                'porcentaje_descuento'=> 'nullable',
+                'bloqueado'=> 'nullable',
+            ],
+            // Mensajes de error
+            [
+                'precio.requi0red' => 'El precio del pedido es obligatorio.',
+                'cliente_id.required' => 'El cliente es obligatorio.',
+                'estado.required' => 'El estado del pedido es obligatoria.',
+                'fecha.required' => 'La fecha es obligatoria.',
+            ]
+        );
+        $pedido = Pedido::find($id);
+        $pedido->update($validatedData);
+        if($this->bloqueado){
+            return;
+        }
+        $pedidosSave = $pedido->update(['estado' => 2]);
+        if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 13,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Aceptado en Almacén',
+                'descripcion' => 'El pedido nº ' . $pedido->id.' ha sido aceptado',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
+            $this->alert('success', '¡Pedido aceptado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido enviar el pedido!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+    }
+
+    
 
     public function completarAnotacion($id){
         $anotacion = AnotacionesClientePedido::find($id);
@@ -145,33 +219,66 @@ class CreateComponent extends Component
 
 
         // Validación de datos
-        $validatedData = $this->validate(
-            [
-                'cliente_id' => 'required',
-                'nombre' => 'nullable',
-                'precio' => 'required',
-                'estado' => 'required',
-                'fecha' => 'required',
-                'tipo_pedido_id' => 'required',
-                'almacen_id' => 'required',
-                'observaciones' => 'nullable',
-                'direccion_entrega' => 'nullable',
-                'provincia_entrega' => 'nullable',
-                'localidad_entrega' => 'nullable',
-                'cod_postal_entrega' => 'nullable',
-                'orden_entrega' => 'nullable',
-                'descuento'=> 'nullable',
-                'porcentaje_descuento'=> 'nullable',
-                'bloqueado'=> 'nullable',
-            ],
-            // Mensajes de error
-            [
-                'precio.required' => 'El precio del pedido es obligatorio.',
-                'cliente_id.required' => 'El cliente es obligatorio.',
-                'estado.required' => 'El estado del pedido es obligatoria.',
-                'fecha.required' => 'La fecha es obligatoria.',
-            ]
-        );
+        //si el rol es 2
+        if (Auth::user()->role == 2) {
+            $validatedData = $this->validate(
+                [
+                    'cliente_id' => 'required',
+                    'nombre' => 'nullable',
+                    'precio' => 'required',
+                    'estado' => 'required',
+                    'fecha' => 'required',
+                    'tipo_pedido_id' => 'required',
+                    'almacen_id' => 'required',
+                    'observaciones' => 'nullable',
+                    'direccion_entrega' => 'nullable',
+                    'provincia_entrega' => 'nullable',
+                    'localidad_entrega' => 'nullable',
+                    'cod_postal_entrega' => 'nullable',
+                    'orden_entrega' => 'nullable',
+                    'descuento'=> 'nullable',
+                    'porcentaje_descuento'=> 'nullable',
+                    'bloqueado'=> 'nullable',
+                ],
+                // Mensajes de error
+                [
+                    'precio.required' => 'El precio del pedido es obligatorio.',
+                    'cliente_id.required' => 'El cliente es obligatorio.',
+                    'estado.required' => 'El estado del pedido es obligatoria.',
+                    'fecha.required' => 'La fecha es obligatoria.',
+                ]
+            );
+    
+        }else{
+            $validatedData = $this->validate(
+                [
+                    'cliente_id' => 'required',
+                    'nombre' => 'nullable',
+                    'precio' => 'required',
+                    'estado' => 'required',
+                    'fecha' => 'required',
+                    'tipo_pedido_id' => 'required',
+                    'almacen_id' => 'nullable',
+                    'observaciones' => 'nullable',
+                    'direccion_entrega' => 'nullable',
+                    'provincia_entrega' => 'nullable',
+                    'localidad_entrega' => 'nullable',
+                    'cod_postal_entrega' => 'nullable',
+                    'orden_entrega' => 'nullable',
+                    'descuento'=> 'nullable',
+                    'porcentaje_descuento'=> 'nullable',
+                    'bloqueado'=> 'nullable',
+                ],
+                // Mensajes de error
+                [
+                    'precio.required' => 'El precio del pedido es obligatorio.',
+                    'cliente_id.required' => 'El cliente es obligatorio.',
+                    'estado.required' => 'El estado del pedido es obligatoria.',
+                    'fecha.required' => 'La fecha es obligatoria.',
+                ]
+            );
+        }
+        
 
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
@@ -209,6 +316,10 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($pedidosSave) {
+            //si el rol es 2 , directamente se acepta el pedido
+            if (Auth::user()->role == 2) {
+                $this->aceptarPedido($pedidosSave->id);
+            } 
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

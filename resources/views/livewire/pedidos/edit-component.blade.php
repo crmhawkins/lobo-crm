@@ -1,5 +1,5 @@
 @php
-$mostrarElemento = Auth::user()->isdirectorcomercial();
+$mostrarElemento = Auth::user()->role == 2;
 $EsAdmin = Auth::user()->isAdmin();
 $canEdit = $EsAdmin; //|| $estado == 1;
 @endphp

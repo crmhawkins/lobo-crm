@@ -1,3 +1,8 @@
+@php
+$mostrarElemento = Auth::user()->role == 2;
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -100,6 +105,25 @@
                                 </select>
                             </div>
                         </div>
+                        @if($mostrarElemento)
+                            <!-- Si la condición es verdadera, muestra esto -->
+                            <div class="form-group col-md-6" wire:ignore>
+
+                                <div x-data="" x-init="$('#select2-almacen').select2();
+                                    $('#select2-almacen').on('change', function(e) {
+                                    var data = $('#select2-almacen').select2('val');
+                                    @this.set('almacen_id', data);
+                                    });">
+                                    <label for="fechaVencimiento">Almacen</label>
+                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-12">
