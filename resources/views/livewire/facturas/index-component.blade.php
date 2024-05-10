@@ -260,14 +260,37 @@
      livewire.on('actualizarTablaAntes', ()=>{
         
         $('#datatable-buttons').DataTable().destroy();
-        console.log('destruido')
+        //console.log('destruido')
 
      })
 
      livewire.on('actualizarTablaDespues', () =>{
         
-            $('#datatable-buttons').DataTable();
-            console.log('creado')
+            $('#datatable-buttons').DataTable({
+        layout: {
+        topStart: 'buttons'
+    },
+        lengthChange: false,
+        pageLength: 30,
+        buttons: ['copy', 'excel', 'pdf', 'colvis'],
+        responsive: true,
+        "language": {
+            "lengthMenu": "Mostrando _MENU_ registros por página",
+            "zeroRecords": "Nothing found - sorry",
+            "info": "Mostrando página _PAGE_ of _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ total registros)",
+            "search": "Buscar:",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
+                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
+            },
+            "zeroRecords": "No se encontraron registros coincidentes",
+        }
+    });
+            //console.log('creado')
         
         
         //$('#datatable-buttons').DataTable().destroy();
