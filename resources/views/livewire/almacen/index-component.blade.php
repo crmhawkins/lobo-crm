@@ -82,6 +82,7 @@
                                         </td>
                                         <td>
                                             <a onclick="prepararPedido({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Preparar pedido</a>
+                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
                                         </td>
                                     </tr>
 
@@ -152,6 +153,7 @@
                                         </td>
                                         <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Comprobar pedido</a>
                                             <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary">Generar albarán</a>
+                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
 
                                         </td>
                                     </tr>
@@ -265,6 +267,7 @@
                                                 
                                                 <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary" style="color: white;">Pedido En Ruta</button>
                                             @endif
+                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
                                         </td>
                                     </tr>
                                 @endforeach
