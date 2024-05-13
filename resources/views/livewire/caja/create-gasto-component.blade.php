@@ -163,7 +163,7 @@
                             </div>
                         </div>
                         <div >
-                            <label for="documento" class="col-sm-12 col-form-label">Documento Transportista</label>
+                            <label for="documento" class="col-sm-12 col-form-label">Documento Adjunto</label>
                             <input type="file" class="btn btn-info text-dark" wire:model="documento">
                          
                             @error('documento') <span class="error">{{ $message }}</span> @enderror
