@@ -180,7 +180,7 @@ class CreateComponent extends Component
         ]);
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
     }
-    protected $listeners = ['refreshComponent' => '$refresh'];
+    protected $listeners = ['refreshComponent' => '$refresh', 'closeModal' => 'closeModal'];
 
     public function render()
     {
@@ -346,6 +346,7 @@ class CreateComponent extends Component
             'submit',
             'alertaGuardar',
             'checkLote',
+            'closeModal'
         ];
     }
 
@@ -424,6 +425,31 @@ class CreateComponent extends Component
             $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
         }
         return $unidades;
+    }
+
+
+    public function isClienteSeleccionado(){
+        if($this->cliente_id == null){
+           
+            //alert cuando finalize que ejecute closeModal
+            $this->alert('error', '¡Debe seleccionar un cliente!', [
+                'position' => 'center',
+                'timer' => 1500,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+                'onClose' => $this->emit('closeModal'),
+                'allowOutsideClick' => false,
+            ]);
+
+
+            return false;
+        }
+        return true;
+    }
+
+    public function closeModal(){
+        return '';
     }
 
     public function addProductos($id)

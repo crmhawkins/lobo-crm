@@ -178,7 +178,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
                                 Lista de productos <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                    style="align-self: end !important;" data-target="#addProductModal" wire:click="isClienteSeleccionado()">Añadir</button>
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
@@ -428,7 +428,13 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
         <script>
             // In your Javascript (external .js resource or <script> tag)
-
+                Livewire.on('closeModal', () => {
+                    setTimeout(() => {
+                        $('#addProductModal').modal('hide');
+                    }, 2000);
+                    console.log('cerrar modal')
+                   
+                });
             $("#alertaGuardar").on("click", () => {
                 Swal.fire({
                     title: '¿Estás seguro?',
