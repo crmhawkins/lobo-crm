@@ -1,4 +1,11 @@
 <div class="container-fluid">
+    <style>
+        @media(max-width: 760px){
+                .unidades > div > div{
+                    min-width: 100px;
+                }
+        }
+        </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -73,41 +80,42 @@
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
                                 Stock</h5>
                             <div class="form-group col-md-12">
-                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>N.º interno</th>
-                                            <th>N.º Lote</th>
-                                            <th>Cantidad</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
+                                <div class="table-responsive">
+                                    <table class="table  table-striped table-bordered dt-responsive nowrap">
+                                        <thead>
                                             <tr>
-                                                <td width="25%">
-                                                    {{$this->getNombreTabla($this->stockentrante->producto_id) }}
-                                                </td>
-                                                <td width="20%">
-                                                    {{$this->stockentrante->lote_id  }}
-                                                </td>
-                                                <td width="20%">
-                                                    {{$this->stockentrante->orden_numero }}
-                                                </td>
-                                                <td width="35%">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-8 text-end">
-                                                            <input type="number" class="form-control" wire:model="cantidad">
-                                                        </div>
-                                                        <div class="col-4 text-start">
-                                                            <p class="my-auto">Unidades</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
+                                                <th>Producto</th>
+                                                <th>N.º interno</th>
+                                                <th>N.º Lote</th>
+                                                <th>Cantidad</th>
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td width="25%">
+                                                        {{$this->getNombreTabla($this->stockentrante->producto_id) }}
+                                                    </td>
+                                                    <td width="20%">
+                                                        {{$this->stockentrante->lote_id  }}
+                                                    </td>
+                                                    <td width="20%">
+                                                        {{$this->stockentrante->orden_numero }}
+                                                    </td>
+                                                    <td width="35%" class="unidades">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8 text-end">
+                                                                <input type="number" class="form-control" wire:model="cantidad">
+                                                            </div>
+                                                            <div class="col-4 text-start">
+                                                                <p class="my-auto">Unidades</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

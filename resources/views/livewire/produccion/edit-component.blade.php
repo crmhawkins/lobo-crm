@@ -1,4 +1,11 @@
 <div class="container-fluid">
+    <style>
+        @media(max-width: 760px){
+            .cantidadInput{
+                min-width: 60px;
+            }
+        }
+    </style>
     <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">
@@ -132,7 +139,7 @@
                                                     <td width="50%">
                                                         <div class="row align-items-center">
                                                             <div class="col-6 text-end"><input type="number"
-                                                                    class="form-control"
+                                                                    class="form-control cantidadInput"
                                                                     wire:model="mercaderias_gastadas.{{ $productoIndex }}.cantidad"
                                                                     wire:change='setPrecioEstimado' disabled>
                                                             </div>

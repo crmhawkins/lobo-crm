@@ -80,7 +80,7 @@
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
                                 Lista de productos <button type="button" class="btn btn-primary" data-toggle="modal"
-                                    style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                    style="align-self: end !important;" data-target="#addProductModal" >Añadir</button>
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_ordenados) > 0)

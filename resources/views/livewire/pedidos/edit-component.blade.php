@@ -217,6 +217,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
+                                <div class="table-responsive">
                                     <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
                                         <thead>
                                             <tr>
@@ -234,20 +235,20 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                     </td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
                                                     @if ($canEdit)
-                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
+                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block ; min-width: 80px;">€</td>
                                                     @else
-                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block" disabled>€</td>
+                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block; min-width: 80px;" disabled>€</td>
                                                     @endif
                                                     <td>{{ $producto['precio_total']}} €</td>
                                                     @if ($canEdit)
-                                                    <td>
+                                                    <td class="">
                                                         @if(Auth::user()->role != 3 && Auth::user()->role != 2)
                                                             <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                             <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
                                                         @endif
                                                     </td>
                                                     @else
-                                                    <td>
+                                                    <td class="d-flex flex-nowrap">
                                                         <button type="button" class="btn btn-secondary">X</button>
                                                         <button class="btn btn-info">Editar</button>
                                                     </td>
@@ -261,6 +262,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
                                 @endif
                             </div>
                         </div>

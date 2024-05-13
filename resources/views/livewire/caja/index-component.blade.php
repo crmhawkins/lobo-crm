@@ -22,91 +22,93 @@
                 <div class="table-responsive card-body">
                     <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
                     @if (count($caja) > 0)
-                        <table class="table-sm table-striped table-bordered mt-5"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;" >
-                            <thead>
-                                <tr>
-                                    <th colspan="9">Saldo inicial</th>
-                                    <th colspan="3">{{$saldo_inicial}}€</th>
-                                </tr>
-                                <tr>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Concepto</th>
-                                    <th scope="col">Asociado</th>
-                                    <th scope="col">Desglose</th>
-                                    <!--<th scope="col">Estado</th> -->
-                                    <th scope="col">Importe</th>
-                                    <th scope="col">% Iva</th>
-                                    <th scope="col">Retencion</th>
-                                    <th scope="col">Descuento</th>
-                                    <th scope="col">(+)</th>
-                                    <th scope="col">(-)</th>
-                                    <th scope="col">Saldo</th>
-
-
-                                    <th scope="col">Ver</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($caja as $tipoIndex => $tipo)
+                        <div class="table-responsive">
+                            <table id="tablacaja" class="table-sm table-striped table-bordered mt-5"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;" >
+                                <thead>
+                                    {{-- <tr>
+                                        <th colspan="9">Saldo inicial</th>
+                                        <th colspan="3">{{$saldo_inicial}}€</th>
+                                    </tr> --}}
                                     <tr>
-                                        <td>{{ $tipo->fecha }}</td>
-                                        <td>{{ $tipo->descripcion }}</td>
-                                        @if (isset($tipo->pedido_id))
-                                        <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
-                                        @elseif($tipo->poveedor_id)
-                                        <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
-                                        @else
-                                        <td></td>
-                                        @endif
-                                        <td>{{$tipo->tipo_movimiento}}</td>
-                                        <!-- <td>
-                                            @if ($tipo->tipo_movimiento == 'Gasto')
-                                                @switch($tipo->estado)
-                                                    @case('Pendiente')
-                                                    <span class="badge badge-warning">{{ $tipo->estado }}</span>
-                                                        @break
-                                                    @case("Pagado")
-                                                    <span class="badge badge-success">{{ $tipo->estado }}</span>
-                                                        @break
-                                                    @case('Vencido')
-                                                    <span class="badge badge-danger">{{ $tipo->estado }}</span>
-                                                        @break
-                                                    @default
-                                                    <span class="badge badge-info">{{ $tipo->estado }}</span>
-                                                @endswitch
-                                            @endif
-                                        </td> -->
-                                        <td>{{ $tipo->importe }} €</td>
-                                        @if($tipo->tipo_movimiento == 'Gasto')
-                                            <td>{{ floatval($tipo->iva) }}%</td>
-                                            <td>{{ floatval($tipo->retencion) }}%</td>
-                                            <td>{{ floatval($tipo->descuento) }}%</td>
-                                        @else
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        @endif
-                                        <td>
-                                            @if ($tipo->tipo_movimiento == 'Ingreso')
-                                                {{ $tipo->importe }} €
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($tipo->tipo_movimiento == 'Gasto')
-                                                {{ floatval($tipo->total) }} €
-                                            @endif
-                                        </td>
-
-                                        <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Concepto</th>
+                                        <th scope="col">Asociado</th>
+                                        <th scope="col">Desglose</th>
+                                        <!--<th scope="col">Estado</th> -->
+                                        <th scope="col">Importe</th>
+                                        <th scope="col">% Iva</th>
+                                        <th scope="col">Retencion</th>
+                                        <th scope="col">Descuento</th>
+                                        <th scope="col">(+)</th>
+                                        <th scope="col">(-)</th>
+                                        <th scope="col">Saldo</th>
 
 
-                                        <td> <a href="caja-edit/{{ $tipo->id }}"
-                                                class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a></td>
+                                        <th scope="col">Ver</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($caja as $tipoIndex => $tipo)
+                                        <tr>
+                                            <td>{{ $tipo->fecha }}</td>
+                                            <td>{{ $tipo->descripcion }}</td>
+                                            @if (isset($tipo->pedido_id))
+                                            <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
+                                            @elseif($tipo->poveedor_id)
+                                            <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
+                                            @else
+                                            <td></td>
+                                            @endif
+                                            <td>{{$tipo->tipo_movimiento}}</td>
+                                            <!-- <td>
+                                                @if ($tipo->tipo_movimiento == 'Gasto')
+                                                    @switch($tipo->estado)
+                                                        @case('Pendiente')
+                                                        <span class="badge badge-warning">{{ $tipo->estado }}</span>
+                                                            @break
+                                                        @case("Pagado")
+                                                        <span class="badge badge-success">{{ $tipo->estado }}</span>
+                                                            @break
+                                                        @case('Vencido')
+                                                        <span class="badge badge-danger">{{ $tipo->estado }}</span>
+                                                            @break
+                                                        @default
+                                                        <span class="badge badge-info">{{ $tipo->estado }}</span>
+                                                    @endswitch
+                                                @endif
+                                            </td> -->
+                                            <td>{{ $tipo->importe }} €</td>
+                                            @if($tipo->tipo_movimiento == 'Gasto')
+                                                <td>{{ floatval($tipo->iva) }}%</td>
+                                                <td>{{ floatval($tipo->retencion) }}%</td>
+                                                <td>{{ floatval($tipo->descuento) }}%</td>
+                                            @else
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            @endif
+                                            <td>
+                                                @if ($tipo->tipo_movimiento == 'Ingreso')
+                                                    {{ $tipo->importe }} €
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($tipo->tipo_movimiento == 'Gasto')
+                                                    {{ floatval($tipo->total) }} €
+                                                @endif
+                                            </td>
+
+                                            <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>
+
+
+                                            <td> <a href="caja-edit/{{ $tipo->id }}"
+                                                    class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -135,6 +137,41 @@
     </div>
 
     @section('scripts')
+
+    <script>
+        
+        //on document ready datatable responsive
+        $(document).ready(function() {
+            $('#tablacaja').DataTable({
+        layout: {
+        topStart: 'buttons'
+    },
+        lengthChange: false,
+        pageLength: 30,
+        buttons: ['copy', 'excel', 'pdf', 'colvis'],
+        responsive: true,
+        "language": {
+            "lengthMenu": "Mostrando _MENU_ registros por página",
+            "zeroRecords": "Nothing found - sorry",
+            "info": "Mostrando página _PAGE_ of _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ total registros)",
+            "search": "Buscar:",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
+                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
+            },
+            "zeroRecords": "No se encontraron registros coincidentes",
+        }
+    });
+        });
+
+
+    </script>
+
+
     <script src="../assets/js/jquery.slimscroll.js"></script>
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>

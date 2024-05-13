@@ -1,4 +1,21 @@
 <div class="container-fluid mx-auto">
+    <style>
+        @media (max-width: 768px) {
+            #filtrosSelect {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: start !important;
+                gap: 20px !important;
+                margin-bottom: 10px;
+            }
+
+            .botones{
+                width: 100%;
+                margin: 10px;
+                display: block;
+            }
+        }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -26,12 +43,12 @@
                             <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
                         </div>
                     @endif
-                    <div class="d-flex gap-1 justify-content-end align-items-end flex-column" >
+                    <div class="d-flex gap-1 justify-content-end align-items-end flex-column flex-wrap" >
                         
-                        <div class="d-flex gap-2 justify-content-end" >
+                        <div class="d-flex gap-2 justify-content-end" id="filtrosSelect" >
                             <div class="filtro d-flex flex-column">
                                 <label class=""  id="comerciales"  >
-                                    Filtrar por Comerciales
+                                    Comerciales
                                     </label>
                                 <select class="text-white bg-secondary rounded p-1" id="comercialesSelect" wire:change="onChangeFiltrado(1)" wire:model="comercialSeleccionadoId">
                                     <option value="-1">Todos</option>
@@ -43,7 +60,7 @@
                             </div>
                             <div class="filtro d-flex flex-column" >
                                 <label class=""  id="delegaciones"  >
-                                Filtrar por Delegaciones
+                                Delegaciones
                                 </label>
                                 <select class="text-white bg-secondary rounded p-1" id="delegacionesSelect" wire:change="onChangeFiltrado(2)" wire:model="delegacionSeleccionadaCOD">
                                     <option value='-1' >Todas</option>
@@ -55,7 +72,7 @@
                             </div>
                             <div class="filtro d-flex flex-column" >
                                 <label class=""  id="clientes"  >
-                                Filtrar por Clientes
+                                Clientes
                                 </label>
                                 <select class="text-white bg-secondary rounded p-1" id="clientesSelect"  wire:change="onChangeFiltrado(3)" wire:model="clienteSeleccionadoId">
                                     <option value='-1' >Todos</option>
@@ -214,16 +231,16 @@
                                                 <span class="badge badge-info">{{ $fact->estado }}</span>
                                             @endswitch</td>
                                             <td> 
-                                                <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary">
+                                                <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary botones">
                                                     @if(Auth::user()->role == 3)
                                                         Ver
                                                     @else
                                                         Ver/Editar
                                                     @endif
                                                 </a>
-                                                <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Factura Con IVA</button>
-                                                <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary" style="color: white;">Factura Sin IVA</button>
-                                                <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary" style="color: white;">Albarán</button>
+                                                <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
+                                                <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
+                                                <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
                                             </td>
                                         </tr>
                                     @endforeach

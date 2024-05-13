@@ -1,4 +1,13 @@
 <div class="container-fluid mx-auto">
+    <style>
+        @media (max-width: 760px){
+            .botones{
+                width: 100%;
+                margin: 10px;
+                display: block;
+            }
+        }
+        </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -151,9 +160,9 @@
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
-                                        <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary" style="color: white;">Comprobar pedido</a>
-                                            <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary">Generar albarán</a>
-                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
+                                        <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary botones" style="color: white;">Comprobar pedido</a>
+                                            <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary botones">Generar albarán</a>
+                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
 
                                         </td>
                                     </tr>
@@ -256,18 +265,18 @@
                                         @endswitch
                                         </td>
                                         <td>
-                                                <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary"  style="color: white;">Descargar albarán</a>
+                                                <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary botones"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8 )
                                                 @if($pedido->tipo_pedido_id == 0)
-                                                    <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary">Crear Factura</a>
+                                                    <a href="facturas-create/{{ $pedido->id }}" class="btn btn-secondary botones">Crear Factura</a>
                                                 @else
-                                                    <button class="btn btn-secondary" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
+                                                    <button class="btn btn-secondary botones" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
                                                 @endif
                                             @else
                                                 
-                                                <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary" style="color: white;">Pedido En Ruta</button>
+                                                <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary botones" style="color: white;">Pedido En Ruta</button>
                                             @endif
-                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
+                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
                                         </td>
                                     </tr>
                                 @endforeach
