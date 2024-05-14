@@ -41,15 +41,9 @@ class IndexComponent extends Component
 
     }
 
-    public function updating($property, $value){
+    public function updated($property, $value){
         if($property == 'filtro'){
-            if($value == 'Ingreso'){
-                $this->caja = Caja::where('tipo_movimiento', 'Ingreso')->get();
-            }else if($value == 'Gasto'){
-                $this->caja = Caja::where('tipo_movimiento', 'Gasto')->get();
-            }else{
-                $this->caja = Caja::all();
-            }
+            $this->cambioMes();
         }   
     }
 
@@ -102,6 +96,11 @@ class IndexComponent extends Component
 
         // Obtener registros de la tabla Caja que están entre fechaInicio y fechaFin
         $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->get();
+
+        //si filtro es diferente de todos
+        if($this->filtro != 'Todos' && $this->filtro != null){
+            $this->caja = $this->caja->where('tipo_movimiento', $this->filtro);
+        }
 
         // Reiniciar saldo_array
         $this->saldo_array = [];
