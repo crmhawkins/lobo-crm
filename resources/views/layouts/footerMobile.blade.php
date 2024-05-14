@@ -95,7 +95,7 @@
                 stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <path d="M4 6l16 0" />
-                <path d="M4 12l16 0" />
+                <path d="M4 12l16 0" />stock
                 <path d="M4 18l16 0" />
             </svg><br><span>MENÚ</span></button>
     </footer>
@@ -208,7 +208,8 @@
                         </a>
                     </div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5|| $user_rol == 7)
+                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5|| $user_rol == 7 || $user_rol == 2)
+                  @if($user_rol !=2)
                     <div class="col-6"><a class="footer-button" href="{{ route('almacen.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5"
@@ -222,6 +223,7 @@
                             </svg>
                             <span>ALMACÉN</span>
                         </a></div>
+                  @endif
                     <div class="col-6"><a class="footer-button" href="{{ route('stock.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-packages"
                                 width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5"
