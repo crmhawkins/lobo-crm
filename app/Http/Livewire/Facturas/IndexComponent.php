@@ -9,6 +9,7 @@ use App\Models\Delegacion;
 use App\Models\Facturas;
 use App\Models\Productos;
 use App\Models\StockEntrante;
+use App\Models\Configuracion;
 use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -427,7 +428,7 @@ class IndexComponent extends Component
     {
 
         $factura = Facturas::find($id);
-        
+        $configuracion = Configuracion::first();
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
@@ -476,6 +477,7 @@ class IndexComponent extends Component
                 'cliente' => $cliente,
                 'productos' => $productos,
                 'producto' => $productofact,
+                'configuracion' => $configuracion,
             ];
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -498,6 +500,7 @@ public function descargarPdfs($id)
 
         $factura = Facturas::find($id);
         $iva = true;
+        $configuracion = Configuracion::first();
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
@@ -546,6 +549,7 @@ public function descargarPdfs($id)
                 'cliente' => $cliente,
                 'productos' => $productos,
                 'producto' => $productofact,
+                'configuracion' => $configuracion,
             ];
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF

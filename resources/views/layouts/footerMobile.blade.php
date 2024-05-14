@@ -292,6 +292,12 @@
                             <span>ADMIN. USUARIOS</span>
                         </a>
                     </div>
+                    <div class="exit-button-col">
+                        <a class="footer-button" href="{{ route('configuracion.edit') }}">
+                            <i class="fa-solid fa-gears" style="font-size: 44px"></i>
+                            <span>OPCIONES </span>
+                        </a>
+                    </div>
                 @endif
                 <div @if ($user_rol == 1) class="col-12" @else class="col-6" @endif> <a class="footer-button" href="{{ route('logout') }}"
                         onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">

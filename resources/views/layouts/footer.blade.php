@@ -184,7 +184,14 @@
                             <path d="M15.97 17.25l1.3 .75"></path>
                             <path d="M20.733 20l1.3 .75"></path>
                         </svg>
-                        <span>ADMIN. USUARIOS</span>
+                        <span>ADMIN. USUARIOS </span>
+                    </a>
+                </div>
+                
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('configuracion.edit') }}">
+                        <i class="fa-solid fa-gears" style="font-size: 44px"></i>
+                        <span>OPCIONES </span>
                     </a>
                 </div>
             </div>

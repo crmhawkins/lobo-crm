@@ -24,6 +24,8 @@ use App\Http\Controllers\Test;
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
 
+use App\Http\Controllers\ConfiguracionController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -130,4 +132,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     //Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
     Route::get('/test/ivaAProductos', [Test::class, 'ivaAProductos'])->name('test.ivaAProductos'); //ok
     Route::get('/test/calcularIvayTotalFacturas', [Test::class, 'calcularIvayTotalFacturas'])->name('test.calcularIvayTotalFacturas'); //ok
+
+    //ruta configuracion
+    Route::get('/configuracion', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
 });

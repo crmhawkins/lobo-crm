@@ -229,9 +229,13 @@
                     @default
                         ------------------
                         @break
-                @endswitch</td>
+                @endswitch
+                <br>
+                <br>
+                <span style="font-weight: bold">Número de cuenta: </span><span> {{$configuracion->cuenta}}  </span>
+            </td>
 
-            <td><span style="font-weight: bold">Vencimiento a {{ $cliente->vencimiento_factura_pref}} días </span></td>
+            <td ><span style="font-weight: bold;">Vencimiento a {{ $cliente->vencimiento_factura_pref}} días </span></td>
         </tr>
         {{-- <tr>
             <td style="text-align: left !important"><span style="font-weight: bold">Albarán:</span> {{ $albaran->num_albaran }}</td>
