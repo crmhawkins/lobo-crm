@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
-
+use ZipArchive;
 
 class IndexComponent extends Component
 {
+
     // public $search;
     public $pedidos;
     public $facturas;
@@ -35,6 +36,8 @@ class IndexComponent extends Component
     public $clienteSeleccionadoId;
 
     public $arrFiltrado = [];
+    public $arrDescargaFacturas = [];
+    public $check;
 
 
     public function mount()
@@ -58,6 +61,46 @@ class IndexComponent extends Component
             //por cada factura se calcula el total de iva y el total de importes y el totales con iva
             $this->calcularTotales($this->facturas);
         }
+    }
+
+
+    
+
+    public function descargarFacturas($array) {
+        $this->arrDescargaFacturas = $array;
+        $pdfs = [];
+
+        // Itera sobre cada factura y genera un PDF por cada una
+        foreach($this->arrDescargaFacturas as $index => $facturaId) {
+            // Llama a la función descargarPdfs para generar el PDF de la factura
+            $pdf = $this->descargarPdfs($facturaId);
+
+            // Verifica si el PDF es válido antes de agregarlo a la matriz
+            if ($pdf !== null) {
+                // Agrega el PDF a la matriz
+                $pdfs["factura_{$facturaId}.pdf"] = $pdf->output();
+            } else {
+                // Si el PDF es nulo, puedes registrar un mensaje de error o realizar alguna otra acción
+                Log::error("Error al generar el PDF para la factura {$facturaId}");
+            }
+        }
+
+        // Crea un archivo ZIP para contener todos los PDFs
+        $zipFileName = 'facturas.zip';
+        $zip = new ZipArchive;
+        if ($zip->open($zipFileName, ZipArchive::CREATE) === true) {
+            // Agrega cada PDF a la carpeta raíz del archivo ZIP
+            foreach ($pdfs as $pdfName => $pdfContent) {
+                $zip->addFromString($pdfName, $pdfContent);
+            }
+            $zip->close();
+        } else {
+            // Si no se puede crear el archivo ZIP, puedes registrar un mensaje de error o realizar alguna otra acción
+            Log::error("Error al crear el archivo ZIP para las facturas");
+        }
+
+        // Descarga el archivo ZIP
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
 
     public function filtrar($id, $filtro)
@@ -154,8 +197,8 @@ class IndexComponent extends Component
     {
 
         if ($property == 'delegacionSeleccionadaCOD' || $property == 'comercialSeleccionadoId' || $property == 'clienteSeleccionadoId') {
-            $this->emit('actualizarTablaAntes');
-        }
+        $this->emit('actualizarTablaAntes');
+    }
     }
 
 
@@ -326,6 +369,7 @@ class IndexComponent extends Component
             'albaran',
             'actualizarTabla',
             'limpiarFiltros',
+            'descargarFacturas'
         ];
     }
     public function albaran($pedidoId, $iva)
@@ -393,13 +437,14 @@ class IndexComponent extends Component
     {
 
         $factura = Facturas::find($id);
-
+        
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
+           
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -432,7 +477,7 @@ class IndexComponent extends Component
                     }
                 }
             }
-
+            
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
@@ -442,16 +487,84 @@ class IndexComponent extends Component
                 'productos' => $productos,
                 'producto' => $productofact,
             ];
-
+            
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-            $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');;
+            $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
+
             return response()->streamDownload(
                 fn () => print($pdf->output()),
                 // "factura_{$factura->numero_factura}.pdf");
                 "{$factura->numero_factura}.pdf"
             );
+
+
         } else {
             return redirect('admin/facturas');
         }
     }
+
+public function descargarPdfs($id)
+    {
+
+        $factura = Facturas::find($id);
+        $iva = true;
+        if ($factura != null) {
+            $pedido = Pedido::find($factura->pedido_id);
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact = Productos::find($factura->producto_id);
+            $productos = [];
+           
+            if (isset($pedido)) {
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    }
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
+                    if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
+                        $productos[] = [
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
+                        ];
+                    }
+                }
+            }
+            
+            $datos = [
+                'conIva' => $iva,
+                'albaran' => $albaran,
+                'factura' => $factura,
+                'pedido' => $pedido,
+                'cliente' => $cliente,
+                'productos' => $productos,
+                'producto' => $productofact,
+            ];
+            
+            // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+            $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
+            return $pdf;
+
+
+        } 
+    }
+
+
 }

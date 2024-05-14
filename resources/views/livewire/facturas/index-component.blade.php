@@ -90,6 +90,7 @@
                         <button class="btn btn-primary" id="clear"  @if(count($arrFiltrado) == 0) style="display:none" @endif>Eliminar Filtros</button>
 
                     </div>
+                    <button class="btn btn-primary" onclick="descargarFacturas()">Descargar seleccionados</button>
                     @if (isset($facturas) && count($facturas) > 0)
 
                             <!-- Aquí comienza el botón desplegable para filtrar por columna -->
@@ -115,6 +116,7 @@
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                     <tr>
+                                        <th scope="col">Descarga</th>
                                         <th scope="col">Número</th>
                                         <th scope="col">P.asociado</th>
                                         <th scope="col">Comercial</th>
@@ -135,7 +137,9 @@
                                     @foreach ($facturas as $key=>$fact)
                                         
                                         <tr>
-                                            
+                                            <td>
+                                                <input type="checkbox" onclick="anadirArray({{ $fact->id }})" value="{{ $fact->id }}">
+                                            </td>
                                             <td>{{ $fact->numero_factura }}</td>
                                             @if ($fact->pedido_id == 0 || $pedidos->where('id', $fact->pedido_id) == null)
                                                 <td>Sin pedido</td>
@@ -277,6 +281,8 @@
 
         //ready
         $(document).ready(function() {
+            console.log('ready')    ;
+            
             
             $('#clientesSelect').on('change', function() {
                 $('#datatable-buttons').DataTable().destroy();
@@ -296,7 +302,20 @@
                 window.livewire.emit('limpiarFiltros');
             });
 
+            
+
         });
+
+        let arrDescargas = [];
+        function anadirArray(id) {
+            //si el id no esta en el array lo añade, si esta lo elimina
+            if(arrDescargas.includes(id)){
+                arrDescargas = arrDescargas.filter(item => item !== id);
+            }else{
+                arrDescargas.push(id);
+            }
+            console.log(arrDescargas);
+        }   
 
      livewire.on('actualizarTablaAntes', ()=>{
         
@@ -331,13 +350,17 @@
             "zeroRecords": "No se encontraron registros coincidentes",
         }
     });
-            //console.log('creado')
-        
-        
-        //$('#datatable-buttons').DataTable().destroy();
-       
+               
      })
     
+
+     function descargarFacturas(){
+        //console.log($array);
+        $('#datatable-buttons').DataTable().destroy();
+        $array = arrDescargas;
+        console.log($array, 'array');
+        window.livewire.emit('descargarFacturas', $array);
+     }
   
     function descargarFactura(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
