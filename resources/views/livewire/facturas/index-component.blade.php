@@ -82,10 +82,22 @@
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
                                     </select>                            
                             </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="estado"  >
+                                Estado
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"  wire:change="onChangeFiltrado(4)" wire:model="estadoSeleccionado" >
+                                    <option value='-1' >Todos</option>
+                                    <option value='vencidas' >Vencidas</option>
+                                    <option value='pendientes' >Pendientes</option>
+                                    <option value='pagadas' >Pagadas</option>
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                    </select>                            
+                            </div>
                             
                         </div>
                         @if(count($arrFiltrado) > 0)
-                            <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif</p>
+                            <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif @if(isset($arrFiltrado[4])) Estado @endif</p>
                         @endif
                         <button class="btn btn-primary" id="clear"  @if(count($arrFiltrado) == 0) style="display:none" @endif>Eliminar Filtros</button>
 
@@ -113,7 +125,28 @@
                             
                         </div>
                         
-                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                            $('#datatable-buttons').DataTable({
+                                responsive: true,
+                                layout: {
+                                    topStart: 'buttons'
+                                },
+                                lengthChange: false,
+                                pageLength: 30,
+                                buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                                language: {
+                                    'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                    'zeroRecords': 'No se encontraron registros',
+                                    'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                    'infoEmpty': 'No hay registros disponibles',
+                                    'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                    'search': 'Buscar:',
+                                },
+                        
+                                                });
+                                            })"
+                                            wire:key='{{ rand() }}'>
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                             <thead>
                                     <tr>
                                         <th scope="col">Descarga</th>
@@ -268,6 +301,7 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
                     @else
                         <h6 class="text-center">No tenemos ninguna factura</h6>
                     @endif
@@ -284,21 +318,21 @@
             console.log('ready')    ;
             
             
-            $('#clientesSelect').on('change', function() {
-                $('#datatable-buttons').DataTable().destroy();
-            });
+            // $('#clientesSelect').on('change', function() {
+            //     $('#datatable-buttons').DataTable().destroy();
+            // });
 
-            $('#comercialesSelect').on('change', function() {
-                $('#datatable-buttons').DataTable().destroy();
-            });
+            // $('#comercialesSelect').on('change', function() {
+            //     $('#datatable-buttons').DataTable().destroy();
+            // });
 
-            $('#delegacionesSelect').on('change', function() {
-                $('#datatable-buttons').DataTable().destroy();
-            });
+            // $('#delegacionesSelect').on('change', function() {
+            //     $('#datatable-buttons').DataTable().destroy();
+            // });
 
             $('#clear').on('click', function() {
-                console.log('clear')
-                $('#datatable-buttons').DataTable().destroy();
+                //console.log('clear')
+                //$('#datatable-buttons').DataTable().destroy();
                 window.livewire.emit('limpiarFiltros');
             });
 
@@ -317,46 +351,46 @@
             console.log(arrDescargas);
         }   
 
-     livewire.on('actualizarTablaAntes', ()=>{
+    //  livewire.on('actualizarTablaAntes', ()=>{
         
-        $('#datatable-buttons').DataTable().destroy();
-        //console.log('destruido')
+    //     $('#datatable-buttons').DataTable().destroy();
+    //     //console.log('destruido')
 
-     })
+    //  })
 
-     livewire.on('actualizarTablaDespues', () =>{
+    //  livewire.on('actualizarTablaDespues', () =>{
         
-            $('#datatable-buttons').DataTable({
-        layout: {
-        topStart: 'buttons'
-    },
-        lengthChange: false,
-        pageLength: 30,
-        buttons: ['copy', 'excel', 'pdf', 'colvis'],
-        responsive: true,
-        "language": {
-            "lengthMenu": "Mostrando _MENU_ registros por página",
-            "zeroRecords": "Nothing found - sorry",
-            "info": "Mostrando página _PAGE_ of _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ total registros)",
-            "search": "Buscar:",
-            "paginate": {
-                "first": "Primero",
-                "last": "Ultimo",
-                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
-                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
-            },
-            "zeroRecords": "No se encontraron registros coincidentes",
-        }
-    });
+    //         $('#datatable-buttons').DataTable({
+    //     layout: {
+    //     topStart: 'buttons'
+    // },
+    //     lengthChange: false,
+    //     pageLength: 30,
+    //     buttons: ['copy', 'excel', 'pdf', 'colvis'],
+    //     responsive: true,
+    //     "language": {
+    //         "lengthMenu": "Mostrando _MENU_ registros por página",
+    //         "zeroRecords": "Nothing found - sorry",
+    //         "info": "Mostrando página _PAGE_ of _PAGES_",
+    //         "infoEmpty": "No hay registros disponibles",
+    //         "infoFiltered": "(filtrado de _MAX_ total registros)",
+    //         "search": "Buscar:",
+    //         "paginate": {
+    //             "first": "Primero",
+    //             "last": "Ultimo",
+    //             "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
+    //             "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
+    //         },
+    //         "zeroRecords": "No se encontraron registros coincidentes",
+    //     }
+    // });
                
-     })
+    //  })
     
 
      function descargarFacturas(){
         //console.log($array);
-        $('#datatable-buttons').DataTable().destroy();
+        //$('#datatable-buttons').DataTable().destroy();
         $array = arrDescargas;
         console.log($array, 'array');
         window.livewire.emit('descargarFacturas', $array);
@@ -383,6 +417,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 <!-- Responsive examples -->
-<script src="../assets/pages/datatables.init.js"></script>
+{{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 
 @endsection

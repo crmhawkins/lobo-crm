@@ -38,6 +38,7 @@ class IndexComponent extends Component
     public $arrFiltrado = [];
     public $arrDescargaFacturas = [];
     public $check;
+    public $estadoSeleccionado;
 
 
     public function mount()
@@ -110,6 +111,7 @@ class IndexComponent extends Component
             1 => 'comerciales',
             2 => 'delegaciones',
             3 => 'clientes',
+            4 => 'estados',
         ];
 
         //si el filtro existe en el array de filtros, se actualiza con lo que se le pasa por parámetro
@@ -126,80 +128,63 @@ class IndexComponent extends Component
 
     public function filtrarFacturas($filtros)
     {
-        $facturas = Facturas::all();
-        $facturasFiltradas = [];
+        $facturasQuery = Facturas::query();
 
-        //debe comprobar que filtros hay activos y buscar las facturas que cumplan con esos filtros que traen los ids, por lo que deberia
-        //saber si estan los 3 filtros, 2 o 1
-        if (count($filtros) == 3) {
-            //si hay 3 filtros activos
-            foreach ($facturas as $factura) {
-                //dd($factura);
-                if (isset($filtros[1]) && isset($filtros[2]) && isset($filtros[3])) {
-                    $cliente = Clients::find($factura->cliente_id);
-                    if ($cliente->comercial_id == $filtros[1] && $cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]) {
-                        $facturasFiltradas[] = $factura;
-                    }
+        // Aplicar filtros si hay alguno activo
+        if (!empty($filtros)) {
+            foreach ($filtros as $filtro => $id) {
+                switch ($filtro) {
+                    case 1: // Filtrar por comercial
+                        $facturasQuery->whereHas('cliente', function ($query) use ($id) {
+                            $query->where('comercial_id', $id);
+                        });
+                        break;
+                    case 2: // Filtrar por delegación
+                        $facturasQuery->whereHas('cliente', function ($query) use ($id) {
+                            $query->where('delegacion_COD', $id);
+                        });
+                        break;
+                    case 3: // Filtrar por cliente
+                        $facturasQuery->where('cliente_id', $id);
+                        break;
+                    case 4: // Filtrar por estado de la factura
+                        switch ($this->estadoSeleccionado) {
+                            case 'vencidas':
+                                $facturasQuery->where(function ($query) {
+                                    $query->where('estado', 'Pendiente')
+                                            ->orWhere('estado', 'Cancelado');
+                                })->whereDate('fecha_vencimiento', '<=', now());
+                                break;
+                            case 'pagadas':
+                                $facturasQuery->where('estado', 'Pagado');
+                                break;
+                            case 'pendientes':
+                                $facturasQuery->where('estado', 'Pendiente')
+                                                ->whereDate('fecha_vencimiento', '>', now());
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
-        } else if (count($filtros) == 2) {
-            //si hay 2 filtros activos
-            foreach ($facturas as $factura) {
-                if (isset($filtros[3]) && isset($filtros[1])) {
-                    $cliente = Clients::find($factura->cliente_id);
-                    if ($cliente->comercial_id == $filtros[1] && $factura->cliente_id == $filtros[3]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                } else if (isset($filtros[3]) && isset($filtros[2])) {
-                    $cliente = Clients::find($factura->cliente_id);
-                    if ($cliente->delegacion_COD == $filtros[2] && $factura->cliente_id == $filtros[3]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                } else if (isset($filtros[1]) && isset($filtros[2])) {
-                    //debe buscar clientes que tengan el cod de la delegacion y el id del comercial
-                    $cliente = Clients::find($factura->cliente_id);
-                    if ($cliente->delegacion_COD == $filtros[2] && $cliente->comercial_id == $filtros[1]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                }
-            }
-        } else if (count($filtros) == 1) {
-            //si hay 1 filtro activo
-            foreach ($facturas as $factura) {
-                if (isset($filtros[3])) {
-                    if ($factura->cliente_id == $filtros[3]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                } else if (isset($filtros[1])) {
-                    //el comercial id es el id que tiene asociado el cliente. Por lo que hay que ver que cliente tiene la factura y ver el comercial que tiene ese cliente.
-                    $cliente = Clients::find($factura->cliente_id);
-                    if ($cliente->comercial_id == $filtros[1]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                } else if (isset($filtros[2])) {
-                    //debe hacer lo mismo que con el comercial, ver que cliente tiene la factura y ver la delegacion que tiene ese cliente
-                    $cliente = Clients::find($factura->cliente_id);
-                    //dd($cliente->delegacion_COD, $filtros[2]);
-                    if ($cliente->delegacion_COD == $filtros[2]) {
-                        $facturasFiltradas[] = $factura;
-                    }
-                }
-            }
-        } else {
-            //si no hay filtros activos
-            $facturasFiltradas = $facturas;
         }
+
+        // Obtener las facturas filtradas
+        $facturasFiltradas = $facturasQuery->get();
 
         $this->updateFactura($facturasFiltradas);
     }
 
-    public function updating($property, $value)
-    {
+    // public function updating($property, $value)
+    // {
 
-        if ($property == 'delegacionSeleccionadaCOD' || $property == 'comercialSeleccionadoId' || $property == 'clienteSeleccionadoId') {
-        $this->emit('actualizarTablaAntes');
-    }
-    }
+    //     if ($property == 'delegacionSeleccionadaCOD' || $property == 'comercialSeleccionadoId' || $property == 'clienteSeleccionadoId') {
+    //     $this->emit('actualizarTablaAntes');
+    // }
+    // }
 
 
 
@@ -207,7 +192,7 @@ class IndexComponent extends Component
     {
         $this->facturas = $facturasActualizadas;
         $this->calcularTotales($this->facturas);
-        $this->emit('actualizarTablaDespues');
+       // $this->emit('actualizarTablaDespues');
     }
 
     public function eliminarFiltro($filtro)
@@ -237,35 +222,40 @@ class IndexComponent extends Component
         $this->delegacionSeleccionadaCOD = null;
         $this->comercialSeleccionadoId = null;
         $this->clienteSeleccionadoId = null;
-        $this->emit('actualizarTablaDespues');
+        //$this->emit('actualizarTablaDespues');
         //dd($this->facturas);
 
     }
 
     public function onChangeFiltrado($filtro)
     {
-        //dd($filtro);
-        if ($filtro == 2 && $this->delegacionSeleccionadaCOD != null) {
-            if ($this->delegacionSeleccionadaCOD == -1) {
-                $this->eliminarFiltro(2);
-            } else {
-                $this->filtrar($this->delegacionSeleccionadaCOD, $filtro);
-            }
+        $id = null;
+
+        // Determinar el ID según el filtro seleccionado
+        switch ($filtro) {
+            case 1:
+                $id = $this->comercialSeleccionadoId;
+                break;
+            case 2:
+                $id = $this->delegacionSeleccionadaCOD;
+                break;
+            case 3:
+                $id = $this->clienteSeleccionadoId;
+                break;
+            case 4:
+                $id = $this->estadoSeleccionado;
+                break;
+            default:
+                break;
         }
 
-        if ($filtro == 1 && $this->comercialSeleccionadoId != null) {
-            if ($this->comercialSeleccionadoId == -1) {
-                $this->eliminarFiltro(1);
+        // Verificar si se ha seleccionado un filtro válido
+        if ($id !== null) {
+            // Verificar si se ha seleccionado la opción "Todos" (-1)
+            if ($id == -1) {
+                $this->eliminarFiltro($filtro);
             } else {
-                $this->filtrar($this->comercialSeleccionadoId, $filtro);
-            }
-        }
-
-        if ($filtro == 3 && $this->clienteSeleccionadoId != null) {
-            if ($this->clienteSeleccionadoId == -1) {
-                $this->eliminarFiltro(3);
-            } else {
-                $this->filtrar($this->clienteSeleccionadoId, $filtro);
+                $this->filtrar($id, $filtro);
             }
         }
     }
