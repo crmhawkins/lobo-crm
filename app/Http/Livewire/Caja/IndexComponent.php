@@ -24,6 +24,9 @@ class IndexComponent extends Component
     public $pedido;
     public $facturas;
 
+    public $filtro;
+
+
 
     public function mount()
     {
@@ -37,6 +40,20 @@ class IndexComponent extends Component
 
 
     }
+
+    public function updating($property, $value){
+        if($property == 'filtro'){
+            if($value == 'Ingreso'){
+                $this->caja = Caja::where('tipo_movimiento', 'Ingreso')->get();
+            }else if($value == 'Gasto'){
+                $this->caja = Caja::where('tipo_movimiento', 'Gasto')->get();
+            }else{
+                $this->caja = Caja::all();
+            }
+        }   
+    }
+
+
     public function render()
     {
         return view('livewire.caja.index-component');

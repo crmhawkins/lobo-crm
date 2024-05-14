@@ -21,10 +21,62 @@
             <div class="card m-b-30">
                 <div class="table-responsive card-body">
                     <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group" x-init="
+                            $('#select2-producto').select2();
+                            $('#select2-producto').on('change', function(e) {
+                                var data = $('#select2-producto').select2('val');
+                                @this.set('filtro', data);
+                            });
+                            
+                            // Establecer el valor seleccionado de Select2 para que coincida con Livewire al iniciar
+                            $nextTick(() => {
+                                $('#select2-producto').val(@this.filtro).trigger('change');
+                            });
+                            ">
+                                <label for="example-text-input" class="col-form-label">Tipo de movimiento</label>
+                                <select class="form-control" id="select2-producto" wire:model="filtro">
+                                    <option value="Todos">Todos</option>
+                                    <option value="Ingreso">Ingreso</option>
+                                    <option value="Gasto">Gasto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
                     @if (count($caja) > 0)
-                        <div class="table-responsive">
+                        <div class="table-responsive" x-data="{}" x-init="$nextTick(() => {
+                            $('#tablacaja').DataTable({
+                                responsive: true,
+                                fixedHeader: {
+                                    header: true,
+                                    footer: true,
+                                },
+                                searching: false,
+                                paging: false,
+                                info: false,
+                                dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
+                                buttons: [
+                                                    {
+                                                        extend: 'excelHtml5',
+                                                        text: 'Exportar a Excel',
+                                                        titleAttr: 'Excel',
+                                                        className: 'btn-secondary px-3 py-1 mb-2'
+                                                    },
+                                                    {
+                                                        extend: 'pdfHtml5',
+                                                        text: 'Exportar a PDF',
+                                                        titleAttr: 'PDF',
+                                                        className: 'btn-secondary px-3 py-1 mb-2'
+                                                    }
+                                                    ]
+                                                });
+                                            })"
+                                            wire:key='{{ rand() }}'>
                             <table id="tablacaja" class="table-sm table-striped table-bordered mt-5"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;" >
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;"  wire:key='{{ rand() }}'>
                                 <thead>
                                     {{-- <tr>
                                         <th colspan="9">Saldo inicial</th>
@@ -140,33 +192,8 @@
 
     <script>
         
-        //on document ready datatable responsive
-        $(document).ready(function() {
-            $('#tablacaja').DataTable({
-        layout: {
-        topStart: 'buttons'
-    },
-        lengthChange: false,
-        pageLength: 30,
-        buttons: ['copy', 'excel', 'pdf', 'colvis'],
-        responsive: true,
-        "language": {
-            "lengthMenu": "Mostrando _MENU_ registros por página",
-            "zeroRecords": "Nothing found - sorry",
-            "info": "Mostrando página _PAGE_ of _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ total registros)",
-            "search": "Buscar:",
-            "paginate": {
-                "first": "Primero",
-                "last": "Ultimo",
-                "next": "<i class='fa-solid fa-arrow-right w-100'></i>",
-                "previous": "<i class='fa-solid fa-arrow-left w-100'></i>"
-            },
-            "zeroRecords": "No se encontraron registros coincidentes",
-        }
-    });
-        });
+        
+        
 
 
     </script>
