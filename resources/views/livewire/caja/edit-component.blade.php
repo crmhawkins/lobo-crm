@@ -232,13 +232,15 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 @enderror
                             </div>
                         </div>
-                        <div >
-                            <label for="documento" class="col-sm-12 col-form-label">Documento Adjunto</label>
-                            <input type="file" class="btn btn-info text-dark" wire:model="documentoSubido">
-                         
-                            @error('documento') <span class="error">{{ $message }}</span> @enderror
-                         
-                        </div>
+                        @if($canEdit)
+                            <div >
+                                <label for="documento" class="col-sm-12 col-form-label">Documento Adjunto</label>
+                                <input type="file" class="btn btn-info text-dark" wire:model="documentoSubido" >
+                            
+                                @error('documento') <span class="error">{{ $message }}</span> @enderror
+                            
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -266,7 +268,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <h5>Descarga</h5>
                             <div class="row">
                                 <div class="col-12">
-                                    <button class="w-100 btn btn-success mb-2" wire:click="descargarDocumento">Documento Transportista</button>
+                                    <button class="w-100 btn btn-success mb-2" wire:click="descargarDocumento">Documento</button>
                                 </div>
                             </div>
                         </div>

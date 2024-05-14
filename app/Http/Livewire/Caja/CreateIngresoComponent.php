@@ -71,7 +71,7 @@ class CreateIngresoComponent extends Component
 
     public function submit()
     {
-        if(count($this->bancos) > 0){
+        
             // Validación de datos
             $validatedData = $this->validate(
                 [
@@ -81,6 +81,7 @@ class CreateIngresoComponent extends Component
                     'descripcion' => 'required',
                     'pedido_id' => 'required',
                     'fecha' => 'required',
+                    'banco' => 'nullable'
 
 
                 ],
@@ -94,30 +95,7 @@ class CreateIngresoComponent extends Component
                     'fecha.required' => 'La fecha es obligatoria.',
                 ]
             );
-        }else{
-            $validatedData = $this->validate(
-                [
-                    'tipo_movimiento' => 'required',
-                    'metodo_pago' => 'required',
-                    'importe' => 'required',
-                    'descripcion' => 'required',
-                    'pedido_id' => 'required',
-                    'fecha' => 'required',
-                    'banco' => 'required',
-                ],
-                // Mensajes de error
-                [
-                    'tipo_movimiento.required' => 'El tipo de movimiento es obligatorio.',
-                    'metodo_pago.required' => 'El método de pago es obligatorio.',
-                    'importe.required' => 'El importe es obligatorio.',
-                    'descripcion.required' => 'La descripción es obligatoria.',
-                    'pedido_id.required' => 'El pedido es obligatorio.',
-                    'fecha.required' => 'La fecha es obligatoria.',
-                    'banco.required' => 'El banco es obligatorio.',
-
-                ]
-            );
-        }
+        
         // Guardar datos validados
         $usuariosSave = Caja::create([
             'tipo_movimiento' => $this->tipo_movimiento,
