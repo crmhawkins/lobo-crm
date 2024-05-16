@@ -37,7 +37,9 @@ class CreateIngresoComponent extends Component
     public function mount()
     {
 
-        $this->facturas = Facturas::where('estado', 'Pendiente')->get();
+        $this->facturas = Facturas::where('estado', 'Pendiente')
+        ->orWhere('estado', 'Parcial')
+        ->get();
         $this->clientes = Clients::all();
         $this->bancos = Bancos::all();
     }
@@ -59,6 +61,7 @@ class CreateIngresoComponent extends Component
             $this->facturaSeleccionada = Facturas::find($id);
             $this->importeFactura = $this->facturaSeleccionada->total;
             $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
+            //dd($this->ingresos_factura->sum('importe'));
             if(count($this->ingresos_factura) > 0){
                 $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
 
@@ -107,6 +110,24 @@ class CreateIngresoComponent extends Component
             'banco' => $this->banco,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
+
+
+        $this->importeFactura = $this->facturaSeleccionada->total;
+        $this->ingresos_factura = Caja::where('pedido_id', $this->facturaSeleccionada->id)->get();
+        $importe = $this->importeFactura;
+        if(count($this->ingresos_factura) > 0){
+            $importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+
+        }
+
+        if($importe <= 0 ){
+            $this->facturaSeleccionada->estado = 'Pagada';
+            $this->facturaSeleccionada->save();
+        }else{
+            $this->facturaSeleccionada->estado = 'Parcial';
+            $this->facturaSeleccionada->save();
+        }
+
 
         // Alertas de guardado exitoso
         if ($usuariosSave) {

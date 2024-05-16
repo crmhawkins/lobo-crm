@@ -43,6 +43,7 @@ class EditComponent extends Component
     public $productos;
     public $cantidad;
     public $descuento;
+    public $total;
 
 
     public function mount()
@@ -71,6 +72,7 @@ class EditComponent extends Component
         $this->descripcion = $this->facturas->descripcion;
         $this->estado = $this->facturas->estado;
         $this->metodo_pago = $this->facturas->metodo_pago;
+        $this->total = $this->facturas->total;
         
         if(!$this->facturas->descuento){
             if(isset($this->pedido)){
@@ -116,6 +118,7 @@ class EditComponent extends Component
                 'descripcion' => '',
                 'estado' => 'nullable',
                 'precio' => 'nullable',
+                'total' => 'nullable',
                 'metodo_pago' => 'nullable',
                 'producto_id' => 'nullable',
                 'cantidad' => 'nullable'
@@ -138,6 +141,7 @@ class EditComponent extends Component
             'descripcion' => $this->descripcion,
             'estado' => $this->estado,
             'precio' => $this->precio,
+            'total' => $this->total,
             'metodo_pago' => $this->metodo_pago,
             'cantidad' => $this->cantidad,
             'producto_id' =>$this->producto_id,

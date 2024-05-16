@@ -43,6 +43,7 @@ class CreateComponent extends Component
     public $isFacturaRectificativa = false;
     public $tipo;
     public $observacionesDescarga;
+    public $total;
 
     public function mount()
     {
@@ -61,6 +62,9 @@ class CreateComponent extends Component
                 $this->descuento = $this->pedido->porcentaje_descuento;
             }
         }
+
+        
+
         $this->productos = Productos::where('tipo_precio',5)->get();
         $this->clientes = Clients::where('estado', 2)->get();
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
@@ -145,7 +149,12 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        
+        if(!isset($this->precio) || $this->precio !== null){
+            $this->precio = $this->total;
+
+        }
+
+
         if($this->isFacturaRectificativa){
             $this->tipo = 2;
             // Validación de datos
@@ -159,11 +168,13 @@ class CreateComponent extends Component
                     'descripcion' => '',
                     'estado' => 'nullable',
                     'precio' => 'nullable',
+                    'total' => 'nullable',
                     'metodo_pago' => 'nullable',
                     'producto_id' => 'nullable',
                     'cantidad' => 'nullable',
                     'descuento' => 'nullable',
                     'tipo' => 'required',
+
 
                 ],
                 // Mensajes de error
@@ -185,6 +196,7 @@ class CreateComponent extends Component
                     'descripcion' => '',
                     'estado' => 'nullable',
                     'precio' => 'nullable',
+                    'total' => 'nullable',
                     'metodo_pago' => 'nullable',
                     'producto_id' => 'nullable',
                     'cantidad' => 'nullable',
@@ -201,6 +213,7 @@ class CreateComponent extends Component
         }
         
 
+        //dd($this->total);
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
