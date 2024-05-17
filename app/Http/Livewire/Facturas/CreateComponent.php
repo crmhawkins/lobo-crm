@@ -43,7 +43,6 @@ class CreateComponent extends Component
     public $isFacturaRectificativa = false;
     public $tipo;
     public $observacionesDescarga;
-    public $total;
 
     public function mount()
     {
@@ -149,10 +148,7 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        if(!isset($this->precio) || $this->precio !== null){
-            $this->precio = $this->total;
-
-        }
+        
 
 
         if($this->isFacturaRectificativa){
@@ -168,7 +164,6 @@ class CreateComponent extends Component
                     'descripcion' => '',
                     'estado' => 'nullable',
                     'precio' => 'nullable',
-                    'total' => 'nullable',
                     'metodo_pago' => 'nullable',
                     'producto_id' => 'nullable',
                     'cantidad' => 'nullable',
@@ -196,7 +191,6 @@ class CreateComponent extends Component
                     'descripcion' => '',
                     'estado' => 'nullable',
                     'precio' => 'nullable',
-                    'total' => 'nullable',
                     'metodo_pago' => 'nullable',
                     'producto_id' => 'nullable',
                     'cantidad' => 'nullable',
@@ -262,7 +256,11 @@ class CreateComponent extends Component
             $producto_almacen = Productos::find($producto->producto_pedido_id);
            
             $iva_id = $producto_almacen->iva_id;
+            
             $valor_iva = iva::find($iva_id)->iva;
+            if(isset($valor_iva)){
+                $valor_iva = 21;
+            }
             //dd($producto);
             //teniendo en cuenta que valor_iva es el porcentaje de iva, si el iva es 21% valor_iva = 21
 
@@ -271,12 +269,20 @@ class CreateComponent extends Component
             //total es la suma de los productos con el iva
             $total += ($producto->precio_total + (($producto->precio_total * $valor_iva) / 100));
         }
+        if($iva == 0){
+            $iva = (($factura->precio * 21) / 100);
+        }
+        
+        if($total == 0){
+            $total = $factura->precio + $iva;
+        }
 
         if($factura->descuento){
+            
             $iva = $iva - (($iva * $factura->descuento) / 100);
             $total = $total - (($total * $factura->descuento) / 100);
         }
-
+        
         //update de la factura
         if($factura){
             $factura->iva = $iva;

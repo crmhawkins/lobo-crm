@@ -135,13 +135,13 @@
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Total</label>
                                 <div class="col-sm-12">
                                     @if(isset($this->idpedido))
-                                    <input type="number" wire:model="total" class="form-control"
+                                    <input type="number" wire:model="precio" class="form-control"
                                         placeholder="total" disabled>
                                     @else
-                                    <input type="number" wire:model="total" class="form-control"
+                                    <input type="number" wire:model="precio" class="form-control"
                                         placeholder="total">
                                     @endif
-                                    @error('total')
+                                    @error('precio')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
