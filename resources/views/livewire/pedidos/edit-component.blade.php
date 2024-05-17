@@ -522,7 +522,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     pedido</button>
                             </div>
                         @endif
-
+                           
                         @if ($bloqueado)
                             @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)
                                 <div class="col-12">
@@ -533,7 +533,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
                             @endif
                         @else
-                            @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento)
+                            @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento || $this->getEstadoNombre() == 'Recibido' && $EsAdmin)
                                 <div class="col-12">
                                     <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
                                 </div>
