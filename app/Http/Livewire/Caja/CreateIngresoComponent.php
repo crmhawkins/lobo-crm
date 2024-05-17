@@ -73,8 +73,7 @@ class CreateIngresoComponent extends Component
     }
 
     public function submit()
-    {
-        
+    { 
             // Validación de datos
             $validatedData = $this->validate(
                 [
