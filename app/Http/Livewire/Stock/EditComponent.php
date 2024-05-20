@@ -12,6 +12,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
+use App\Models\RoturaStock;
 
 class EditComponent extends Component
 {
@@ -31,6 +32,12 @@ class EditComponent extends Component
     public $stockentrante;
     public $stock;
     public $almacenActual;
+
+
+    public $roturaStockItem;
+    public $addStockItem;
+    public $deleteStockItem;
+
     public function mount()
     {
         $this->stockentrante = StockEntrante::find( $this->identificador);
@@ -82,6 +89,17 @@ class EditComponent extends Component
             'observaciones' => $this->observaciones,
         ]);
 
+        if($this->roturaStockItem > 0){
+            $roturaStock = new RoturaStock();
+            $roturaStock->stock_id = $this->stock->id;
+            $roturaStock->cantidad = $this->roturaStockItem;
+            $roturaStock->fecha = Carbon::now();
+            //$roturaStock->observaciones = 'Rotura de stock';
+            $roturaStock->almacen_id = $this->almacen_id;
+            $roturaStock->user_id = Auth::user()->id;
+            $roturaStock->save();
+        }
+
 
         if ($productUpdate) {
             $this->alert('success', '¡Stock actualizado correctamente!', [
@@ -100,6 +118,32 @@ class EditComponent extends Component
                 'toast' => false,
             ]);
         }
+
+    }
+
+    public function  addStock(){
+        $this->addStockItem = abs($this->addStockItem);
+        $this->cantidad = $this->cantidad + $this->addStockItem;
+
+    }
+
+    public function  deleteStock(){
+
+        $this->deleteStockItem = abs($this->deleteStockItem);
+
+            
+        $this->cantidad = $this->cantidad - $this->deleteStockItem;
+        //si es un numero negativo se convierte en positivo, es decir, se le quita el signo negativo
+        
+    }
+
+    public function  roturaStock(){
+
+        $this->roturaStockItem = abs($this->roturaStockItem);
+
+        $this->cantidad = $this->cantidad - $this->roturaStockItem;
+
+        
 
     }
 

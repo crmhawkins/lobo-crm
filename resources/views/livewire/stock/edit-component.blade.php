@@ -20,6 +20,75 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="addStock" tabindex="-1" style="background: #00800040" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title ">Añadir Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="addStockItem">
+
+                    <button class="btn btn-success mt-2" wire:click="addStock" data-dismiss="modal">Añadir</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" style="background:#ff000040" id="deleteStock" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="deleteStockItem">
+
+                    <button class="btn btn-danger mt-2" wire:click="deleteStock" data-dismiss="modal">Eliminar</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" style="background: #ffff0040" id="roturaStock" tabindex="-1" role="dialog">
+        <div class="modal-dialog "
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-warning">Rotura de Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="roturaStockItem">
+
+                    <button class="btn btn-success mt-2" wire:click="roturaStock" data-dismiss="modal">Rotura</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -88,11 +157,12 @@
                                                 <th>N.º interno</th>
                                                 <th>N.º Lote</th>
                                                 <th>Cantidad</th>
+                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                    <td width="25%">
+                                                    <td width="20%">
                                                         {{$this->getNombreTabla($this->stockentrante->producto_id) }}
                                                     </td>
                                                     <td width="20%">
@@ -101,7 +171,7 @@
                                                     <td width="20%">
                                                         {{$this->stockentrante->orden_numero }}
                                                     </td>
-                                                    <td width="35%" class="unidades">
+                                                    <td width="25%" class="unidades">
                                                         <div class="row align-items-center">
                                                             <div class="col-8 text-end">
                                                                 <input type="number" class="form-control" wire:model="cantidad">
@@ -110,6 +180,11 @@
                                                                 <p class="my-auto">Unidades</p>
                                                             </div>
                                                         </div>
+                                                    </td>
+                                                    <td width="100%" class="d-flex gap-2 flex-wrap">
+                                                        <button class="btn btn-success"  data-toggle="modal" style="align-self: end !important;" data-target="#addStock">Añadir</button>
+                                                        <button class="btn btn-danger" data-toggle="modal" style="align-self: end !important;" data-target="#deleteStock" >Eliminar</button>
+                                                        <button class="btn btn-warning" data-toggle="modal" style="align-self: end !important;" data-target="#roturaStock" >Rotura</button>
                                                     </td>
                                                 </tr>
 
