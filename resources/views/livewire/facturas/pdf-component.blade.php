@@ -157,8 +157,8 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>Descuento Aplicado:</td>
-            <td>{{$pedido->porcentaje_descuento}}%<</td>
+            <td>Descuento Aplicado({{$pedido->porcentaje_descuento}}%):</td>
+            <td>{{$pedido->descuento_total}}€<</td>
         </tr>
         @endif
         @endif
@@ -170,29 +170,19 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>BASE IMPONIBLE</td>
-            @if (isset($factura->descuento))
-            <td>{{ number_format($factura->precio * (1 -(($factura->descuento) / 100)), 2) }}€</td>
-            @else
-            <td>{{ number_format($factura->precio, 2) }}€</td>
-            @endif
+            <td>{{ number_format($factura->precio , 2 , ',', '.')}}€</td>
+            
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>IVA 21%</td>
-            @if (isset($factura->descuento))
-            <td>{{number_format(($factura->precio * (1 -(($factura->descuento) / 100))) * 0.21, 2)}}€</td>
-            @else
-            <td>{{number_format($factura->precio * 0.21, 2)}}€</td>
-            @endif
+            <td>{{number_format(($factura->iva) , 2 , ',', '.')}}€</td>
         </tr>
         <tr style="background-color:#ececec;">
             <td></td>
             <td>TOTAL</td>
-            @if (isset($factura->descuento))
-            <td>{{number_format(($factura->precio * (1 -(($factura->descuento) / 100)))* 1.21, 2)}}€</td>
-            @else
-            <td>{{number_format($factura->precio * 1.21, 2)}}€</td>
-            @endif
+            <td>{{number_format(($factura->total), 2 , ',', '.')}}€</td>
+            
         </tr>
     </table>
     @else
@@ -200,11 +190,7 @@
         <tr style="background-color:#ececec;">
             <td></td>
             <td>Total</td>
-            @if (isset($factura->descuento))
-            <td>{{ number_format($factura->precio * (1 -(($factura->descuento) / 100)), 2) }}€</td>
-            @else
-            <td>{{ number_format($factura->precio, 2) }}€</td>
-            @endif
+            <td>{{ number_format($factura->precio , 2, ',', '.' )}}€</td>
         </tr>
     </table>
     @endif

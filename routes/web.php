@@ -132,6 +132,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     //Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
     Route::get('/test/ivaAProductos', [Test::class, 'ivaAProductos'])->name('test.ivaAProductos'); //ok
     Route::get('/test/calcularIvayTotalFacturas', [Test::class, 'calcularIvayTotalFacturas'])->name('test.calcularIvayTotalFacturas'); //ok
+    Route::get('/test/fixPedidos', [Test::class, 'fixPedidos'])->name('test.fixPedidos'); //ok
+
 
     //ruta configuracion
     Route::get('/configuracion', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');

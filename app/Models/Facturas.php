@@ -32,7 +32,9 @@ class Facturas extends Model
         'tipo',
         'iva',
         'total',
-
+        'subtotal_pedido',
+        'iva_total_pedido',
+        'descuento_total_pedido',
     ];
 
 

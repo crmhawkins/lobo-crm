@@ -73,6 +73,10 @@ class EditComponent extends Component
     public $indexPedidoProductoEditar;
     public $fecha_salida;
     public $empresa_transporte;
+
+    public $subtotal;
+    public $iva_total;
+    public $descuento_total;
     
 
 
@@ -159,6 +163,7 @@ class EditComponent extends Component
         $totalUnidadesSinCargo = 0;
         foreach ($this->productos_pedido as $productoPedido) {
             $totalUnidades += $productoPedido['unidades'];
+
             if ($productoPedido['precio_ud'] == 0) {
                 $totalUnidadesSinCargo += $productoPedido['unidades'];
             }
@@ -171,11 +176,20 @@ class EditComponent extends Component
         if($this->porcentaje_sincargo > $this->porcentaje_bloq){
             $this->bloqueado=true;
         }else{$this->bloqueado=false;}
-
+        $total_iva = 0;
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
             $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
 
+            $iva = Iva::find($producto->iva_id);
+            if($iva){
+                //dd($iva);
+                if($this->descuento !== 0 && $this->descuento !== null){
+                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                }else{
+                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                }
+            }
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto && $productoPedido['precio_ud'] != 0) {
                 $this->bloqueado = true;
@@ -201,6 +215,9 @@ class EditComponent extends Component
                 'descuento' => 'nullable',
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
+                'subtotal' => 'nullable',
+                'iva_total' => 'nullable',
+                'descuento_total' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -249,6 +266,7 @@ class EditComponent extends Component
             if($factura){
                 $factura->update(['precio' => $this->precio]);
                 $this->calcularTotales($factura);
+                
 
             }
 
@@ -300,34 +318,41 @@ class EditComponent extends Component
     public function calcularTotales($factura){
         $iva= 0;
         $total = 0;
-        $productos = DB::table('productos_pedido')->where('pedido_id', $factura->pedido_id)->get();
-        
-        foreach ($productos as $producto) {
-            $producto_almacen = Productos::find($producto->producto_pedido_id);
-           
-            $iva_id = $producto_almacen->iva_id;
-            $valor_iva = iva::find($iva_id)->iva;
-            //dd($producto);
-            //teniendo en cuenta que valor_iva es el porcentaje de iva, si el iva es 21% valor_iva = 21
 
-            $iva += (($producto->precio_total * $valor_iva) / 100);
-            
-            //total es la suma de los productos con el iva
-            $total += ($producto->precio_total + (($producto->precio_total * $valor_iva) / 100));
-        }
+        //si hay pedido id
+        if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
+            //coger el precio del pedido y sumarle el iva
+            $total = $factura->precio + $this->iva_total;
+            $iva = $this->iva_total;
 
-        if($factura->descuento){
-            $iva = $iva - (($iva * $factura->descuento) / 100);
-            $total = $total - (($total * $factura->descuento) / 100);
-        }
-
-        //update de la factura
-        if($factura){
             $factura->iva = $iva;
+            $factura->iva_total_pedido = $this->iva_total;
+            $factura->descuento_total_pedido = $this->descuento_total;
+            $factura->subtotal_pedido = $this->subtotal;
             $factura->total = $total;
             $factura->save();
+            
+        }else{
+            if(isset($factura) && isset($factura->precio) && $factura->precio != null){
+                
+                $total = $factura->precio;
+                $iva = (($factura->precio * 21) / 100);
+                if($factura->descuento){
+                    $total = $total - (($total * $factura->descuento) / 100);
+                }
+
+                //total es total + iva
+                $total = $total + $iva;
+
+                $factura->iva = $iva;
+                $factura->iva_total_pedido = $this->iva_total;
+                $factura->descuento_total_pedido = $this->descuento_total;
+                $factura->subtotal_pedido = $this->subtotal;
+                $factura->total = $total;
+                $factura->save();
+
+            }   
         }
-        
 
     }
 
@@ -831,10 +856,35 @@ class EditComponent extends Component
 
             // Aplicar el descuento al precio total
             $this->precioEstimado -= $descuento;
+            $this->descuento_total = $this->precioSinDescuento - $this->precioEstimado;
+            $this->descuento_total = number_format($this->descuento_total, 2, '.', '');
+
+        }else{
+            $this->descuento_total = 0;
         }
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
+        $this->subtotal = $this->precioSinDescuento;
+        //calcular iva de los productos
+        $total_iva  = 0;
+        foreach ($this->productos_pedido as $productoPedido) {
+            $producto = Productos::find($productoPedido['producto_pedido_id']);
+            $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
+            //ver que iva tiene el producto
+            $iva = Iva::find($producto->iva_id);
+            if($iva){
+                //dd($iva);
+                if($this->descuento == 1){
+                    //dd($this->descuento);
+                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                }else{
+                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                }
+            }
+            
+        }
+        $this->iva_total = $total_iva;
     }
 
 

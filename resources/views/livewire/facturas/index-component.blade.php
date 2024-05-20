@@ -196,14 +196,12 @@
                                                     <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
                                                 @endif
                                             </td>
-                                            @if(isset($fact->descuento))
-                                                    <td>{{number_format( $fact->precio * (1 + (-($fact->descuento) /100)),2) }}€
-                                                    </td>
+                                                    <td>{{number_format( $fact->precio ,2) }}€</td>
                                                     <td>
                                                         @if($fact->iva !== null)
                                                             {{ $fact->iva }}
                                                         @else
-                                                            {{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 0.21, 2)}}
+                                                            {{number_format(($fact->precio) * 0.21, 2)}}
                                                         @endif
                                                         € 
                                                     </td>
@@ -211,30 +209,11 @@
                                                         @if($fact->total !== null )
                                                             {{ $fact->total }}
                                                         @else
-                                                            {{number_format(($fact->precio*(1 + (-($fact->descuento) /100))) * 1.21, 2)}}
+                                                            {{number_format(($fact->precio) * 1.21, 2)}}
                                                         @endif
                                                             €
                                                     </td>
-                                            @else
-                                                <td>{{$fact->precio }}€
-                                                </td>
-                                                <td>
-                                                    @if($fact->iva !== null)
-                                                        {{ $fact->iva}}
-                                                    @else
-                                                        {{number_format($fact->precio *  0.21, 2)}}
-                                                    @endif    
-                                                    €
-                                                </td>
-                                                <td>
-                                                    @if($fact->total !== null )
-                                                        {{ $fact->total }}
-                                                    @else
-                                                        {{number_format($fact->precio * 1.21, 2)}}
-                                                    @endif
-                                                    €
-                                                </td>
-                                            @endif
+                                            
                                             <td >
                                                 @switch($fact->metodo_pago)
                                                     @case("giro_bancario")
@@ -284,7 +263,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="7"></td>
+                                        <td colspan="8"></td>
                                         <td><strong>Total Importe</strong></td>
                                         <td><strong>Total Iva</strong></td>
                                         <td><strong>Total Con Iva</strong></td>
@@ -292,7 +271,7 @@
                                         <td colspan="2"></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="7"></td>
+                                        <td colspan="8"></td>
                                         <td><strong>{{ $totalImportes }}€</strong></td>
                                         <td><strong>{{ $totalIva }}€</strong></td>
                                         <td><strong>{{ $totalesConIva }}€</strong></td>

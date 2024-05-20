@@ -126,21 +126,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <label for="fecha_emision" class="col-sm-12 col-form-label">Total</label>
-                                <div class="col-sm-12">
-                                    @if(isset($this->pedido_id))
-                                    <input type="number" wire:model="total" class="form-control"
-                                        placeholder="total" disabled>
-                                    @else
-                                    <input type="number" wire:model="total" class="form-control"
-                                        placeholder="total" @if(!$canEdit) disabled @endif>
-                                    @endif
-                                    @error('total')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                            
                             <div class="col-md-4">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
@@ -158,17 +144,66 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-12">
-                                <label for="descuento" class="col-sm-12 col-form-label">Descuento </label>
+                            <div class="col-md-4">
+                                <label for="fecha_emision" class="col-sm-12 col-form-label">Importe sin descuento</label>
+                                <div class="col-sm-12">
+                                    
+                                    <input type="number" wire:model="subtotal_pedido" class="form-control"
+                                        placeholder="subtotal pedido" readonly>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="descuento" class="col-sm-12 col-form-label">Descuento</label>
                                 <div class="col-sm-12">
                                     <input type="number" wire:model="descuento" class="form-control"
-                                        placeholder="descuento" @if(!$canEdit) disabled @endif>
+                                        placeholder="descuento" readonly>
                                         @error('precio')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <label for="fecha_emision" class="col-sm-12 col-form-label">Total descuento</label>
+                                <div class="col-sm-12">
+                                    
+                                    <input type="number" wire:model="descuento_total_pedido" class="form-control"
+                                        placeholder="descuento total pedido" readonly>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fecha_emision" class="col-sm-12 col-form-label">Importe</label>
+                                <div class="col-sm-12">
+                                    
+                                    <input type="number" wire:model="precio" class="form-control"
+                                        placeholder="importe" readonly>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="iva_total_pedido" class="col-sm-12 col-form-label">Iva total</label>
+                                <div class="col-sm-12">
+                                    
+                                    <input type="number" wire:model="iva_total_pedido" class="form-control"
+                                        placeholder="iva total pedido" readonly>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="total" class="col-sm-12 col-form-label">Total</label>
+                                <div class="col-sm-12">
+                                    
+                                    <input type="number" wire:model="total" class="form-control"
+                                        placeholder="total" readonly>
+
+                                </div>
+                            </div>
+
+                            
                         </div>
+                        
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>

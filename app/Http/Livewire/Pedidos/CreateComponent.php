@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\AnotacionesClientePedido;
 use App\Models\ProductoPrecioCliente;
 use App\Models\Almacen;
+use App\Models\Iva;
 
 class CreateComponent extends Component
 {
@@ -56,6 +57,12 @@ class CreateComponent extends Component
     public $anotacionesProximoPedido = [];
     public $productosPecioCliente = [];
     public $almacenes = [];
+
+    public $subtotal = 0;
+    public $iva_total = 0;
+    public $descuento_total = 0;
+
+
     public function mount()
     {
 
@@ -206,16 +213,30 @@ class CreateComponent extends Component
             $this->bloqueado=true;
         }else{$this->bloqueado=false;}
 
+        $total_iva  = 0;
          foreach ($this->productos_pedido as $productoPedido) {
              $producto = Productos::find($productoPedido['producto_pedido_id']);
              $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
-
+             //ver que iva tiene el producto
+                $iva = Iva::find($producto->iva_id);
+                if($iva){
+                    //dd($iva);
+                    if($this->descuento == 1){
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                    }else{
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                    }
+                }
+             
+             
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto && $productoPedido['precio_ud'] != 0) {
                 $this->bloqueado = true;
                 break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
          }
+        
+         $this->iva_total = $total_iva;
 
 
         // Validación de datos
@@ -239,6 +260,9 @@ class CreateComponent extends Component
                     'descuento'=> 'nullable',
                     'porcentaje_descuento'=> 'nullable',
                     'bloqueado'=> 'nullable',
+                    'subtotal' => 'nullable',
+                    'iva_total' => 'nullable',
+                    'descuento_total' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -268,6 +292,9 @@ class CreateComponent extends Component
                     'descuento'=> 'nullable',
                     'porcentaje_descuento'=> 'nullable',
                     'bloqueado'=> 'nullable',
+                    'subtotal' => 'nullable',
+                    'iva_total' => 'nullable',
+                    'descuento_total' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -581,10 +608,18 @@ class CreateComponent extends Component
 
             // Aplicar el descuento al precio total
             $this->precioEstimado -= $descuento;
+            $this->descuento_total = $this->precioSinDescuento - $this->precioEstimado;
+            $this->descuento_total = number_format($this->descuento_total, 2, '.', '');
+        }else{
+            $this->descuento_total = 0;
         }
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
+        $this->subtotal = number_format($this->precioSinDescuento);
+
+       
+        
     }
 
     public function getProductoNombre()

@@ -267,40 +267,9 @@ class IndexComponent extends Component
         $this->totalImportes = 0;
         $this->totalesConIva = 0;
         foreach ($facturas as $factura) {
-            if (isset($factura->descuento)) {
-                $importe = $factura->precio * (1 + (- ($factura->descuento) / 100));
-
-                if($factura->iva !== null){
-                    $iva = $factura->iva;
-                }else{
-                    $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
-                }
-
-                if($factura->total !== null){
-                    $totalesIva = $factura->total;
-                }else{
-                    $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
-                }
-                
-            } else {
-                $importe = $factura->precio;
-
-                if($factura->iva !== null){
-                    $iva = $factura->iva;
-                }else{
-                    $iva = $factura->precio * 0.21;
-                }
-
-                if($factura->total !== null){
-                    $totalesIva = $factura->total;
-                }else{
-                    $totalesIva = $factura->precio * 1.21;
-                }
-                
-            }
-            $this->totalImportes += $importe;
-            $this->totalIva += $iva;
-            $this->totalesConIva += $totalesIva;
+            $this->totalImportes += $factura->precio;
+            $this->totalIva += $factura->iva;
+            $this->totalesConIva += $factura->total;
             
         }
 

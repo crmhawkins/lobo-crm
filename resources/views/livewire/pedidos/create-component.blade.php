@@ -217,19 +217,34 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
                         </div>
                             @if ($descuento)
-                            <div class="form-group col-md-6 d-flex align-items-center">
-                            <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                            <div class="form-group col-md-6 d-flex flex-column justify-content-center">
+                            <label>Porcentaje descuento</label>
+                            <input class="form-control"  type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
                             </div>
                          @endif
                         </div>
                         <div class="form-group col-md-1">
                            &nbsp;
                         </div>
-                        <div class="form-group col-md-5">
+                        
+                    </div>
+                    @if (count($productos_pedido) > 0)
+                    <div class="d-flex col-12">
+                        <div class="form-group col-md-4">
+                            <label for="subtotal">Subtotal</label>
+                            <input type="text" wire:model="subtotal" class="form-control" readonly>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="subtotal">Descuento total</label>
+                            <input type="text" wire:model="descuento_total" class="form-control" readonly>
+                        </div>
+                        <div class="form-group col-md-4">
                             <label for="fecha">Precio final</label>
                             <input type="text" wire:model="precio" class="form-control" readonly>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <div wire:ignore.self class="modal fade" id="addProductModal" tabindex="-1" role="dialog">

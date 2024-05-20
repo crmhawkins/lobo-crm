@@ -43,6 +43,10 @@ class CreateComponent extends Component
     public $isFacturaRectificativa = false;
     public $tipo;
     public $observacionesDescarga;
+    public $subtotal_pedido;
+    public $iva_total_pedido;
+    public $descuento_total_pedido;
+    public $total;
 
     public function mount()
     {
@@ -60,6 +64,11 @@ class CreateComponent extends Component
             if($this->pedido->descuento){
                 $this->descuento = $this->pedido->porcentaje_descuento;
             }
+            $this->subtotal_pedido = $this->pedido->subtotal;
+            $this->iva_total_pedido = $this->pedido->iva_total;
+            $this->descuento_total_pedido = $this->pedido->descuento_total;
+            $this->total = $this->pedido->precio + $this->pedido->iva_total;
+            $this->total = number_format($this->total, 2, '.', '');
         }
 
         
@@ -169,6 +178,7 @@ class CreateComponent extends Component
                     'cantidad' => 'nullable',
                     'descuento' => 'nullable',
                     'tipo' => 'required',
+                    
 
 
                 ],
@@ -195,6 +205,9 @@ class CreateComponent extends Component
                     'producto_id' => 'nullable',
                     'cantidad' => 'nullable',
                     'descuento' => 'nullable',
+                    'subtotal_pedido' => 'nullable',
+                    'iva_total_pedido' => 'nullable',
+                    'descuento_total_pedido' => 'nullable',
 
                 ],
                 // Mensajes de error
@@ -206,8 +219,6 @@ class CreateComponent extends Component
             );
         }
         
-
-        //dd($this->total);
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
         event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
@@ -250,46 +261,38 @@ class CreateComponent extends Component
     public function calcularTotales($factura){
         $iva= 0;
         $total = 0;
-        $productos = DB::table('productos_pedido')->where('pedido_id', $factura->pedido_id)->get();
-        
-        foreach ($productos as $producto) {
-            $producto_almacen = Productos::find($producto->producto_pedido_id);
-           
-            $iva_id = $producto_almacen->iva_id;
-            
-            $valor_iva = iva::find($iva_id)->iva;
-            if(isset($valor_iva)){
-                $valor_iva = 21;
-            }
-            //dd($producto);
-            //teniendo en cuenta que valor_iva es el porcentaje de iva, si el iva es 21% valor_iva = 21
 
-            $iva += (($producto->precio_total * $valor_iva) / 100);
+        //si hay pedido id
+        if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
             
-            //total es la suma de los productos con el iva
-            $total += ($producto->precio_total + (($producto->precio_total * $valor_iva) / 100));
-        }
-        if($iva == 0){
-            $iva = (($factura->precio * 21) / 100);
-        }
-        
-        if($total == 0){
-            $total = $factura->precio + $iva;
-        }
+            //coger el precio del pedido y sumarle el iva
+            $total = $factura->precio + $factura->iva_total_pedido;
+            $iva = $factura->iva_total_pedido;
 
-        if($factura->descuento){
-            
-            $iva = $iva - (($iva * $factura->descuento) / 100);
-            $total = $total - (($total * $factura->descuento) / 100);
-        }
-        
-        //update de la factura
-        if($factura){
             $factura->iva = $iva;
             $factura->total = $total;
             $factura->save();
+            
+        }else{
+            if(isset($factura) && isset($factura->precio) && $factura->precio != null){
+                $total = $factura->precio;
+                $iva = (($factura->precio * 21) / 100);
+                if($factura->descuento){
+                    $total = $total - (($total * $factura->descuento) / 100);
+                }
+
+                //total es total + iva
+                $total = $total + $iva;
+
+                $factura->iva = $iva;
+                $factura->total = $total;
+                $factura->save();
+
+            }
+            
+
+
         }
-        
 
     }
 

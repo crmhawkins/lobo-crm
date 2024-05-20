@@ -7,6 +7,8 @@ use App\Models\Facturas;
 use App\Models\Clients;
 use App\Models\Productos;
 use App\Models\Iva;
+use App\Models\Pedido;
+use Illuminate\Support\Facades\DB;
 
 class Test extends Controller
 {
@@ -72,14 +74,17 @@ class Test extends Controller
         $facturas = Facturas::all();
 
         foreach ($facturas as $factura) {
-            if (isset($factura->descuento)) {
-                $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
-                $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
-            } else {
-                $importe = $factura->precio;
-                $iva = $factura->precio * 0.21;
-                $totalesIva = $factura->precio * 1.21;
-            }
+            // if (isset($factura->descuento)) {
+            //     $iva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 0.21;
+            //     $totalesIva = ($factura->precio * (1 + (- ($factura->descuento) / 100))) * 1.21;
+            // } else {
+            //     $importe = $factura->precio;
+            //     $iva = $factura->precio * 0.21;
+            //     $totalesIva = $factura->precio * 1.21;
+            // }
+
+            $iva = $factura->iva_total_pedido;
+            $totalesIva = $factura->precio + $factura->iva_total_pedido;
 
             $factura = Facturas::find($factura->id);
             $factura->iva = $iva;
@@ -89,6 +94,103 @@ class Test extends Controller
 
         return 'test ok';
 
+    }
+
+
+    public function fixPedidos(){
+        $pedidos = Pedido::all();
+
+        foreach ($pedidos as $pedido) {
+            if($pedido->id == 107){
+                //dd($pedido->subtotal);
+            };
+
+
+            //actualizar campo subtotal, iva_total y descuento_total
+            //si el pedido tiene descuento, calcular el descuento y restarlo al subtotal
+
+            
+
+
+            
+
+            //iva total dependiendo del iva de los productos
+            //Hay que coger los productos asociados al pedido y coger el iva de cada producto y sumarlos
+            $productos = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+            $iva_total = 0;
+            
+            
+            if($productos){
+                $subtotal = 0;
+                foreach ($productos as $p) {
+                    $producto = Productos::find($p->producto_pedido_id);
+                    
+                    if(isset($producto) && $producto->iva_id){
+                        
+                        $subtotal += $p->precio_ud * $p->unidades;
+
+                        $iva = Iva::find($producto->iva_id);
+                        if($iva){
+                            //dd($iva);
+                            if($pedido->descuento == 1){
+                                $iva_total += (($p->precio_ud * $p->unidades) * (1 - ($pedido->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                            }else{
+                                $iva_total += (($p->precio_ud * $p->unidades)) * ($iva->iva / 100);
+                            }
+                        }else{
+                            if($pedido->descuento == 1){
+                                $iva_total += (($p->precio_ud * $p->unidades) * (1 - ($pedido->porcentaje_descuento / 100))) * 0.21;
+                            }else{
+                                $iva_total += (($p->precio_ud * $p->unidades)) * 0.21;
+                            }
+                        }
+                    }
+                }
+                $pedido->subtotal = $subtotal;
+                
+
+
+            }else{
+                $iva_total = $pedido->precio * 0.21;
+                $pedido->subtotal = $pedido->precio;
+            }
+
+            if ($pedido->descuento) {
+                $pedido->descuento_total = $pedido->subtotal * ($pedido->porcentaje_descuento / 100);
+            }else{
+                $pedido->descuento_total = 0;
+               
+            }
+            
+            $pedido->iva_total = $iva_total;
+            
+            $pedido->iva_total = number_format($pedido->iva_total, 2, '.', '');
+            $pedido->descuento_total = number_format($pedido->descuento_total, 2, '.', '');
+            $pedido->subtotal = number_format($pedido->subtotal, 2, '.', '');
+
+            
+
+            //comprobar si hay factura asociada
+            
+                $pedido->save();
+                $facturas = Facturas::where('pedido_id', $pedido->id)->get();
+                if(isset($facturas)){
+                    foreach ($facturas as $f) {
+                        
+                        $f->subtotal_pedido = $pedido->subtotal;
+                        $f->iva_total_pedido = $pedido->iva_total;
+                        $f->descuento_total_pedido = $pedido->descuento_total;
+                        if($f->numero_factura == 'F240019'){
+                            //dd($pedido, $f);
+                        }
+                        $f->save();
+                    }
+                }
+          
+
+        }
+        
+        return 'test ok';
     }
 
 

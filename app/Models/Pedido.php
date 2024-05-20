@@ -34,6 +34,9 @@ class Pedido extends Model
         'bloqueado',
         'fecha_salida',
         'empresa_transporte',
+        'subtotal',
+        'iva_total',
+        'descuento_total',
     ];
 
     /**

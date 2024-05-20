@@ -44,6 +44,9 @@ class EditComponent extends Component
     public $cantidad;
     public $descuento;
     public $total;
+    public $subtotal_pedido;
+    public $iva_total_pedido;
+    public $descuento_total_pedido;
 
 
     public function mount()
@@ -62,6 +65,7 @@ class EditComponent extends Component
         }else{
             $this->precio = 0;
         }
+        //dd($this->pedido->precio);
         $this->pedido_id = $this->facturas->pedido_id;
 
         $this->numero_factura = $this->facturas->numero_factura;
@@ -73,6 +77,9 @@ class EditComponent extends Component
         $this->estado = $this->facturas->estado;
         $this->metodo_pago = $this->facturas->metodo_pago;
         $this->total = $this->facturas->total;
+        $this->descuento_total_pedido = $this->facturas->descuento_total_pedido;
+        $this->iva_total_pedido = $this->facturas->iva_total_pedido;
+        $this->subtotal_pedido = $this->facturas->subtotal_pedido;
         
         if(!$this->facturas->descuento){
             if(isset($this->pedido)){
@@ -146,6 +153,10 @@ class EditComponent extends Component
             'cantidad' => $this->cantidad,
             'producto_id' =>$this->producto_id,
             'descuento' =>$this->descuento,
+            'descuento_total_pedido' => $this->descuento_total_pedido,
+            'iva_total_pedido' => $this->iva_total_pedido,
+            'subtotal_pedido' => $this->subtotal_pedido,
+
 
         ]);
 
@@ -342,36 +353,40 @@ class EditComponent extends Component
     }
 
     public function calcularTotales($factura){
-
         $iva= 0;
         $total = 0;
-        $productos = DB::table('productos_pedido')->where('pedido_id', $factura->pedido_id)->get();
-        foreach ($productos as $producto) {
-            $producto_almacen = Productos::find($producto->producto_pedido_id);
-           
-            $iva_id = $producto_almacen->iva_id;
-            $valor_iva = iva::find($iva_id)->iva;
-            //dd($producto);
-            //teniendo en cuenta que valor_iva es el porcentaje de iva, si el iva es 21% valor_iva = 21
 
-            $iva += (($producto->precio_total * $valor_iva) / 100);
+        //si hay pedido id
+        if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
             
-            //total es la suma de los productos con el iva
-            $total += ($producto->precio_total + (($producto->precio_total * $valor_iva) / 100));
-        }
+            //coger el precio del pedido y sumarle el iva
+            $total = $factura->precio + $factura->iva_total_pedido;
+            $iva = $factura->iva_total_pedido;
 
-        if($factura->descuento){
-            $iva = $iva - (($iva * $factura->descuento) / 100);
-            $total = $total - (($total * $factura->descuento) / 100);
-        }
-
-        //update de la factura
-        if($factura){
             $factura->iva = $iva;
             $factura->total = $total;
             $factura->save();
+            
+        }else{
+            if(isset($factura) && isset($factura->precio) && $factura->precio != null){
+                $total = $factura->precio;
+                $iva = (($factura->precio * 21) / 100);
+                if($factura->descuento){
+                    $total = $total - (($total * $factura->descuento) / 100);
+                }
+
+                //total es total + iva
+                $total = $total + $iva;
+
+                $factura->iva = $iva;
+                $factura->total = $total;
+                $factura->save();
+
+            }
+            
+
+
         }
-        
 
     }
 
