@@ -158,6 +158,16 @@
         </tr>-->
     </table>
 
+    @if(isset($nota) && $nota != '')
+        <div style="margin-top: 2%; margin-bottom: 2%;">
+            <span style="font-weight: bold; color:#0196eb">Nota:</span><br>
+            <div style="background-color: #ececec; padding: 10px;">
+                {{$nota}}
+            </div>
+        </div>
+    @endif
+    
+
 </body>
 
 </html>

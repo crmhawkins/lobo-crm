@@ -377,6 +377,13 @@ class IndexComponent extends Component
             }
         }
 
+        $nota = null;
+        if(isset($factura)){
+            if(isset($factura->descripcion) && $factura->descripcion != null){
+                $nota = $factura->descripcion;
+            }
+        }
+
         $datos = [
             'conIva' => false,
             'pedido' => $pedido,
@@ -384,6 +391,7 @@ class IndexComponent extends Component
             'productos' => $productos,
             'num_albaran' => $num_albaran = $albaran->num_albaran,
             'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+            'nota' => $nota ?? null,
         ];
 
         // Generar y mostrar el PDF
