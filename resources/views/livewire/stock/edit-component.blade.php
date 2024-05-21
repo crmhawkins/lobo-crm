@@ -1,3 +1,7 @@
+@php
+$EsAdmin = Auth::user()->isAdmin();
+$canEdit = $EsAdmin; //|| $estado == 1;
+@endphp
 <div class="container-fluid">
     <style>
         @media(max-width: 760px){
@@ -25,7 +29,7 @@
             style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title ">Añadir Stock</h5>
+                    <h5 class="modal-title ">Sumar Stock</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -34,7 +38,7 @@
 
                     <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="addStockItem">
 
-                    <button class="btn btn-success mt-2" wire:click="addStock" data-dismiss="modal">Añadir</button>
+                    <button class="btn btn-success mt-2" wire:click="addStock" data-dismiss="modal">Sumar</button>
                     
                 </div>
                 <div class="modal-footer">
@@ -48,7 +52,7 @@
             style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Eliminar Stock</h5>
+                    <h5 class="modal-title">Restar Stock</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -57,7 +61,7 @@
 
                     <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="deleteStockItem">
 
-                    <button class="btn btn-danger mt-2" wire:click="deleteStock" data-dismiss="modal">Eliminar</button>
+                    <button class="btn btn-danger mt-2" wire:click="deleteStock" data-dismiss="modal">Restar</button>
                     
                 </div>
                 <div class="modal-footer">
@@ -122,7 +126,7 @@
                                 @this.set('estado', data);
                             });">
                                 <label for="Estado">Estado</label>
-                                <select class="form-control" name="estado" id="select2-estado" wire:model="estado">
+                                <select class="form-control" name="estado" id="select2-estado" wire:model="estado" @if(!$canEdit) disabled @endif>
                                     <option value="0">Stock completo</option>
                                     <option value="1">Stock parcial</option>
                                 </select>
@@ -136,7 +140,7 @@
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-10">
                             <label for="fecha">Observaciones</label>
-                            <textarea wire:model="observaciones" class="form-control"></textarea>
+                            <textarea wire:model="observaciones" class="form-control" @if(!$canEdit) disabled @endif></textarea>
                         </div>
                     </div>
                 </div>
@@ -174,7 +178,7 @@
                                                     <td width="25%" class="unidades">
                                                         <div class="row align-items-center">
                                                             <div class="col-8 text-end">
-                                                                <input type="number" class="form-control" wire:model="cantidad">
+                                                                <input type="number" class="form-control" wire:model="cantidad" @if(!$canEdit) disabled @endif>
                                                             </div>
                                                             <div class="col-4 text-start">
                                                                 <p class="my-auto">Unidades</p>
@@ -182,8 +186,8 @@
                                                         </div>
                                                     </td>
                                                     <td width="100%" class="d-flex gap-2 flex-wrap">
-                                                        <button class="btn btn-success"  data-toggle="modal" style="align-self: end !important;" data-target="#addStock">Añadir</button>
-                                                        <button class="btn btn-danger" data-toggle="modal" style="align-self: end !important;" data-target="#deleteStock" >Eliminar</button>
+                                                        <button class="btn btn-success"  data-toggle="modal" style="align-self: end !important;" data-target="#addStock">Sumar</button>
+                                                        <button class="btn btn-danger" data-toggle="modal" style="align-self: end !important;" data-target="#deleteStock" >Restar</button>
                                                         <button class="btn btn-warning" data-toggle="modal" style="align-self: end !important;" data-target="#roturaStock" >Rotura</button>
                                                     </td>
                                                 </tr>

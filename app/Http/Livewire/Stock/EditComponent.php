@@ -143,6 +143,19 @@ class EditComponent extends Component
 
         $this->cantidad = $this->cantidad - $this->roturaStockItem;
 
+        $this->alert('warning', '¿Seguro que desea registrar la rotura de stock?', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'update',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ])
+        ;
+       
         
 
     }

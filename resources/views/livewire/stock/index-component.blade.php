@@ -155,6 +155,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                             
                                                             @if($EsAdmin)
                                                                 <a class="btn btn-primary botones" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
+                                                            @else
+                                                                <a class="btn btn-warning botones" href="/admin/stock-edit/{{$lote['id']}}">Editar</a>
                                                             @endif
                                                         @if($this->qrAsignado($lote))
                                                             
