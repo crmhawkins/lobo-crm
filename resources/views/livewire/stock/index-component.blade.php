@@ -144,26 +144,27 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                     <td>{{ floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) )}}</td>
 
                                                     <td class="botonesStock">
-                                                     @if(Auth::user()->role != 2)
+                                                    @if(Auth::user()->role != 2)
                                                         @if($this->qrAsignado($lote))
                                                             <button class="btn btn-primary botones" onclick="generarQRIndividual({{$lote}})"> QR</button>
                                                         @else
                                                             <button class="btn btn-primary botones" onclick="iniciarEscaneo('asignar',{{$lote}})">Asignar Qr</button>
                                                         @endif
-                                                           
+                                                       
                                                                 <a class="btn btn-primary botones" href="/admin/stock-traspaso/{{$lote['id']}}"> Traspaso de lote</a>
-                                                            
+                                                    @endif      
                                                             @if($EsAdmin)
                                                                 <a class="btn btn-primary botones" href="/admin/stock-edit/{{$lote['id']}}"> Editar lote</a>
                                                             @else
                                                                 <a class="btn btn-warning botones" href="/admin/stock-edit/{{$lote['id']}}">Editar</a>
                                                             @endif
+                                                    @if(Auth::user()->role != 2)
                                                         @if($this->qrAsignado($lote))
                                                             
                                                                 <button class="btn btn-danger botones" onclick="borrar({{$lote}})">Eliminar QR</button>
                                                             
                                                         @endif
-                                                     @endif
+                                                    @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
