@@ -148,12 +148,72 @@ class EditComponent extends Component
         $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] * $producto['unidades']  ;
         $this->setPrecioEstimado();
     }
-    protected $listeners = ['refreshComponent' => '$refresh'];
+    protected $listeners = ['refreshComponent' => '$refresh', 'updateWithoutRestrictions' => 'updateWithoutRestrictions'];
 
 
     public function render()
     {
         return view('livewire.pedidos.edit-component');
+    }
+
+    public function updateWithoutRestrictions(){
+        $validatedData = $this->validate(
+            [
+                'cliente_id' => 'required',
+                'nombre' => 'nullable',
+                'precio' => 'required',
+                'estado' => 'required',
+                'fecha' => 'required',
+                'tipo_pedido_id' => 'required',
+                'observaciones' => 'nullable',
+                'almacen_id' => 'nullable',
+                'direccion_entrega' => 'nullable',
+                'provincia_entrega' => 'nullable',
+                'localidad_entrega' => 'nullable',
+                'cod_postal_entrega' => 'nullable',
+                'orden_entrega' => 'nullable',
+                'descuento' => 'nullable',
+                'porcentaje_descuento'=> 'nullable',
+                'bloqueado'=> 'nullable',
+            ],
+            // Mensajes de error
+            [
+                'precio.requi0red' => 'El precio del pedido es obligatorio.',
+                'cliente_id.required' => 'El cliente es obligatorio.',
+                'estado.required' => 'El estado del pedido es obligatoria.',
+                'fecha.required' => 'La fecha es obligatoria.',
+            ]
+        );
+        
+        $pedido = Pedido::find($this->identificador);
+        $pedido->update($validatedData);
+        $pedidosSave = $pedido->update(['estado' => 2]);
+        
+        if ($pedidosSave) {
+            Alertas::create([
+                'user_id' => 13,
+                'stage' => 3,
+                'titulo' => 'Estado del Pedido: Aceptado en Almacén',
+                'descripcion' => 'El pedido nº ' . $pedido->id.' ha sido aceptado',
+                'referencia_id' => $pedido->id,
+                'leida' => null,
+            ]);
+            $this->alert('success', '¡Pedido aceptado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
+            $this->alert('error', '¡No se ha podido enviar el pedido!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
     }
 
     public function update()
@@ -311,7 +371,8 @@ class EditComponent extends Component
             'rechazarPedido',
             'alertaAlmacen',
             'updateAlmacen',
-            'checkLote'
+            'checkLote',
+            'updateWithoutRestrictions'
         ];
     }
 
@@ -491,7 +552,19 @@ class EditComponent extends Component
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
         if($this->bloqueado){
-            return;
+
+            
+
+            return $this->alert('info', 'El pedido ha sido bloqueado por superar el porcentaje de descuento permitido. ¿Desea aceptar el pedido? ', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'updateWithoutRestrictions',
+                'confirmButtonText' => 'Sí',
+                'showDenyButton' => true,
+                'denyButtonText' => 'No',
+                'timerProgressBar' => true,
+            ]);
         }
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {
