@@ -616,10 +616,8 @@ class CreateComponent extends Component
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
-        $this->subtotal = number_format($this->precioSinDescuento);
+        $this->subtotal = number_format($this->precioSinDescuento,2, '.', '');
 
-       
-        
     }
 
     public function getProductoNombre()
