@@ -212,6 +212,9 @@
                     @case('transferencia')
                         Transferencia
                         @break
+                    @case('otros')
+                        Otros
+                        @break
                     @default
                         ------------------
                         @break

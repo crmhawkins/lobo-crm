@@ -228,6 +228,9 @@
                                                     @case("pagare")
                                                         Pagaré
                                                         @break
+                                                    @case("otros")
+                                                        Otros
+                                                        @break
                                                     @default
                                                     {{ $fact->metodo_pago }}
                                                 @endswitch

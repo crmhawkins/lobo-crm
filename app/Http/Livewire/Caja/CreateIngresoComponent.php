@@ -120,7 +120,7 @@ class CreateIngresoComponent extends Component
         }
 
         if($importe <= 0 ){
-            $this->facturaSeleccionada->estado = 'Pagada';
+            $this->facturaSeleccionada->estado = 'Pagado';
             $this->facturaSeleccionada->save();
         }else{
             $this->facturaSeleccionada->estado = 'Parcial';

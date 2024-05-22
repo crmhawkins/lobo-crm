@@ -499,6 +499,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         <option value="pagare">Pagare</option>
                                         <option value="confirming">Confirming</option>
                                         <option value="transferencia">Transferencia</option>
+                                        <option value="otros">Otros</option>
                                     </select>
                                     @error('forma_pago_pref')
                                         <span class="text-danger">{{ $message }}</span>

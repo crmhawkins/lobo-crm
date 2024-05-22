@@ -136,6 +136,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <option value="pagare">Pagare</option>
                                             <option value="confirming">Confirming</option>
                                             <option value="transferencia">Transferencia</option>
+                                            <option value="otros">Otros</option>
                                         </select>
                                     @error('denominacion')
                                         <span class="text-danger">{{ $message }}</span>
