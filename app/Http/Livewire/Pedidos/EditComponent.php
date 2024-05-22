@@ -77,6 +77,7 @@ class EditComponent extends Component
     public $subtotal;
     public $iva_total;
     public $descuento_total;
+    public $npedido_cliente;
     
 
 
@@ -111,6 +112,7 @@ class EditComponent extends Component
         $this->porcentaje_bloq = is_null($cliente->porcentaje_bloq) ? 10 : $cliente->porcentaje_bloq;
         $this->fecha_salida = $pedido->fecha_salida;
         $this->empresa_transporte = $pedido->empresa_transporte;
+        $this->npedido_cliente = $pedido->npedido_cliente;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
@@ -175,6 +177,7 @@ class EditComponent extends Component
                 'descuento' => 'nullable',
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
+                'npedido_cliente' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -278,6 +281,7 @@ class EditComponent extends Component
                 'subtotal' => 'nullable',
                 'iva_total' => 'nullable',
                 'descuento_total' => 'nullable',
+                'npedido_cliente' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -540,6 +544,7 @@ class EditComponent extends Component
                 'descuento' => 'nullable',
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
+                'npedido_cliente' => 'nullable',
             ],
             // Mensajes de error
             [

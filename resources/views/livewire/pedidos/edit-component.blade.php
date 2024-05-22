@@ -181,6 +181,16 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <label for="cod_postal_entrega">Código postal</label>
                             <input type="text" wire:model="cod_postal_entrega" class="form-control" readonly>
                         </div>
+                        <div class="form-group col-md-5">
+                            <label for="npedido_cliente" >Nº Pedido Cliente</label>
+                            <input wire:model="npedido_cliente" class="form-control">
+                        </div>
+                        <div class="form-group col-md-1">
+                            &nbsp;
+                        </div>
+                        <div class="form-group col-md-5">
+                           
+                        </div>
                     </div>
                     <div class="form-row mb-4 justify-content-center">
                        {{-- <div class="form-group col-md-5">

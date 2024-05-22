@@ -46,6 +46,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">Nº</th>
+                                <th scope="col">Nº ped. Cliente</th>
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Cliente: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Precio: @mobile &nbsp; @endmobile</th>
@@ -58,6 +59,7 @@
                             @foreach ($pedidos as $presup)
                             <tr>
                                 <td>{{ $presup->id }}</td>
+                                <td>{{ $presup->npedido_cliente }}</td>
                                 <td>{{ $presup->fecha }}</td>
                                 <td>{{ $this->getClienteNombre($presup->cliente_id) }}</td>
                                 <td>{{ $presup->precio }} €</td>

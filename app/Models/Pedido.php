@@ -37,6 +37,7 @@ class Pedido extends Model
         'subtotal',
         'iva_total',
         'descuento_total',
+        'npedido_cliente',
     ];
 
     /**

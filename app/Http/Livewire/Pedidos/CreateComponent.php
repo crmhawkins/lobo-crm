@@ -36,7 +36,7 @@ class CreateComponent extends Component
     public $orden_entrega;
     public $fecha;
     public $observaciones;
-    public $tipo_pedido_id = 1;
+    public $tipo_pedido_id = 0;
     public $productos_pedido = [];
     public $productos;
     public $descuento = 0;
@@ -61,6 +61,7 @@ class CreateComponent extends Component
     public $subtotal = 0;
     public $iva_total = 0;
     public $descuento_total = 0;
+    public $npedido_cliente;
 
 
     public function mount()
@@ -263,6 +264,7 @@ class CreateComponent extends Component
                     'subtotal' => 'nullable',
                     'iva_total' => 'nullable',
                     'descuento_total' => 'nullable',
+                    'npedido_cliente' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -295,6 +297,7 @@ class CreateComponent extends Component
                     'subtotal' => 'nullable',
                     'iva_total' => 'nullable',
                     'descuento_total' => 'nullable',
+                    'npedido_cliente' => 'nullable',
                 ],
                 // Mensajes de error
                 [

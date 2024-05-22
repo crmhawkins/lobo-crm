@@ -58,6 +58,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Pedido</th>
+                                    <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
@@ -71,6 +72,7 @@
                                 @foreach ($pedidos_pendientes as $pedido)
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
+                                        <td>{{ $pedido->npedido_cliente }}</td>
 
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
@@ -132,6 +134,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Pedido</th>
+                                    <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
@@ -144,6 +147,7 @@
                                 @foreach ($pedidos_preparacion as $pedido)
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
+                                        <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
@@ -236,6 +240,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Pedido</th>
+                                    <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
@@ -248,6 +253,7 @@
                                 @foreach ($pedidos_enviados as $pedido)
                                     <tr>
                                         <td>{{ $pedido->id }}</td>
+                                        <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
