@@ -11,6 +11,9 @@ use App\Models\Albaran;
 use App\Models\Facturas;
 use App\Models\Productos;
 use App\Models\StockEntrante;
+use App\Models\User;
+use App\Models\Delegacion;
+
 use Illuminate\Support\Facades\DB;
 //pdf
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,6 +21,83 @@ class IndexComponent extends Component
 {
     public $pedidos;
     public $clientes;
+    public $arrFiltrado = [];
+    public $comerciales = [];
+    public $delegaciones = [];
+    public $delegacionSeleccionadaCOD = -1;
+    public $comercialSeleccionadoId = -1;
+    public $clienteSeleccionadoId = -1;
+    public $estadoSeleccionado = -1;
+    public $fecha_min = null;
+    public $fecha_max = null;
+    protected $listeners = ['refreshComponent' => '$refresh'];
+
+    public function updatePedidos()
+    {
+        $query = Pedido::query();
+        
+        $delegacion = Delegacion::where('COD', $this->delegacionSeleccionadaCOD)->first();
+        
+        if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
+            $query->whereHas('cliente', function ($query) {
+                $query->where('delegacion_COD', $this->delegacionSeleccionadaCOD);
+            });
+        }
+
+        if($this->estadoSeleccionado && $this->estadoSeleccionado != -1){
+            $estado = $this->getEstadoId($this->estadoSeleccionado);
+            $query->where('estado',  $estado);
+        }
+
+        if($this->clienteSeleccionadoId && $this->clienteSeleccionadoId != -1){
+            $query->where('cliente_id', $this->clienteSeleccionadoId);
+        }
+
+        if($this->comercialSeleccionadoId && $this->comercialSeleccionadoId != -1){
+            $query->whereHas('cliente', function ($query) {
+                $query->where('comercial_id', $this->comercialSeleccionadoId);
+            });
+        }
+
+        //rango entre fecha min y fecha max
+        if($this->fecha_min){
+            $query->where('fecha', '>=', $this->fecha_min);
+        }
+        if($this->fecha_max){
+            $query->where('fecha', '<=', $this->fecha_max);
+        }
+
+
+        
+        $this->pedidos = $query->get();
+
+        //dd($this->pedidos);
+
+        $this->emit('refreshComponent');
+    }
+    public function limpiarFiltros()
+    {
+        $this->delegacionSeleccionadaCOD = -1;
+        $this->comercialSeleccionadoId = -1;
+        $this->estadoSeleccionado = -1;
+        $this->clienteSeleccionadoId = -1;
+        $this->fecha_min = null;
+        $this->fecha_max = null;
+        $this->updatePedidos();
+    }
+    public function updated($propertyName)
+    {
+        if (
+            $propertyName == 'delegacionSeleccionadaCOD' ||
+            $propertyName == 'comercialSeleccionadoId' ||
+            $propertyName == 'estadoSeleccionado' ||
+            $propertyName == 'clienteSeleccionadoId' ||
+            $propertyName == 'fecha_min' ||
+            $propertyName == 'fecha_max'
+        ) {
+            $this->updatePedidos();
+        }
+    }
 
     public function mount()
     {
@@ -30,6 +110,37 @@ class IndexComponent extends Component
                         ->flatten();
         }
         $this->clientes = Clients::all();
+        $this->comerciales = User::whereIn('role', [2, 3])->get();
+        $this->delegaciones = Delegacion::all();
+    }
+
+    public function getComercial($id)
+    {
+        $comerciales = User::whereIn('role', [2, 3])->get();
+
+        $cliente = $this->clientes->find($id);
+        
+        if (isset($cliente)) {
+            $comercial = $comerciales->where('id', $cliente->comercial_id)->first();
+            if (isset($comercial)) {
+                return $comercial->name;
+            } else {
+                return "no definido";
+            }
+        } else {
+
+            return "no definido";
+        }
+    }
+    public function getDelegacion($id)
+    {
+        
+        $delegaciones = Delegacion::all();
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre;
+        }
+        return "no definido";
     }
 
     public function getClienteNombre($id){
@@ -50,6 +161,9 @@ class IndexComponent extends Component
         return PedidosStatus::firstWhere('id', $estado)->status;
     }
 
+    public function getEstadoId($estado){
+        return PedidosStatus::firstWhere('status', $estado)->id;
+    }
 
     public function albaranExiste($pedidoId)
     {

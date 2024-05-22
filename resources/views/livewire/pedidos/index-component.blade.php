@@ -21,6 +21,86 @@
                     <h4 class="mt-0 header-title">Listado de todos los pedidos</h4>
                     <p class="sub-title../plugins">Listado completo de todos nuestros pedidos, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
+                    <div class="d-flex gap-1 justify-content-end align-items-end flex-column flex-wrap" >
+                        
+                        <div class="d-flex gap-2 justify-content-end" id="filtrosSelect" >
+                            <div class="filtro d-flex flex-column">
+                                <label class=""  id="comerciales"  >
+                                    Comerciales
+                                    </label>
+                                <select class="text-white bg-secondary rounded p-1" id="comercialesSelect"  wire:model="comercialSeleccionadoId">
+                                    <option value="-1">Todos</option>
+                                    @foreach ( $comerciales as $comercial )
+                                        <option value='{{ $comercial->id }}'>{{ $comercial->name }}</option>
+                                    @endforeach
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                </select>                            
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="delegaciones"  >
+                                Delegaciones
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="delegacionesSelect"  wire:model="delegacionSeleccionadaCOD">
+                                    <option value='-1' >Todas</option>
+                                    @foreach ( $delegaciones as $delegacion )
+                                        <option value='{{  $delegacion->COD }}'>{{ $delegacion->nombre }}</option>
+                                    @endforeach
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                    </select>                            
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="clientes"  >
+                                Clientes
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"   wire:model="clienteSeleccionadoId">
+                                    <option value='-1' >Todos</option>
+                                    @foreach ( $clientes as $cliente )
+                                        <option value='{{$cliente->id }}' >{{ $cliente->nombre }}</option>
+                                    @endforeach
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                    </select>                            
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="estado"  >
+                                Estado
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"   wire:model="estadoSeleccionado" >
+                                    <option value='-1' >Todos</option>
+                                    <option value='Entregado' >Entregado</option>
+                                    <option value='Facturado' >Facturado</option>
+                                    <option value='Preparación' >Preparación</option>
+                                    <option value='Recibido' >Recibido</option>
+                                    <option value='Aceptado en Almacén' >Almacén</option>
+                                    <option value='Albarán' >Albarán</option>
+                                    <option value='Rechazado' >Rechazado</option>
+                                    <option value='En Ruta' >En Ruta</option>
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                </select>                            
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="estado"  >
+                                Fecha min
+                                </label>
+                                <input type="date" class="text-white bg-secondary rounded p-1" id="fecha_min"   wire:model="fecha_min" >
+                               
+                                        <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="estado"  >
+                                    Fecha max
+                                </label>
+                                <input type="date" class="text-white bg-secondary rounded p-1" id="fecha_max"   wire:model="fecha_max" >
+                            </div>        
+                            
+                        </div>
+                        @if(count($arrFiltrado) > 0)
+                            <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif @if(isset($arrFiltrado[4])) Estado @endif</p>
+                        @endif
+                        <button class="btn btn-primary" wire:click="limpiarFiltros()"  @if($comercialSeleccionadoId == -1 && $delegacionSeleccionadaCOD == -1 && $clienteSeleccionadoId == -1 && $estadoSeleccionado == -1 && $fecha_min == null && $fecha_max == null) 
+                        style="display:none"
+                         @endif>Eliminar Filtros</button>
+
+                    </div>
                     @if (count($pedidos) > 0)
 
                     <!-- Aquí comienza el botón desplegable para filtrar por columna -->
@@ -35,18 +115,41 @@
                                 <a class="dropdown-item" href="#" data-column="2">Cliente</a>
                                 <a class="dropdown-item" href="#" data-column="3">Precio</a>
                                 <a class="dropdown-item" href="#" data-column="4">Estado</a>
+                                
                                 <!-- Agrega más ítems según las columnas de tu tabla -->
                             </div>
                             <!-- Aquí termina el botón desplegable -->
                             <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
                         </div>
                     </div>
-
-                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable-buttons').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: 'buttons'
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                            language: {
+                                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                'zeroRecords': 'No se encontraron registros',
+                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'infoEmpty': 'No hay registros disponibles',
+                                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                'search': 'Buscar:',
+                            },
+                    
+                                            });
+                                        })"
+                                        wire:key='{{ rand() }}'>
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                         <thead>
                             <tr>
                                 <th scope="col">Nº</th>
                                 <th scope="col">Nº ped. Cliente</th>
+                                <th scope="col">Delegación</th>
+                                <th scope="col">Comercial</th>
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Cliente: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Precio: @mobile &nbsp; @endmobile</th>
@@ -60,6 +163,10 @@
                             <tr>
                                 <td>{{ $presup->id }}</td>
                                 <td>{{ $presup->npedido_cliente }}</td>
+                                
+
+                                <td>{{ $this->getDelegacion($presup->cliente_id) }}</td>
+                                <td>{{ $this->getComercial($presup->cliente_id) }}</td>
                                 <td>{{ $presup->fecha }}</td>
                                 <td>{{ $this->getClienteNombre($presup->cliente_id) }}</td>
                                 <td>{{ $presup->precio }} €</td>
@@ -101,6 +208,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
                     @else
                     <h6 class="text-center">No se encuentran pedidos disponibles</h6>
                     @endif
@@ -175,6 +283,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 <!-- Responsive examples -->
-<script src="../assets/pages/datatables.init.js"></script>
+{{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 
 @endsection
