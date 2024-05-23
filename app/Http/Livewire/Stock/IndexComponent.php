@@ -174,10 +174,15 @@ class IndexComponent extends Component
 
         foreach ($this->productos_lotes_salientes as $loteIndex => $lote) {
             $stock_Entrante = StockEntrante::where('id', $lote['stock_entrante_id'])->first();
+            $stockSaliente = StockSaliente::where('stock_entrante_id', $lote['stock_entrante_id'])->first();
+            $almacen = Almacen::find($stockSaliente->almacen_origen_id);
+
+            //  dd($stockSaliente);
             $arrayProductosLotes[] = [
                 'lote_id' => $stock_Entrante['lote_id'],
                 'orden_numero' => $stock_Entrante['orden_numero'],
-                'almacen' => $this->almacen($stock_Entrante),
+                //'almacen' => $this->almacen($stock_Entrante),
+                'almacen' => $almacen->almacen ?? 'Almacen no asignado',
                 'producto' => $this->getProducto($lote['producto_id']),
                 'fecha' => Carbon::parse($lote['fecha_salida'])->format('d/m/Y'),
                 'cantidad' => $lote['cantidad_salida'],

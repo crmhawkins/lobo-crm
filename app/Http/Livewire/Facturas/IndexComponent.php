@@ -106,6 +106,7 @@ class IndexComponent extends Component
         }
         
         $this->facturas = $query->get();
+        $this->calcularTotales($this->facturas);
 
         //dd($this->pedidos);
 

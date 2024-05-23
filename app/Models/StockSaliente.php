@@ -19,6 +19,7 @@ class StockSaliente extends Model
         'cantidad_salida',
         'fecha_salida',
         'motivo_salida',
+        'almacen_origen_id',
     ];
 
     public function stockEntrante()

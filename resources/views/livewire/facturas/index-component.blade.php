@@ -135,7 +135,13 @@
                                 },
                                 lengthChange: false,
                                 pageLength: 30,
-                                buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                                buttons: ['copy', { extend: 'excelHtml5', exportOptions: {
+                                    columns: ':visible'
+                                } },
+                                 'pdf', 'colvis'],
+                                exportOptions: {
+                                    footer:false,
+                                },
                                 language: {
                                     'lengthMenu': 'Mostrar _MENU_ registros por página',
                                     'zeroRecords': 'No se encontraron registros',
@@ -198,20 +204,20 @@
                                                     <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
                                                 @endif
                                             </td>
-                                                    <td>{{number_format( $fact->precio ,2) }}€</td>
+                                                    <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
                                                     <td>
                                                         @if($fact->iva !== null)
-                                                            {{ $fact->iva }}
+                                                            {{ number_format($fact->iva, 2, '.', '') }}
                                                         @else
-                                                            {{number_format(($fact->precio) * 0.21, 2)}}
+                                                            {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}
                                                         @endif
                                                         € 
                                                     </td>
                                                     <td>
                                                         @if($fact->total !== null )
-                                                            {{ $fact->total }}
+                                                            {{ number_format($fact->total , 2, '.', '') }}
                                                         @else
-                                                            {{number_format(($fact->precio) * 1.21, 2)}}
+                                                            {{number_format(($fact->precio) * 1.21, 2, '.', '')}}
                                                         @endif
                                                             €
                                                     </td>
@@ -266,7 +272,7 @@
                                         </tr>
                                     @endforeach
                                 </tbody>
-                                <tfoot>
+                                {{-- <tfoot>
                                     <tr>
                                         <td colspan="8"></td>
                                         <td><strong>Total Importe</strong></td>
@@ -283,8 +289,36 @@
                                         <!-- Ajusta el colspan según el número de columnas en tu tabla -->
                                         <td colspan="2"></td>
                                     </tr>
-                                </tfoot>
+                                </tfoot> --}}
                             </table>
+                            <div class="col-md-3 mt-4" style="float:right;" x-data="{}" x-init="$nextTick(() => {
+                                $('#datatable2').DataTable({
+                                    responsive: true,
+                                    paging: false, 
+                                    searching: false,
+                                    ordering: false, 
+                                    info: false,
+                                                    });
+                                                })"
+                                                wire:key='{{ rand() }}'> 
+                                <table id="datatable2" wire:key='{{ rand() }}'>
+                                    <thead>
+                                        <tr>
+                                            <th>Importe Total</th>
+                                            <th>IVA Total</th>
+                                            <th>Total con IVA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ $totalImportes }}€</td>
+                                            <td>{{ $totalIva }}€</td>
+                                            <td>{{ $totalesConIva }}€</td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
                         </div>
                     @else
                         <h6 class="text-center">No tenemos ninguna factura</h6>

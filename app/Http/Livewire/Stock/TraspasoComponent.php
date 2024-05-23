@@ -82,7 +82,7 @@ class TraspasoComponent extends Component
                 'estado' => 2,
             ]);
          }
-
+         //se crea el nuevo stock en almacen
         $mercaderiaSave = Stock::create(
             [
                 'estado' =>  $this->estado,
@@ -90,6 +90,7 @@ class TraspasoComponent extends Component
                 'almacen_id' => $this->almacenDestino,
                 'observaciones' => $this->observaciones,
             ]);
+
         $mercaderiaproductoSave = StockEntrante::create([
                 'producto_id' => $this->stockentrante->producto_id,
                 'lote_id' => $this->stockentrante->lote_id ,
@@ -104,12 +105,15 @@ class TraspasoComponent extends Component
             $productUpdate =$this->stockentrante->update([
                 'cantidad' => $nuevaCantidad,
             ]);
+
+            
     
             $stockSaliente = StockSaliente::create([
                 'stock_entrante_id' => $mercaderiaproductoSave->id,
                 'producto_id' => $mercaderiaproductoSave->producto_id,
                 'cantidad_salida' => $this->cantidad,
                 'fecha_salida' => Carbon::now(),
+                'almacen_origen_id' => $this->almacenActual->id,
             ]);
         
         }
