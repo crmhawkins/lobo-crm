@@ -255,6 +255,14 @@ class IndexComponent extends Component
             'descargarFacturas'
         ];
     }
+
+   public function hasPedido($facturaId)
+    {
+        $factura = Facturas::find($facturaId);
+        $pedido = Pedido::find($factura->pedido_id);
+        return isset($pedido);
+    }
+
     public function albaran($pedidoId, $iva)
     {
         // Buscar el albarán asociado con el ID del pedido

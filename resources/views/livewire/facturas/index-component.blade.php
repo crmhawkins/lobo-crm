@@ -303,7 +303,9 @@
                                                 </a>
                                                 <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
                                                 <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
-                                                <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
+                                                @if($this->hasPedido($fact->id))
+                                                    <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
