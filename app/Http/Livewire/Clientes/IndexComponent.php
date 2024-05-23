@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Clientes;
 
 use App\Models\Clients;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class IndexComponent extends Component
 {
@@ -12,7 +13,11 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        $this->clientes = Clients::all();
+        if(Auth::user()->role != 3){
+            $this->clientes = Clients::all();
+        }else{
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
+        }
     }
 
     public function render()
