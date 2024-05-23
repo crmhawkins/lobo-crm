@@ -60,6 +60,11 @@
                 <span style="font-size: 80%"><span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
                 @if($pedido->npedido_cliente)
                     <span style="font-weight: bold;">Pedido:</span> {{$pedido->npedido_cliente}}<br>
+                @elseif($pedido->id)
+                    <span style="font-weight: bold;">Pedido:</span> {{$pedido->id}}<br>
+                @endif
+                @if($albaran->num_albaran)
+                    <span style="font-weight: bold;">Albarán:</span> {{$albaran->num_albaran}}<br>
                 @endif
                     <span style="font-weight: bold;">Fecha:</span> {{$factura->fecha_emision}}<br>
                     <span style="font-weight: bold;">Vencimiento:</span> {{$factura->fecha_vencimiento}}</span>

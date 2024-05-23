@@ -100,10 +100,11 @@ class CreateComponent extends Component
 
             if ($lastInvoice) {
                 // Extrae el número secuencial de la última factura del año y lo incrementa
-                $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
+                $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
             } else {
                 $lastNumber = 1;
             }
+           
         }else{
             $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->max('numero_factura');
 
@@ -120,9 +121,10 @@ class CreateComponent extends Component
            
         }
         
+       
         
         if($this->isFacturaRectificativa){
-            $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+            $this->numero_factura = 'CN240020'  . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }else{
             $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }
