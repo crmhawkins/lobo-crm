@@ -13,6 +13,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\Models\RoturaStock;
+use App\Models\ModificacionesStock;
+use App\Models\User;
 
 class EditComponent extends Component
 {
@@ -32,6 +34,9 @@ class EditComponent extends Component
     public $stockentrante;
     public $stock;
     public $almacenActual;
+    public $motivo;
+    public $roturas = [];
+    public $modificaciones = [];
 
 
     public $roturaStockItem;
@@ -58,6 +63,10 @@ class EditComponent extends Component
 
     public function render()
     {
+
+        $this->roturas = RoturaStock::where('stock_id', $this->stock->id)->get();
+        $this->modificaciones = ModificacionesStock::where('stock_id', $this->stock->id)->get();
+
         return view('livewire.stock.edit-component');
     }
 
@@ -94,10 +103,38 @@ class EditComponent extends Component
             $roturaStock->stock_id = $this->stock->id;
             $roturaStock->cantidad = $this->roturaStockItem;
             $roturaStock->fecha = Carbon::now();
+            $roturaStock->observaciones = $this->motivo;
             //$roturaStock->observaciones = 'Rotura de stock';
             $roturaStock->almacen_id = $this->almacen_id;
             $roturaStock->user_id = Auth::user()->id;
             $roturaStock->save();
+            $this->roturaStockItem = 0;
+            $this->motivo = null;
+        }elseif($this->addStockItem > 0){
+            $anadirStock = new ModificacionesStock();
+            $anadirStock->stock_id = $this->stock->id;
+            $anadirStock->cantidad = $this->addStockItem;
+            $anadirStock->fecha = Carbon::now();
+            $anadirStock->tipo = 'Suma';
+            $anadirStock->motivo = $this->motivo;
+            $anadirStock->almacen_id = $this->almacen_id;
+            $anadirStock->user_id = Auth::user()->id;
+            $anadirStock->save();
+            $this->addStockItem = 0;
+            $this->motivo = null;
+        }elseif($this->deleteStockItem > 0){
+            $restarStock = new ModificacionesStock();
+            $restarStock->stock_id = $this->stock->id;
+            $restarStock->cantidad = $this->deleteStockItem;
+            $restarStock->fecha = Carbon::now();
+            $restarStock->tipo = 'Resta';
+            $restarStock->motivo = $this->motivo;
+            $restarStock->almacen_id = $this->almacen_id;
+            $restarStock->user_id = Auth::user()->id;
+            $restarStock->save();
+            $this->deleteStockItem = 0;
+            $this->motivo = null;
+
         }
 
 
@@ -122,22 +159,75 @@ class EditComponent extends Component
     }
 
     public function  addStock(){
+
+        if($this->motivo == null){
+            $this->alert('error', '¡Debe indicar un motivo para sumar stock!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            $this->addStockItem = 0;
+            return;
+        }
+
         $this->addStockItem = abs($this->addStockItem);
         $this->cantidad = $this->cantidad + $this->addStockItem;
+        $this->alert('warning', '¿Seguro que desea registrar la suma de stock?', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'update',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ])
+        ;
 
     }
 
     public function  deleteStock(){
-
+        if($this->motivo == null){
+            $this->alert('error', '¡Debe indicar un motivo para restar stock!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            $this->deleteStockItem = 0;
+            return;
+        }
         $this->deleteStockItem = abs($this->deleteStockItem);
 
             
         $this->cantidad = $this->cantidad - $this->deleteStockItem;
         //si es un numero negativo se convierte en positivo, es decir, se le quita el signo negativo
+
+        $this->alert('warning', '¿Seguro que desea registrar la resta de stock?', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'update',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timerProgressBar' => true,
+        ])
+        ;
         
     }
 
     public function  roturaStock(){
+        if($this->motivo == null){
+            $this->alert('error', '¡Debe indicar un motivo para rotura stock!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            $this->roturaStockItem = 0;
+            return;
+        }
 
         $this->roturaStockItem = abs($this->roturaStockItem);
 
@@ -220,6 +310,26 @@ class EditComponent extends Component
     {
         $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
+    }
+
+    public function getNombreUsuario($id)
+    {
+        //dd("prueba");
+        $nombre_usuario = User::where('id', $id)->first();
+
+        if($nombre_usuario != null){
+            return $nombre_usuario->name . " " . $nombre_usuario->surname;
+        }
+
+        return "Usuario no encontrado";
+    }
+
+    public function getNombreAlmacen($id)
+    {
+        //dd("prueba");
+        $nombre_almacen = Almacen::where('id', $id)->first()->almacen;
+        //dd($nombre_almacen);
+        return $nombre_almacen ?? "Almacén no encontrado";
     }
 
 

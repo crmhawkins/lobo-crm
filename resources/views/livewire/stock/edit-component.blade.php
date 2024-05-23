@@ -35,8 +35,12 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </button>
                 </div>
                 <div class="modal-body">
-
+                    <label>Stock a sumar:</label>
                     <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="addStockItem">
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
+
 
                     <button class="btn btn-success mt-2" wire:click="addStock" data-dismiss="modal">Sumar</button>
                     
@@ -58,8 +62,11 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </button>
                 </div>
                 <div class="modal-body">
-
+                    <label>Stock a restar:</label>
                     <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="deleteStockItem">
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
 
                     <button class="btn btn-danger mt-2" wire:click="deleteStock" data-dismiss="modal">Restar</button>
                     
@@ -81,12 +88,144 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </button>
                 </div>
                 <div class="modal-body">
-
+                    <label>Rotura:</label>
                     <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="roturaStockItem">
-
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
                     <button class="btn btn-success mt-2" wire:click="roturaStock" data-dismiss="modal">Rotura</button>
                     
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" id="roturaitems" tabindex="-1" style="background: #00800040;" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important; width:140%;">
+            <div class="modal-content" style="width: 150%;">
+                <div class="modal-header">
+                    <h5 class="modal-title ">Ver Roturas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                @if(count($roturas) > 0)
+                <div class="modal-body" x-data="{}" x-init="$nextTick(() => {
+                    $('#datatable-rotura').DataTable({
+                        responsive: true,
+                        lengthChange: false,
+                        pageLength: 5,
+                        info: false,
+                        language: {
+                            lengthMenu: 'Mostrar _MENU_ registros por página',
+                            zeroRecords: 'No se encontraron registros',
+                            info: 'Mostrando página _PAGE_ de _PAGES_',
+                            infoEmpty: 'No hay registros disponibles',
+                            infoFiltered: '(filtrado de _MAX_ total registros)',
+                            search: 'Buscar:'
+                        },
+                        
+                    });
+                })" wire:key='{{ rand() }}'>
+                
+                    <table id="datatable-rotura" style="width: 100%"  wire:key='{{ rand() }}'>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>User</th>
+                                <th>Cantidad</th>
+                                <th>Motivo</th>
+                                <th>Almacen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($roturas as $rotura )
+
+                            <tr>
+                                <td>{{$rotura->fecha}}</td>
+                                <td>{{$this->getNombreUsuario($rotura->user_id)}}</td>
+                                <td>{{$rotura->cantidad}}</td>
+                                <td>{{$rotura->observaciones}}</td>
+                                <td>{{$this->getNombreAlmacen($rotura->almacen_id)}}</td>
+                            </tr>
+                                
+                            @endforeach
+                        </tbody>
+
+                    </table>
+                    
+                  
+                </div>
+                @endif 
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" id="modificacionesitems" tabindex="-1" style="background: #00800040;" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important; width:140%;">
+            <div class="modal-content" style="width: 150%;">
+                <div class="modal-header">
+                    <h5 class="modal-title ">Ver Modificaciones</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                @if(count($modificaciones) > 0)
+                <div class="modal-body" x-data="{}" x-init="$nextTick(() => {
+                    $('#datatable-modificacion').DataTable({
+                        responsive: true,
+                        lengthChange: false,
+                        pageLength: 5,
+                        info: false,
+                        language: {
+                            lengthMenu: 'Mostrar _MENU_ registros por página',
+                            zeroRecords: 'No se encontraron registros',
+                            info: 'Mostrando página _PAGE_ de _PAGES_',
+                            infoEmpty: 'No hay registros disponibles',
+                            infoFiltered: '(filtrado de _MAX_ total registros)',
+                            search: 'Buscar:'
+                        },
+                        
+                    });
+                })" wire:key='{{ rand() }}'>
+                
+                    <table id="datatable-modificacion" style="width: 100%"  wire:key='{{ rand() }}'>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>User</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Motivo</th>
+                                <th>Almacen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($modificaciones as $modificacion )
+
+                            <tr>
+                                <td>{{$modificacion->fecha}}</td>
+                                <td>{{$this->getNombreUsuario($modificacion->user_id)}}</td>
+                                <td>{{$modificacion->tipo}}</td>
+                                <td>{{$modificacion->cantidad}}</td>
+                                <td>{{$modificacion->motivo}}</td>
+                                <td>{{$this->getNombreAlmacen($modificacion->almacen_id)}}</td>
+                            </tr>
+                                
+                            @endforeach
+                        </tbody>
+
+                    </table>
+                    
+                  
+                </div>
+                @endif 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
@@ -178,7 +317,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                     <td width="25%" class="unidades">
                                                         <div class="row align-items-center">
                                                             <div class="col-8 text-end">
-                                                                <input type="number" class="form-control" wire:model="cantidad" @if(!$canEdit) disabled @endif>
+                                                                <input type="number" class="form-control" wire:model="cantidad" disabled >
                                                             </div>
                                                             <div class="col-4 text-start">
                                                                 <p class="my-auto">Unidades</p>
@@ -201,18 +340,34 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                 </div>
             </div>
         </div>
+        @if(count($roturas) > 0 || count($modificaciones) > 0)
         <div class="col-md-3" style="width: 23vw !important;">
             <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
                 <div class="card-body">
                     <h5>Opciones </h5>
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-12">
                             <button class="w-100 btn btn-success mb-2" wire:click.prevent="update">Actualizar stock</button>
                         </div>
-                    </div>
+                    </div> --}}
+                    @if(count($roturas) > 0)
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-warning mb-2" data-toggle="modal" data-target="#roturaitems" >Ver roturas</button>
+                            </div>
+                        </div>
+                    @endif
+                    @if(count($modificaciones) > 0)
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" data-toggle="modal" data-target="#modificacionesitems" >Ver Modificaciones</button>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
+        @endif
         <style>
             fieldset.scheduler-border {
                 border: 1px groove #ddd !important;
@@ -271,6 +426,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
+        <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+        <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
         </script>
     @endsection

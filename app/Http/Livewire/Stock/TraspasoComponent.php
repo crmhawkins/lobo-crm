@@ -56,6 +56,25 @@ class TraspasoComponent extends Component
     // Al hacer update en el formulario
     public function update()
     {
+
+        if($this->almacenDestino == null){
+            $this->alert('error', '¡Selecciona almacén!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        if($this->cantidad == null){
+            $this->alert('error', '¡Ingresa una cantidad!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
          $oldCantidad = $this->stockentrante->cantidad;
          if($this->cantidad <= $oldCantidad){
             $nuevaCantidad = $oldCantidad - $this->cantidad;

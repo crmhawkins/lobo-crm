@@ -34,17 +34,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <a href="{{ route('mercaderia.create') }}" class="btn btn-lg btn-primary w-100">NUEVO
                                 MATERIAL PARA PRODUCTO</a>
 
-                            <div x-data="" x-init="$nextTick(() => {
-                                $('#select2-categoria').select2({ tags: true });
-                                $('#select2-categoria').on('change', function(e) {
-                                    var data = $('#select2-categoria').select2('val');
-                                    @this.set('categoria_id', data);
-                                    @this.emit('cambioCategoria');
-                                    console.log(data);
-                                });
-                            });" wire:key='{{ time() . 'juanito' }}'>
+                            <div  wire:key='{{ time() . 'juanito' }}'>
                                 <label for="categoria">Categoría de los materiales</label>
-                                <select class="form-control" name="producto" id="select2-categoria"
+                                <select class="form-control" name="producto" id="select2-categoria" wire:model="categoria_id"
                                     value="{{ $categoria_id }}">
                                     <option value="0">Todos los materiales</option>
                                     @foreach ($categorias as $categoria)

@@ -48,6 +48,31 @@ class IndexComponent extends Component
         }
     }
 
+    public function updateMateriales(){
+
+        $query = Mercaderia::query();
+
+        if($this->categoria_id != 0){
+            $query->where('categoria_id', $this->categoria_id);
+        }
+
+        $this->mercaderias = $query->get();
+
+        $this->emit('refreshComponent');    
+
+
+    }
+
+    public function updated($propertyName)
+    {
+        if (
+            $propertyName == 'categoria_id' 
+
+        ) {
+            $this->updateMateriales();
+        }
+    }
+
     public function getCantidad($id)
     {
         return StockMercaderiaEntrante::where('mercaderia_id', $id)->get()->sum('cantidad');
