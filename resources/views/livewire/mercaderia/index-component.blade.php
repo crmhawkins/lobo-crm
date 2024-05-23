@@ -47,10 +47,30 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         </div>
                         <div class="col-md-12" wire:ignore.self>
 
-                            </div>
+                            <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                                $('#datatable-buttons').DataTable({
+                                    responsive: true,
+                                    layout: {
+                                        topStart: 'buttons'
+                                    },
+                                    lengthChange: false,
+                                    pageLength: 30,
+                                    buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                                    language: {
+                                        'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                        'zeroRecords': 'No se encontraron registros',
+                                        'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                        'infoEmpty': 'No hay registros disponibles',
+                                        'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                        'search': 'Buscar:',
+                                    },
+                            
+                                                    });
+                                                })"
+                                                wire:key='{{ rand() }}'>                            
                             <table id="datatable-buttons"
                                 class="table table-striped table-bordered dt-responsive nowrap"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                                 <thead>
                                     <tr>
                                         <th scope="col">Nombre</th>
@@ -76,6 +96,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
                         </div>
                 </div>
                 @endif
@@ -106,5 +127,5 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 <!-- Responsive examples -->
-<script src="../assets/pages/datatables.init.js"></script>
+{{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 @endsection
