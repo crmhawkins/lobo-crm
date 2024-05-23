@@ -50,7 +50,7 @@
                                 <label class=""  id="comerciales"  >
                                     Comerciales
                                     </label>
-                                <select class="text-white bg-secondary rounded p-1" id="comercialesSelect" wire:change="onChangeFiltrado(1)" wire:model="comercialSeleccionadoId">
+                                <select class="text-white bg-secondary rounded p-1" id="comercialesSelect"  wire:model="comercialSeleccionadoId">
                                     <option value="-1">Todos</option>
                                     @foreach ( $comerciales as $comercial )
                                         <option value='{{ $comercial->id }}'>{{ $comercial->name }}</option>
@@ -62,7 +62,7 @@
                                 <label class=""  id="delegaciones"  >
                                 Delegaciones
                                 </label>
-                                <select class="text-white bg-secondary rounded p-1" id="delegacionesSelect" wire:change="onChangeFiltrado(2)" wire:model="delegacionSeleccionadaCOD">
+                                <select class="text-white bg-secondary rounded p-1" id="delegacionesSelect"  wire:model="delegacionSeleccionadaCOD">
                                     <option value='-1' >Todas</option>
                                     @foreach ( $delegaciones as $delegacion )
                                         <option value='{{  $delegacion->COD }}'>{{ $delegacion->nombre }}</option>
@@ -74,7 +74,7 @@
                                 <label class=""  id="clientes"  >
                                 Clientes
                                 </label>
-                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"  wire:change="onChangeFiltrado(3)" wire:model="clienteSeleccionadoId">
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"   wire:model="clienteSeleccionadoId">
                                     <option value='-1' >Todos</option>
                                     @foreach ( $clientes as $cliente )
                                         <option value='{{$cliente->id }}' >{{ $cliente->nombre }}</option>
@@ -86,7 +86,7 @@
                                 <label class=""  id="estado"  >
                                 Estado
                                 </label>
-                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"  wire:change="onChangeFiltrado(4)" wire:model="estadoSeleccionado" >
+                                <select class="text-white bg-secondary rounded p-1" id="clientesSelect"   wire:model="estadoSeleccionado" >
                                     <option value='-1' >Todos</option>
                                     <option value='vencidas' >Vencidas</option>
                                     <option value='pendientes' >Pendientes</option>
@@ -99,7 +99,9 @@
                         @if(count($arrFiltrado) > 0)
                             <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif @if(isset($arrFiltrado[4])) Estado @endif</p>
                         @endif
-                        <button class="btn btn-primary" id="clear"  @if(count($arrFiltrado) == 0) style="display:none" @endif>Eliminar Filtros</button>
+                        <button class="btn btn-primary" wire:click="limpiarFiltros()"  @if($comercialSeleccionadoId == -1 && $delegacionSeleccionadaCOD == -1 && $clienteSeleccionadoId == -1 && $estadoSeleccionado == -1 ) 
+                        style="display:none"
+                         @endif>Eliminar Filtros</button>
 
                     </div>
                     <button class="btn btn-primary" onclick="descargarFacturas()">Descargar seleccionados</button>

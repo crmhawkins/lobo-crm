@@ -30,17 +30,16 @@ class IndexComponent extends Component
     public $totalImportes;
 
     public $delegaciones;
-    public $delegacionSeleccionadaCOD;
+    public $delegacionSeleccionadaCOD = -1;
 
     public $comerciales;
-    public $comercialSeleccionadoId;
-    public $clienteSeleccionadoId;
+    public $comercialSeleccionadoId = -1;
+    public $clienteSeleccionadoId = -1;
 
     public $arrFiltrado = [];
     public $arrDescargaFacturas = [];
     public $check;
-    public $estadoSeleccionado;
-
+    public $estadoSeleccionado = -1;
 
     public function mount()
     {
@@ -58,6 +57,7 @@ class IndexComponent extends Component
             foreach ($clientes_comercial as $cliente) {
                 $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
             }
+
         } else {
             $this->facturas = Facturas::all();
             //por cada factura se calcula el total de iva y el total de importes y el totales con iva
@@ -65,6 +65,72 @@ class IndexComponent extends Component
         }
     }
 
+    public function updateFacturas()
+    {
+        $query = Facturas::query();
+        
+        if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
+            $query->whereHas('cliente', function ($query) {
+                $query->where('delegacion_COD', $this->delegacionSeleccionadaCOD);
+            });
+        }
+
+        if ($this->comercialSeleccionadoId && $this->comercialSeleccionadoId != -1) {
+            $query->whereHas('cliente', function ($query) {
+                $query->where('comercial_id', $this->comercialSeleccionadoId);
+            });
+        }
+
+        if ($this->estadoSeleccionado && $this->estadoSeleccionado != -1) {
+            switch ($this->estadoSeleccionado) {
+                case 'vencidas':
+                    $query->where(function ($query) {
+                        $query->where('estado', 'Pendiente')
+                            ->orWhere('estado', 'Cancelado');
+                    })->whereDate('fecha_vencimiento', '<=', now());
+                    break;
+                case 'pagadas':
+                    $query->where('estado', 'Pagado');
+                    break;
+                case 'pendientes':
+                    $query->where('estado', 'Pendiente')
+                        ->whereDate('fecha_vencimiento', '>', now());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if ($this->clienteSeleccionadoId && $this->clienteSeleccionadoId != -1) {
+            $query->where('cliente_id', $this->clienteSeleccionadoId);
+        }
+        
+        $this->facturas = $query->get();
+
+        //dd($this->pedidos);
+
+        $this->emit('refreshComponent');
+    }
+    public function limpiarFiltros()
+    {
+        $this->delegacionSeleccionadaCOD = -1;
+        $this->comercialSeleccionadoId = -1;
+        $this->estadoSeleccionado = -1;
+        $this->clienteSeleccionadoId = -1;
+        $this->updateFacturas();
+    }
+    public function updated($propertyName)
+    {
+        if (
+            $propertyName == 'delegacionSeleccionadaCOD' ||
+            $propertyName == 'comercialSeleccionadoId' ||
+            $propertyName == 'estadoSeleccionado' ||
+            $propertyName == 'clienteSeleccionadoId' 
+
+        ) {
+            $this->updateFacturas();
+        }
+    }
 
     
 
@@ -105,88 +171,7 @@ class IndexComponent extends Component
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
 
-    public function filtrar($id, $filtro)
-    {
-
-        $filtros = [
-            1 => 'comerciales',
-            2 => 'delegaciones',
-            3 => 'clientes',
-            4 => 'estados',
-        ];
-
-        //si el filtro existe en el array de filtros, se actualiza con lo que se le pasa por parámetro
-        if (array_key_exists($filtro, $this->arrFiltrado)) {
-            $this->arrFiltrado[$filtro] = $id;
-        } else {
-            //si no existe, se añade al array de filtros
-            $this->arrFiltrado[$filtro] = $id;
-        }
-
-        //se filtran las facturas
-        $this->filtrarFacturas($this->arrFiltrado);
-    }
-
-    public function filtrarFacturas($filtros)
-    {
-        $facturasQuery = Facturas::query();
-
-        // Aplicar filtros si hay alguno activo
-        if (!empty($filtros)) {
-            foreach ($filtros as $filtro => $id) {
-                switch ($filtro) {
-                    case 1: // Filtrar por comercial
-                        $facturasQuery->whereHas('cliente', function ($query) use ($id) {
-                            $query->where('comercial_id', $id);
-                        });
-                        break;
-                    case 2: // Filtrar por delegación
-                        $facturasQuery->whereHas('cliente', function ($query) use ($id) {
-                            $query->where('delegacion_COD', $id);
-                        });
-                        break;
-                    case 3: // Filtrar por cliente
-                        $facturasQuery->where('cliente_id', $id);
-                        break;
-                    case 4: // Filtrar por estado de la factura
-                        switch ($this->estadoSeleccionado) {
-                            case 'vencidas':
-                                $facturasQuery->where(function ($query) {
-                                    $query->where('estado', 'Pendiente')
-                                            ->orWhere('estado', 'Cancelado');
-                                })->whereDate('fecha_vencimiento', '<=', now());
-                                break;
-                            case 'pagadas':
-                                $facturasQuery->where('estado', 'Pagado');
-                                break;
-                            case 'pendientes':
-                                $facturasQuery->where('estado', 'Pendiente')
-                                                ->whereDate('fecha_vencimiento', '>', now());
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        // Obtener las facturas filtradas
-        $facturasFiltradas = $facturasQuery->get();
-
-        $this->updateFactura($facturasFiltradas);
-    }
-
-    // public function updating($property, $value)
-    // {
-
-    //     if ($property == 'delegacionSeleccionadaCOD' || $property == 'comercialSeleccionadoId' || $property == 'clienteSeleccionadoId') {
-    //     $this->emit('actualizarTablaAntes');
-    // }
-    // }
-
+    
 
 
     public function updateFactura($facturasActualizadas)
@@ -196,70 +181,7 @@ class IndexComponent extends Component
        // $this->emit('actualizarTablaDespues');
     }
 
-    public function eliminarFiltro($filtro)
-    {
-        //se elimina el filtro del array de filtros
-        unset($this->arrFiltrado[$filtro]);
-
-        //se filtran las facturas
-        //$this->emit('actualizarTablaAntes');
-        $this->filtrarFacturas($this->arrFiltrado);
-        //$this->emit('actualizarTablaDespues');
-    }
-
-    public function limpiarFiltros()
-    {
-        $this->arrFiltrado = [];
-
-        //hay que hacerlo de forma asíncrona
-
-        //se filtran las facturas
-
-
-        //$this->emit('actualizarTablaAntes');
-        $this->facturas = Facturas::all();
-        $this->calcularTotales($this->facturas);
-        //$this->emit('actualizarTablaDespues');
-        $this->delegacionSeleccionadaCOD = null;
-        $this->comercialSeleccionadoId = null;
-        $this->clienteSeleccionadoId = null;
-        //$this->emit('actualizarTablaDespues');
-        //dd($this->facturas);
-
-    }
-
-    public function onChangeFiltrado($filtro)
-    {
-        $id = null;
-
-        // Determinar el ID según el filtro seleccionado
-        switch ($filtro) {
-            case 1:
-                $id = $this->comercialSeleccionadoId;
-                break;
-            case 2:
-                $id = $this->delegacionSeleccionadaCOD;
-                break;
-            case 3:
-                $id = $this->clienteSeleccionadoId;
-                break;
-            case 4:
-                $id = $this->estadoSeleccionado;
-                break;
-            default:
-                break;
-        }
-
-        // Verificar si se ha seleccionado un filtro válido
-        if ($id !== null) {
-            // Verificar si se ha seleccionado la opción "Todos" (-1)
-            if ($id == -1) {
-                $this->eliminarFiltro($filtro);
-            } else {
-                $this->filtrar($id, $filtro);
-            }
-        }
-    }
+   
 
     public function calcularTotales($facturas)
     {

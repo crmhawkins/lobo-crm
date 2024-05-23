@@ -43,6 +43,11 @@ class Facturas extends Model
         return $this->belongsTo(Clients::class, 'cliente_id');
     }
 
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'pedido_id');
+    }
+
     /**
      * Mutaciones de fecha.
      *

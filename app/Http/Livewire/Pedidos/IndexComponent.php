@@ -134,7 +134,6 @@ class IndexComponent extends Component
     }
     public function getDelegacion($id)
     {
-        
         $delegaciones = Delegacion::all();
         $cliente = $this->clientes->find($id);
         if (isset($cliente)) {
@@ -177,7 +176,6 @@ class IndexComponent extends Component
     public function albaran($pedidoId)
     {
         
-
         // Buscar el albarán asociado con el ID del pedido
 		//$factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();
