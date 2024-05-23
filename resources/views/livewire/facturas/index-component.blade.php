@@ -131,29 +131,67 @@
                             $('#datatable-buttons').DataTable({
                                 responsive: true,
                                 layout: {
-                                    topStart: 'buttons'
+                                    topStart: {
+                                        buttons: [
+                                            {
+                                                extend: 'copyHtml5',
+                                                exportOptions: { orthogonal: 'export' }
+                                            },
+                                            {
+                                                extend: 'excelHtml5',
+                                                exportOptions: { orthogonal: 'export', columns: ':visible' }
+                                            },
+                                            {
+                                                extend: 'pdfHtml5',
+                                                exportOptions: { orthogonal: 'export' }
+                                            },
+                                            {
+                                                extend: 'colvis',
+                                                columns: ':not(.noVis)'
+                                            }
+                                        ]
+                                    }
                                 },
                                 lengthChange: false,
                                 pageLength: 30,
-                                buttons: ['copy', { extend: 'excelHtml5', exportOptions: {
-                                    columns: ':visible'
-                                } },
-                                 'pdf', 'colvis'],
-                                exportOptions: {
-                                    footer:false,
-                                },
+                                buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
                                 language: {
-                                    'lengthMenu': 'Mostrar _MENU_ registros por página',
-                                    'zeroRecords': 'No se encontraron registros',
-                                    'info': 'Mostrando página _PAGE_ de _PAGES_',
-                                    'infoEmpty': 'No hay registros disponibles',
-                                    'infoFiltered': '(filtrado de _MAX_ total registros)',
-                                    'search': 'Buscar:',
+                                    lengthMenu: 'Mostrar _MENU_ registros por página',
+                                    zeroRecords: 'No se encontraron registros',
+                                    info: 'Mostrando página _PAGE_ de _PAGES_',
+                                    infoEmpty: 'No hay registros disponibles',
+                                    infoFiltered: '(filtrado de _MAX_ total registros)',
+                                    search: 'Buscar:'
                                 },
-                        
-                                                });
-                                            })"
-                                            wire:key='{{ rand() }}'>
+                                
+                                columns: [
+                                    { data: 'Descarga' },
+                                    { data: 'Número' },
+                                    { data: 'P.asociado' },
+                                    { data: 'Comercial' },
+                                    { data: 'Delegacion' },
+                                    { data: 'Cliente' },
+                                    { data: 'F.emisión' },
+                                    { data: 'F.vencimiento' },
+                                    { data: 'Importe' },
+                                    { data: 'IVA' },
+                                    { data: 'Total(Con IVA)' },
+                                    { data: 'M.pago' },
+                                    { data: 'Estado' },
+                                    { data: 'Acciones' },
+                                ],
+                                columnDefs: [
+                                    {
+                                        targets: [8, 9, 10],
+                                        render: function(data, type, row) {
+                                            return type === 'export' ? data.replace(/[€,]/g, '') : data;
+                                        }
+                                    }
+                                ]
+                            });
+                        })" wire:key='{{ rand() }}'>
+                            <!-- Tu tabla de datos aquí -->
+                        </div>
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                             <thead>
                                     <tr>
@@ -207,19 +245,17 @@
                                                     <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
                                                     <td>
                                                         @if($fact->iva !== null)
-                                                            {{ number_format($fact->iva, 2, '.', '') }}
+                                                            {{ number_format($fact->iva, 2, '.', '') }}€
                                                         @else
-                                                            {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}
-                                                        @endif
-                                                        € 
+                                                            {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}€
+                                                        @endif 
                                                     </td>
                                                     <td>
                                                         @if($fact->total !== null )
-                                                            {{ number_format($fact->total , 2, '.', '') }}
+                                                            {{ number_format($fact->total , 2, '.', '') }}€
                                                         @else
-                                                            {{number_format(($fact->precio) * 1.21, 2, '.', '')}}
-                                                        @endif
-                                                            €
+                                                            {{number_format(($fact->precio) * 1.21, 2, '.', '')}}€
+                                                        @endif        
                                                     </td>
                                             
                                             <td >
