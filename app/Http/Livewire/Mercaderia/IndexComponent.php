@@ -198,7 +198,7 @@ class IndexComponent extends Component
                 $motivoMercaderia  = ModificacionesMercaderia::create([
                     'mercaderia_id' => $this->mercaderiaSeleccionada->id,
                     'stock_mercaderia_entrante_id' => $mercaderiaEntranteNew->id,
-                    'motivo' => 'Ingreso de stock',
+                    'motivo' => $this->motivo ?? 'Modificacion de stock',
                     'cantidad' => abs($this->cantidad),
                     'user_id' => Auth::user()->id,
                     'tipo' => $tipo,
