@@ -185,32 +185,37 @@ class CreateComponent extends Component
     {
         // Obtener las entradas de StockEntrante para el producto, ordenadas por ejemplo por fecha
         $entradas = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->orderBy('created_at')->get();
-        if ($entradas->sum('cantidad') > $cantidad) {
-            foreach ($entradas as $entrada) {
-                if ($cantidad <= 0) break;
-                // Calcular la cantidad a sacar de esta entrada
-                $cantidadASacar = min($entrada->cantidad, $cantidad);
-                $entrada->cantidad -= $cantidadASacar;
-                $entrada->save();
-                $cantidad -= $cantidadASacar;
+        $newEntrada = StockMercaderiaEntrante::create([
+            'mercaderia_id' => $productoId,
+            'cantidad' => -abs($cantidad),
+            'tipo' => 'Saliente',
+        ]);
+        // if ($entradas->sum('cantidad') > $cantidad) {
+        //     foreach ($entradas as $entrada) {
+        //         if ($cantidad <= 0) break;
+        //         // Calcular la cantidad a sacar de esta entrada
+        //         $cantidadASacar = min($entrada->cantidad, $cantidad);
+        //         $entrada->cantidad -= $cantidadASacar;
+        //         $entrada->save();
+        //         $cantidad -= $cantidadASacar;
 
-                // Si la entrada de StockEntrante se vacía, revisar el registro en Stock
-                if ($entrada->cantidad == 0) {
-                    $stock = StockMercaderia::where('id', $entrada->stock_id)->first();
-                    // Comprobar si todas las entradas de este stock se han vaciado
-                    if ($stock->entrantes->every(function ($ent) {
-                        return $ent->cantidad == 0;
-                    })) {
-                        // Desactivar el stock si es necesario
-                        $stock->estado = 2;
-                        $stock->save();
-                    } else {
-                        $stock->estado = 1;
-                        $stock->save();
-                    }
-                }
-            }
-        }
+        //         // Si la entrada de StockEntrante se vacía, revisar el registro en Stock
+        //         if ($entrada->cantidad == 0) {
+        //             $stock = StockMercaderia::where('id', $entrada->stock_id)->first();
+        //             // Comprobar si todas las entradas de este stock se han vaciado
+        //             if ($stock->entrantes->every(function ($ent) {
+        //                 return $ent->cantidad == 0;
+        //             })) {
+        //                 // Desactivar el stock si es necesario
+        //                 $stock->estado = 2;
+        //                 $stock->save();
+        //             } else {
+        //                 $stock->estado = 1;
+        //                 $stock->save();
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     public function sumarStock()

@@ -35,10 +35,15 @@ class CreateComponent extends Component
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 0;
         $this->qr_id = $this->identificador;
-        $stockAsignado = StockMercaderia::where('qr_id', $this->qr_id)->first();
+        $stockAsignado = Mercaderia::where('qr', $this->qr_id)->first();
+        //dd($stockAsignado);
         if(isset($stockAsignado)){
-            $material_id = StockMercaderiaEntrante ::where('stock_id', $stockAsignado->id)->orderBy('created_at', 'desc')->first()->mercaderia_id;
-            $this->mercaderias_ordenadas[] = ['mercaderia_id' => $material_id, "cantidad" => 0];
+            $material_id = StockMercaderiaEntrante ::where('mercaderia_id', $stockAsignado->id)->orderBy('created_at', 'desc')->first();
+            if($material_id != null){
+                $this->mercaderias_ordenadas[] = ['mercaderia_id' => $material_id->mercaderia_id, "cantidad" => 0];
+            }else{
+                $this->mercaderias_ordenadas[] = ['mercaderia_id' => $stockAsignado->id, "cantidad" => 0];
+            }
         }
         $this->lote_id = "Selecciona un producto";
         $this->mercaderias = Mercaderia::all();
@@ -134,8 +139,10 @@ class CreateComponent extends Component
             DB::table('stock_mercaderia_entrante')
                 ->insert([
                     'mercaderia_id' => $mercaderias['mercaderia_id'],
-                    'stock_id' => $mercaderiaSave->id,
-                    'cantidad' => $mercaderias['cantidad']
+                    'cantidad' => $mercaderias['cantidad'],
+                    'tipo' => 'Entrante',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]);
         }
 

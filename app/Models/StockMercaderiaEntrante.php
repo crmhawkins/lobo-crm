@@ -14,9 +14,9 @@ class StockMercaderiaEntrante extends Model
     protected $table = "stock_mercaderia_entrante";
 
     protected $fillable = [
-        'stock_id',
         'mercaderia_id',
         'cantidad',
+        'tipo',
         ];
 
 

@@ -16,7 +16,8 @@ class Mercaderia extends Model
         'nombre',
         'categoria_id',
         'precio',
-        'stock_seguridad'
+        'stock_seguridad',
+        'qr',
     ];
 
 

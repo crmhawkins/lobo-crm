@@ -9,6 +9,10 @@ use App\Models\MercaderiaCategoria;
 use App\Models\StockMercaderiaEntrante;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\ModificacionesMercaderia;
+use App\Models\RoturaMercaderia;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class IndexComponent extends Component
 {
@@ -16,6 +20,11 @@ class IndexComponent extends Component
     use LivewireAlert;
     public $mercaderias;
     public $categorias;
+    public $mercaderiaSeleccionadaId;
+    public $mercaderiaSeleccionada;
+    public $cantidad;
+    public $motivo;
+    
 
     public $categoria_id;
 
@@ -48,6 +57,14 @@ class IndexComponent extends Component
         }
     }
 
+
+    public function changeMercaderiaSeleccionadaId($id){
+        $this->mercaderiaSeleccionadaId = $id;
+        
+        $this->mercaderiaSeleccionada = Mercaderia::find($id);
+        //dd($this->mercaderiaSeleccionada);
+    }
+
     public function updateMateriales(){
 
         $query = Mercaderia::query();
@@ -60,6 +77,149 @@ class IndexComponent extends Component
 
         $this->emit('refreshComponent');    
 
+
+    }
+
+    public function addStock(){
+        
+        
+        if($this->mercaderiaSeleccionada == null){
+            $this->alert('warning', 'Seleccione una mercadería.');
+            return;
+        }
+
+        if($this->cantidad == null){
+            $this->alert('warning', 'Ingrese una cantidad.');
+            return;
+        }
+
+
+        
+        
+        $update =  $this->updateStock('Suma');
+
+        if($update){
+            $this->alert('success', 'Stock actualizado correctamente.');
+        }else{
+            $this->alert('error', 'Error al actualizar el stock.');
+        }
+
+        $this->resetSeleccionados();
+    }
+
+    public function deleteStock(){
+        
+        
+        if($this->mercaderiaSeleccionada == null){
+            $this->alert('warning', 'Seleccione una mercadería.');
+            return;
+        }
+
+        if($this->cantidad == null){
+            $this->alert('warning', 'Ingrese una cantidad.');
+            return;
+        }
+
+        $update =  $this->updateStock('Resta');
+
+        if($update){
+            $this->alert('success', 'Stock actualizado correctamente.');
+        }else{
+            $this->alert('error', 'Error al actualizar el stock.');
+        }
+
+        $this->resetSeleccionados();
+    }
+
+    public function roturaStock(){
+        
+        if($this->mercaderiaSeleccionada == null){
+            $this->alert('warning', 'Seleccione una mercadería.');
+            return;
+        }
+
+        if($this->cantidad == null){
+            $this->alert('warning', 'Ingrese una cantidad.');
+            return;
+        }
+
+        if($this->motivo == null){
+            $this->alert('warning', 'Ingrese un motivo.');
+            return;
+        }
+
+        $update =  $this->updateStock('Rotura');
+
+        if($update){
+            $this->alert('success', 'Stock actualizado correctamente.');
+        }else{
+            $this->alert('error', 'Error al actualizar el stock.');
+        }
+
+        $this->resetSeleccionados();
+    }
+
+    public function resetSeleccionados(){
+        $this->mercaderiaSeleccionada = null;
+        $this->mercaderiaSeleccionadaId = null;
+        $this->cantidad = null;
+        $this->motivo = null;
+
+    }
+
+    public function updateStock($tipo){
+        $mercaderiaEntrante = StockMercaderiaEntrante::where('mercaderia_id', $this->mercaderiaSeleccionada->id)->first();
+        if(!$mercaderiaEntrante){
+            return false;
+        }
+
+        if($tipo == 'Resta' || $tipo == 'Rotura'){
+            if($mercaderiaEntrante->cantidad < $this->cantidad){
+                $this->alert('warning', 'No hay suficiente stock.');
+                return false;
+            }
+            $mercaderiaEntranteNew = StockMercaderiaEntrante::create([
+                'mercaderia_id' => $this->mercaderiaSeleccionada->id,
+                'cantidad' => -abs($this->cantidad),
+                'tipo' => 'Entrante',
+            ]);
+
+        }else{
+            $mercaderiaEntranteNew = StockMercaderiaEntrante::create([
+                'mercaderia_id' => $this->mercaderiaSeleccionada->id,
+                'cantidad' => abs($this->cantidad),
+                'tipo' => 'Entrante',
+            ]);
+        }
+        
+        //dd($mercaderiaEntrante);
+       if($mercaderiaEntranteNew){
+            if($tipo == 'Suma' || $tipo == 'Resta'){
+                $motivoMercaderia  = ModificacionesMercaderia::create([
+                    'mercaderia_id' => $this->mercaderiaSeleccionada->id,
+                    'stock_mercaderia_entrante_id' => $mercaderiaEntranteNew->id,
+                    'motivo' => 'Ingreso de stock',
+                    'cantidad' => abs($this->cantidad),
+                    'user_id' => Auth::user()->id,
+                    'tipo' => $tipo,
+                    'fecha' => Carbon::now(),
+                ]);
+            }else{
+
+                $motivoMercaderia = RoturaMercaderia::create([
+                    'mercaderia_id' => $this->mercaderiaSeleccionada->id,
+                    'stock_mercaderia_entrante_id' => $mercaderiaEntranteNew->id,
+                    'motivo' => $this->motivo,
+                    'cantidad' => abs($this->cantidad),
+                    'user_id' => Auth::user()->id,
+                    'fecha' => Carbon::now(),
+                ]);
+
+            }
+            
+       }
+
+       return $mercaderiaEntranteNew;
 
     }
 

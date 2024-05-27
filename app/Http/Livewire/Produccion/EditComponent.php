@@ -82,6 +82,9 @@ class EditComponent extends Component
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_ordenados[$id]['producto_id']);
+        if($producto == null){
+            return '';
+        }
         $cajas = ($this->productos_ordenados[$id]['cantidad'] / $producto->unidades_por_caja);
         $pallets = floor($cajas / $producto->cajas_por_pallet);
         $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
@@ -103,7 +106,12 @@ class EditComponent extends Component
 
     public function getPesoTotal($id,$in)
     {
-        $pesoUnidad = $this->productos->where('id', $id)->first()->peso_neto_unidad;
+        $pesoUnidad = $this->productos->where('id', $id)->first();
+        if($pesoUnidad == null){
+            return '';
+        }else{
+            $pesoUnidad = $pesoUnidad->peso_neto_unidad;
+        }
         $cantidad = $this->productos_ordenados[$in]['cantidad'];
         $pesoTotal= ($pesoUnidad * $cantidad)/1000;
         return $pesoTotal;
@@ -128,8 +136,8 @@ class EditComponent extends Component
 
     public function getNombreTabla($id)
     {
-        $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
-        return $nombre_producto;
+        $nombre_producto = $this->productos->where('id', $id)->first();
+        return $nombre_producto ? $nombre_producto->nombre : '';
     }
     public function getNombreTabla2($id)
     {
@@ -204,32 +212,41 @@ class EditComponent extends Component
     {
         // Obtener las entradas de StockEntrante para el producto, ordenadas por ejemplo por fecha
         $entradas = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->orderBy('created_at')->get();
-        if ($entradas->sum('cantidad') > $cantidad) {
-            foreach ($entradas as $entrada) {
-                if ($cantidad <= 0) break;
-                // Calcular la cantidad a sacar de esta entrada
-                $cantidadASacar = min($entrada->cantidad, $cantidad);
-                $entrada->cantidad -= $cantidadASacar;
-                $entrada->save();
-                $cantidad -= $cantidadASacar;
 
-                // Si la entrada de StockEntrante se vacía, revisar el registro en Stock
-                if ($entrada->cantidad == 0) {
-                    $stock = StockMercaderia::where('id', $entrada->stock_id)->first();
-                    // Comprobar si todas las entradas de este stock se han vaciado
-                    if ($stock->entrantes->every(function ($ent) {
-                        return $ent->cantidad == 0;
-                    })) {
-                        // Desactivar el stock si es necesario
-                        $stock->estado = 2;
-                        $stock->save();
-                    } else {
-                        $stock->estado = 1;
-                        $stock->save();
-                    }
-                }
-            }
-        }
+        $newMercaderiaEntrante = StockMercaderiaEntrante::create([
+            'mercaderia_id' => $productoId,
+            'cantidad' => -$cantidad,
+            'tipo' => 'Saliente',
+        ]);
+
+
+
+        // if ($entradas->sum('cantidad') > $cantidad) {
+        //     foreach ($entradas as $entrada) {
+        //         if ($cantidad <= 0) break;
+        //         // Calcular la cantidad a sacar de esta entrada
+        //         $cantidadASacar = min($entrada->cantidad, $cantidad);
+        //         $entrada->cantidad -= $cantidadASacar;
+        //         $entrada->save();
+        //         $cantidad -= $cantidadASacar;
+
+        //         // Si la entrada de StockEntrante se vacía, revisar el registro en Stock
+        //         if ($entrada->cantidad == 0) {
+        //             $stock = StockMercaderia::where('id', $entrada->stock_id)->first();
+        //             // Comprobar si todas las entradas de este stock se han vaciado
+        //             if ($stock->entrantes->every(function ($ent) {
+        //                 return $ent->cantidad == 0;
+        //             })) {
+        //                 // Desactivar el stock si es necesario
+        //                 $stock->estado = 2;
+        //                 $stock->save();
+        //             } else {
+        //                 $stock->estado = 1;
+        //                 $stock->save();
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     public function completarProduccion()

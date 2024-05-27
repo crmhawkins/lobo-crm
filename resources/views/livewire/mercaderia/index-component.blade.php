@@ -18,7 +18,84 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
+    <div wire:ignore.self class="modal fade" id="addStock" tabindex="-1" style="background: #00800040" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title ">Sumar Material @if($mercaderiaSeleccionada) <span class="text-info ">{{ $mercaderiaSeleccionada->nombre }}</span> @endif</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Material a sumar:</label>
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="cantidad">
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
 
+
+                    <button class="btn btn-success mt-2" wire:click="addStock" data-dismiss="modal">Sumar</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" style="background:#ff000040" id="deleteStock" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Restar Material @if($mercaderiaSeleccionada) <span class="text-info ">{{ $mercaderiaSeleccionada->nombre }}</span> @endif</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Material a restar:</label>
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="cantidad">
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
+
+                    <button class="btn btn-danger mt-2" wire:click="deleteStock" data-dismiss="modal">Restar</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" style="background: #ffff0040" id="roturaStock" tabindex="-1" role="dialog">
+        <div class="modal-dialog "
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-warning">Rotura de Material @if($mercaderiaSeleccionada) <span class="text-info ">{{ $mercaderiaSeleccionada->nombre }}</span> @endif</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label>Rotura:</label>
+                    <input type="number" min="1" pattern="^[0-9]+" class="form-control" placeholder="Stock" wire:model="cantidad">
+                    <br>
+                    <label>Motivo:</label>
+                    <textarea class="form-control" wire:model="motivo"></textarea>
+                    <button class="btn btn-success mt-2" wire:click="roturaStock" data-dismiss="modal">Rotura</button>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-12">
@@ -91,6 +168,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                 @if($canEdit)
                                                     <a href="mercaderia-edit/{{ $mercaderia->id }}" class="btn btn-primary">Ver/Editar</a> 
                                                 @endif
+                                                <button class="btn btn-success"  data-toggle="modal" style="align-self: end !important;" data-target="#addStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Sumar</button>
+                                                <button class="btn btn-danger" data-toggle="modal" style="align-self: end !important;" data-target="#deleteStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Restar</button>
+                                                <button class="btn btn-warning" data-toggle="modal" style="align-self: end !important;" data-target="#roturaStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Rotura</button>
                                             </td>
                                         </tr>
                                     @endforeach
