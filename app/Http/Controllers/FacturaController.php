@@ -46,6 +46,15 @@ class FacturaController extends Controller
         return view('factura.create', compact('id'));
 
     }
+
+
+    public function create2()
+    {
+
+        return view('factura.createrectificativa');
+
+    }
+
     public function create1()
     {
 

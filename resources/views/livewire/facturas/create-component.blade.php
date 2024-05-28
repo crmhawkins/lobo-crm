@@ -14,6 +14,32 @@
             </div>
         </div> <!-- end row -->
     </div>
+    <div wire:ignore.self class="modal fade" id="viewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Añadir servicios</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nombreServicio">Nombre del servicio</label>
+                    <textarea  wire:model="descripcionServicio" class="form-control mb-1" placeholder="Descripción"> </textarea>
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" wire:model="cantidad" class="form-control mb-1" placeholder="Cantidad">
+                    <label for="importeServicio">Importe</label>
+                    <input type="number" wire:model="importeServicio" class="form-control mb-1" placeholder="Precio">
+                    <button class="btn btn-success" wire:click="addArticulo()">Añadir</button>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- end page-title -->
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
@@ -21,14 +47,7 @@
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                            <div class="col-md-4">
-                                <label for="rectificativa" class="col-sm-12 col-form-label">
-                                    <input type="checkbox" wire:model="isFacturaRectificativa" 
-                                        name="isFacturaRectificativa" id="isFacturaRectificativa">
-                                        ¿Es factura rectificativa?
-                                    
-                                </label>
-                            </div>
+                            
                         <div class="form-group row">
                             <div class="col-md-4">
                                 <label for="numero_factura" class="col-sm-12 col-form-label">Número de Factura</label>
@@ -101,7 +120,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            @if(is_null($this->idpedido))
+                            {{-- @if(is_null($this->idpedido))
                             <div class="col-md-4">
                                 <label for="Cliente" class="col-sm-12 col-form-label">Producto</label>
                                 <div class="col-sm-12">
@@ -113,40 +132,11 @@
                                     </select>
                                 </div>
                             </div>
-                            @endif
+                            @endif --}}
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-4">
-                                <label for="fecha_emision" class="col-sm-12 col-form-label">Cantidad</label>
-                                <div class="col-sm-12">
-                                    @if(isset($this->idpedido))
-                                    <input type="number" wire:model="cantidad" class="form-control"
-                                        placeholder="cantidad" disabled>
-                                    @else
-                                    <input type="number" wire:model="cantidad" class="form-control"
-                                        placeholder="cantidad" wire:change='calculoPrecio()'>
-                                    @endif
-                                    @error('cantidad')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                @if(!isset($this->idpedido))
-                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Importe</label>
-                                @endif
-                                <div class="col-sm-12">
-                                    @if(isset($this->idpedido))
-                                    
-                                    @else
-                                    <input type="number" wire:model="precio" class="form-control"
-                                        placeholder="total">
-                                    @endif
-                                    @error('precio')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
+                            
+
                             <div class="col-md-4">
                                 <label for="metodo_pago" class="col-sm-12 col-form-label">Método de pago</label>
                                 <div class="col-sm-12" wire:ignore.self>
@@ -164,68 +154,70 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <div class="col-md-4">
-                                <label for="fecha_emision" class="col-sm-12 col-form-label">Importe sin descuento</label>
-                                <div class="col-sm-12">
-                                    
-                                    <input type="number" wire:model="subtotal_pedido" class="form-control"
-                                        placeholder="subtotal pedido" readonly>
-
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="descuento" class="col-sm-12 col-form-label">Descuento</label>
-                                <div class="col-sm-12">
-                                    <input type="number" wire:model="descuento" class="form-control"
-                                        placeholder="descuento" readonly>
-                                        @error('precio')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="fecha_emision" class="col-sm-12 col-form-label">Total descuento</label>
-                                <div class="col-sm-12">
-                                    
-                                    <input type="number" wire:model="descuento_total_pedido" class="form-control"
-                                        placeholder="descuento total pedido" readonly>
-
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="fecha_emision" class="col-sm-12 col-form-label">Importe</label>
-                                <div class="col-sm-12">
-                                    
-                                    <input type="number" wire:model="precio" class="form-control"
-                                        placeholder="importe" readonly>
-
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="iva_total_pedido" class="col-sm-12 col-form-label">Iva total</label>
-                                <div class="col-sm-12">
-                                    
-                                    <input type="number" wire:model="iva_total_pedido" class="form-control"
-                                        placeholder="iva total pedido" readonly>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="total" class="col-sm-12 col-form-label">Total</label>
-                                <div class="col-sm-12">
-                                    
-                                    <input type="number" wire:model="total" class="form-control"
-                                        placeholder="total" readonly>
-
-                                </div>
-                            </div>
-
-                            
-                        </div>
                         
+                        
+                        @if($idpedido != null)
+                            
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Importe sin descuento</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="subtotal_pedido" class="form-control"
+                                            placeholder="subtotal pedido" readonly>
 
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="descuento" class="col-sm-12 col-form-label">Descuento</label>
+                                    <div class="col-sm-12">
+                                        <input type="number" wire:model="descuento" class="form-control"
+                                            placeholder="descuento" readonly>
+                                            @error('precio')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Total descuento</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="descuento_total_pedido" class="form-control"
+                                            placeholder="descuento total pedido" readonly>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Importe</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="precio" class="form-control"
+                                            placeholder="importe" readonly>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="iva_total_pedido" class="col-sm-12 col-form-label">Iva total</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="iva_total_pedido" class="form-control"
+                                            placeholder="iva total pedido" readonly>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="total" class="col-sm-12 col-form-label">Total</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="total" class="form-control"
+                                            placeholder="total" readonly>
+
+                                    </div>
+                                </div>                            
+                            </div>
+                        @endif
+                        
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
@@ -251,9 +243,120 @@
                             </div>
                         </div>
                     </form>
+                    
+                    @if($idpedido == null)
+                        <button class="btn btn-info" data-toggle="modal" data-target="#viewModal">Añadir Servicio</button>
+                    @endif
+                    
+                    <div class="form-group row mt-2">
+                        @if(count($servicios) > 0)
+                            <h3 class="ms-3">Lista de servicios</h3>
+                            <div class="form-group col-md-11">
+                                    <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Cantidad</th>
+                                            <th>Importe</th>
+                                            <th>Eliminar</th>
+                                        </tr>
+                                        @foreach ($servicios as $index =>  $servicio)
+                                            <tr>
+                                                <td>{{ $servicio['descripcion'] }}</td>
+                                                <td>{{ $servicio['cantidad'] }}</td>
+                                                <td>{{ $servicio['importe'] }}</td>
+                                                <td><button type="button" class="btn btn-danger" wire:click="deleteServicio({{ $index }})">X</button></td>
+                                            </tr>
+                                        @endforeach
+
+                                    </table>
+                            </div>
+                        @endif
+                    </div>
                 </div>
+                @if(count($productos_pedido) > 0)
+                    <div class="card-body">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-md-12">
+                                <h5 class="ms-3"
+                                    style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
+                                    Lista de productos 
+                                </h5>
+                                <div class="form-group col-md-12">
+                                    @if (count($productos_pedido) > 0)
+                                        <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio unidad</th>
+                                                    <th>Precio total</th>
+                                                    <th>Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productos_pedido as $productoIndex => $producto)
+                                                    <tr>
+                                                        <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}</td>
+                                                        <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                        <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
+                                                        <td>{{ $producto['precio_total']}} €</td>
+                                                        <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{$productoIndex}}')">X</button></td>
+                                                    </tr>
+                                                @endforeach
+                                                {{-- <tr>
+                                                    <th colspan="3">Precio estimado</th>
+                                                    <th>{{ $precioSinDescuento }} €</td>
+                                                </tr> --}}
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-md-5 d-flex align-items-center">
+                                <div class="form-group col-md-6 d-flex align-items-center">
+                                    <label for="descuento">Descuento</label>
+                                    <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
+                                </div>
+                                @if ($descuento)
+                                    <div class="form-group col-md-6 d-flex flex-column justify-content-center">
+                                        <label>Porcentaje descuento</label>
+                                        <input class="form-control"  type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="form-group col-md-1">
+                            &nbsp;
+                            </div>
+                            
+                        </div>
+                        @if (count($productos_pedido) > 0)
+                            <div class="d-flex col-12">
+                                <div class="form-group col-md-4">
+                                    <label for="subtotal">Subtotal</label>
+                                    <input type="text" wire:model="subtotal" class="form-control" readonly>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="subtotal">Descuento total</label>
+                                    <input type="text" wire:model="descuento_total" class="form-control" readonly>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="fecha">Precio final</label>
+                                    <input type="text" wire:model="precio" class="form-control" readonly>
+                                </div>
+                            </div>
+                        @endif
+
+                        
+                    </div>
+                @endif
+                
+                
             </div>
+            
         </div>
+        
         <div class="col-md-3">
             <div class="card m-b-30">
                 <div class="card-body">

@@ -56,8 +56,10 @@
             <td class="bold" width="40%" style="text-align: right !important">
                 <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">ALBARÁN</h1><br>
                 <span style="font-size: 80%"><span style="font-weight: bold;">#{{$num_albaran}}</span><br>
+               
+                <span style="font-weight: bold;">Nº Pedido:</span> {{$pedido->id}}<br>
                 @if($pedido->npedido_cliente != null)
-                    <span style="font-weight: bold;">Pedido:</span> {{$pedido->npedido_cliente}}<br>
+                    <span style="font-weight: bold;">Nº Pedido Cliente:</span> {{$pedido->npedido_cliente}}<br>
                 @endif
                     <span style="font-weight: bold;">Fecha:</span> {{$fecha_albaran}}<br>
             </td>

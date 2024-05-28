@@ -40,6 +40,7 @@ class IndexComponent extends Component
     public $arrDescargaFacturas = [];
     public $check;
     public $estadoSeleccionado = -1;
+    public $tipoFactura = -1;
 
     public function mount()
     {
@@ -59,15 +60,35 @@ class IndexComponent extends Component
             }
 
         } else {
-            $this->facturas = Facturas::all();
+            $this->facturas = Facturas::where('tipo', 1)->orWhere('tipo', null)->get();
             //por cada factura se calcula el total de iva y el total de importes y el totales con iva
             $this->calcularTotales($this->facturas);
         }
     }
 
+    public function getFacturaAsociada($id)
+    {
+        
+        $factura = Facturas::where('id', $id)->first();
+
+        if(!$factura){
+            return 'No definido';
+        }
+
+        return $factura->factura_id;
+    }
+
     public function updateFacturas()
     {
         $query = Facturas::query();
+
+        if ($this->tipoFactura == -1) {
+            $query->where('tipo', 1)->orWhere('tipo', null);
+        }elseif($this->tipoFactura == 2){
+            $query->where('tipo', 2);
+        }elseif($this->tipoFactura == 3){
+            $query->where('tipo', 3);
+        }
         
         if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
             $query->whereHas('cliente', function ($query) {
@@ -118,6 +139,7 @@ class IndexComponent extends Component
         $this->comercialSeleccionadoId = -1;
         $this->estadoSeleccionado = -1;
         $this->clienteSeleccionadoId = -1;
+        $this->tipoFactura = -1;
         $this->updateFacturas();
     }
     public function updated($propertyName)
@@ -126,7 +148,8 @@ class IndexComponent extends Component
             $propertyName == 'delegacionSeleccionadaCOD' ||
             $propertyName == 'comercialSeleccionadoId' ||
             $propertyName == 'estadoSeleccionado' ||
-            $propertyName == 'clienteSeleccionadoId' 
+            $propertyName == 'clienteSeleccionadoId' ||
+            $propertyName == 'tipoFactura'
 
         ) {
             $this->updateFacturas();

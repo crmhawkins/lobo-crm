@@ -39,8 +39,11 @@
                         informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
                     @if(Auth::user()->role != 3)
-                        <div class="col-12 mb-5">
+                        <div class="col-12 mb-1">
                             <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
+                        </div>
+                        <div class="col-12 mb-5">
+                            <a href="facturas-create-rectificativa" class="btn btn-lg w-100 btn-secondary">Crear factura rectificativa</a>
                         </div>
                     @endif
                     <div class="d-flex gap-1 justify-content-end align-items-end flex-column flex-wrap" >
@@ -94,6 +97,17 @@
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
                                     </select>                            
                             </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="estado"  >
+                                Tipo
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="tipoFactura"   wire:model="tipoFactura" >
+                                    <option value='-1' >Normales</option>
+                                    <option value='2' >Rectificativas</option>
+                                    <option value='3' >Servicios</option>
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                    </select>                            
+                            </div>
                             
                         </div>
                         @if(count($arrFiltrado) > 0)
@@ -105,7 +119,7 @@
 
                     </div>
                     <button class="btn btn-primary" onclick="descargarFacturas()">Descargar seleccionados</button>
-                    @if (isset($facturas) && count($facturas) > 0)
+                    @if (isset($facturas) && count($facturas) > 0 && ($tipoFactura !=2 && $tipoFactura != 3))
 
                             <!-- Aquí comienza el botón desplegable para filtrar por columna -->
                         <div id="Botonesfiltros" class="d-flex gap-2">
@@ -202,12 +216,23 @@
                                         <th scope="col">Delegacion</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">F.emisión</th>
-                                        <th scope="col">F.vencimiento</th>
-                                        <th scope="col">Importe</th>
-                                        <th scope="col">IVA</th>
-                                        <th scope="col">Total(Con IVA)</th>
-                                        <th scope="col">M.pago</th>
-                                        <th scope="col">Estado</th>
+                                        @if($tipoFactura != 2)
+                                            <th scope="col">F.vencimiento</th>
+                                        
+                                            <th scope="col">Importe</th>
+                                            <th scope="col">IVA</th>
+                                            <th scope="col">Total(Con IVA)</th>
+                                            <th scope="col">M.pago</th>
+                                            <th scope="col">Estado</th>
+                                        @else
+                                            <th scope="col" style="display: none!important;">F.vencimiento</th>
+                                        
+                                            <th scope="col" style="display: none">Importe</th>
+                                            <th scope="col" style="display: none">IVA</th>
+                                            <th scope="col" style="display: none">Total(Con IVA)</th>
+                                            <th scope="col" style="display: none">M.pago</th>
+                                            <th scope="col" style="display: none">Estado</th>
+                                        @endif
                                         <th scope="col">Acciones</th>
                                     </tr>
                             </thead>
@@ -234,65 +259,75 @@
                                             <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
 
                                             <td>{{ $fact->fecha_emision }}</td>
-                                            <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
-                                                    <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
-                                                @elseif($fact->estado == 'Pagado')
-                                                    <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
-                                                @else
-                                                    <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
-                                                @endif
-                                            </td>
-                                                    <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
-                                                    <td>
-                                                        @if($fact->iva !== null)
-                                                            {{ number_format($fact->iva, 2, '.', '') }}€
-                                                        @else
-                                                            {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}€
-                                                        @endif 
-                                                    </td>
-                                                    <td>
-                                                        @if($fact->total !== null )
-                                                            {{ number_format($fact->total , 2, '.', '') }}€
-                                                        @else
-                                                            {{number_format(($fact->precio) * 1.21, 2, '.', '')}}€
-                                                        @endif        
-                                                    </td>
-                                            
-                                            <td >
-                                                @switch($fact->metodo_pago)
-                                                    @case("giro_bancario")
-                                                        Giro Bancario
+                                            @if($tipoFactura != 2)
+                                                <td>@if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
+                                                        <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
+                                                    @elseif($fact->estado == 'Pagado')
+                                                        <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
+                                                    @else
+                                                        <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
+                                                    @endif
+                                                </td>
+                                                        <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
+                                                        <td>
+                                                            @if($fact->iva !== null)
+                                                                {{ number_format($fact->iva, 2, '.', '') }}€
+                                                            @else
+                                                                {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}€
+                                                            @endif 
+                                                        </td>
+                                                        <td>
+                                                            @if($fact->total !== null )
+                                                                {{ number_format($fact->total , 2, '.', '') }}€
+                                                            @else
+                                                                {{number_format(($fact->precio) * 1.21, 2, '.', '')}}€
+                                                            @endif        
+                                                        </td>
+                                                
+                                                <td >
+                                                    @switch($fact->metodo_pago)
+                                                        @case("giro_bancario")
+                                                            Giro Bancario
+                                                            @break
+                                                        @case("confirming")
+                                                            Confirming
+                                                            @break
+                                                        @case("transferencia")
+                                                            Transferencia
+                                                            @break
+                                                        @case("pagare")
+                                                            Pagaré
+                                                            @break
+                                                        @case("otros")
+                                                            Otros
+                                                            @break
+                                                        @default
+                                                        {{ $fact->metodo_pago }}
+                                                    @endswitch
+                                                    
+                                                </td>
+                                                <td>@switch($fact->estado)
+                                                    @case('Pendiente')
+                                                    <span class="badge badge-warning">{{ $fact->estado }}</span>
                                                         @break
-                                                    @case("confirming")
-                                                        Confirming
+                                                    @case('Pagado')
+                                                    <span class="badge badge-success">{{ $fact->estado }}</span>
                                                         @break
-                                                    @case("transferencia")
-                                                        Transferencia
-                                                        @break
-                                                    @case("pagare")
-                                                        Pagaré
-                                                        @break
-                                                    @case("otros")
-                                                        Otros
+                                                    @case('Cancelado')
+                                                    <span class="badge badge-danger">{{ $fact->estado }}</span>
                                                         @break
                                                     @default
-                                                    {{ $fact->metodo_pago }}
-                                                @endswitch
-                                                
-                                            </td>
-                                            <td>@switch($fact->estado)
-                                                @case('Pendiente')
-                                                <span class="badge badge-warning">{{ $fact->estado }}</span>
-                                                    @break
-                                                @case('Pagado')
-                                                <span class="badge badge-success">{{ $fact->estado }}</span>
-                                                    @break
-                                                @case('Cancelado')
-                                                <span class="badge badge-danger">{{ $fact->estado }}</span>
-                                                    @break
-                                                @default
-                                                <span class="badge badge-info">{{ $fact->estado }}</span>
-                                            @endswitch</td>
+                                                    <span class="badge badge-info">{{ $fact->estado }}</span>
+                                                @endswitch</td>
+                                            @else
+                                            <td style="display: none;"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+                                            @endif
                                             <td> 
                                                 <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary botones">
                                                     @if(Auth::user()->role == 3)
@@ -358,10 +393,373 @@
                                 </table>
                             </div>
                         </div>
+                    @elseif(isset($facturas) && count($facturas) > 0 && $tipoFactura == 2)
+                    <div id="Botonesfiltros" class="d-flex gap-2">
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Filtrar por Columna
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" data-column="0">Número</a>
+                                <a class="dropdown-item" href="#" data-column="1">P.asociado</a>
+                                <a class="dropdown-item" href="#" data-column="2">Cliente</a>
+                                <a class="dropdown-item" href="#" data-column="3">Total</a>
+                                <a class="dropdown-item" href="#" data-column="4">M.pago</a>
+                                <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <!-- Aquí termina el botón desplegable -->
+                            <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable222-buttons').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            exportOptions: { orthogonal: 'export' }
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            exportOptions: { orthogonal: 'export', columns: ':visible' }
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            exportOptions: { orthogonal: 'export' }
+                                        },
+                                        {
+                                            extend: 'colvis',
+                                            columns: ':not(.noVis)'
+                                        }
+                                    ]
+                                }
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
+                            language: {
+                                lengthMenu: 'Mostrar _MENU_ registros por página',
+                                zeroRecords: 'No se encontraron registros',
+                                info: 'Mostrando página _PAGE_ de _PAGES_',
+                                infoEmpty: 'No hay registros disponibles',
+                                infoFiltered: '(filtrado de _MAX_ total registros)',
+                                search: 'Buscar:'
+                            },
+                            
+                            
+                            
+                        });
+                    })" wire:key='{{ rand() }}'>
+                        <!-- Tu tabla de datos aquí -->
+                    </div>
+                    <table id="datatable222-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
+                        <thead>
+                                <tr>
+                                    <th scope="col">Descarga</th>
+                                    <th scope="col">Número</th>
+                                    <th scope="col">P.asociado</th>
+                                     <th scope="col">F. asociada</th> 
+                                    <th scope="col">Comercial</th>
+                                    <th scope="col">Delegacion</th>
+                                    <th scope="col">Cliente</th>
+                                    <th scope="col">F.emisión</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                        </thead>
+                            <tbody>
+                                
+                                @foreach ($facturas as $key=>$fact)
+                                    
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" onclick="anadirArray({{ $fact->id }})" value="{{ $fact->id }}">
+                                        </td>
+                                        <td>{{ $fact->numero_factura }}</td>
+                                        @if ($fact->pedido_id == 0 || $pedidos->where('id', $fact->pedido_id) == null)
+                                            <td>Sin pedido</td>
+                                        @else
+                                            <td><a href="{{ route('pedidos.edit', ['id' => $fact->pedido_id]) }}"
+                                                    class="btn btn-primary" target="_blank"> &nbsp;Pedido
+                                                    {{ $fact->pedido_id }}</a></td>
+                                        @endif
+                                         <td>
+                                            <a href="{{ route('facturas.edit', ['id' => $this->getFacturaAsociada($fact->id)]) }}"
+                                                class="btn btn-primary" target="_blank"> &nbsp;Factura
+                                                {{ $this->getFacturaAsociada($fact->id) }}</a>
+                                        </td> 
+                                        <td>{{ $this->getComercial($fact->cliente_id)}}</td>
+                                        <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
+
+                                        <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+
+                                        <td>{{ $fact->fecha_emision }}</td>
+                                        
+                                        
+                                        <td> 
+                                            <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary botones">
+                                                @if(Auth::user()->role == 3)
+                                                    Ver
+                                                @else
+                                                    Ver/Editar
+                                                @endif
+                                            </a>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
+                                            @if($this->hasPedido($fact->id))
+                                                <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            {{-- <tfoot>
+                                <tr>
+                                    <td colspan="8"></td>
+                                    <td><strong>Total Importe</strong></td>
+                                    <td><strong>Total Iva</strong></td>
+                                    <td><strong>Total Con Iva</strong></td>
+                                    <!-- Ajusta el colspan según el número de columnas en tu tabla -->
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8"></td>
+                                    <td><strong>{{ $totalImportes }}€</strong></td>
+                                    <td><strong>{{ $totalIva }}€</strong></td>
+                                    <td><strong>{{ $totalesConIva }}€</strong></td>
+                                    <!-- Ajusta el colspan según el número de columnas en tu tabla -->
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot> --}}
+                        </table>
+                        {{-- <div class="col-md-3 mt-4" style="float:right;" x-data="{}" x-init="$nextTick(() => {
+                            $('#datatable2').DataTable({
+                                responsive: true,
+                                paging: false, 
+                                searching: false,
+                                ordering: false, 
+                                info: false,
+                                                });
+                                            })"
+                                            wire:key='{{ rand() }}'> 
+                            <table id="datatable2" wire:key='{{ rand() }}'>
+                                <thead>
+                                    <tr>
+                                        <th>Importe Total</th>
+                                        <th>IVA Total</th>
+                                        <th>Total con IVA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ $totalImportes }}€</td>
+                                        <td>{{ $totalIva }}€</td>
+                                        <td>{{ $totalesConIva }}€</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div> --}}
+                    </div>
+                    
+                </div>
+                @elseif(isset($facturas) && count($facturas) > 0 && $tipoFactura == 3)
+                    <div id="Botonesfiltros" class="d-flex gap-2">
+                        <div class="dropdown ">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Filtrar por Columna
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" data-column="0">Número</a>
+                                <a class="dropdown-item" href="#" data-column="1">P.asociado</a>
+                                <a class="dropdown-item" href="#" data-column="2">Cliente</a>
+                                <a class="dropdown-item" href="#" data-column="3">Total</a>
+                                <a class="dropdown-item" href="#" data-column="4">M.pago</a>
+                                <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <!-- Aquí termina el botón desplegable -->
+                            <button class="btn btn-primary ml-2" id="clear-filter">Eliminar Filtro</button>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable333-buttons').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: {
+                                    buttons: [
+                                        {
+                                            extend: 'copyHtml5',
+                                            exportOptions: { orthogonal: 'export' }
+                                        },
+                                        {
+                                            extend: 'excelHtml5',
+                                            exportOptions: { orthogonal: 'export', columns: ':visible' }
+                                        },
+                                        {
+                                            extend: 'pdfHtml5',
+                                            exportOptions: { orthogonal: 'export' }
+                                        },
+                                        {
+                                            extend: 'colvis',
+                                            columns: ':not(.noVis)'
+                                        }
+                                    ]
+                                }
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
+                            language: {
+                                lengthMenu: 'Mostrar _MENU_ registros por página',
+                                zeroRecords: 'No se encontraron registros',
+                                info: 'Mostrando página _PAGE_ de _PAGES_',
+                                infoEmpty: 'No hay registros disponibles',
+                                infoFiltered: '(filtrado de _MAX_ total registros)',
+                                search: 'Buscar:'
+                            },
+                            
+                            
+                            
+                        });
+                        })" wire:key='{{ rand() }}'>
+                        <!-- Tu tabla de datos aquí -->
+                    </div>
+                        <table id="datatable333-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
+                            <thead>
+                                    <tr>
+                                        <th scope="col">Descarga</th>
+                                        <th scope="col">Número</th>
+                                        <th scope="col">Comercial</th>
+                                        <th scope="col">Delegacion</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">F.emisión</th>
+                                        <th scope="col">F.vencimiento</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">M.pago</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                            </thead>
+                            <tbody>
+                                
+                                @foreach ($facturas as $key=>$fact)
+                                    
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" onclick="anadirArray({{ $fact->id }})" value="{{ $fact->id }}">
+                                        </td>
+                                        <td>{{ $fact->numero_factura }}</td>
+                                        
+                                        
+                                        <td>{{ $this->getComercial($fact->cliente_id)}}</td>
+                                        <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
+
+                                        <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+
+                                        <td>{{ $fact->fecha_emision }}</td>
+                                        <td>
+                                            @if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
+                                                <span class="badge badge-danger">{{ $fact->fecha_vencimiento }}</span>
+                                            @elseif($fact->estado == 'Pagado')
+                                                <span class="badge badge-success">{{ $fact->fecha_vencimiento }}</span>
+                                            @else
+                                                <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
+                                            @endif
+                                        </td>
+
+                                        <td>{{ number_format($fact->total , 2, '.', '') }}€</td>
+                                        <td >
+                                            @switch($fact->metodo_pago)
+                                                @case("giro_bancario")
+                                                    Giro Bancario
+                                                    @break
+                                                @case("confirming")
+                                                    Confirming
+                                                    @break
+                                                @case("transferencia")
+                                                    Transferencia
+                                                    @break
+                                                @case("pagare")
+                                                    Pagaré
+                                                    @break
+                                                @case("otros")
+                                                    Otros
+                                                    @break
+                                                @default
+                                                {{ $fact->metodo_pago }}
+                                            @endswitch
+                                            
+                                        </td>
+                                        <td>
+                                            @switch($fact->estado)
+                                                @case('Pendiente')
+                                                <span class="badge badge-warning">{{ $fact->estado }}</span>
+                                                    @break
+                                                @case('Pagado')
+                                                <span class="badge badge-success">{{ $fact->estado }}</span>
+                                                    @break
+                                                @case('Cancelado')
+                                                <span class="badge badge-danger">{{ $fact->estado }}</span>
+                                                    @break
+                                                @default
+                                                    <span class="badge badge-info">{{ $fact->estado }}</span>
+                                            @endswitch
+                                        </td>
+                                        
+                                        <td> 
+                                            <a href="facturas-edit/{{ $fact->id }}" class="btn btn-primary botones">
+                                                @if(Auth::user()->role == 3)
+                                                    Ver
+                                                @else
+                                                    Ver/Editar
+                                                @endif
+                                            </a>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
+                                            <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
+                                            @if($this->hasPedido($fact->id))
+                                                <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            
+                        </table>
+                        <div class="col-md-3 mt-4" style="float:right;" x-data="{}" x-init="$nextTick(() => {
+                            $('#datatable2').DataTable({
+                                responsive: true,
+                                paging: false, 
+                                searching: false,
+                                ordering: false, 
+                                info: false,
+                                                });
+                                            })"
+                                            wire:key='{{ rand() }}'> 
+                            <table id="datatable2" wire:key='{{ rand() }}'>
+                                <thead>
+                                    <tr>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ $totalesConIva }}€</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
                     @else
                         <h6 class="text-center">No tenemos ninguna factura</h6>
                     @endif
                 </div>
+
+                
             </div>
         </div>
     </div>

@@ -17,6 +17,11 @@ use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
 use App\Models\Iva;
+use App\Models\StockEntrante;
+use App\Models\ProductosFacturas;
+use Carbon\Carbon;
+use App\Models\ServiciosFacturas;
+
 
 
 class EditComponent extends Component
@@ -47,6 +52,16 @@ class EditComponent extends Component
     public $subtotal_pedido;
     public $iva_total_pedido;
     public $descuento_total_pedido;
+    public $tipo;
+    public $factura_id;
+    public $productos_factura;
+    public $productos_pedido = [];
+    public $serviciosDB;
+    public $servicios = [];
+    public $descripcionServicio;
+    public $cantidadServicio;
+    public $importeServicio;
+
 
 
     public function mount()
@@ -64,9 +79,20 @@ class EditComponent extends Component
             $this->precio = $this->pedido->precio;
         }else{
             $this->precio = 0;
+            $this->serviciosDB = ServiciosFacturas::where('factura_id', $this->facturas->id)->get();
+           
+            if($this->serviciosDB){
+                
+                foreach($this->serviciosDB as $servicio){
+                    
+                    $this->servicios= array_merge($this->servicios, [['descripcion' => $servicio->descripcion, 'cantidad' => $servicio->cantidad, 'importe' => $servicio->precio , 'id' => $servicio->id, 'new' => false]]);
+                }
+            }
         }
         //dd($this->pedido->precio);
         $this->pedido_id = $this->facturas->pedido_id;
+        
+       // dd($this->productos_pedido);
 
         $this->numero_factura = $this->facturas->numero_factura;
 
@@ -80,6 +106,7 @@ class EditComponent extends Component
         $this->descuento_total_pedido = $this->facturas->descuento_total_pedido;
         $this->iva_total_pedido = $this->facturas->iva_total_pedido;
         $this->subtotal_pedido = $this->facturas->subtotal_pedido;
+        $this->tipo = $this->facturas->tipo;
         
         if(!$this->facturas->descuento){
             if(isset($this->pedido)){
@@ -92,6 +119,91 @@ class EditComponent extends Component
         }else{
             $this->descuento = $this->facturas->descuento;
         }
+
+        if($this->tipo == 2){
+            $this->productos = Productos::All();
+            $this->productos_pedido = DB::table('productos_pedido')->where('pedido_id', $this->pedido_id)->get();
+            $this->productos_factura = DB::table('productos_factura')->where('factura_id', $this->facturas->id)->get();
+            $this->productos_pedido = json_decode(json_encode($this->productos_pedido), true);
+
+            //dd($this->productos_pedido);
+            //por cada producto de la factura debemos coger su cantidad y añadirla al json de productos_pedido bajo ['descontar_ud]
+            foreach($this->productos_factura as $index => $producto_factura){
+                $this->productos_pedido[$index]['descontar_ud'] = $producto_factura->cantidad;
+            }
+            
+        }
+
+    }
+
+    public function addArticulo()
+    {
+        
+        $this->servicios = array_merge($this->servicios, [['descripcion' => $this->descripcionServicio, 'cantidad' => $this->cantidadServicio, 'importe' => $this->importeServicio, 'new' => true]]);
+        $this->descripcionServicio = null;
+        $this->cantidadServicio = null;
+        $this->importeServicio = null;
+        //dd($this->servicios);
+    }
+    public function deleteServicio($index)
+    {
+        //marcarlo como a eliminar
+        if($this->servicios[$index]['new']){
+            unset($this->servicios[$index]);
+        }else{
+            $this->servicios[$index]['delete'] = true;
+        }
+    }
+
+
+    public function getNombreTabla($id)
+    {
+        $nombre_producto = $this->productos->where('id', $id)->first();
+        if($nombre_producto){
+            return $nombre_producto->nombre;
+        }else{
+            return '';
+        }
+
+    }
+    public function getNumeroFactura(){
+        $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
+
+            if ($lastInvoice) {
+                // Extrae el número secuencial de la última factura del año y lo incrementa
+                $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
+            } else {
+                if($year = 24 ){
+                    $lastNumber = 20;
+                }else{
+                    $lastNumber = 1;
+                }
+            }
+           
+        
+         
+            $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+        
+        //dd("prueba"); 
+
+    }
+
+    public function getUnidadesTabla($id)
+    {
+
+        $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
+        
+        $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
+        $pallets = floor($cajas / $producto->cajas_por_pallet);
+        $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+        $unidades = '';
+        if ($cajas_sobrantes > 0) {
+            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+        } else {
+            $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+        }
+        return $unidades;
     }
 
     public function render()
@@ -108,6 +220,16 @@ class EditComponent extends Component
            if(isset($producto)){
            $this->precio = $producto->precio * $this->cantidad;
         }
+        }
+    }
+
+    public function hasStockEntrante($lote_id){
+        $stockEntrante = StockEntrante::where('id', $lote_id)->first();
+        //  dd($stockEntrante);
+        if($stockEntrante){
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -138,37 +260,65 @@ class EditComponent extends Component
             ]
         );
 
-        // Guardar datos validados
-        $facturasSave = $this->facturas->update([
-            'numero_factura' => $this->numero_factura,
-            'cliente_id' => $this->cliente_id,
-            'pedido_id'  => $this->pedido_id,
-            'fecha_emision' => $this->fecha_emision,
-            'fecha_vencimiento' => $this->fecha_vencimiento,
-            'descripcion' => $this->descripcion,
-            'estado' => $this->estado,
-            'precio' => $this->precio,
-            'total' => $this->total,
-            'metodo_pago' => $this->metodo_pago,
-            'cantidad' => $this->cantidad,
-            'producto_id' =>$this->producto_id,
-            'descuento' =>$this->descuento,
-            'descuento_total_pedido' => $this->descuento_total_pedido,
-            'iva_total_pedido' => $this->iva_total_pedido,
-            'subtotal_pedido' => $this->subtotal_pedido,
-
-
-        ]);
-
-        if($this->facturas->estado == "Pagado"){
-            $pedido=Pedido::find($this->pedido_id);
-            if (isset($this->pedido_id) && isset($pedido)){
-                 $pedido->update(['estado' => 6]);
+        if($this->tipo == 2){
+            //recorremos los productos de la factura y miramos si las cantidades son menores o mayores que las descontar_ud
+            foreach($this->productos_factura as $index => $producto_factura){
+                $producto_pedido = $this->productos_pedido[$index];
+                $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
+                if($producto_factura['cantidad'] > $producto_pedido['descontar_ud']){
+                    //si la cantidad de la factura es mayor que la cantidad a descontar, se añade la diferencia al stock
+                    $stockEntrante->cantidad = $stockEntrante->cantidad - ($producto_factura['cantidad'] - $producto_pedido['descontar_ud']);
+                    $stockEntrante->save();
+                    //actualizar ProductoFactura con la cantidad descontada
+                    $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
+                    $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
+                    $producto_factura->save();
+                }else if($producto_factura['cantidad'] < $producto_pedido['descontar_ud']){
+                    //si la cantidad de la factura es menor que la cantidad a descontar, se resta la diferencia al stock
+                    $stockEntrante->cantidad = $stockEntrante->cantidad + ($producto_pedido['descontar_ud'] - $producto_factura['cantidad']);
+                    $stockEntrante->save();
+                    $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
+                    $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
+                    $producto_factura->save();
                 }
-        }
+            }
 
-        if ($facturasSave) {
-            $this->calcularTotales($this->facturas);
+
+
+            //si hay productos pedido con descontar_ud que no estan en productos_factura, se añaden al stock y a productos_factura
+            foreach($this->productos_pedido as $index => $producto_pedido){
+                $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
+                //dd($producto_factura);
+                if(!$producto_factura && isset($producto_pedido['descontar_ud']) && $producto_pedido['descontar_ud'] > 0){
+                    $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
+                    if($stockEntrante){
+                        
+                        $stockEntrante->cantidad = $stockEntrante->cantidad + $producto_pedido['descontar_ud'];
+                        $stockEntrante->save();
+                        $this->productos_factura->push([
+                            'producto_pedido_id' => $producto_pedido['producto_pedido_id'],
+                                'cantidad' => $producto_pedido['descontar_ud'],
+                        ]);
+
+                        $productosFactura = new ProductosFacturas();
+                        $productosFactura->factura_id = $this->facturas->id;
+                        $productosFactura->producto_id = $producto_pedido['producto_pedido_id'];
+                        $productosFactura->cantidad = $producto_pedido['descontar_ud'];
+                        $productosFactura->unidades = $producto_pedido['unidades'];
+                        $productosFactura->precio_ud = $producto_pedido['precio_ud'];
+                        $total = $producto_pedido['precio_total'];
+                        $productosFactura->total = $total;
+                        $productosFactura->stock_entrante_id = $stockEntrante->id;
+                        $productosFactura->save();
+                }
+                    
+                }
+            }
+
+
+            
+
+            //alerta
             $this->alert('success', 'Factura actualizada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -178,19 +328,118 @@ class EditComponent extends Component
                 'confirmButtonText' => 'ok',
                 'timerProgressBar' => true,
             ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información de la factura!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
+            //dd("prueba");
+
+
+        }elseif($this->tipo == 3){
+                //si es un servicio
+                //dd("prueba");
+                foreach($this->servicios as $index => $servicio){
+                    if($servicio['new']){
+                        $servicioFactura = new ServiciosFacturas();
+                        $servicioFactura->factura_id = $this->facturas->id;
+                        $servicioFactura->descripcion = $servicio['descripcion'];
+                        $servicioFactura->cantidad = $servicio['cantidad'];
+                        $servicioFactura->precio = $servicio['importe'];
+                        $servicioFactura->total = $servicio['importe'] * $servicio['cantidad'];
+                        $servicioFactura->save();
+                    }else if(isset($servicio['delete'])){
+                        $servicioFactura = ServiciosFacturas::find($servicio['id']);
+                        $servicioFactura->delete();
+                    }
+                }
+                $servicios = ServiciosFacturas::where('factura_id', $this->facturas->id)->get();
+                //calcular total y subtotalPedido
+                $total = 0;
+                foreach($servicios as $servicio){
+                    $total += $servicio->total;
+                }
+                $this->facturas->total = $total;
+                $this->facturas->subtotal_pedido = $total;
+                $this->facturas->fecha_emision = $this->fecha_emision;
+                $this->facturas->fecha_vencimiento = $this->fecha_vencimiento;
+                $this->facturas->estado = $this->estado;
+                $this->facturas->cliente_id = $this->cliente_id;    
+                $this->facturas->save();
+
+                $this->alert('success', 'Factura actualizada correctamente!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmed',
+                    'confirmButtonText' => 'ok',
+                    'timerProgressBar' => true,
+                ]);
+            
+        }else{
+            // Guardar datos validados
+            $facturasSave = $this->facturas->update([
+                'numero_factura' => $this->numero_factura,
+                'cliente_id' => $this->cliente_id,
+                'pedido_id'  => $this->pedido_id,
+                'fecha_emision' => $this->fecha_emision,
+                'fecha_vencimiento' => $this->fecha_vencimiento,
+                'descripcion' => $this->descripcion,
+                'estado' => $this->estado,
+                'precio' => $this->precio,
+                'total' => $this->total,
+                'metodo_pago' => $this->metodo_pago,
+                'cantidad' => $this->cantidad,
+                'producto_id' =>$this->producto_id,
+                'descuento' =>$this->descuento,
+                'descuento_total_pedido' => $this->descuento_total_pedido,
+                'iva_total_pedido' => $this->iva_total_pedido,
+                'subtotal_pedido' => $this->subtotal_pedido,
+
+
             ]);
+
+            if($this->facturas->estado == "Pagado"){
+                $pedido=Pedido::find($this->pedido_id);
+                if (isset($this->pedido_id) && isset($pedido)){
+                    $pedido->update(['estado' => 6]);
+                    }
+            }
+
+            if ($facturasSave) {
+                $this->calcularTotales($this->facturas);
+                $this->alert('success', 'Factura actualizada correctamente!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmed',
+                    'confirmButtonText' => 'ok',
+                    'timerProgressBar' => true,
+                ]);
+            } else {
+                $this->alert('error', '¡No se ha podido guardar la información de la factura!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+            }
+
+            
         }
 
         session()->flash('message', 'Factura actualizada correctamente.');
 
-        $this->emit('productUpdated');
+            $this->emit('productUpdated');
+        
     }
+    public function changeDescontar($id){
+        // si descontar es mayor que unidades, descontar = unidades
+        if($this->productos_pedido[$id]['descontar_ud'] > $this->productos_pedido[$id]['unidades']){
+            $this->productos_pedido[$id]['descontar_ud'] = $this->productos_pedido[$id]['unidades'];
+        }
 
+        // si descontar es menor que 0, descontar = 0
+        if($this->productos_pedido[$id]['descontar_ud'] < 0){
+            $this->productos_pedido[$id]['descontar_ud'] = 0;
+        }
+    }
     // Eliminación
     public function destroy()
     {
@@ -293,6 +542,23 @@ class EditComponent extends Component
     public function confirmDelete()
     {
         $factura = Facturas::find($this->identificador);
+
+        //coger la factura_id y encontrarla
+
+        $factura_normal = Facturas::where('factura_rectificativa_id', $factura->id)->first();
+        if($factura_normal){
+            $factura_normal->factura_rectificativa_id = null;
+            $factura_normal->save();
+        }
+
+        $factura-> factura_id = null;
+        $factura->save();
+
+        //productos_factura
+        $productos_factura = ProductosFacturas::where('factura_id', $factura->id)->get();
+        foreach($productos_factura as $producto_factura){
+            $producto_factura->delete();
+        }
         event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
         $factura->delete();
         return redirect()->route('facturas.index');

@@ -344,6 +344,7 @@ class CreateComponent extends Component
         );
     }
 
+    //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
     {
         $stock = Stock::where('qr_id', $qrCode)->first();
@@ -357,7 +358,7 @@ class CreateComponent extends Component
             ]);
             return;
         }
-
+        
         $entradaStock = StockEntrante::where('stock_id', $stock->id)->first();
         if (!$entradaStock) {
             $this->alert('error', 'Lote no encontrado.', [
@@ -370,6 +371,7 @@ class CreateComponent extends Component
             return;
         }
 
+            //entrada stock producto_id es distinto a productos pedido producto_pedido_id
         if ($entradaStock->producto_id != $this->productos_pedido[$rowIndex]['producto_pedido_id']) {
             $this->alert('error', 'El QR escaneado no corresponde al producto requerido.', [
                 'position' => 'center',

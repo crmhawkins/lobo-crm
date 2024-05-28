@@ -8,6 +8,9 @@ use App\Models\Clients;
 use App\Models\Productos;
 use App\Models\Iva;
 use App\Models\Pedido;
+use App\Models\StockMercaderiaEntrante;
+use App\Models\StockMercaderia;
+use App\Models\Mercaderia;
 use Illuminate\Support\Facades\DB;
 
 class Test extends Controller
@@ -69,6 +72,17 @@ class Test extends Controller
         return 'test ok';
     }
 
+    // public function cambiarQrsMercaderia(){
+    //     $response = '';
+
+    //     $mercaderias = Mercaderia::all();
+
+    //     foreach ($mercaderias as $mercaderia) {
+    //         $stockMercaderias = StockMercaderia::where('qr_id', $mercaderia->qr)->first();
+    //     }
+
+    //     return 'test ok';
+    // }
 
     public function calcularIvayTotalFacturas(){
         $facturas = Facturas::all();
@@ -108,11 +122,6 @@ class Test extends Controller
 
             //actualizar campo subtotal, iva_total y descuento_total
             //si el pedido tiene descuento, calcular el descuento y restarlo al subtotal
-
-            
-
-
-            
 
             //iva total dependiendo del iva de los productos
             //Hay que coger los productos asociados al pedido y coger el iva de cada producto y sumarlos

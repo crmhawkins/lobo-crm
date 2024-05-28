@@ -91,6 +91,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas.index');
     Route::get('/facturas-create/{id}', [FacturaController::class, 'create'])->name('facturas.create');
     Route::get('/facturas-create', [FacturaController::class, 'create1'])->name('facturas.create');
+    Route::get('/facturas-create-rectificativa', [FacturaController::class, 'create2'])->name('facturas.createrectificativa');
+
     Route::get('/facturas-edit/{id}', [FacturaController::class, 'edit'])->name('facturas.edit');
     Route::get('/facturas-pdf/{id}', [FacturaController::class, 'pdf'])->name('facturas.pdf');
     Route::get('/facturas-pdf-preview/{id}', [FacturaController::class, 'pdfPreview'])->name('facturas.pdfpreview');
