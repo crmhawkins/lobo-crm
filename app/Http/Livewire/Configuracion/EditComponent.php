@@ -5,17 +5,42 @@ namespace App\Http\Livewire\Configuracion;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
+use App\Models\DepartamentosProveedores;
+
 class EditComponent extends Component
 {
     use LivewireAlert;
 
     public $cuenta;
     public $configuracion;
+    public $departamentos = [];
+    public $nombreDepartamento;
+
 
     public function mount($configuracion)
     {
         $this->configuracion = $configuracion;
         $this->cuenta = $configuracion->cuenta;
+        $this->departamentos = DepartamentosProveedores::all();
+
+    }
+
+    public function addDepartamento(){
+        $this->validate([
+            'nombreDepartamento' => 'required'
+        ]);
+        $departamento = DepartamentosProveedores::create([
+            'nombre' => $this->nombreDepartamento,
+            'descripcion' => ''
+        ]);
+
+        $this->departamentos = DepartamentosProveedores::all();
+    }
+
+    public function removeDepartamento($id){
+        $departamento = DepartamentosProveedores::find($id);
+        $departamento->delete();
+        $this->departamentos = DepartamentosProveedores::all();
     }
 
     public function update()

@@ -53,8 +53,16 @@ class EditComponent extends Component
         $this->nota = $proveedor->nota;
         $this->departamentos = DepartamentosProveedores::all();
         if($proveedor->departamento_id != null){
-            $this->departamentoSeleccionado = DepartamentosProveedores::find($proveedor->departamento_id)->first();
-            $this->departamentoSeleccionadoId = $proveedor->departamento_id;
+            $this->departamentoSeleccionado = DepartamentosProveedores::find($proveedor->departamento_id);
+
+            if($this->departamentoSeleccionado != null){
+                $this->departamentoSeleccionado = DepartamentosProveedores::find($proveedor->departamento_id)->first();
+                $this->departamentoSeleccionadoId = $this->departamentoSeleccionado->id;
+            }
+
+            
+            
+            
         }
 
     }

@@ -52,8 +52,54 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Departamentos Proveedores</label>
+                                <div class="col-sm-12">
+                                    <div class="d-flex gap-2">
+                                        <input type="text" wire:model="nombreDepartamento" class="form-control mb-1" name="nombreDepartamento"
+                                            id="nombreDepartamento" placeholder="nombre Departamento" @if(!$canEdit) disabled @endif>
+                                        @error('departamento')
+                                            <span class="text-danger">{{ $message }}</span>
+                                            <style>
+                                                .nombre {
+                                                    color: red;
+                                                }
+                                            </style>
+                                        @enderror
+                                    
+
+                                        <button class="btn btn-primary" wire:click="addDepartamento">Añadir</button>
+                                    </div>
+                                    @if(count($departamentos) > 0)
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($departamentos as $departamento)
+                                                    <tr>
+                                                        <td>{{ $departamento->nombre }}</td>
+                                                        <td>
+                                                            <button class="btn btn-danger"
+                                                                wire:click="removeDepartamento({{ $departamento->id }})">Eliminar</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
+
+                            </div>
                             
                         </div>
+                        
+                            
+                       
+                            
                        
                     </form>
                 </div>
