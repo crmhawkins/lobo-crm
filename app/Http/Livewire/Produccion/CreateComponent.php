@@ -278,7 +278,15 @@ class CreateComponent extends Component
             ]);
             return;
         }
-
+        if($this->almacen_id == 0){
+            //alert seleccionar almacen
+            $this->alert('error', 'Seleccione un almacen', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
         // Validación de datos
         $validatedData = $this->validate(
             [
