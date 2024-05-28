@@ -98,6 +98,20 @@
                                     </select>                            
                             </div>
                             <div class="filtro d-flex flex-column" >
+                                <label class=""  id="fecha_min"  >
+                                Fecha min
+                                </label>
+                                <input type="date" class="text-white bg-secondary rounded p-1" id="fecha_min"   wire:model="fecha_min" >
+                               
+                                        <!-- Agrega más ítems según las columnas de tu tabla -->
+                            </div>
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="fecha_max"  >
+                                    Fecha max
+                                </label>
+                                <input type="date" class="text-white bg-secondary rounded p-1" id="fecha_max"   wire:model="fecha_max" >
+                            </div>        
+                            <div class="filtro d-flex flex-column" >
                                 <label class=""  id="estado"  >
                                 Tipo
                                 </label>
@@ -113,7 +127,7 @@
                         @if(count($arrFiltrado) > 0)
                             <p>Filtrando por: @if(isset($arrFiltrado[1])) Comerciales @endif  @if(isset($arrFiltrado[2])) Delegaciones @endif  @if(isset($arrFiltrado[3])) Cliente @endif @if(isset($arrFiltrado[4])) Estado @endif</p>
                         @endif
-                        <button class="btn btn-primary" wire:click="limpiarFiltros()"  @if($comercialSeleccionadoId == -1 && $delegacionSeleccionadaCOD == -1 && $clienteSeleccionadoId == -1 && $estadoSeleccionado == -1 ) 
+                        <button class="btn btn-primary" wire:click="limpiarFiltros()"  @if($comercialSeleccionadoId == -1 && $delegacionSeleccionadaCOD == -1 && $clienteSeleccionadoId == -1 && $estadoSeleccionado == -1 && $fecha_min == null && $fecha_max == null ) 
                         style="display:none"
                          @endif>Eliminar Filtros</button>
 
@@ -153,7 +167,7 @@
                                             },
                                             {
                                                 extend: 'excelHtml5',
-                                                exportOptions: { orthogonal: 'export', columns: ':visible' }
+                                                exportOptions: { orthogonal: 'export', columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
                                             },
                                             {
                                                 extend: 'pdfHtml5',

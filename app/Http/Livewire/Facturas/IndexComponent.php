@@ -41,6 +41,8 @@ class IndexComponent extends Component
     public $check;
     public $estadoSeleccionado = -1;
     public $tipoFactura = -1;
+    public $fecha_min;
+    public $fecha_max;
 
     public function mount()
     {
@@ -125,6 +127,15 @@ class IndexComponent extends Component
         if ($this->clienteSeleccionadoId && $this->clienteSeleccionadoId != -1) {
             $query->where('cliente_id', $this->clienteSeleccionadoId);
         }
+
+        //rango entre fecha min y fecha max
+        if($this->fecha_min){
+            $query->where('fecha_emision', '>=', $this->fecha_min);
+        }
+        if($this->fecha_max){
+            $query->where('fecha_emision', '<=', $this->fecha_max);
+        }
+
         
         $this->facturas = $query->get();
         $this->calcularTotales($this->facturas);
@@ -140,6 +151,8 @@ class IndexComponent extends Component
         $this->estadoSeleccionado = -1;
         $this->clienteSeleccionadoId = -1;
         $this->tipoFactura = -1;
+        $this->fecha_min = null;
+        $this->fecha_max = null;
         $this->updateFacturas();
     }
     public function updated($propertyName)
@@ -149,7 +162,9 @@ class IndexComponent extends Component
             $propertyName == 'comercialSeleccionadoId' ||
             $propertyName == 'estadoSeleccionado' ||
             $propertyName == 'clienteSeleccionadoId' ||
-            $propertyName == 'tipoFactura'
+            $propertyName == 'tipoFactura' || 
+            $propertyName == 'fecha_min' ||
+            $propertyName == 'fecha_max'
 
         ) {
             $this->updateFacturas();
