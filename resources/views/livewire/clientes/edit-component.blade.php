@@ -306,7 +306,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model="telefono" class="form-control" name="telefono"
+                                    <input type="number" wire:model="telefono" class="form-control" name="telefono"
                                         id="telefono" placeholder="Teléfono" @if(!$canEdit) disabled @endif>
                                     @error('telefono')
                                         <span class="text-danger">{{ $message }}</span>
