@@ -146,7 +146,7 @@ class CreateComponent extends Component
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
         if($this->isFacturaRectificativa){
             $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
-
+            
             if ($lastInvoice) {
                 // Extrae el número secuencial de la última factura del año y lo incrementa
                 $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
@@ -159,8 +159,34 @@ class CreateComponent extends Component
             }
            
         }else{
-            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->max('numero_factura');
+            //donde tipo sea distinto de 2
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->max('numero_factura');
+            //numero de facturas perdidos
+            // $facturas = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->orWhere('tipo', null)->get();
+            // //para coger el lastInvoice necesito que recorra todas las facturas no rectificativas, es decir de que no sean de tipo 2, y coja la que la ultima cuyo siguiente no sea consecutivo
+            // //dd($facturas);
+            // foreach($facturas as $index => $factura){
+                
+            //     $numero_factura = substr($factura->numero_factura, 1);
+            //     $numero_factura = intval($numero_factura);
+            //     //dd($numero_factura);
+                
+            //     if(!isset($facturas[$index + 1])){
+            //         $lastInvoice = $factura->numero_factura;
+            //         break;
+            //     }
+            //     $numero_factura_siguiente = substr($facturas[$index + 1]->numero_factura, 1);
+            //     $numero_factura_siguiente = intval($numero_factura_siguiente);
 
+            //     if($numero_factura + 1 != $numero_factura_siguiente){
+            //         $lastInvoice = $factura->numero_factura;
+            //         break;
+            //     }
+
+            //     //este numero_factura debe ser consecutivo por lo que la siguiente factura debe ser igual a la actual + 1
+            // }
+
+            //dd($lastInvoice);
             if ($lastInvoice) {
                 // Extrae el número secuencial de la última factura del año y lo incrementa
                 $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
