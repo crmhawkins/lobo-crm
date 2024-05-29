@@ -76,7 +76,9 @@ class EditComponent extends Component
         $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
         $this->almacen_id = $orden->almacen_id;
         $this->pedidos = Pedido::all();
-        $this->pedido_id = $orden->pedido_id ?? null;
+        $this->pedido_id = $orden->pedido_id;
+        //dd($orden);
+        //dd($this->pedido_id);
     }
 
     public function render()
@@ -418,8 +420,49 @@ class EditComponent extends Component
             'timerProgressBar' => true,
         ]);
     }
+
+
+    public function submit(){
+        $validatedData = $this->validate(
+            [
+                'numero' => 'required',
+                'almacen_id' => 'required',
+                'pedido_id' => 'nullable',
+                'estado' => 'required',
+                'fecha' => 'required',
+                'observaciones' => 'nullable',
+            ],
+            // Mensajes de error
+            [
+                'almacen_id.required' => 'El numero de orden es obligatorio.',
+                'estado.required' => 'El estado del pedido es obligatoria.',
+                'fecha.required' => 'La fecha es obligatoria.',
+            ]
+        );
+
+        $orden = OrdenProduccion::find($this->identificador);
+
+        $orden->update($validatedData);
+
+        //alert 
+
+        $this->alert('success', '¡Orden de producción actualizada correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+            'timerProgressBar' => true,
+        ]);
+
+
+    }
+
     public function confirmed()
     {
+
+
         // Do something
         return redirect()->route('produccion.index');
     }

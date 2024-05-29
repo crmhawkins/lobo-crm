@@ -61,15 +61,18 @@
                                 });
                             })"  wire:ignore>
                                 <div>
-                                    <select name="pedido_id" id="pedido_id" wire:model="pedido_id"
-                                        style="width: 100% !important">
-                                        <option value="{{ null }}">-- Selecciona un pedido --
-                                        </option>
-                                        @foreach ($pedidos as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->id }}
+                                    
+                                        <select name="pedido_id" id="pedido_id" wire:model="pedido_id"
+                                            style="width: 100% !important" @if(($this->estado) != "0") disabled @endif>
+                                            <option value="{{ null }}">-- Selecciona un pedido --
                                             </option>
-                                        @endforeach
-                                    </select>
+                                            @foreach ($pedidos as $presup)
+                                                <option value="{{ $presup->id }}">{{ $presup->id }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                   
+                                        
                                 </div>
                             </div>
 
@@ -277,6 +280,14 @@
         @if(($this->estado) == "0")
             <div class="col-md-3" style="width: 23vw !important;">
                 <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
+                    <div class="card-body">
+                        <h5>GUARDAR CAMBIOS</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <h5>PONER EN PRODUCCIÓN</h5>
                         <div class="row">
