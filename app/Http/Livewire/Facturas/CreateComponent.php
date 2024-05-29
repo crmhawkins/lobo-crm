@@ -160,7 +160,7 @@ class CreateComponent extends Component
            
         }else{
             //donde tipo sea distinto de 2
-            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->max('numero_factura');
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->orWhere('tipo', null)->max('numero_factura');
             //numero de facturas perdidos
             // $facturas = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->orWhere('tipo', null)->get();
             // //para coger el lastInvoice necesito que recorra todas las facturas no rectificativas, es decir de que no sean de tipo 2, y coja la que la ultima cuyo siguiente no sea consecutivo
