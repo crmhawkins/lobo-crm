@@ -31,7 +31,7 @@ class IndexComponent extends Component
     public function mount()
     {
         $this->mes = Carbon::now()->format('Y-m'); // Año-mes actual
-        $this->caja = Caja::all();
+        $this->caja = Caja::orderBy('fecha')->get();
         $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
         $this->cambioMes();
         $this->proceedor = Proveedores::all();
@@ -68,17 +68,19 @@ class IndexComponent extends Component
     public function calcular_saldo($index, $id)
     {
         $movimiento = $this->caja->where('id', $id)->first();
+        //dd($movimiento);
         if ($index == 0) {
+            
             if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[] = $this->saldo_inicial - $movimiento->total;
-            } else  if ($movimiento->tipo_movimiento == 'Ingreso') {
-                $this->saldo_array[] = $this->saldo_inicial + $movimiento->importe;
+                $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total;
+            } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
+                $this->saldo_array[$index] = $this->saldo_inicial + $movimiento->importe;
             }
         } else {
             if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[] = $this->saldo_array[$index - 1] - $movimiento->total;
-            } else if ($movimiento->tipo_movimiento == 'Ingreso') {
-                $this->saldo_array[] = $this->saldo_array[$index - 1] + $movimiento->importe;
+                $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total;
+            } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
+                $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimiento->importe;
             }
         }
         return $this->saldo_array[$index];
@@ -95,7 +97,7 @@ class IndexComponent extends Component
         $fechaFin = $fechaFin->format('Y-m-d');
 
         // Obtener registros de la tabla Caja que están entre fechaInicio y fechaFin
-        $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->get();
+        $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->orderBy('fecha')->get();
 
         //si filtro es diferente de todos
         if($this->filtro != 'Todos' && $this->filtro != null){
