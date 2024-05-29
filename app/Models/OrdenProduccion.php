@@ -17,6 +17,7 @@ class OrdenProduccion extends Model
         'almacen_id',
         'fecha',
         'estado',
+        'pedido_id',
     ];
 
 

@@ -19,6 +19,7 @@ use App\Models\StockMercaderiaEntrante;
 use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Pedido;
 
 class CreateComponent extends Component
 {
@@ -39,6 +40,8 @@ class CreateComponent extends Component
     public $ordenes_mercaderias;
     public $almacen_id;
     public $almacenes;
+    public $pedidos;
+    public $pedido_id;
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function mount()
@@ -52,6 +55,7 @@ class CreateComponent extends Component
         $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
         $user = Auth::user();
         $this->almacen_id = $user->almacen_id;
+        $this->pedidos = Pedido::all();
     }
 
     public function render()
@@ -294,6 +298,7 @@ class CreateComponent extends Component
                 'almacen_id' => 'required',
                 'estado' => 'required',
                 'fecha' => 'required',
+                'pedido_id' => 'nullable',
                 'observaciones' => 'nullable',
             ],
             // Mensajes de error

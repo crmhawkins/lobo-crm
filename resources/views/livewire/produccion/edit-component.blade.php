@@ -1,3 +1,7 @@
+@php(
+    $canEdit = $estado == 0 ? true : false
+)
+
 <div class="container-fluid">
     <style>
         @media(max-width: 760px){
@@ -32,7 +36,7 @@
                                 básicos del pedido</h5>
                         </div>
                         {{--@if (auth()->user()->almacen_id == 0)--}}
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <div>
                                     @if(($this->estado) == "0")
                                     <select name="almacen" wire:model="almacen_id" style="width: 100% !important" >
@@ -46,7 +50,30 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                
                             </div>
+                            <div class="form-group col-md-6" x-data="" x-init="$nextTick(() => {
+                                $('#pedido_id').select2();
+                                $('#pedido_id').on('change', function(e) {
+                                    var data = $('#pedido_id').select2('val');
+                                    @this.set('pedido_id', data);
+                                    console.log(data);
+                                });
+                            })"  wire:ignore>
+                                <div>
+                                    <select name="pedido_id" id="pedido_id" wire:model="pedido_id"
+                                        style="width: 100% !important">
+                                        <option value="{{ null }}">-- Selecciona un pedido --
+                                        </option>
+                                        @foreach ($pedidos as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->id }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+
                        {{-- @else
                             <div class="form-group col-md-11">
                                 <h4> Almacén de destino: {{ $almacenes->where('id', $almacen_id)->first()->almacen }}
@@ -71,7 +98,8 @@
                                 <select class="form-control" name="estado" id="select2-estado"
                                     wire:model="estado" disabled>
                                     <option value="0">Pendiente</option>
-                                    <option value="1">Aceptado</option>
+                                    <option value="1">Completado</option>
+                                    <option value="2">En producción</option>
                                 </select>
                             </div>
                         </div>
@@ -247,19 +275,43 @@
             </div>
         </div>
         @if(($this->estado) == "0")
-        <div class="col-md-3" style="width: 23vw !important;">
-            <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
-                <div class="card-body">
-                    <h5>COMPLETAR PROCUCCIÓN</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="completarProduccion">Completar</button>
+            <div class="col-md-3" style="width: 23vw !important;">
+                <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
+                    <div class="card-body">
+                        <h5>PONER EN PRODUCCIÓN</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-secondary mb-2" wire:click.prevent="enProduccion">En producción</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5>Eliminar</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-danger mb-2" wire:click.prevent="destroy()">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        
+            </div>
+            
+        @elseif($this->estado == "2")
+            <div class="col-md-3" style="width: 23vw !important;">
+                <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
+                    <div class="card-body">
+                        <h5>COMPLETAR PROCUCCIÓN</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="completarProduccion">Completar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endif
+
         <style>
             fieldset.scheduler-border {
                 border: 1px groove #ddd !important;

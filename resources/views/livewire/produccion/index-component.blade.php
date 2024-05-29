@@ -64,14 +64,16 @@
                                         <td>{{ $this->getAlmacen($produccion->almacen_id) }}</td>
                                         <td>
                                             @if(($produccion->estado) == "0")
-                                            <span class="badge badge-warning">Pendiente</span>
+                                                <span class="badge badge-warning">Pendiente</span>
                                             @elseif(($produccion->estado) == "1")
-                                            <span class="badge badge-success">Completado</span>
+                                                <span class="badge badge-success">Completado</span>
+                                            @elseif(($produccion->estado) == "2")
+                                                <span class="badge badge-info">En producción</span>
                                             @endif
                                         </td>
 
                                         <td> <a href="produccion-edit/{{ $produccion->id }}"
-                                                class="btn btn-primary">Ver</a>
+                                                class="btn btn-primary">@if($produccion->estado == "0" ||$produccion->estado == "2") Ver/Editar @else Ver @endif</a>
                                             </td>
                                     </tr>
                                 @endforeach

@@ -25,7 +25,7 @@
                                 básicos del pedido</h5>
                         </div>
                         {{--@if (auth()->user()->almacen_id == 0)--}}
-                            <div class="form-group col-md-11">
+                            <div class="form-group col-md-5">
                                 <div>
                                     <select name="almacen" id="select2-almacen" wire:model="almacen_id"
                                         style="width: 100% !important">
@@ -33,6 +33,26 @@
                                         </option>
                                         @foreach ($almacenes as $presup)
                                             <option value="{{ $presup->id }}">{{ $presup->almacen }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6" x-data="" x-init="$nextTick(() => {
+                                $('#pedido_id').select2();
+                                $('#pedido_id').on('change', function(e) {
+                                    var data = $('#pedido_id').select2('val');
+                                    @this.set('pedido_id', data);
+                                    console.log(data);
+                                });
+                            })"  wire:ignore>
+                                <div>
+                                    <select name="pedido_id" id="pedido_id" wire:model="pedido_id"
+                                        style="width: 100% !important">
+                                        <option value="{{ null }}">-- Selecciona un pedido --
+                                        </option>
+                                        @foreach ($pedidos as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->id }}
                                             </option>
                                         @endforeach
                                     </select>

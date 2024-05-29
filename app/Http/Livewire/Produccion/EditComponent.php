@@ -19,7 +19,7 @@ use App\Models\StockMercaderiaEntrante;
 use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Pedido;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -41,6 +41,8 @@ class EditComponent extends Component
     public $ordenes_mercaderias;
     public $almacen_id;
     public $almacenes;
+    public $pedidos = [];
+    public $pedido_id;
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public function mount()
@@ -73,6 +75,8 @@ class EditComponent extends Component
         }
         $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
         $this->almacen_id = $orden->almacen_id;
+        $this->pedidos = Pedido::all();
+        $this->pedido_id = $orden->pedido_id ?? null;
     }
 
     public function render()
@@ -249,6 +253,32 @@ class EditComponent extends Component
         // }
     }
 
+    
+    public function sumarStock($productoId, $cantidad){
+        // Obtener las entradas de StockEntrante para el producto, ordenadas por ejemplo por fecha
+        $entradas = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->orderBy('created_at')->get();
+
+        $newMercaderiaEntrante = StockMercaderiaEntrante::create([
+            'mercaderia_id' => $productoId,
+            'cantidad' => abs($cantidad),
+            'tipo' => 'Entrante',
+        ]);
+    }
+
+    public function enProduccion(){
+        $orden = OrdenProduccion::find($this->identificador);
+        $orden->update(['estado' => 2]);
+        $this->alert('success', '¡Producción en proceso!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+            'timerProgressBar' => true,
+        ]);
+    }
+
     public function completarProduccion()
     {
         $Orden = OrdenProduccion::find($this->identificador);
@@ -412,4 +442,34 @@ class EditComponent extends Component
         $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
     }
+
+    public function destroy(){
+        $orden = OrdenProduccion::find($this->identificador);
+        $productos = ProductosProduccion::where('orden_id', $orden->id)->get();
+        $mercaderias = MercaderiaProduccion::where('orden_id', $orden->id)->get();
+
+        
+        foreach ($this->mercaderias_gastadas as $mercaderiaIndex => $mercaderia) {
+            $this->sumarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
+        }
+
+        foreach ($productos as $producto) {
+            $producto->delete();
+        }
+        foreach ($mercaderias as $mercaderia) {
+            $mercaderia->delete();
+        }
+        $orden->delete();
+        $this->alert('success', '¡Orden de producción eliminada correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+            'timerProgressBar' => true,
+        ]);
+    }
+
+
 }
