@@ -43,7 +43,65 @@ class EditComponent extends Component
     public $almacenes;
     public $pedidos = [];
     public $pedido_id;
+
+    public $productoEditar;
+    public $productoEditarId;
+    public $productoEditarNombre;
+    public $productoEditarPrecio;
+    public $productoEditarUds;
+    public $productoEditarPallets;
+    public $productoEditarCajas;
+
+    public $arrProductosEditar = [];
+    public $indexPedidoProductoEditar;
+
+    public $mercaderia_gastadas_old = [];
+    public $productos_ordenados_old = [];
+
     protected $listeners = ['refreshComponent' => '$refresh'];
+    public function editProductos($id){
+        
+        
+
+        $this->productos_ordenados[$id]['cantidad'] = $this->unidades_producto;
+        //dd($this->productos_ordenados[$id]['cantidad'] , $this->productoEditarUds);
+        //dd($this->productos_ordenados[$id]['cantidad']);
+        $this->productoEditar = null;
+        $this->productoEditarId = null;
+        $this->productoEditarNombre = null;
+        $this->productoEditarPrecio = null;
+        $this->productoEditarUds = null;
+        $this->productoEditarPallets = null;
+        $this->productoEditarCajas = null;
+        $this->indexPedidoProductoEditar = null;
+        //dd($this->productos_ordenados);
+
+        $this->setMercaderia();
+
+        $this->emit('refreshComponent');
+
+    }
+
+    public function selectProduct($id, $unidades, $idIndex){
+        //dd("prueba");
+        //selecciona el producto para editarlo
+        $this->productoEditar = Productos::find($id);
+        //dd($unidades);
+        //dd($this->productoEditar , $id, $unidades, $idIndex);
+        $this->productoEditarId = $id;
+        $this->productoEditarNombre = $this->productoEditar->nombre;
+        $this->productoEditarUds = $unidades;
+        //$this->productoEditarPallets = floor($unidades / $this->productoEditar->unidades_por_caja / $this->productoEditar->cajas_por_pallet);
+        //$this->productoEditarCajas = floor($unidades / $this->productoEditar->unidades_por_caja);
+
+        $this->producto_seleccionado = $this->productoEditarId;
+        $this->unidades_producto = $this->productoEditarUds;
+        $this->unidades_pallet_producto = $this->productoEditarPallets;
+        $this->unidades_caja_producto = $this->productoEditarCajas;
+
+        $this->indexPedidoProductoEditar = $idIndex;
+  
+    }
 
     public function mount()
     {
@@ -65,6 +123,7 @@ class EditComponent extends Component
                 'borrar' => 0,
             ];
         }
+       
         foreach ($mercaderias_orden as $mercaderia_orden) {
             $this->mercaderias_gastadas[] = [
                 'id' => $mercaderia_orden->id,
@@ -84,6 +143,16 @@ class EditComponent extends Component
     public function render()
     {
         return view('livewire.produccion.edit-component');
+    }
+
+    public function getUnidades($id){
+        $producto = Productos::find($this->productos_ordenados[$id]['producto_id']);
+        if($producto == null){
+            return '';
+        }
+        $unidades = $this->productos_ordenados[$id]['cantidad'];
+        return $unidades;
+
     }
     public function getUnidadesTabla($id)
     {
@@ -186,11 +255,41 @@ class EditComponent extends Component
         $this->unidades_caja_producto = 0;
         $this->unidades_pallet_producto = 0;
         $this->setPrecioEstimado();
+
+
+
         $this->emit('refreshComponent');
     }
 
     public function setPrecioEstimado()
     {
+
+        foreach ($this->productos_ordenados as $productos) {
+            $materiales = MaterialesProducto::where('producto_id', $productos['producto_id'])->get();
+            $producto = Productos::where('id', $productos['producto_id'])->first();
+            $unidades = $producto->cajas_por_pallet * $producto->unidades_por_caja;
+            foreach ($materiales as $material) {
+                $mercaderia_existe = false;
+                $mercaderia_id = $material->mercaderia_id;
+                foreach ($this->mercaderias_gastadas as $mercaderias) {
+                    if ($mercaderias['mercaderia_id'] == $material->mercaderia_id) {
+                        $mercaderia_existe = true;
+                        $mercaderia_id = $mercaderias['mercaderia_id'];
+                    }
+                }
+                if ($mercaderia_existe == true) {
+                    $mercaderia = array_search($mercaderia_id, array_column($this->mercaderias_gastadas, 'mercaderia_id'));
+                    $this->mercaderias_gastadas[$mercaderia]['cantidad'] = ($material->cantidad/$producto->unidades_por_caja) * $productos['cantidad'] ;
+                } else {
+                    $this->mercaderias_gastadas[] = ['mercaderia_id' => $mercaderia_id, "cantidad" => ($material->cantidad/$producto->unidades_por_caja) * $productos['cantidad']];
+                }
+            }
+        }
+    }
+
+    public function setMercaderia()
+    {
+        $this->mercaderia_gastadas_old = $this->mercaderias_gastadas;
         foreach ($this->productos_ordenados as $productos) {
             $materiales = MaterialesProducto::where('producto_id', $productos['producto_id'])->get();
             $producto = Productos::where('id', $productos['producto_id'])->first();
@@ -225,34 +324,6 @@ class EditComponent extends Component
             'tipo' => 'Saliente',
         ]);
 
-
-
-        // if ($entradas->sum('cantidad') > $cantidad) {
-        //     foreach ($entradas as $entrada) {
-        //         if ($cantidad <= 0) break;
-        //         // Calcular la cantidad a sacar de esta entrada
-        //         $cantidadASacar = min($entrada->cantidad, $cantidad);
-        //         $entrada->cantidad -= $cantidadASacar;
-        //         $entrada->save();
-        //         $cantidad -= $cantidadASacar;
-
-        //         // Si la entrada de StockEntrante se vacía, revisar el registro en Stock
-        //         if ($entrada->cantidad == 0) {
-        //             $stock = StockMercaderia::where('id', $entrada->stock_id)->first();
-        //             // Comprobar si todas las entradas de este stock se han vaciado
-        //             if ($stock->entrantes->every(function ($ent) {
-        //                 return $ent->cantidad == 0;
-        //             })) {
-        //                 // Desactivar el stock si es necesario
-        //                 $stock->estado = 2;
-        //                 $stock->save();
-        //             } else {
-        //                 $stock->estado = 1;
-        //                 $stock->save();
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     
@@ -423,6 +494,8 @@ class EditComponent extends Component
 
 
     public function submit(){
+        //dd($this->productos_ordenados , $this->mercaderias_gastadas, $this->mercaderia_gastadas_old);
+
         $validatedData = $this->validate(
             [
                 'numero' => 'required',
@@ -443,6 +516,61 @@ class EditComponent extends Component
         $orden = OrdenProduccion::find($this->identificador);
 
         $orden->update($validatedData);
+
+
+        //hay que diferenciar entre la mercaderia old y la nueva. Hay que sumar o restar la cantidad de la diferencia.
+        //si la cantidad es positiva, se suma, si es negativa se resta.
+        //si la cantidad es 0, no se hace nada.
+
+        //primero se recorren las mercaderias viejas
+        foreach ($this->mercaderia_gastadas_old as $mercaderiaIndex => $mercaderia) {
+            //se busca la mercaderia en las nuevas
+            $mercaderia_nueva = $this->mercaderias_gastadas[$mercaderiaIndex];
+            //si la mercaderia no existe en las nuevas, se suma la cantidad a stock
+            if($mercaderia_nueva == null){
+                $this->sacarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
+            }else{
+                //si la mercaderia existe en las nuevas, se compara la cantidad
+                if($mercaderia['cantidad'] > $mercaderia_nueva['cantidad']){
+                    //si la cantidad es mayor, se resta la diferencia
+                    $this->sumarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad'] - $mercaderia_nueva['cantidad']);
+                }else if($mercaderia['cantidad'] < $mercaderia_nueva['cantidad']){
+                    //si la cantidad es menor, se suma la diferencia
+                    $this->sacarStock($mercaderia['mercaderia_id'], $mercaderia_nueva['cantidad'] - $mercaderia['cantidad']);
+                }
+            }
+        }
+
+        //se recorren las mercaderias nuevas
+        foreach ($this->mercaderias_gastadas as $mercaderiaIndex => $mercaderia) {
+            //se busca la mercaderia en las viejas
+            $mercaderia_vieja = $this->mercaderia_gastadas_old[$mercaderiaIndex];
+            //si la mercaderia no existe en las viejas, se resta la cantidad a stock
+            if($mercaderia_vieja == null){
+                $this->sumarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
+            }
+        }
+
+        //guardar los productos y las mercaderias
+        foreach ($this->productos_ordenados as $producto) {
+            if ($producto['id'] != null) {
+                $orden_producto = ProductosProduccion::find($producto['id']);
+                $orden_producto->update(['orden_id' => $orden->id, 'producto_id' => $producto['producto_id'], 'cantidad' => $producto['cantidad']]);
+            } else {
+                ProductosProduccion::create(['orden_id' => $orden->id, 'producto_id' => $producto['producto_id'], 'cantidad' => $producto['cantidad']]);
+            }
+        }
+
+        foreach ($this->mercaderias_gastadas as $mercaderia) {
+            if ($mercaderia['id'] != null) {
+                $orden_mercancia = MercaderiaProduccion::find($mercaderia['id']);
+                $orden_mercancia->update(['orden_id' => $orden->id, 'mercaderia_id' => $mercaderia['mercaderia_id'], 'cantidad' => $mercaderia['cantidad']]);
+            } else {
+                MercaderiaProduccion::create(['orden_id' => $orden->id, 'mercaderia_id' => $mercaderia['mercaderia_id'], 'cantidad' => $mercaderia['cantidad']]);
+            }
+        }
+
+
 
         //alert 
 

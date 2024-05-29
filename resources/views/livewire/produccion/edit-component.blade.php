@@ -25,6 +25,105 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="editProductModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if ($productoEditar != null)
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="card border border-dark border-1"
+                                    style="margin-bottom: 5px !important">
+                                    <div class="card-body"
+                                        style="
+                                    display: flex;
+                                    flex-direction: column;
+                                    flex-wrap: wrap;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                        <h2 class="card-title mt-0 font-32"
+                                            style="text-align: center; margin-bottom: -0.25rem !important;">
+                                            {{ $this->getProductoNombre() }}</h2>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="row justify-content-center">
+                        <div class="col-md-10" style="text-align: center !important;">
+                            <label for="fechaVencimiento">Producto seleccionado</label>
+                        </div>
+                        <div class="col-md-10" wire:ignore>
+                            <div x-data="" x-init="$('#select2-producto').select2();
+                            $('#select2-producto').on('change', function(e) {
+                                var data = $('#select2-producto').select2('val');
+                                @this.set('producto_seleccionado', data);
+                                @this.set('unidades_pallet_producto', 0);
+                                @this.set('unidades_caja_producto', 0);
+                                @this.set('unidades_producto', 0);
+                                console.log('data');
+                            });">
+                                <input type="text" value="{{ $productoEditarNombre}}" class="form-control" disabled>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    @if ($productoEditar != null)
+                        <div class="row justify-content-center mt-1">
+                            <div class="col-md-3" style="text-align: center !important;">
+                                <label for="fechaVencimiento">Pallets</label>
+                            </div>
+                            <div class="col-md-3" style="text-align: center !important;">
+                                <label for="fechaVencimiento">Cajas</label>
+                            </div>
+                            <div class="col-md-3" style="text-align: center !important;">
+                                <label for="unidades">Uds.</label>
+                            </div>
+                            <div class="col-md-3" style="text-align: center !important;">
+                                <label for="unidades">&nbsp; </label>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center mt-1">
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" wire:model="unidades_caja_producto" wire:change='updateCaja()'>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" wire:model="unidades_producto" wire:change='updateUnidad()'>
+                            </div>
+                            <div class="col-md-3" style="justify-content: start !important"
+                                style="display: flex;flex-direction: column;align-content: center;justify-content: center;align-items: center;">
+                                <button type="button" class="btn btn-primary w-100"
+                                    wire:click.prevent="editProductos('{{ $indexPedidoProductoEditar }}')"
+                                    data-dismiss="modal" aria-label="Close">Editar</a>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-11 mt-3">
+
+                                <input name="sinCargo" class="form-check-input" type="checkbox" id="sinCargo" wire:model="sinCargo">
+                                <label for="sinCargo" style="cursor:pointer"> Producto sin cargos.</label>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row justify-content-center" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -130,6 +229,9 @@
                                                 <th>Producto</th>
                                                 <th>Cantidad</th>
                                                 <th>PESO</th>
+                                                @if($this->estado == '0')
+                                                    <th>Acciones</th>
+                                                @endif
                                                 {{--<th>Eliminar</th>--}}
                                             </tr>
                                         </thead>
@@ -139,6 +241,14 @@
                                                     <td >{{ $this->getNombreTabla($producto['producto_id']) }}</td>
                                                     <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
                                                      <td >{{ $this->getPesoTotal($producto['producto_id'],$productoIndex)}} KG</td>
+                                                    @if($this->estado == '0')
+                                                        <td>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;"
+                                                            data-target="#editProductModal" 
+                                                            wire:click="selectProduct({{$producto['producto_id']}}, '{{ $this->getUnidades($productoIndex) }}' , {{ $productoIndex }})">Editar</button>
+
+                                                        </td>
+                                                    @endif
                                                     {{--<td width="25%"><button type="button" class="btn btn-danger"
                                                             wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
                                                     </td>--}}
@@ -312,7 +422,7 @@
             <div class="col-md-3" style="width: 23vw !important;">
                 <div class="card m-b-30 position-fixed" style="width: -webkit-fill-available">
                     <div class="card-body">
-                        <h5>COMPLETAR PROCUCCIÓN</h5>
+                        <h5>COMPLETAR PRODUCCIÓN</h5>
                         <div class="row">
                             <div class="col-12">
                                 <button class="w-100 btn btn-success mb-2" wire:click.prevent="completarProduccion">Completar</button>
