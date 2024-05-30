@@ -153,7 +153,21 @@
                                     @enderror
                                 </div>
                             </div>
+                            @if($idpedido != null)
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">recargo</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="recargo" class="form-control"
+                                            placeholder="recargo" >
+
+                                    </div>
+                                </div>
+
+                            @endif
                         </div>
+                        
+                        
                         
                         
                         @if($idpedido != null)

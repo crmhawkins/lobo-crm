@@ -61,6 +61,8 @@ class EditComponent extends Component
     public $descripcionServicio;
     public $cantidadServicio;
     public $importeServicio;
+    public $recargo = 0;
+    public $total_recargo = 0;
 
 
 
@@ -75,6 +77,8 @@ class EditComponent extends Component
         $this->productos = Productos::where('tipo_precio',5)->get();  
         $this->producto_id = $this->facturas->producto_id;
         $this->cantidad = $this->facturas->cantidad;
+        $this->recargo = $this->facturas->recargo ?? 0;
+        $this->total_recargo = $this->facturas->total_recargo ?? 0;
         if(isset($this->pedido)){
             $this->precio = $this->pedido->precio;
         }else{
@@ -621,24 +625,30 @@ class EditComponent extends Component
     public function calcularTotales($factura){
         $iva= 0;
         $total = 0;
-
+        $recargo = $this->recargo;
+        $recargo_total = 0;
         //si hay pedido id
         if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
-            
+            $recargo_total = (($factura->precio * $recargo) / 100);
             //coger el precio del pedido y sumarle el iva
-            $total = $factura->precio + $factura->iva_total_pedido;
+            $total = $factura->precio + $recargo_total +  $factura->iva_total_pedido;
             $iva = $factura->iva_total_pedido;
 
             $factura->iva = $iva;
             $factura->total = $total;
+            $factura->recargo = $recargo;
+            $factura->total_recargo = $recargo_total;
             $factura->save();
             
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
+                $recargo_total = (($factura->precio * $recargo) / 100);
                 $total = $factura->precio;
                 $iva = (($factura->precio * 21) / 100);
                 if($factura->descuento){
-                    $total = $total - (($total * $factura->descuento) / 100);
+                    $total = $total - (($total * $factura->descuento) / 100) + $recargo_total;
+                }else{
+                    $total = $total + $recargo_total;
                 }
 
                 //total es total + iva
@@ -646,6 +656,8 @@ class EditComponent extends Component
 
                 $factura->iva = $iva;
                 $factura->total = $total;
+                $factura->recargo = $recargo;
+                $factura->total_recargo = $recargo_total;
                 $factura->save();
 
             }

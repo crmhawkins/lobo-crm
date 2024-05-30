@@ -163,6 +163,25 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
+                                        
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Recargo</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="recargo" class="form-control"
+                                            placeholder="recargo" >
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="fecha_emision" class="col-sm-12 col-form-label">Total recargo</label>
+                                    <div class="col-sm-12">
+                                        
+                                        <input type="number" wire:model="total_recargo" class="form-control"
+                                            placeholder="total recargo" disabled>
+
+                                    </div>
                                 </div>
                             @endif
                         </div>

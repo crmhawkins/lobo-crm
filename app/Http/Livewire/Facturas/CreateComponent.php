@@ -57,6 +57,8 @@ class CreateComponent extends Component
     public $arrServicios = [];
     public $descripcionServicio;
     public $importeServicio;
+    public $recargo = 0;
+    public $total_recargo = 0;
 
     public function mount()
     {
@@ -418,24 +420,34 @@ class CreateComponent extends Component
     public function calcularTotales($factura){
         $iva= 0;
         $total = 0;
+        $recargo = $this->recargo;
+        $recargo_total = 0;
 
         //si hay pedido id
         if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
             
-            //coger el precio del pedido y sumarle el iva
-            $total = $factura->precio + $factura->iva_total_pedido;
+            //calcular el recargo en base a $factura->precio, siendo recargo un porcentaje
+            
+
+            $recargo_total = (($factura->precio * $recargo) / 100);
+            $total = $factura->precio + $recargo_total + $factura->iva_total_pedido;
             $iva = $factura->iva_total_pedido;
 
             $factura->iva = $iva;
             $factura->total = $total;
+            $factura->recargo = $recargo;
+            $factura->total_recargo = $recargo_total;
             $factura->save();
             
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
-                $total = $factura->precio;
+                $recargo_total = (($factura->precio * $recargo) / 100);
+                $total = $factura->precio ;
                 $iva = (($factura->precio * 21) / 100);
                 if($factura->descuento){
-                    $total = $total - (($total * $factura->descuento) / 100);
+                    $total = $total - (($total * $factura->descuento) / 100) + $recargo_total;
+                }else{
+                    $total = $total + $recargo_total;
                 }
 
                 //total es total + iva
@@ -443,6 +455,8 @@ class CreateComponent extends Component
 
                 $factura->iva = $iva;
                 $factura->total = $total;
+                $factura->recargo = $recargo;
+                $factura->total_recargo = $recargo_total;
                 $factura->save();
 
             }

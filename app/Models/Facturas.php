@@ -35,6 +35,8 @@ class Facturas extends Model
         'subtotal_pedido',
         'iva_total_pedido',
         'descuento_total_pedido',
+        'recargo',
+        'total_recargo',
     ];
 
 
