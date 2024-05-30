@@ -24,6 +24,11 @@ class IndexComponent extends Component
     public $pedido;
     public $facturas;
 
+    public $ingresos;
+    public $gastos;
+    
+
+
     public $filtro;
 
 
@@ -86,6 +91,11 @@ class IndexComponent extends Component
         return $this->saldo_array[$index];
     }
 
+    public function calcularIngresoyGasto(){
+        $this->ingresos = $this->caja->where('tipo_movimiento', 'Ingreso')->sum('importe');
+        $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->sum('total');
+    }
+
     public function cambioMes()
     {
         list($year, $month) = explode('-', $this->mes);
@@ -103,6 +113,8 @@ class IndexComponent extends Component
         if($this->filtro != 'Todos' && $this->filtro != null){
             $this->caja = $this->caja->where('tipo_movimiento', $this->filtro);
         }
+
+        $this->calcularIngresoyGasto();
 
         // Reiniciar saldo_array
         $this->saldo_array = [];

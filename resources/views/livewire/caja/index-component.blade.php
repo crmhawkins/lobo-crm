@@ -47,6 +47,42 @@
 
 
                     @if (count($caja) > 0)
+
+
+                        <div class="table-responsive" x-data="{}" x-init="$nextTick(() => {
+                            $('#tablaingresosgastos').DataTable({
+                                responsive: true,
+                                fixedHeader: {
+                                    header: true,
+                                    footer: true,
+                                },
+                                searching: false,
+                                ordering: false,
+                                paging: false,
+                                info: false,
+                                
+                                                });
+                                            })"
+                                            wire:key='{{ rand() }}'>
+                            <table id="tablaingresosgastos" class="table-sm table-striped table-bordered mt-1"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;"  wire:key='{{ rand() }}'>
+                                <thead>
+                                    <tr>
+                                        <th>Ingresos</th>
+                                        <th>Gastos</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ $ingresos }}€</td>
+                                        <td>{{ $gastos }}€</td>
+                                        <td>{{ $ingresos - $gastos }}€</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
                         <div class="table-responsive" x-data="{}" x-init="$nextTick(() => {
                             $('#tablacaja').DataTable({
                                 responsive: true,
@@ -55,6 +91,7 @@
                                     footer: true,
                                 },
                                 searching: false,
+                                ordering: false,
                                 paging: false,
                                 info: false,
                                 dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
@@ -75,7 +112,7 @@
                                                 });
                                             })"
                                             wire:key='{{ rand() }}'>
-                            <table id="tablacaja" class="table-sm table-striped table-bordered mt-5"
+                            <table id="tablacaja" class="table-sm table-striped table-bordered mt-2"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;"  wire:key='{{ rand() }}'>
                                 <thead>
                                     {{-- <tr>
@@ -142,11 +179,13 @@
                                             @endif
                                             <td>
                                                 @if ($tipo->tipo_movimiento == 'Ingreso')
+                                                    @php($ingresos += $tipo->importe)
                                                     {{ $tipo->importe }} €
                                                 @endif
                                             </td>
                                             <td>
                                                 @if ($tipo->tipo_movimiento == 'Gasto')
+                                                    @php($gastos += $tipo->total)
                                                     {{ floatval($tipo->total) }} €
                                                 @endif
                                             </td>
