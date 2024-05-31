@@ -364,8 +364,9 @@ class EditComponent extends Component
 
 
                 $this->facturas->precio = $total;
-                $this->facturas->iva = 21;
+                
                 $this->facturas->iva_total_pedido = $total * 21 / 100;
+                $this->facturas->iva = $this->facturas->iva_total_pedido;
                 $this->facturas->total = $total + ($total * 21 / 100);
                 $this->facturas->subtotal_pedido = $total;
                 $this->facturas->fecha_emision = $this->fecha_emision;

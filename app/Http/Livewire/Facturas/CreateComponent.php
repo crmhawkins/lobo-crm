@@ -328,8 +328,8 @@ class CreateComponent extends Component
                 }       
 
                 $this->precio = $this->total;
-                $this->iva = 21;
                 $this->iva_total_pedido = ($this->subtotal_pedido * 21) / 100;
+                $this->iva = $this->iva_total_pedido;
                 $this->total = $this->total + $this->iva_total_pedido;
                 
                 
