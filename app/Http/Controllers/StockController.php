@@ -58,6 +58,13 @@ class StockController extends Controller
         //
     }
 
+    public function historial()
+    {
+
+
+        return view('stock.historial' );
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

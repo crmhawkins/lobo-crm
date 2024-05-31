@@ -107,6 +107,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock-edit/{id}', [StockController::class, 'edit'])->name('stock.edit');
     Route::get('/stock-traspaso/{id}', [StockController::class, 'traspaso'])->name('traspaso.edit');
     Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock.crear-qr');
+    Route::get('/stock/historial', [StockController::class, 'historial'])->name('stock.historial');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios-create', [UsuarioController::class, 'create'])->name('usuarios.create');

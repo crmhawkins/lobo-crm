@@ -43,8 +43,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         <button type="button" onclick="iniciarEscaneo('añadir')" class="btn btn-lg btn-primary w-100 mt-2">AÑADIR STOCK</button>
                         <button type="button" onclick="iniciarEscaneo('editar')" class="btn btn-lg btn-primary w-100 mt-2">MODIFICAR STOCK</button>
                         <button type="button" wire:click.prevent="alertaGuardar" class="btn btn-lg btn-primary w-100 mt-2">GENERAR CÓDIGOS QR</button>
-                        <button type="button" wire:click.prevent="imprimirEntrante" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL ENTRANTE</button>
-                        <button type="button" wire:click.prevent="imprimirSaliente" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL SALIENTE</button>
+                        {{-- <button type="button" wire:click.prevent="imprimirEntrante" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL ENTRANTE</button> --}}
+                        {{-- <button type="button" wire:click.prevent="imprimirSaliente" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL SALIENTE</button> --}}
+                        <a href="{{ route('stock.historial') }}" class="btn btn-lg btn-secondary w-100 mt-2">VER HISTORIAL</a>
 
                     </div>
                     @if (auth()->user()->role == 1)
