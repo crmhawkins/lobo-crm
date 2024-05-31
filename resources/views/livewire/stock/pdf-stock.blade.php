@@ -66,7 +66,6 @@
 <table   class="table table-striped table-bordered dt-responsive nowrap"  >
     <thead>
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
-            <th>Nº Interno</th>
             <th>N.º Lote</th>
             <th>Pedido</th>
             <th>Almacen</th>
@@ -80,7 +79,6 @@
     <tbody>
         @foreach ($producto_lotes as $loteIndex => $lote)
             <tr style="background-color:#ececec;">
-                <th>{{ $lote['lote_id'] }}</th>
                 <th>{{ $lote['orden_numero'] }}</th>
                 <th>{{ $lote['pedido_id'] }}</th>
                 <th>{{ $lote['almacen'] }}</th>
