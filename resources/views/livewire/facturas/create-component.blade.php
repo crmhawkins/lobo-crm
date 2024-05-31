@@ -434,6 +434,13 @@
 
             });
 
+            $('#cliente_id').select2({
+                placeholder: "-- Seleccione un cliente --",
+                width: 'resolve'
+            }).on('change', function() {
+                @this.set('cliente_id', $('#cliente_id').val());
+            });
+
 
             console.log('select2')
             $("#datepicker").datepicker();
