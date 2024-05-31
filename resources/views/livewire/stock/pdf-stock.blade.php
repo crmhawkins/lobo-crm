@@ -68,11 +68,13 @@
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th>Nº Interno</th>
             <th>N.º Lote</th>
+            <th>Pedido</th>
             <th>Almacen</th>
             <th>Producto</th>
             <th>Fecha de entrada</th>
             <th>Cantidad (en Botellas)</th>
             <th>Cantidad (en Cajas)</th>
+            <th>Tipo</th>
         </tr>
     </thead>
     <tbody>
@@ -80,11 +82,13 @@
             <tr style="background-color:#ececec;">
                 <th>{{ $lote['lote_id'] }}</th>
                 <th>{{ $lote['orden_numero'] }}</th>
+                <th>{{ $lote['pedido_id'] }}</th>
                 <th>{{ $lote['almacen'] }}</th>
                 <th>{{ $lote['producto'] }}</th>
                 <td>{{ $lote['fecha'] }}</td>
                 <td>{{ $lote['cantidad'] }}</td>   
                 <td>{{ $lote['cajas']}}</td>
+                <td>{{ $lote['tipo'] }}</td>
             </tr>
         @endforeach
 </table>

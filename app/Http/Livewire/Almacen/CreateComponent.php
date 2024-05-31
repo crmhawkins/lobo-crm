@@ -19,6 +19,7 @@ use Livewire\Component;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
+use App\Models\StockSaliente;
 
 class CreateComponent extends Component
 {
@@ -255,6 +256,16 @@ class CreateComponent extends Component
             if ($stockEntrante) {
                 $stockEntrante->cantidad -= $productoPedido->unidades;
                 $stockEntrante->update();
+                $stockSaliente = StockSaliente::create([
+                    'stock_entrante_id' => $stockEntrante->id,
+                    'producto_id' => $producto->id,
+                    'cantidad_salida' => $productoPedido->unidades,
+                    'fecha_salida' => Carbon::now(),
+                    'pedido_id' => $pedido->id,
+                    'tipo' => 'Pedido',
+                    'motivo_salida' => 'Venta',
+                    'almacen_origen_id' => $almacen->id,
+                ]);
             }
             $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
             $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();

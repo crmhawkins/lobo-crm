@@ -97,6 +97,15 @@ class IndexComponent extends Component
         }
     }
 
+    public function getAlmacen($id)
+    {
+        $almacen = Almacen::find($id);
+        if($almacen == null){
+            return null;
+        }
+        return $almacen->almacen;
+    }
+
     public function almacen($lote){
 
         $almacenId = Stock::where('id', $lote->stock_id)->first()->almacen_id;
@@ -170,29 +179,102 @@ class IndexComponent extends Component
     
         $arrayProductosLotes = [];
         //dd($this->productos_lotes_salientes);
-    
+        
+        $allData = collect([]);
 
-        foreach ($this->productos_lotes_salientes as $loteIndex => $lote) {
-            $stock_Entrante = StockEntrante::where('id', $lote['stock_entrante_id'])->first();
-            $stockSaliente = StockSaliente::where('stock_entrante_id', $lote['stock_entrante_id'])->first();
-            $almacen = Almacen::find($stockSaliente->almacen_origen_id);
+        $stocks = Stock::with([
+            'entrantes',
+            'entrantes.salidas',
+            'modificaciones',
+            'roturas'
+        ])->get();
 
-            //  dd($stockSaliente);
-            $arrayProductosLotes[] = [
-                'lote_id' => $stock_Entrante['lote_id'],
-                'orden_numero' => $stock_Entrante['orden_numero'],
-                //'almacen' => $this->almacen($stock_Entrante),
-                'almacen' => $almacen->almacen ?? 'Almacen no asignado',
-                'producto' => $this->getProducto($lote['producto_id']),
-                'fecha' => Carbon::parse($lote['fecha_salida'])->format('d/m/Y'),
-                'cantidad' => $lote['cantidad_salida'],
-                'cajas' => floor($lote['cantidad_salida']/ $this->getUnidadeCaja($lote['producto_id']) ),
-            ];
 
+        //unificar los datos para la vista
+        foreach ($stocks as $stock) {
+            
+            //si stock entrantes esta vacio continua
+            if($stock->entrantes == null) continue;
+
+            foreach ($stock->entrantes as $stockEntrante) {
+                //dd($stock->entrantes->salidas);
+                //stockEntrante un bool pero no deberia dar eso
+            
+                foreach ($stock->entrantes->salidas as $salida) {
+                    if(count($stock->entrantes->salidas) == 0) continue;
+
+                    //antes de meterlo comprueba si el id ya está en el array, y si lo esta no lo meto.
+                    if($allData->contains('id_salida', $salida->id)) continue;
+                    //dd($salida);
+                    $allData->push([
+                        'id_salida' => $salida->id,
+                        'interno' => $salida->stock_entrante_id,
+                        'lote_id' => $stock->entrantes->lote_id,
+                        'orden_numero' => $stock->entrantes->orden_numero,
+                        'almacen' => $this->getAlmacen($salida->almacen_origen_id) ?? 'Almacen no asignado',
+                        'producto' => $this->getProducto($salida->producto_id),
+                        'fecha' => Carbon::parse($salida->fecha_salida)->format('d/m/Y'),
+                        'cantidad' => $salida->cantidad_salida,
+                        'cajas' => floor($salida->cantidad_salida / $this->getUnidadeCaja($salida->producto_id)),
+                        'tipo' => $salida->pedido_id ? 'Venta' : 'Salida',
+                        'created_at' => $salida->created_at,
+                        'pedido_id' => $salida->pedido_id ?? '',
+                    ]);
+                }
+                foreach ($stock->modificaciones as $modificacion) {
+                    //dd($stock->entrantes);
+
+                    //antes de meterlo comprueba si el id ya está en el array, y si lo esta no lo meto.
+                    if($allData->contains('id_modificacion', $modificacion->id)) continue;
+                    //si la modificacion es tipo 'Suma' no la meto
+                    if($modificacion->tipo == 'Suma') continue;
+                    $allData->push([
+                        'id_modificacion' => $modificacion->id,
+                        'interno' => $modificacion->stock_id,
+                        'lote_id' => $stock->entrantes->lote_id,
+                        'orden_numero' => $stock->entrantes->orden_numero, // No hay orden asociada a modificaciones
+                        'almacen' => $modificacion->almacen_id ? $this->getAlmacen($modificacion->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
+                        'producto' => $this->getProducto($stock->entrantes->producto_id),
+                        'fecha' => Carbon::parse($modificacion->fecha)->format('d/m/Y'),
+                        'cantidad' => $modificacion->cantidad,
+                        'cajas' => floor($modificacion->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
+                        'tipo' => 'Modificación',
+                        'created_at' => $modificacion->created_at,
+                        'pedido_id' => '-',
+                    ]);
+
+                    //comprueba si el id
+                }
+
+                foreach ($stock->roturas as $rotura) {
+                    //antes de meterlo comprueba si el id ya está en el array, y si lo esta no lo meto.
+                    if($allData->contains('id_rotura', $rotura->id)) continue;
+                    $allData->push([
+                        'id_rotura' => $rotura->id,
+                        'interno' => $rotura->stock_id,
+                        'lote_id' => $stock->entrantes->lote_id,
+                        'orden_numero' => $stock->entrantes->orden_numero, // No hay orden asociada a roturas
+                        'almacen' => $modificacion->almacen_id ? $this->getAlmacen($modificacion->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
+                        'producto' => $this->getProducto($stock->entrantes->producto_id),
+                        'fecha' => Carbon::parse($rotura->fecha)->format('d/m/Y'),
+                        'cantidad' => $rotura->cantidad,
+                        'cajas' => floor($rotura->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
+                        'tipo' => 'Rotura',
+                        'created_at' => $rotura->created_at,
+                        'pedido_id' => '-', // No hay pedido asociado a roturas
+                    ]);
+                }    
+            }
         }
 
+
+        // Ordenar todos los datos por created_at
+        $allData = $allData->sortBy('created_at');
+        //dd($allData);
+        
+
         $datos = [
-            'producto_lotes' => $arrayProductosLotes,
+            'producto_lotes' =>  $allData,
             'tipo' => 'Saliente',
         ];
         $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output();

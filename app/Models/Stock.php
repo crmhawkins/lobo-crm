@@ -35,4 +35,19 @@ class Stock extends Model
         return $this->hasOne(StockEntrante::class, 'stock_id');
     }
 
+    public function salientes()
+    {
+        return $this->hasMany(StockSaliente::class, 'stock_entrante_id');
+
+    }
+    public function modificaciones()
+    {
+        return $this->hasMany(ModificacionesStock::class, 'stock_id');
+    }
+
+    public function roturas()
+    {
+        return $this->hasMany(RoturaStock::class, 'stock_id');
+    }
+
 }

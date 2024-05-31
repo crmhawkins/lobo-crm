@@ -21,4 +21,15 @@ class RoturaStock extends Model
     ];
 
 
+    public function stock()
+    {
+        return $this->belongsTo(Stock::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
 }
