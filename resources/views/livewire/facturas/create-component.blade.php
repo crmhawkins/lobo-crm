@@ -439,6 +439,7 @@
                 width: 'resolve'
             }).on('change', function() {
                 @this.set('cliente_id', $('#cliente_id').val());
+                livewire.emit('onClienteChange');
             });
 
 

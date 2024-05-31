@@ -103,6 +103,17 @@ class CreateComponent extends Component
         $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
     }
+
+
+    public function onClienteChange()
+    {
+        $this->cliente = Clients::find($this->cliente_id);
+        $this->observacionesDescarga = $this->cliente->observaciones;
+        $diasVencimiento = $this->cliente->vencimiento_factura_pref;
+        $this->fecha_vencimiento = Carbon::now()->addDays($diasVencimiento)->format('Y-m-d');
+        $this->metodo_pago = $this->cliente->forma_pago_pref;
+    }
+
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
@@ -479,6 +490,7 @@ class CreateComponent extends Component
             'submit',
             'destroy',
             'listarPedido',
+            'onClienteChange'
         ];
     }
 
