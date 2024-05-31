@@ -17,7 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 use ZipArchive;
-
+use App\Models\ServiciosFacturas;
 class IndexComponent extends Component
 {
 
@@ -381,6 +381,9 @@ class IndexComponent extends Component
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
+            if($factura->tipo == 3){
+                $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+            }
             //dd($albaran);
            
             if (isset($pedido)) {
@@ -425,6 +428,7 @@ class IndexComponent extends Component
                 'productos' => $productos,
                 'producto' => $productofact,
                 'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
             ];
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -454,6 +458,7 @@ public function descargarPdfs($id)
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
+           
            
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();

@@ -355,14 +355,23 @@ class EditComponent extends Component
                 $servicios = ServiciosFacturas::where('factura_id', $this->facturas->id)->get();
                 //calcular total y subtotalPedido
                 $total = 0;
+                $precio = 0;
                 foreach($servicios as $servicio){
+                    
                     $total += $servicio->total;
+                    
                 }
-                $this->facturas->total = $total;
+
+
+                $this->facturas->precio = $total;
+                $this->facturas->iva = 21;
+                $this->facturas->iva_total_pedido = $total * 21 / 100;
+                $this->facturas->total = $total + ($total * 21 / 100);
                 $this->facturas->subtotal_pedido = $total;
                 $this->facturas->fecha_emision = $this->fecha_emision;
                 $this->facturas->fecha_vencimiento = $this->fecha_vencimiento;
                 $this->facturas->estado = $this->estado;
+                $this->facturas->descripcion = $this->descripcion;
                 $this->facturas->cliente_id = $this->cliente_id;    
                 $this->facturas->save();
 

@@ -326,8 +326,14 @@ class CreateComponent extends Component
                         $this->total += $servicio['importe'] * $servicio['cantidad'];
                     }
                 }       
-                
+
                 $this->precio = $this->total;
+                $this->iva = 21;
+                $this->iva_total_pedido = ($this->subtotal_pedido * 21) / 100;
+                $this->total = $this->total + $this->iva_total_pedido;
+                
+                
+                
                 //dd($this->numero_factura, $this->cliente_id, $this->pedido_id, $this->fecha_emision, $this->fecha_vencimiento, $this->descripcion, $this->estado, $this->precio, $this->metodo_pago, $this->producto_id, $this->cantidad, $this->descuento, $this->iva, $this->subtotal_pedido, $this->iva_total_pedido, $this->descuento_total_pedido, $this->descripcion_servicio, $this->tipo, $this->total);
             
             //validacion con servicios
