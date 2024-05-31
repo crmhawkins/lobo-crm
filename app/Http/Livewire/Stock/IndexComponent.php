@@ -224,6 +224,7 @@ class IndexComponent extends Component
                 foreach ($stock->modificaciones as $modificacion) {
                     //dd($stock->entrantes);
 
+
                     //antes de meterlo comprueba si el id ya está en el array, y si lo esta no lo meto.
                     if($allData->contains('id_modificacion', $modificacion->id)) continue;
                     //si la modificacion es tipo 'Suma' no la meto
@@ -254,7 +255,7 @@ class IndexComponent extends Component
                         'interno' => $rotura->stock_id,
                         'lote_id' => $stock->entrantes->lote_id,
                         'orden_numero' => $stock->entrantes->orden_numero, // No hay orden asociada a roturas
-                        'almacen' => $modificacion->almacen_id ? $this->getAlmacen($modificacion->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
+                        'almacen' => $rotura->almacen_id ? $this->getAlmacen($rotura->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
                         'producto' => $this->getProducto($stock->entrantes->producto_id),
                         'fecha' => Carbon::parse($rotura->fecha)->format('d/m/Y'),
                         'cantidad' => $rotura->cantidad,
