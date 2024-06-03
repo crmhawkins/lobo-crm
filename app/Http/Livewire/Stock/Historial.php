@@ -158,6 +158,15 @@ class Historial extends Component
 
     public function setLotes()
     {
+
+        if($this->producto_id != null){
+            $this->producto_seleccionado = $this->producto_id;
+        }
+
+        if($this->almacen_id == 0){
+            $this->almacen_id = null;
+        }
+
         if($this->almacen_id == null){
             if($this->producto_seleccionado == 0){
 

@@ -1,6 +1,5 @@
 <div class="container-fluid pb-5">
-    <style>
-       
+    <style>    
         table {
             width: 100%;
             border-collapse: collapse;
@@ -60,19 +59,19 @@
         </div>
     </div>
     
-        <table  class="header" wire:key="{{ rand() }}">
-            <tr width="100%">
-                <td width="40%" style="text-align: left !important"></td>
-                <td width="20%">&nbsp;</td>
-                <td class="bold" width="40%" style="text-align: right !important">
+    <table  class="header" wire:key="{{ rand() }}">
+        <tr width="100%">
+            <td width="40%" style="text-align: left !important"></td>
+            <td width="20%">&nbsp;</td>
+            <td class="bold" width="40%" style="text-align: right !important">
                     <h1 style="display: inline; color:#0196eb; font-weight:bolder;">Historial de Stock @if($isEntrada) Entrante  @else Saliente @endif</h1><br>
-                </td>
-            </tr>
+            </td>
+        </tr>
 
-        </table>
-        <div style="margin-left: -10%; width: 250%; border-bottom: 2px solid #bbbbbb"></div>
-        <br>
-        @if(!$isEntrada)  
+    </table>
+    <div style="margin-left: -10%; width: 250%; border-bottom: 2px solid #bbbbbb"></div>
+    <br>
+    @if(!$isEntrada)  
         <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
             $('#datatable-buttons').DataTable({
                 responsive: true,
@@ -85,7 +84,7 @@
                                                 },
                                                 {
                                                     extend: 'excelHtml5',
-                                                    exportOptions: { orthogonal: 'export', columns: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+                                                    exportOptions: { orthogonal: 'export' },
                                                 },
                                                 {
                                                     extend: 'pdfHtml5',
@@ -106,12 +105,14 @@
                                         zeroRecords: 'No se encontraron registros',
                                         info: 'Mostrando página _PAGE_ de _PAGES_',
                                         infoEmpty: 'No hay registros disponibles',
+                                        emptyTable: 'No hay registros disponibles',
+
                                         infoFiltered: '(filtrado de _MAX_ total registros)',
                                         search: 'Buscar:'
                                     },
-            })
-        })" wire:key="{{ rand() }}">
-            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" wire:key="{{ rand() }}">
+                                })
+                            })" wire:key="{{ rand() }}">
+            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="max-width:100%;" wire:key="{{ rand() }}">
                 <thead>
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                         <th>Fecha</th>
@@ -140,7 +141,7 @@
                 </tbody>
             </table>
         </div>
-        @else
+    @else
         <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
             $('#datatable-buttons2').DataTable({
                 responsive: true,
@@ -174,11 +175,12 @@
                                         zeroRecords: 'No se encontraron registros',
                                         info: 'Mostrando página _PAGE_ de _PAGES_',
                                         infoEmpty: 'No hay registros disponibles',
+                                        emptyTable: 'No hay registros disponibles',
                                         infoFiltered: '(filtrado de _MAX_ total registros)',
                                         search: 'Buscar:'
                                     },
-            })
-        })" wire:key="{{ rand() }}">
+                                 })
+                                })" wire:key="{{ rand() }}">
             <table id="datatable-buttons2" class="table table-striped table-bordered dt-responsive nowrap" wire:key="{{ rand() }}">
                 <thead>
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
@@ -204,7 +206,12 @@
                 </tbody>
             </table>
         </div>
-        @endif
+    @endif
+    <style>
+        .content-page{
+            overflow: hidden !important;
+        }
+    </style>
 </div>
 
 @section('scripts')
