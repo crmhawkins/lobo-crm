@@ -31,12 +31,30 @@
     </style>
     
     <div class="row">
-        <div class="col-md-12">
-            <div class="form-group col-md-6">
+        <div class="col-md-12 d-flex flex-wrap">
+            <div class="form-group col-md-4">
                 <label for="stock">Salida/Entrada</label>
                 <select wire:model="isEntrada" class="form-control" id="stock">
                     <option value="0">Saliente</option>
                     <option value="1">Entrante</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="stock">Producto</label>
+                <select wire:model="producto_id" class="form-control" id="stock">
+                    <option value="0">Todos</option>
+                    @foreach ($productos as $producto)
+                        <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="stock">Almacen</label>
+                <select wire:model="almacen_id" class="form-control" id="stock">
+                    <option value="0">Todos</option>
+                    @foreach ($almacenes as $almacen)
+                        <option value="{{ $almacen->id }}">{{ $almacen->almacen }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>
@@ -93,7 +111,7 @@
                                     },
             })
         })" wire:key="{{ rand() }}">
-            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap">
+            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" wire:key="{{ rand() }}">
                 <thead>
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                         <th>Fecha</th>
@@ -161,7 +179,7 @@
                                     },
             })
         })" wire:key="{{ rand() }}">
-            <table id="datatable-buttons2" class="table table-striped table-bordered dt-responsive nowrap">
+            <table id="datatable-buttons2" class="table table-striped table-bordered dt-responsive nowrap" wire:key="{{ rand() }}">
                 <thead>
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                         <th>Fecha</th>

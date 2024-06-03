@@ -17,16 +17,20 @@ class Historial extends Component
     public $allData;
     public $producto_lotes;
     public $almacen_id;
+    public $producto_id;
     public $producto_seleccionado = 0;
     public $productos_lotes_salientes;
+    public $almacenes;
+    public $productos;
 
-    
     public function formatFecha($id)
     {
         return Carbon::parse(Stock::find($id)->fecha)->format('d/m/Y');
     }
     public function mount(){
 
+        $this->almacenes = Almacen::all();
+        $this->productos = Productos::all();
         if($this->isEntrada){
             $this->setLotes();
 
@@ -56,7 +60,8 @@ class Historial extends Component
                 'modificaciones',
                 'roturas'
             ])->get();
-    
+
+           
             //unificar los datos para la vista
             foreach ($stocks as $stock) {
                 
@@ -132,7 +137,15 @@ class Historial extends Component
                     }    
                 }
             }
-        
+            
+            if($this->almacen_id != null && $this->almacen_id != 0){	
+                $this->allData = $this->allData->where('almacen', $this->getAlmacen($this->almacen_id));
+            }
+
+            if($this->producto_id != 0){
+                $this->allData = $this->allData->where('producto', $this->getProducto($this->producto_id));
+            }
+
             // Ordenar todos los datos por created_at
             $this->allData = $this->allData->sortBy('created_at');
             $this->producto_lotes = $this->allData;
@@ -141,6 +154,7 @@ class Historial extends Component
          
        
     }
+
 
     public function setLotes()
     {
@@ -234,6 +248,9 @@ class Historial extends Component
        if($field == 'isEntrada'){
            $this->mount();
        }
+       if($field == 'almacen_id' || $field == 'producto_id'){
+        $this->mount();
+    }
     }
 
     public function render()
