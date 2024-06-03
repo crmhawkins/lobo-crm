@@ -33,6 +33,9 @@
         .footer {
             width: 100%;
         }
+        .page-break {
+                page-break-after: always;
+            }
     </style>
 </head>
 
@@ -177,6 +180,9 @@
         @endif
     </table>
 
+    @if(count($productos)> 10)
+        <div class="page-break"></div>
+    @endif
 
     @if($conIva)
     <table style="margin-top: 2% !important">
