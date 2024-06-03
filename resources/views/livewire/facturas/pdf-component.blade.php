@@ -200,7 +200,7 @@
         @if(isset($factura->total_recargo))
             <tr style="background-color:#ececec;">
                 <td></td>
-                <td>Recargo {{number_format(($factura->recargo) , 0 , ',', '.')}}%</td>
+                <td>Recargo {{number_format(($factura->recargo), 2 , ',', '.')}}%</td>
                 <td>{{number_format(($factura->total_recargo), 2 , ',', '.')}}€</td>
             </tr>
 
