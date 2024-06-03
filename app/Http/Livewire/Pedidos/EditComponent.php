@@ -328,7 +328,9 @@ class EditComponent extends Component
             //Update factura relacionada si existe
             $factura = Facturas::where('pedido_id', $this->identificador)->first();
             if($factura){
-                $factura->update(['precio' => $this->precio]);
+                $factura->update(
+                    ['precio' => $this->precio,
+                    'cliente_id' => $this->cliente_id]);
                 $this->calcularTotales($factura);
                 
 
