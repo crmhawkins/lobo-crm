@@ -43,6 +43,7 @@ class CreateComponent extends Component
     public $observaciones;
     public $descuento;
     public $almacen_id;
+    public $pedido_almacen_id;
     public $observacionesDescarga;
     public function mount()
     {
@@ -50,6 +51,7 @@ class CreateComponent extends Component
         $this->almacen_id = auth()->user()->almacen_id;
         $this->pedido = Pedido::find($this->identificador);
         $this->pedido_id = $this->pedido->id;
+        $this->pedido_almacen_id = $this->pedido->almacen_id;
         $this->descuento = $this->pedido->descuento;
         $this->cliente = Clients::where('id', $this->pedido->cliente_id)->first();
         $this->observacionesDescarga = $this->cliente->observaciones;
@@ -358,9 +360,33 @@ class CreateComponent extends Component
     //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
     {
+
+        if($this->pedido_almacen_id == null){
+            $this->alert('error', 'No tienes un almacén asignado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return;
+        }
+
+
         $stock = Stock::where('qr_id', $qrCode)->first();
         if (!$stock) {
             $this->alert('error', 'QR no asignado o inválido.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return;
+        }
+
+        if($stock->almacen_id != $this->pedido_almacen_id){
+            $this->alert('error', 'El QR escaneado no pertenece a tu almacén.', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
