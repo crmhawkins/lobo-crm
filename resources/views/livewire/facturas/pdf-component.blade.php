@@ -117,44 +117,63 @@
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     <table>
-        @if(isset($pedido))
-        <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
-            <th style="text-align: left !important">CONCEPTO</th>
-            <th>LOTE</th>
-            <th>UNIDADES</th>
-            <th>PESO TOTAL</th>
-            <th>PRECIO</th>
-            <th>SUBTOTAL</th>
-        </tr>
-        <tr style="background-color:#fff; color: #fff;">
-            <th style="padding: 0px !important; height: 10px !important;"></th>
-        </tr>
-
-        @foreach ($productos as $producto)
-        <tr class="left-aligned" style="background-color:#ececec;">
-            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
-            <td>{{ $producto['lote_id'] }}</td>
-            <td>{{ $producto['cantidad'] }}</td>
-            <td>{{ $producto['peso_kg'] }} Kg</td>
-            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-            <td>{{ number_format($producto['precio_total'], 2) }} €</td>
-
-        </tr>
-        @endforeach
-        
-        @endif
-
-        @if(isset($pedido))
-        @if ($pedido->descuento )
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>Descuento Aplicado({{$pedido->porcentaje_descuento}}%):</td>
-            <td>{{$pedido->descuento_total}}€<</td>
-        </tr>
-        @endif
+        @if(isset($pedido) && $factura->tipo != 2)
+            <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
+                <th style="text-align: left !important">CONCEPTO</th>
+                <th>LOTE</th>
+                <th>UNIDADES</th>
+                <th>PESO TOTAL</th>
+                <th>PRECIO</th>
+                <th>SUBTOTAL</th>
+            </tr>
+            <tr style="background-color:#fff; color: #fff;">
+                <th style="padding: 0px !important; height: 10px !important;"></th>
+            </tr>
+            @foreach ($productos as $producto)
+                <tr class="left-aligned" style="background-color:#ececec;">
+                    <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
+                    <td>{{ $producto['lote_id'] }}</td>
+                    <td>{{ $producto['cantidad'] }}</td>
+                    <td>{{ $producto['peso_kg'] }} Kg</td>
+                    <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+                    <td>{{ number_format($producto['precio_total'], 2) }} €</td>
+                </tr>
+            @endforeach
+            
+            @if(isset($pedido))
+                @if ($pedido->descuento )
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Descuento Aplicado({{$pedido->porcentaje_descuento}}%):</td>
+                        <td>{{$pedido->descuento_total}}€<</td>
+                    </tr>
+                @endif
+            @endif
+        @else
+            <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
+                <th style="text-align: left !important">CONCEPTO</th>
+                <th>LOTE</th>
+                <th>UNIDADES</th>
+                <th>PESO TOTAL</th>
+                <th>PRECIO</th>
+                <th>SUBTOTAL</th>
+            </tr>
+            <tr style="background-color:#fff; color: #fff;">
+                <th style="padding: 0px !important; height: 10px !important;"></th>
+            </tr>
+            @foreach ($productosFactura as $producto)
+                <tr class="left-aligned" style="background-color:#ececec;">
+                    <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
+                    <td>{{ $producto['lote_id'] }}</td>
+                    <td>{{ $producto['cantidad'] }}</td>
+                    <td>{{ $producto['peso_kg'] }} Kg</td>
+                    <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+                    <td>{{ number_format($producto['precio_total'], 2) }} €</td>
+                </tr>
+            @endforeach
         @endif
     </table>
     <table style="margin-top:10px;">
@@ -185,41 +204,57 @@
     @endif
 
     @if($conIva)
-    <table style="margin-top: 2% !important">
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>BASE IMPONIBLE</td>
-            <td>{{ number_format($factura->precio , 2 , ',', '.')}}€</td>
-            
-        </tr>
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>IVA 21%</td>
-            <td>{{number_format(($factura->iva) , 2 , ',', '.')}}€</td>
-        </tr>
-        @if(isset($factura->total_recargo))
+        <table style="margin-top: 2% !important">
             <tr style="background-color:#ececec;">
                 <td></td>
-                <td>Recargo {{number_format(($factura->recargo), 2 , ',', '.')}}%</td>
-                <td>{{number_format(($factura->total_recargo), 2 , ',', '.')}}€</td>
+                <td>BASE IMPONIBLE</td>
+                @if($factura->tipo == 2)
+                    <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
+                @else
+                    <td>{{ number_format($factura->precio , 2 , ',', '.')}}€</td>
+                @endif
+                
             </tr>
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>IVA 21%</td>
+                @if($factura->tipo == 2)
+                    <td>{{ number_format($iva_productos , 2 , ',', '.')}}€</td>
+                @else
+                    <td>{{number_format(($factura->iva) , 2 , ',', '.')}}€</td>
+                @endif
+            </tr>
+            @if(isset($factura->total_recargo) && $factura->tipo !=2)
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>Recargo {{number_format(($factura->recargo), 2 , ',', '.')}}%</td>
+                    <td>{{number_format(($factura->total_recargo), 2 , ',', '.')}}€</td>
+                </tr>
 
-        @endif
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>TOTAL</td>
-            <td>{{number_format(($factura->total), 2 , ',', '.')}}€</td>
-            
-        </tr>
-    </table>
+            @endif
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>TOTAL</td>
+                @if($factura->tipo == 2)
+                    <td>{{ number_format($total , 2 , ',', '.')}}€</td>
+                @else
+                    <td>{{number_format(($factura->total), 2 , ',', '.')}}€</td>
+                @endif
+                
+            </tr>
+        </table>
     @else
-    <table style="margin-top: 5% !important">
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>Total</td>
-            <td>{{ number_format($factura->precio , 2, ',', '.' )}}€</td>
-        </tr>
-    </table>
+        <table style="margin-top: 5% !important">
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>Total</td>
+                @if($factura->tipo == 2)
+                    <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
+                @else
+                    <td>{{number_format(($factura->precio), 2 , ',', '.')}}€</td>
+                @endif
+            </tr>
+        </table>
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->

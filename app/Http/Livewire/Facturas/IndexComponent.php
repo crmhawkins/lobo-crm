@@ -418,7 +418,48 @@ class IndexComponent extends Component
                     }
                 }
             }
-            
+            $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+            $productosdeFactura = [];
+            foreach ($productosFactura as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+               
+                if ($stockEntrante) {
+                    $lote = $stockEntrante->orden_numero;
+                } else {
+                    $lote = "";
+                }
+                if ($producto) {
+                    if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                        $peso = "Peso no definido";
+                    } else {
+                        $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                    }
+                    $productosdeFactura[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->unidades,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' =>  ($productoPedido->unidades * $productoPedido->precio_ud),
+                        'iva' => ($productoPedido->unidades * $productoPedido->precio_ud) * $producto->iva / 100,
+                        'lote_id' => $lote,
+                        'peso_kg' =>  $peso,
+                    ];
+                }
+            }
+            $total = 0;
+            $base_imponible = 0;
+            $iva_productos = 0;
+
+            if ($factura->tipo == 2){
+                
+                foreach ($productosdeFactura as $producto) {
+                    $base_imponible += $producto['precio_total'];
+                    $iva_productos += $producto['iva'];
+                }
+                $total = $base_imponible + $iva_productos;
+
+            }
+
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
@@ -429,6 +470,11 @@ class IndexComponent extends Component
                 'producto' => $productofact,
                 'configuracion' => $configuracion,
                 'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
+                
             ];
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -458,6 +504,7 @@ public function descargarPdfs($id)
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
+
            
            
             if (isset($pedido)) {
@@ -492,7 +539,8 @@ public function descargarPdfs($id)
                     }
                 }
             }
-            
+
+         
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
