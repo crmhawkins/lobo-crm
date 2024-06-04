@@ -437,10 +437,10 @@ class IndexComponent extends Component
                     }
                     $productosdeFactura[] = [
                         'nombre' => $producto->nombre,
-                        'cantidad' => $productoPedido->unidades,
+                        'cantidad' => $productoPedido->cantidad,
                         'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' =>  ($productoPedido->unidades * $productoPedido->precio_ud),
-                        'iva' => ($productoPedido->unidades * $productoPedido->precio_ud) * $producto->iva / 100,
+                        'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => ($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100,
                         'lote_id' => $lote,
                         'peso_kg' =>  $peso,
                     ];
