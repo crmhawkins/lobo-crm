@@ -186,7 +186,7 @@
                                             </td>
                                             <td>
                                                 @if ($tipo->tipo_movimiento == 'Gasto')
-                                                    @php($gastos += $tipo->total)
+                                                      
                                                     {{ floatval($tipo->total) }}€
                                                 @endif
                                             </td>

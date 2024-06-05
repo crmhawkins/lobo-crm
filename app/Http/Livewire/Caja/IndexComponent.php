@@ -102,7 +102,7 @@ class IndexComponent extends Component
 
     public function calcularIngresoyGasto(){
         $this->ingresos = $this->caja->where('tipo_movimiento', 'Ingreso')->sum('importe');
-        $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->sum('total');
+        $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->where('estado', '!=', 'Pendiente')->sum('total');
     }
 
     public function cambioMes()
