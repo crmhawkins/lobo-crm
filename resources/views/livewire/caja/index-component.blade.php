@@ -168,7 +168,7 @@
                                                     @endswitch
                                                 @endif
                                             </td> -->
-                                            <td>{{ $tipo->importe }} €</td>
+                                            <td>{{ $tipo->importe }}€</td>
                                             @if($tipo->tipo_movimiento == 'Gasto')
                                                 <td>{{ floatval($tipo->iva) }}%</td>
                                                 <td>{{ floatval($tipo->retencion) }}%</td>
@@ -181,13 +181,13 @@
                                             <td>
                                                 @if ($tipo->tipo_movimiento == 'Ingreso')
                                                     @php($ingresos += $tipo->importe)
-                                                    {{ $tipo->importe }} €
+                                                    {{ $tipo->importe }}€
                                                 @endif
                                             </td>
                                             <td>
                                                 @if ($tipo->tipo_movimiento == 'Gasto')
                                                     @php($gastos += $tipo->total)
-                                                    {{ floatval($tipo->total) }} €
+                                                    {{ floatval($tipo->total) }}€
                                                 @endif
                                             </td>
                                             <td>{{ $tipo->estado }}</td>
