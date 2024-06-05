@@ -376,7 +376,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     <div class="row">
                         <div class="col-12">
                             <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                presupuesto</button>
+                                Pedido</button>
                         </div>
                     </div>
                     <div class="row">

@@ -69,6 +69,10 @@ class CreateComponent extends Component
 
         $this->productos = Productos::all();
         $this->clientes = Clients::where('estado', 2)->get();
+        //si el usuario autenticado es comercial, solo ve sus clientes asociados.
+        if (Auth::user()->role == 3 ){
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->where('estado', 2)->get();
+        }
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
         $this->cliente_id = null;
