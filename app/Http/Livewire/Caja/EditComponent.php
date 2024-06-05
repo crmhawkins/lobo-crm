@@ -50,6 +50,8 @@ class EditComponent extends Component
     public $documento;
     public $documentoSubido;
     public $documentoPath;
+    public $nInterno;
+    public $nFactura;
 
 
 
@@ -77,6 +79,8 @@ class EditComponent extends Component
         $this->fecha_vencimiento = $caja->fechaVencimiento;
         $this->fecha_pago = $caja->fechaPago;
         $this->documento = $caja->documento_pdf;
+        $this->nInterno = $caja->nInterno;
+        $this->nFactura = $caja->nFactura;
         
         $this->cuenta = $caja->cuenta;
         $this->delegaciones = Delegacion::all();
@@ -96,8 +100,15 @@ class EditComponent extends Component
         if($this->documento === null || $this->documento === ''){
             return;
         }
-        return response()->download(storage_path('app/private/documentos_gastos/' . $this->documento));
+
+        $proveedor_name = Proveedores::find($this->poveedor_id)->nombre;
+
+        return response()->download(storage_path('app/private/documentos_gastos/' . $this->documento),
+        $this->nInterno.'_'.$proveedor_name.'_'.$this->fecha.'.pdf'
+    );
     }
+
+
 
     public function updating($property , $value){
         //dd($property, $value);
@@ -199,6 +210,8 @@ class EditComponent extends Component
             'importeIva' => $this->importeIva,
             'total' => $this->total,
             'documento_pdf' => $this->documentoPath,
+            'nInterno' => $this->nInterno,
+            'nFactura' => $this->nFactura,
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));

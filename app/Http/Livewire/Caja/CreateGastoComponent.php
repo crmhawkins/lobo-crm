@@ -44,6 +44,9 @@ class CreateGastoComponent extends Component
     public $total;
     public $documento;
     public $documentoPath;
+    public $nInterno;
+    public $nFactura;
+
 
     public function mount()
     {
@@ -159,6 +162,8 @@ class CreateGastoComponent extends Component
             'total' => $this->total,
             'documento_pdf' => $this->documentoPath,
             'estado' => $this->estado,
+            'nFactura' => $this->nFactura,
+            'nInterno' => $this->nInterno,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 

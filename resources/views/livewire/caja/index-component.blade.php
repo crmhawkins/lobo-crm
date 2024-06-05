@@ -21,6 +21,7 @@
             <div class="card m-b-30">
                 <div class="table-responsive card-body">
                     <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
+                    
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group" x-init="
@@ -42,6 +43,12 @@
                                     <option value="Gasto">Gasto</option>
                                 </select>
                             </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button wire:click="descargarTodosDocumentos" class="btn btn-primary">Descargar todos los documentos</button>
                         </div>
                     </div>
 
@@ -121,6 +128,8 @@
                                     </tr> --}}
                                     <tr>
                                         <th scope="col">Fecha</th>
+                                        <th scope="col">Nº Interno</th>
+                                        <th scope="col">Nº Factura</th>
                                         <th scope="col">Concepto</th>
                                         <th scope="col">Asociado</th>
                                         <th scope="col">Desglose</th>
@@ -142,6 +151,8 @@
                                     @foreach ($caja as $tipoIndex => $tipo)
                                         <tr>
                                             <td>{{ $tipo->fecha }}</td>
+                                            <td>{{ $tipo->nInterno }}</td>
+                                            <td>{{ $tipo->nFactura }}</td>
                                             <td>{{ $tipo->descripcion }}</td>
                                             @if (isset($tipo->pedido_id))
                                             <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
@@ -150,7 +161,7 @@
                                             @else
                                             <td></td>
                                             @endif
-                                            <td>{{$tipo->tipo_movimiento}}</td>
+                                            <td>{{$tipo->tipo_movimiento}}</td> 
                                             <!-- <td>
                                                 @if ($tipo->tipo_movimiento == 'Gasto')
                                                     @switch($tipo->estado)

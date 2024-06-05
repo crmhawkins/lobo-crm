@@ -10,9 +10,12 @@ use App\Models\Facturas;
 use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\Caja;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class IndexComponent extends Component
 {
+    use LivewireAlert;
+
     public $caja;
     public $proceedor;
     public $fechas;
@@ -32,7 +35,68 @@ class IndexComponent extends Component
 
     public $filtro;
 
+    public function descargarTodosDocumentos()
+    {
+        $caja = $this->caja->where('documento_pdf', '!=', null)
+                        ->where('tipo_movimiento', 'Gasto');
+        
+        $zip = new \ZipArchive;
+        
+        //dd($this->mes);
+       
+        $mesActual = Carbon::parse($this->mes)->format('F');
+        //en español
+        $meses = array(
+            'January' => 'Enero',
+            'February' => 'Febrero',
+            'March' => 'Marzo',
+            'April' => 'Abril',
+            'May' => 'Mayo',
+            'June' => 'Junio',
+            'July' => 'Julio',
+            'August' => 'Agosto',
+            'September' => 'Septiembre',
+            'October' => 'Octubre',
+            'November' => 'Noviembre',
+            'December' => 'Diciembre'
+        );
+        $mesActual = $meses[$mesActual];
 
+        $ano = Carbon::parse($this->mes)->format('Y');
+
+        $zipFileName = 'documentos_gastos_' . $mesActual . '_' . $ano . '.zip';
+        $zipFilePath = storage_path($zipFileName);
+        try{
+            if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+                foreach ($caja as $c) {
+                    $proveedor = Proveedores::find($c->poveedor_id);
+                    $proveedor_name = $proveedor ? $proveedor->nombre : 'desconocido';
+                    $documento = $c->documento_pdf;
+                    $documentPath = storage_path('app/private/documentos_gastos/' . $documento);
+                    
+                    if (file_exists($documentPath)) {
+                        $nombrePersonalizado = $c->nInterno . '_' . $proveedor_name . '_' . $c->fecha . '.pdf';
+                        $zip->addFile($documentPath, $nombrePersonalizado);
+                    }
+                }
+                $zip->close();
+                
+                return response()->download($zipFilePath)->deleteFileAfterSend(true);
+            } else {
+                return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+            }
+        }catch(\Exception $e){
+            
+            //livewire alert error
+            $this->alert('error', '¡No se ha podido descargar los documentos!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+
+        }
+            
+    }
 
     public function mount()
     {
@@ -104,6 +168,8 @@ class IndexComponent extends Component
         $this->ingresos = $this->caja->where('tipo_movimiento', 'Ingreso')->sum('importe');
         $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->where('estado', '!=', 'Pendiente')->sum('total');
     }
+
+    
 
     public function cambioMes()
     {

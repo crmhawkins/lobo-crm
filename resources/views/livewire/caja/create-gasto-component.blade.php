@@ -156,6 +156,22 @@
                             </select>
                             </div>
                         </div> --}}
+
+                        <div class="mb-3 row d-flex align-items-center ">
+
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Número Interno</label>
+                                <input type="text"  class="form-control" wire:model="nInterno" nombre="nInterno"
+                                    id="descuento" placeholder="Número interno" >
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Número factura</label>
+                                <input type="text" class="form-control" wire:model="nFactura" nombre="nFactura"
+                                    id="total" placeholder="Número de factura">
+                            </div>
+                            
+                        </div>
+
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Detalle</label>
                             <div class="col-sm-10">
