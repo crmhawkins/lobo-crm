@@ -27,6 +27,7 @@ class IndexComponent extends Component
     public $ingresos;
     public $gastos;
     
+    
 
 
     public $filtro;
@@ -72,8 +73,16 @@ class IndexComponent extends Component
     }
     public function calcular_saldo($index, $id)
     {
-        $movimiento = $this->caja->where('id', $id)->first();
+        $movimiento = $this->caja->where('id', $id)->where('estado', '!=','Pendiente')->first();
         //dd($movimiento);
+
+        if ($movimiento == null) {
+            if($index == 0)
+            {
+                return $this->saldo_array[$index] = isset($this->saldo_inicial) ? $this->saldo_inicial : 0;
+            }
+            return $this->saldo_array[$index] = $this->saldo_array[$index - 1];
+        }
         if ($index == 0) {
             
             if ($movimiento->tipo_movimiento == 'Gasto') {

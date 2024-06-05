@@ -184,6 +184,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="card-body">
+                    <h5>Estado</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <select class="form-control" name="estado" id="estado"  wire:model.lazy="estado">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Pagado">Pagado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

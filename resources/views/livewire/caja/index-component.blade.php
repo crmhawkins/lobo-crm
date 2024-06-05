@@ -131,6 +131,7 @@
                                         <th scope="col">Descuento</th>
                                         <th scope="col">(+)</th>
                                         <th scope="col">(-)</th>
+                                        <th scope="col">Estado</th>
                                         <th scope="col">Saldo</th>
 
 
@@ -189,7 +190,7 @@
                                                     {{ floatval($tipo->total) }} €
                                                 @endif
                                             </td>
-
+                                            <td>{{ $tipo->estado }}</td>
                                             <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>
 
 

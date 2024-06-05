@@ -158,6 +158,7 @@ class CreateGastoComponent extends Component
             'importeIva' => $this->importeIva,
             'total' => $this->total,
             'documento_pdf' => $this->documentoPath,
+            'estado' => $this->estado,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
