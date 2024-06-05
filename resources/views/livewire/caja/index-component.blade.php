@@ -23,19 +23,8 @@
                     <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
                     
                     <div class="row">
-                        <div class="col-12">
-                            <div class="form-group" x-init="
-                            $('#select2-producto').select2();
-                            $('#select2-producto').on('change', function(e) {
-                                var data = $('#select2-producto').select2('val');
-                                @this.set('filtro', data);
-                            });
-                            
-                            // Establecer el valor seleccionado de Select2 para que coincida con Livewire al iniciar
-                            $nextTick(() => {
-                                $('#select2-producto').val(@this.filtro).trigger('change');
-                            });
-                            ">
+                        <div class="col-6">
+                            <div  >
                                 <label for="example-text-input" class="col-form-label">Tipo de movimiento</label>
                                 <select class="form-control" id="select2-producto" wire:model="filtro">
                                     <option value="Todos">Todos</option>
@@ -44,9 +33,19 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-6">
+                            <div  >
+                                <label for="example-text-input" class="col-form-label">Estado</label>
+                                <select class="form-control" wire:model="filtroEstado">
+                                    <option value="Todos">Todos</option>
+                                    <option value="Pendiente">Pendientes</option>
+                                    <option value="Pagado">Pagado</option>
+                                </select>
+                            </div>
+                        </div>
 
                     </div>
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-12">
                             <button wire:click="descargarTodosDocumentos" class="btn btn-primary">Descargar todos los documentos</button>
                         </div>
@@ -130,6 +129,7 @@
                                         <th scope="col">Fecha</th>
                                         <th scope="col">Nº Interno</th>
                                         <th scope="col">Nº Factura</th>
+                                        <th scope="col">Estado</th>
                                         <th scope="col">Concepto</th>
                                         <th scope="col">Asociado</th>
                                         <th scope="col">Desglose</th>
@@ -140,7 +140,8 @@
                                         <th scope="col">Descuento</th>
                                         <th scope="col">(+)</th>
                                         <th scope="col">(-)</th>
-                                        <th scope="col">Estado</th>
+                                        <th>Pendiente</th>
+                                        
                                         <th scope="col">Saldo</th>
 
 
@@ -153,6 +154,11 @@
                                             <td>{{ $tipo->fecha }}</td>
                                             <td>{{ $tipo->nInterno }}</td>
                                             <td>{{ $tipo->nFactura }}</td>
+                                            <td >
+                                                <span @if($tipo->estado == "Pendiente") class="badge badge-warning" @elseif($tipo->estado == "Pagado") class="badge badge-success"  @endif>
+                                                {{ $tipo->estado }}
+                                                </span>
+                                            </td>
                                             <td>{{ $tipo->descripcion }}</td>
                                             @if (isset($tipo->pedido_id))
                                             <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
@@ -196,12 +202,23 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($tipo->tipo_movimiento == 'Gasto')
-                                                      
-                                                    {{ floatval($tipo->total) }}€
+                                                @if($tipo->estado != 'Pendiente')
+                                                    @if ($tipo->tipo_movimiento == 'Gasto')
+                                                        
+                                                        {{ floatval($tipo->total) }}€
+                                                    @endif
                                                 @endif
                                             </td>
-                                            <td>{{ $tipo->estado }}</td>
+                                            <td>
+                                                @if($tipo->estado == 'Pendiente')
+                                                    <span  class="badge badge-warning" >
+                                                        @if ($tipo->tipo_movimiento == 'Gasto')
+                                                        
+                                                            {{ floatval($tipo->total) }}€
+                                                        @endif
+                                                    </span>
+                                                @endif
+                                            </td>
                                             <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>
 
 

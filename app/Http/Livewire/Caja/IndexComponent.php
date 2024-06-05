@@ -34,6 +34,7 @@ class IndexComponent extends Component
 
 
     public $filtro;
+    public $filtroEstado;
 
     public function descargarTodosDocumentos()
     {
@@ -112,7 +113,7 @@ class IndexComponent extends Component
     }
 
     public function updated($property, $value){
-        if($property == 'filtro'){
+        if($property == 'filtro' || $property == 'filtroEstado'){
             $this->cambioMes();
         }   
     }
@@ -187,6 +188,10 @@ class IndexComponent extends Component
         //si filtro es diferente de todos
         if($this->filtro != 'Todos' && $this->filtro != null){
             $this->caja = $this->caja->where('tipo_movimiento', $this->filtro);
+        }
+
+        if($this->filtroEstado != 'Todos' && $this->filtroEstado != null){
+            $this->caja = $this->caja->where('estado', $this->filtroEstado);
         }
 
         $this->calcularIngresoyGasto();
