@@ -48,7 +48,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         <a href="{{ route('stock.historial') }}" class="btn btn-lg btn-secondary w-100 mt-2">VER HISTORIAL</a>
 
                     </div>
-                    @if (auth()->user()->role == 1)
+                    @if (auth()->user()->role == 1 || auth()->user()->role == 7)
                     <div class="row justify-content-center">
                         <div class="form-group col-md-12 mt-1">
                             <label for="fechaVencimiento">Almacén</label>
