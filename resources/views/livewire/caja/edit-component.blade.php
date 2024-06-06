@@ -125,6 +125,7 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                             <option value="produccion">Producción</option>
                                             <option value="patrocinios">Patrocinios</option>
                                             <option value="exportacion">Exportación</option>
+                                            <option value="logistica">Logística</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-4">
