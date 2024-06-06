@@ -136,6 +136,7 @@ class EditComponent extends Component
         $this->almacen_id = $orden->almacen_id;
         $this->pedidos = Pedido::all();
         $this->pedido_id = $orden->pedido_id;
+        $this->observaciones = $orden->observaciones;
         //dd($orden);
         //dd($this->pedido_id);
     }

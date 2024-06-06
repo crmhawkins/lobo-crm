@@ -50,6 +50,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Nº de órden</th>
+                                    <th scope="col">Nº Pedido</th>
                                     <th scope="col">Fecha de emisión</th>
                                     <th scope="col">Almacén</th>
                                     <th scope="col">Estado</th>
@@ -60,6 +61,11 @@
                                 @foreach ($ordenes_produccion as $produccion)
                                     <tr>
                                         <td>{{ $produccion->numero }}</td>
+                                        <td>
+                                            @if(isset($produccion->pedido_id))
+                                                <a href="{{ route('pedidos.edit', $produccion->pedido_id) }}" style="width: 100%;" class="btn btn-info fw-bold">{{ $produccion->pedido_id }}</a>
+                                            @endif
+                                        </td>
                                         <td>{{ $produccion->fecha }}</td>
                                         <td>{{ $this->getAlmacen($produccion->almacen_id) }}</td>
                                         <td>

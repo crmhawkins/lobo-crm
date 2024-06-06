@@ -159,6 +159,15 @@ class CreateComponent extends Component
     public function submit()
     {
 
+        if($this->almacen_id == null){
+            $this->alert('error', '¡No se ha podido guardar la entrada del stock! No tienes un almacén asignado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
         // Validación de datos
         $validatedData = $this->validate(
             [

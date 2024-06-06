@@ -3,7 +3,7 @@
 @endsection
 @php
 $EsAdmin = Auth::user()->isAdmin();
-$canEdit = $EsAdmin; //|| $estado == 1;
+$canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //|| $estado == 1;
 @endphp
 <div class="container-fluid">
     <div class="page-title-box">

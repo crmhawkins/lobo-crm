@@ -32,6 +32,14 @@ class IndexComponent extends Component
         return view('livewire.produccion.index-component');
     }
 
+    public function getPedidoById($id){
+        $pedido = Pedido::where('id', $id)->first();
+        if($pedido == null){
+            $pedido->nombre = "No asignado";
+        }
+        return $pedido;
+    }
+
     public function formatFecha($id)
     {
         return Carbon::parse(Stock::find($id)->fecha)->format('d/m/Y');
