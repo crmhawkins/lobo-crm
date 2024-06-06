@@ -129,11 +129,16 @@ class CreateGastoComponent extends Component
                 'cuenta' => 'nullable',
                 'importeIva' => 'nullable',
                 'total' => 'nullable',
-                'documento' => 'required|mimes:pdf|max:1024',
+                //documento maximo 1gb
+                'documento' => 'required|mimes:pdf|max:max:1048576',
             ],
             // Mensajes de error
             [
                 'nombre.required' => 'El nombre es obligatorio.',
+                //documento max
+                'documento.max' => 'El documento no puede pesar más de 1GB.',
+
+                
             ]
         );
 
