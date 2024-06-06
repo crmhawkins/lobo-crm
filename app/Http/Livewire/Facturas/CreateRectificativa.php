@@ -19,6 +19,7 @@ use App\Models\Iva;
 
 use App\Models\ProductosFacturas;
 use App\Models\StockEntrante;
+use App\Models\StockRegistro;
 
 class CreateRectificativa extends Component
 {
@@ -249,12 +250,19 @@ class CreateRectificativa extends Component
                         
                         //buscamos stock entrante que coincida con product id y lote id
                         $stockEntrante = StockEntrante::where('id', $producto['lote_id'])->first();
+
+                       
                         //dd($stockEntrante);
                         //si encontramos, le sumamos las unidades a descontar que son las unidades a rectificar
                         if($stockEntrante){
-                            $stockEntrante->cantidad = $stockEntrante->unidades + $producto['descontar_ud'];
-                            $stockEntrante->save();
 
+                            $stockEntranteRegistro = new StockRegistro();
+                            $stockEntranteRegistro->stock_entrante_id = $stockEntrante->id;
+                            $stockEntranteRegistro->cantidad = -$producto['descontar_ud'];
+                            $stockEntranteRegistro->tipo = 'devolucion';
+                            $stockEntranteRegistro->factura_id = $facturasSave->id;
+                            $stockEntranteRegistro->motivo = 'Entrada';
+                            $stockEntranteRegistro->save();
                             
                             //creamos un productos_factura con las unidades a descontar
                             $productosFactura = new ProductosFacturas();
@@ -273,9 +281,6 @@ class CreateRectificativa extends Component
                 }
             }
 
-
-
-            
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

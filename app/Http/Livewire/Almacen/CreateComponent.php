@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
 use App\Models\StockSaliente;
+use App\Models\StockRegistro;
 
 class CreateComponent extends Component
 {
@@ -256,8 +257,16 @@ class CreateComponent extends Component
             $almacen = Almacen::find($almacen_id);
 
             if ($stockEntrante) {
-                $stockEntrante->cantidad -= $productoPedido->unidades;
-                $stockEntrante->update();
+
+                $stockRegistro = new StockRegistro();
+                $stockRegistro->stock_entrante_id = $stockEntrante->id;
+                $stockRegistro->cantidad = $productoPedido->unidades;
+                $stockRegistro->tipo = "Venta";
+                $stockRegistro->motivo = "Salida";
+                $stockRegistro->pedido_id = $pedido->id;
+                
+                $stockRegistro->save();
+
                 $stockSaliente = StockSaliente::create([
                     'stock_entrante_id' => $stockEntrante->id,
                     'producto_id' => $producto->id,
@@ -271,6 +280,11 @@ class CreateComponent extends Component
             }
             $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
             $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+            foreach($productoLotes as $productoLote){
+                //sumatorio de cantidad lotes segun el stockRegistro
+                $stockRegistro = StockRegistro::where('stock_entrante_id', $productoLote->id)->sum('cantidad');
+                $productoLote->cantidad = $productoLote->cantidad - $stockRegistro;
+            }
             $sumatorioCantidad = $productoLotes->sum('cantidad');
 
             if ($sumatorioCantidad < $stockSeguridad) {
@@ -420,18 +434,21 @@ class CreateComponent extends Component
             return;
         }
 
+        $cantidadStock = 0;
+        $stockRegistro = StockRegistro::where('stock_entrante_id', $entradaStock->id)->sum('cantidad');
+        $cantidadStock = $entradaStock->cantidad - $stockRegistro;
         // Si el stock del lote es suficiente
-        if ($entradaStock->cantidad >= $this->productos_pedido[$rowIndex]['unidades_old']) {
+        if ($cantidadStock >= $this->productos_pedido[$rowIndex]['unidades_old']) {
             $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
         } else {
             // Si no es suficiente, dividir la cantidad necesaria entre los lotes disponibles
-            $this->productos_pedido[$rowIndex]['unidades_old'] -= $entradaStock->cantidad; // Restar la cantidad que puede proporcionar este lote
+            $this->productos_pedido[$rowIndex]['unidades_old'] -= $cantidadStock; // Restar la cantidad que puede proporcionar este lote
             $this->productos_pedido[] = [
                 'producto_pedido_id' => $this->productos_pedido[$rowIndex]['producto_pedido_id'],
                 'unidades' => 0, // Asignar lo que este lote puede dar
-                'unidades_old' => $entradaStock->cantidad, // Asignar lo que este lote puede dar
+                'unidades_old' => $cantidadStock, // Asignar lo que este lote puede dar
                 'precio_ud' => $this->productos_pedido[$rowIndex]['precio_ud'],
-                'precio_total' => $entradaStock->cantidad * $this->productos_pedido[$rowIndex]['precio_ud'],
+                'precio_total' => $cantidadStock * $this->productos_pedido[$rowIndex]['precio_ud'],
                 'lote_id' => $entradaStock->id
             ];
             $this->alert('warning', 'Cantidad insuficiente en este lote, por favor escanea otro lote para completar la cantidad.', [

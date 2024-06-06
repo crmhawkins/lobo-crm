@@ -110,6 +110,7 @@
                                         infoFiltered: '(filtrado de _MAX_ total registros)',
                                         search: 'Buscar:'
                                     },
+                                
                                 })
                             })" wire:key="{{ rand() }}">
             <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="max-width:100%;" wire:key="{{ rand() }}">
@@ -128,11 +129,11 @@
                 <tbody>
                     @foreach ($producto_lotes as $loteIndex => $lote)
                         <tr style="background-color:#ececec;">
-                            <td>{{ $lote['fecha'] }}</td>
-                            <th>{{ $lote['orden_numero'] }}</th>
-                            <th>{{ $lote['pedido_id'] }}</th>
-                            <th>{{ $lote['almacen'] }}</th>
-                            <th>{{ $lote['producto'] }}</th>
+                            <td data-sort='{{ $lote['order_date'] }}' >{{ $lote['fecha'] }}</td>
+                            <td>{{ $lote['orden_numero'] }}</td>
+                            <td>{{ $lote['pedido_id'] }}</td>
+                            <td>{{ $lote['almacen'] }}</td>
+                            <td>{{ $lote['producto'] }}</td>
                             <td>{{ $lote['cantidad'] }}</td>
                             <td>{{ $lote['cajas']}}</td>
                             <td>{{ $lote['tipo'] }}</td>
@@ -179,6 +180,7 @@
                                         infoFiltered: '(filtrado de _MAX_ total registros)',
                                         search: 'Buscar:'
                                     },
+                                 
                                  })
                                 })" wire:key="{{ rand() }}">
             <table id="datatable-buttons2" class="table table-striped table-bordered dt-responsive nowrap" wire:key="{{ rand() }}">
@@ -195,7 +197,7 @@
                 <tbody>
                     @foreach ($producto_lotes as $loteIndex => $lote)
                         <tr style="background-color:#ececec;">
-                            <td>{{ $lote['fecha'] }}</td>
+                            <td data-sort='{{ $lote['order_date'] }}'>{{ $lote['fecha'] }}</td>
                             <th>{{ $lote['orden_numero'] }}</th>
                             <th>{{ $lote['almacen'] }}</th>
                             <th>{{ $lote['producto'] }}</th>
@@ -219,4 +221,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.datatables.net/datetime-moment/1.1.0/js/dataTables.dateTimeMoment.min.js"></script>
 @endsection

@@ -719,15 +719,21 @@ class EditComponent extends Component
         //         $unidades = $uds_total . ' unidades (' . $pallets . ' pallets)';
         //     }
         // } else {
-            $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
-            $pallets = floor($cajas / $producto->cajas_por_pallet);
-            $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
-            $unidades = '';
-            if ($cajas_sobrantes > 0) {
-                $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
-            } else {
-                $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+
+            if(isset($producto)){
+                $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
+                $pallets = floor($cajas / $producto->cajas_por_pallet);
+                $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
+                $unidades = '';
+                if ($cajas_sobrantes > 0) {
+                    $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets, y ' . $cajas_sobrantes . ' cajas)';
+                } else {
+                    $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
+                }
+            }else{
+                $unidades = 0;  
             }
+                
         // }
 
         return $unidades;
@@ -880,20 +886,24 @@ class EditComponent extends Component
     }
     private function obtenerPrecioPorTipo($producto)
     {
-        $tipoPrecio = $producto->tipo_precio;
-        switch ($tipoPrecio) {
-            case 1:
-                return $this->precio_crema;
-            case 2:
-                return $this->precio_vodka07l;
-            case 3:
-                return $this->precio_vodka175l;
-            case 4:
-                return $this->precio_vodka3l;
-            case 5:
-                return $producto->precio;
-            default:
-                return 0;
+        if(isset($producto)){
+            $tipoPrecio = $producto->tipo_precio;
+            switch ($tipoPrecio) {
+                case 1:
+                    return $this->precio_crema;
+                case 2:
+                    return $this->precio_vodka07l;
+                case 3:
+                    return $this->precio_vodka175l;
+                case 4:
+                    return $this->precio_vodka3l;
+                case 5:
+                    return $producto->precio;
+                default:
+                    return 0;
+            }
+        }else{
+            return 0;
         }
     }
 
@@ -952,14 +962,16 @@ class EditComponent extends Component
             $producto = Productos::find($productoPedido['producto_pedido_id']);
             $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
             //ver que iva tiene el producto
-            $iva = Iva::find($producto->iva_id);
-            if($iva){
-                //dd($iva);
-                if($this->descuento == 1){
-                    //dd($this->descuento);
-                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
-                }else{
-                    $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+            if(isset($producto)){
+                $iva = Iva::find($producto->iva_id);
+                if($iva){
+                    //dd($iva);
+                    if($this->descuento == 1){
+                        //dd($this->descuento);
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                    }else{
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                    }
                 }
             }
             

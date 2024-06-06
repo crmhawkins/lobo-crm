@@ -225,8 +225,9 @@
                                             <input type="text" class="form-control" id="empresa_transporte" wire:model="empresa_transporte">
                                         </div>
                                     </div>
+                                   
                                     
-                                   <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success">Pedido en Ruta</button>
+                                   <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success mt-2">Pedido en Ruta</button>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -299,10 +300,14 @@
     </div>
 </div>
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
     <script>
     function enRuta(id) {
         // Suponiendo que tu descarga se realiza aquí
+
         window.livewire.emit('enRuta', id);
+        //window.livewire.emit('enRuta', id);
         setTimeout(() => {
             location.reload()
         }, 1000);
@@ -331,6 +336,8 @@
             // Suponiendo que tu descarga se realiza aquí
             window.livewire.emit('comprobarStockPedido', id);
         }
+
+        
     </script>
     <script src="../assets/js/jquery.slimscroll.js"></script>
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">

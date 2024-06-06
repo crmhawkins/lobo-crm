@@ -13,11 +13,11 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\StockSaliente;
+use App\Models\StockRegistro;
 
 class IndexComponent extends Component
 
 {
-
     use LivewireAlert;
     public $productos;
     public $almacen_id;
@@ -56,12 +56,35 @@ class IndexComponent extends Component
             if($this->producto_seleccionado == 0){
 
                 $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
+
+                foreach ($this->producto_lotes as $lote) {
+                    //eliminar los que producto_lotes - stockRegistro->sum <= 0
+                      $stockRegistro = StockRegistro::where('stock_entrante_id', $lote->id)->sum('cantidad');
+                         if(($lote->cantidad - $stockRegistro) <= 0){
+                             $this->producto_lotes = $this->producto_lotes->where('id', '!=', $lote->id);
+                         }else{
+                            //la cantidad del lote debe ser la cantidad del lote - la cantidad de stockRegistro
+                            $lote->cantidad = $lote->cantidad - $stockRegistro;
+                         }
+                 }
+
                 $this->productos_lotes_salientes = StockSaliente::where('cantidad_salida', '>', 0)->get();
 
             }else{
                 $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
                 ->where('cantidad','>', 0)
                 ->get();
+
+                foreach ($this->producto_lotes as $lote) {
+                    //eliminar los que producto_lotes - stockRegistro->sum <= 0
+                      $stockRegistro = StockRegistro::where('stock_entrante_id', $lote->id)->sum('cantidad');
+                         if(($lote->cantidad - $stockRegistro) <= 0){
+                             $this->producto_lotes = $this->producto_lotes->where('id', '!=', $lote->id);
+                         }else{
+                            //la cantidad del lote debe ser la cantidad del lote - la cantidad de stockRegistro
+                            $lote->cantidad = $lote->cantidad - $stockRegistro;
+                         }
+                 }
 
                 $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
                 ->where('cantidad_salida', '>', 0)->get();
@@ -75,6 +98,17 @@ class IndexComponent extends Component
                 ->where('cantidad','>', 0)
                 ->get();
                 
+                foreach ($this->producto_lotes as $lote) {
+                    //eliminar los que producto_lotes - stockRegistro->sum <= 0
+                      $stockRegistro = StockRegistro::where('stock_entrante_id', $lote->id)->sum('cantidad');
+                         if(($lote->cantidad - $stockRegistro) <= 0){
+                             $this->producto_lotes = $this->producto_lotes->where('id', '!=', $lote->id);
+                         }else{
+                            //la cantidad del lote debe ser la cantidad del lote - la cantidad de stockRegistro
+                            $lote->cantidad = $lote->cantidad - $stockRegistro;
+                         
+                         }
+                 }
                 //productos_lotes_salientes es igual a los productos salientes con el id de los productos Lote  que estan en el almacen, en este caso 
                 //los productos_lotes_salientes tienen en comun el stock_entrante_id con los productos_lotes
                 //dd($this->producto_lotes->pluck('id'));
@@ -87,6 +121,17 @@ class IndexComponent extends Component
                 ->whereIn('stock_id', $entradas_almacen)
                 ->where('cantidad','>', 0)
                 ->get();
+
+                foreach ($this->producto_lotes as $lote) {
+                    //eliminar los que producto_lotes - stockRegistro->sum <= 0
+                      $stockRegistro = StockRegistro::where('stock_entrante_id', $lote->id)->sum('cantidad');
+                         if(($lote->cantidad - $stockRegistro) <= 0){
+                             $this->producto_lotes = $this->producto_lotes->where('id', '!=', $lote->id);
+                         }else{
+                            //la cantidad del lote debe ser la cantidad del lote - la cantidad de stockRegistro
+                            $lote->cantidad = $lote->cantidad - $stockRegistro;
+                         }
+                 }
 
                 $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
                 ->whereIn('stock_entrante_id', $this->producto_lotes->pluck('id'))

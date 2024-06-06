@@ -9,6 +9,7 @@ use App\Models\StockEntrante;
 use App\Models\StockSaliente;
 use App\Models\Almacen;
 use App\Models\Productos;
+use App\Models\StockRegistro;
 
 class Historial extends Component
 {
@@ -22,6 +23,8 @@ class Historial extends Component
     public $productos_lotes_salientes;
     public $almacenes;
     public $productos;
+    public $stockRegistro;
+
 
     public function formatFecha($id)
     {
@@ -36,14 +39,16 @@ class Historial extends Component
 
             $arrayProductosLotes = [];
             foreach ($this->producto_lotes as $loteIndex => $lote) {
+                if($lote->stockEntrante == null) continue;
                 $arrayProductosLotes[] = [
-                    'lote_id' => $lote['lote_id'],
-                    'orden_numero' => $lote['orden_numero'],
-                    'almacen' => $this->almacen($lote),
-                    'producto' => $this->getProducto($lote['producto_id']),
-                    'fecha' => $this->formatFecha($lote['stock_id']),
-                    'cantidad' => $lote['cantidad'],
-                    'cajas' => floor($lote['cantidad']/ $this->getUnidadeCaja($lote['producto_id']) ),
+                    'lote_id' => $lote->stockEntrante->lote_id,
+                    'orden_numero' => $lote->stockEntrante->orden_numero,
+                    'almacen' => $this->almacen($lote->stockEntrante),
+                    'producto' => $this->getProducto($lote->stockEntrante->producto_id),
+                    'fecha' => Carbon::parse($lote->created_at)->format('d/m/Y'),
+                    'order_date' => Carbon::parse($lote->created_at)->format('Ymd'),
+                    'cantidad' => abs($lote->cantidad),
+                    'cajas' => floor(abs($lote->cantidad)/ $this->getUnidadeCaja($lote->stockEntrante->producto_id) ),
                 ];
     
             }
@@ -86,6 +91,7 @@ class Historial extends Component
                             'almacen' => $this->getAlmacen($salida->almacen_origen_id) ?? 'Almacen no asignado',
                             'producto' => $this->getProducto($salida->producto_id),
                             'fecha' => Carbon::parse($salida->fecha_salida)->format('d/m/Y'),
+                            'order_date' => Carbon::parse($salida->fecha_salida)->format('Ymd'), // No hay fecha de pedido en la tabla 'salidas
                             'cantidad' => $salida->cantidad_salida,
                             'cajas' => floor($salida->cantidad_salida / $this->getUnidadeCaja($salida->producto_id)),
                             'tipo' => $salida->pedido_id ? 'Venta' : 'Salida',
@@ -107,6 +113,7 @@ class Historial extends Component
                             'almacen' => $modificacion->almacen_id ? $this->getAlmacen($modificacion->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
                             'producto' => $this->getProducto($stock->entrantes->producto_id),
                             'fecha' => Carbon::parse($modificacion->fecha)->format('d/m/Y'),
+                            'order_date' => Carbon::parse($modificacion->fecha)->format('Ymd'), // No hay fecha de pedido en la tabla 'modificaciones
                             'cantidad' => $modificacion->cantidad,
                             'cajas' => floor($modificacion->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
                             'tipo' => 'Modificación',
@@ -128,6 +135,7 @@ class Historial extends Component
                             'almacen' => $rotura->almacen_id ? $this->getAlmacen($rotura->almacen_id) : "Almacén no asignado.", // Ajustar según tu lógica de almacenamiento
                             'producto' => $this->getProducto($stock->entrantes->producto_id),
                             'fecha' => Carbon::parse($rotura->fecha)->format('d/m/Y'),
+                            'order_date' => Carbon::parse($rotura->fecha)->format('Ymd'), // No hay fecha de pedido en la tabla 'roturas
                             'cantidad' => $rotura->cantidad,
                             'cajas' => floor($rotura->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
                             'tipo' => 'Rotura',
@@ -155,6 +163,14 @@ class Historial extends Component
        
     }
 
+    public function getAlmacenId($lote){
+
+        if($lote == null) return null;
+        if(Stock::where('id', $lote->stock_id)->first() == null) return null;
+        
+        return Stock::where('id', $lote->stock_id)->first()->almacen_id;
+    }
+
 
     public function setLotes()
     {
@@ -170,43 +186,47 @@ class Historial extends Component
         if($this->almacen_id == null){
             if($this->producto_seleccionado == 0){
 
-                $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
-                $this->productos_lotes_salientes = StockSaliente::where('cantidad_salida', '>', 0)->get();
-
-            }else{
-                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
-                ->where('cantidad','>', 0)
+                // $this->producto_lotes = StockEntrante::where('cantidad','>', 0)->get();
+                //hay que tener en cuenta que el stock ahora tiene que tener en cuenta el registro. StockEntrante es la cantidad inicial y stockRegistro es lo que se ha hecho con ese stock
+                $this->producto_lotes = StockRegistro::with('stockEntrante')
+                ->where('motivo', 'Entrada') // Filtrar por motivo 'Entrada'
                 ->get();
+                //  dd($producto_lotes);
+                //necesito que productos lotes sea un join entre stockEntrante y stockRegistro, donde se coja la cantidad de stockRegistro y las demas columnas de stockEntrante
+            }else{
+                
 
-                $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
-                ->where('cantidad_salida', '>', 0)->get();
-
+                $this->producto_lotes = StockRegistro::with(['stockEntrante' => function ($query) {
+                    $query->where('producto_id', $this->producto_seleccionado); // Filtrar por producto_id
+                }])
+                ->where('motivo', 'Entrada') // Filtrar por motivo 'Entrada' en StockRegistro
+                ->get();
             }
         }else{
             if($this->producto_seleccionado == 0){
 
-                $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
-                $this->producto_lotes = StockEntrante::whereIn('stock_id', $entradas_almacen)
-                ->where('cantidad','>', 0)
+                $this->producto_lotes = StockRegistro::with('stockEntrante')
+                ->where('motivo', 'Entrada') // Filtrar por motivo 'Entrada' en StockRegistro
                 ->get();
-                
-                //productos_lotes_salientes es igual a los productos salientes con el id de los productos Lote  que estan en el almacen, en este caso 
-                //los productos_lotes_salientes tienen en comun el stock_entrante_id con los productos_lotes
-                //dd($this->producto_lotes->pluck('id'));
-                $this->productos_lotes_salientes = StockSaliente::whereIn('stock_entrante_id', $this->producto_lotes->pluck('id'))->where('cantidad_salida', '>', 0)->get();
+
+                //recorrer producto_lotes y filtrar por almacen_id
+                $this->producto_lotes = $this->producto_lotes->filter(function ($value, $key) {
+                    //dd($this->getAlmacenId($value->stockEntrante) , $this->almacen_id);
+                    return $this->getAlmacenId($value->stockEntrante) == $this->almacen_id;
+                });
 
 
             }else{
-                $entradas_almacen = Stock::where('almacen_id', $this->almacen_id)->get()->pluck('id');
-                $this->producto_lotes = StockEntrante::where('producto_id', $this->producto_seleccionado)
-                ->whereIn('stock_id', $entradas_almacen)
-                ->where('cantidad','>', 0)
+                $this->producto_lotes = StockRegistro::with(['stockEntrante' => function ($query) {
+                    $query->where('producto_id', $this->producto_seleccionado); // Filtrar por producto_id
+                }])
+                ->where('motivo', 'Entrada') // Filtrar por motivo 'Entrada' en StockRegistro
                 ->get();
 
-                $this->productos_lotes_salientes = StockSaliente::where('producto_id', $this->producto_seleccionado)
-                ->whereIn('stock_entrante_id', $this->producto_lotes->pluck('id'))
-                ->where('cantidad_salida', '>', 0)->get();
-                //dd($this->productos_lotes_salientes);
+                //recorrer producto_lotes y filtrar por almacen_id
+                $this->producto_lotes = $this->producto_lotes->filter(function ($value, $key) {
+                    return $this->getAlmacenId($value->stockEntrante) == $this->almacen_id;
+                });
             }
 
         }

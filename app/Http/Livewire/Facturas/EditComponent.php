@@ -21,7 +21,7 @@ use App\Models\StockEntrante;
 use App\Models\ProductosFacturas;
 use Carbon\Carbon;
 use App\Models\ServiciosFacturas;
-
+use App\Models\StockRegistro;
 
 
 class EditComponent extends Component
@@ -271,16 +271,28 @@ class EditComponent extends Component
                 $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
                 if($producto_factura['cantidad'] > $producto_pedido['descontar_ud']){
                     //si la cantidad de la factura es mayor que la cantidad a descontar, se añade la diferencia al stock
-                    $stockEntrante->cantidad = $stockEntrante->cantidad - ($producto_factura['cantidad'] - $producto_pedido['descontar_ud']);
-                    $stockEntrante->save();
+                    $registroStock = new StockRegistro();
+                    $registroStock->stock_entrante_id = $stockEntrante->id;
+                    $registroStock->cantidad = ($producto_factura['cantidad'] - $producto_pedido['descontar_ud']);
+                    $registroStock->tipo = "devolucion editada";
+                    $registroStock->factura_id = $this->facturas->id;
+                    $registroStock->motivo = "Salida";
+                    $registroStock->save();
+
+                    
                     //actualizar ProductoFactura con la cantidad descontada
                     $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
                     $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
                     $producto_factura->save();
                 }else if($producto_factura['cantidad'] < $producto_pedido['descontar_ud']){
                     //si la cantidad de la factura es menor que la cantidad a descontar, se resta la diferencia al stock
-                    $stockEntrante->cantidad = $stockEntrante->cantidad + ($producto_pedido['descontar_ud'] - $producto_factura['cantidad']);
-                    $stockEntrante->save();
+                    $registroStock = new StockRegistro();
+                    $registroStock->stock_entrante_id = $stockEntrante->id;
+                    $registroStock->cantidad = -($producto_pedido['descontar_ud'] - $producto_factura['cantidad']);
+                    $registroStock->tipo = "devolucion editada";
+                    $registroStock->motivo = "Entrada";
+                    $registroStock->factura_id = $this->facturas->id;
+                    $registroStock->save();
                     $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
                     $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
                     $producto_factura->save();
@@ -296,13 +308,22 @@ class EditComponent extends Component
                 if(!$producto_factura && isset($producto_pedido['descontar_ud']) && $producto_pedido['descontar_ud'] > 0){
                     $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
                     if($stockEntrante){
+
+                        $registroStock = new StockRegistro();
+                        $registroStock->stock_entrante_id = $stockEntrante->id;
+                        $registroStock->cantidad = - $producto_pedido['descontar_ud'];
+                        $registroStock->tipo = "devolucion";
+                        $registroStock->motivo = "Entrada";
+                        $registroStock->factura_id = $this->facturas->id;
+                        $registroStock->save();
                         
-                        $stockEntrante->cantidad = $stockEntrante->cantidad + $producto_pedido['descontar_ud'];
-                        $stockEntrante->save();
+
                         $this->productos_factura->push([
                             'producto_pedido_id' => $producto_pedido['producto_pedido_id'],
                                 'cantidad' => $producto_pedido['descontar_ud'],
                         ]);
+
+
 
                         $productosFactura = new ProductosFacturas();
                         $productosFactura->factura_id = $this->facturas->id;
@@ -567,6 +588,13 @@ class EditComponent extends Component
 
         $factura-> factura_id = null;
         $factura->save();
+
+        //borrar registro que apunten a esta factura
+
+        $registro = StockRegistro::where('factura_id', $factura->id)->get();
+        foreach($registro as $reg){
+            $reg->delete();
+        }
 
         //productos_factura
         $productos_factura = ProductosFacturas::where('factura_id', $factura->id)->get();

@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\Models\RoturaStock;
 use App\Models\ModificacionesStock;
 use App\Models\User;
+use App\Models\StockRegistro;
 
 class EditComponent extends Component
 {
@@ -37,7 +38,7 @@ class EditComponent extends Component
     public $motivo;
     public $roturas = [];
     public $modificaciones = [];
-
+    public $registroStock;
 
     public $roturaStockItem;
     public $addStockItem;
@@ -48,7 +49,10 @@ class EditComponent extends Component
         $this->stockentrante = StockEntrante::find( $this->identificador);
         $this->stock = Stock::find(  $this->stockentrante->stock_id);
         $this->estado = $this->stock->estado;
-        $this->cantidad = $this->stockentrante->cantidad;
+        $this->registroStock = StockRegistro::where('stock_entrante_id', $this->stockentrante->id)->get();
+
+        $this->cantidad = $this->stockentrante->cantidad - $this->registroStock->sum('cantidad');
+        //dd($this->registroStock->sum('cantidad'));
         $this->qr_id = $this->stock->qr_id;
         $this->fecha = $this->stock->fecha;
         $this->observaciones = $this->stock->observaciones;
@@ -89,10 +93,6 @@ class EditComponent extends Component
          }
 
 
-        $productUpdate = $this->stockentrante->update([
-            'cantidad' => $this->cantidad,
-        ]);
-
         $this->stock->update([
             'estado' =>  $this->estado,
             'observaciones' => $this->observaciones,
@@ -108,6 +108,14 @@ class EditComponent extends Component
             $roturaStock->almacen_id = $this->almacen_id;
             $roturaStock->user_id = Auth::user()->id;
             $roturaStock->save();
+
+            $registro = new StockRegistro();
+            $registro->stock_entrante_id = $this->stockentrante->id;
+            $registro->cantidad = $this->roturaStockItem;
+            $registro->tipo = 'Rotura';
+            $registro->motivo = 'Salida';
+            $registro->save();
+
             $this->roturaStockItem = 0;
             $this->motivo = null;
         }elseif($this->addStockItem > 0){
@@ -120,6 +128,14 @@ class EditComponent extends Component
             $anadirStock->almacen_id = $this->almacen_id;
             $anadirStock->user_id = Auth::user()->id;
             $anadirStock->save();
+
+            $registro = new StockRegistro();
+            $registro->stock_entrante_id = $this->stockentrante->id;
+            $registro->cantidad = -$this->addStockItem;
+            $registro->tipo = 'Modificacion';
+            $registro->motivo = 'Entrada';
+            $registro->save();
+
             $this->addStockItem = 0;
             $this->motivo = null;
         }elseif($this->deleteStockItem > 0){
@@ -132,13 +148,20 @@ class EditComponent extends Component
             $restarStock->almacen_id = $this->almacen_id;
             $restarStock->user_id = Auth::user()->id;
             $restarStock->save();
+
+            $registro = new StockRegistro();
+            $registro->stock_entrante_id = $this->stockentrante->id;
+            $registro->cantidad = $this->deleteStockItem;
+            $registro->tipo = 'Modificacion';
+            $registro->motivo = 'Salida';
+            $registro->save();
+
             $this->deleteStockItem = 0;
             $this->motivo = null;
 
         }
 
 
-        if ($productUpdate) {
             $this->alert('success', '¡Stock actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -148,13 +171,7 @@ class EditComponent extends Component
                 'confirmButtonText' => 'ok',
                 'timerProgressBar' => true,
             ]);
-        } else {
-            $this->alert('error', '¡No se ha podido guardar la información del Stock!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-            ]);
-        }
+       
 
     }
 

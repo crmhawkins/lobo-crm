@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Models\Alertas;
 use App\Models\Almacen;
+use App\Models\StockRegistro;
 
 class IndexComponent extends Component
 {
@@ -147,9 +148,10 @@ class IndexComponent extends Component
         $this->pedidoEnRutaId = $pedidoId;
     }
 
+ 
+
     public function enRuta()
     {
-
 
         // Validación de datos
         $validatedData = $this->validate(
@@ -170,7 +172,9 @@ class IndexComponent extends Component
         $pedido = Pedido::find($identificador);
         $pedidosSave = $pedido->update(['estado' => 8,
                                         'fecha_salida' => $this->fecha_salida,
-                                        'empresa_transporte' => $this->empresa_transporte]);
+                                        'empresa_transporte' => $this->empresa_transporte,
+                                        
+                                    ]);
 
         if ($pedidosSave) {
             Alertas::create([
@@ -289,11 +293,41 @@ class IndexComponent extends Component
                                 $query->where('almacen_id', $almacenId);
                             })
                             ->where('producto_id', $productoPedido->producto_pedido_id)
-                            ->sum('cantidad');
+                            ->where('cantidad', '>', 0)
+                            ->get();
 
-            $mensaje .= "Producto: {$producto->nombre}, Requerido: {$productoPedido->unidades}, En Stock: {$stockTotal} - ";
+            //dd($stockTotal);
+            $stockRegistroTotal = 0;
+            //sumar el stock registro
+            $total = 0;
+            // $arr = [];
+            // $arr2 = [];
+            foreach ($stockTotal as $stock) {
+                
+                $stockRegistro = StockRegistro::where('stock_entrante_id', $stock->id)->get();
+                if($stockRegistro->count() > 0  ){
+                    foreach ($stockRegistro as $stockReg) {
+                        $stockRegistroTotal += $stockReg->cantidad;
+                        
+                    }
+                    if($stock->cantidad - $stockRegistroTotal > 0){
+                        $total += $stock->cantidad - $stockRegistroTotal;
+                       // $arr[] = $stock;
+                    }else{
+                        //dd($stock);
+                    }
+                }else{
+                    //$arr2[] = $stock;
+                    $total += $stock->cantidad;
+                }
 
-            if ($stockTotal >= $productoPedido->unidades) {
+            }
+            
+            $stockTotal = $stockTotal->sum('cantidad') - $stockRegistroTotal;
+           
+
+            $mensaje .= "Producto: {$producto->nombre}, Requerido: {$productoPedido->unidades}, En Stock: {$total} - ";
+            if ($total >= $productoPedido->unidades) {
                 $mensaje .= "Stock suficiente.\n";
             } else {
                 $mensaje .= "Stock insuficiente.\n";
