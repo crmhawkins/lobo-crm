@@ -130,7 +130,7 @@ class CreateGastoComponent extends Component
                 'importeIva' => 'nullable',
                 'total' => 'nullable',
                 //documento maximo 1gb
-                'documento' => 'required|mimes:pdf|max:max:1048576',
+                'documento' => 'required|mimes:pdf|max:1048576',
             ],
             // Mensajes de error
             [
