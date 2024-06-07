@@ -484,7 +484,9 @@ class IndexComponent extends Component
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => false,
+            'timer' => null,
+            //que el alert no se cierre
+
         ]);
     }
     public function confirmed()
