@@ -39,19 +39,19 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 });">
                                 <label for="select2-cliente">Cliente</label>
                                 @if ($canEdit)
-                                <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id">
-                                    <option value=""></option>
-                                    @foreach ($clientes as $client)
-                                        <option value="{{ $client->id }}">{{ $client->nombre }}</option>
-                                    @endforeach
-                                </select>
+                                    <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id">
+                                        <option value=""></option>
+                                        @foreach ($clientes as $client)
+                                            <option value="{{ $client->id }}">{{ $client->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 @else
-                                <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id" disabled>
-                                    <option value=""></option>
-                                    @foreach ($clientes as $client)
-                                        <option value="{{ $client->id }}">{{ $client->nombre }}</option>
-                                    @endforeach
-                                </select>
+                                    <select class="form-control" name="cliente_id" id="select2-cliente" wire:model="cliente_id" disabled>
+                                        <option value=""></option>
+                                        @foreach ($clientes as $client)
+                                            <option value="{{ $client->id }}">{{ $client->nombre }}</option>
+                                        @endforeach
+                                    </select>
                                 @endif
                             </div>
                         </div>
@@ -63,27 +63,26 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <label for="estado">Estado</label>
                             <input type="text" value="{{ $this->getEstadoNombre() }}" class="form-control" disabled>
                         </div>
-
                     </div>
 
                     <div class="form-row justify-content-center">
                         <div class="form-group col-md-6" wire:ignore>
                             <div x-data="" x-init="$('#select2-tipo').select2();
-                            $('#select2-tipo').on('change', function(e) {
+                                $('#select2-tipo').on('change', function(e) {
                                 var data = $('#select2-tipo').select2('val');
                                 @this.set('tipo_pedido_id', data);
-                            });">
+                                });">
                                 <label for="fechaVencimiento">Tipo de pedido</label>
                                 @if ($canEdit)
-                                <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id">
-                                    <option value="0">Albarán y factura</option>
-                                    <option value="1">Albarán sin factura</option>
-                                </select>
+                                    <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id">
+                                        <option value="0">Albarán y factura</option>
+                                        <option value="1">Albarán sin factura</option>
+                                    </select>
                                 @else
-                                <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id" disabled>
-                                    <option value="0">Albarán y factura</option>
-                                    <option value="1">Albarán sin factura</option>
-                                </select>
+                                    <select class="form-control" name="estado" id="select2-tipo" wire:model= "tipo_pedido_id" disabled>
+                                        <option value="0">Albarán y factura</option>
+                                        <option value="1">Albarán sin factura</option>
+                                    </select>
                                 @endif
                             </div>
                         </div>
@@ -98,19 +97,19 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     });">
                                     <label for="fechaVencimiento">Almacen</label>
                                     @if ($canEdit || $mostrarElemento)
-                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
-                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
-                                        @foreach ($almacenes as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
-                                        @endforeach
-                                    </select>
+                                        <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
+                                            <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                            @foreach ($almacenes as $presup)
+                                                <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                            @endforeach
+                                        </select>
                                     @else
-                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
-                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
-                                        @foreach ($almacenes as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
-                                        @endforeach
-                                    </select>
+                                        <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                            <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                            @foreach ($almacenes as $presup)
+                                                <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                            @endforeach
+                                        </select>
                                     @endif
                                 </div>
                             </div>
@@ -140,23 +139,21 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 de envío</h5>
                         </div>
-                    @if($fecha_salida != null && $empresa_transporte != null)
-                        <div class="form-group col-md-5">
-                            <label for="localidad_entrega">Fecha de Salida @if($estado ==8)<span class="badge badge-warning">En ruta</span> @endif</label>
-                            <input type="date" wire:model="fecha_salida" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-md-1">
-                            &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
-                            <label for="localidad_entrega">Empresa de transporte @if($estado ==8)<span class="badge badge-warning">En ruta</span>@endif</label>
-                            <input type="text" wire:model="empresa_transporte" class="form-control" readonly>
-                        </div>
-                    @endif
+                        @if($fecha_salida != null && $empresa_transporte != null)
+                            <div class="form-group col-md-5">
+                                <label for="localidad_entrega">Fecha de Salida @if($estado ==8)<span class="badge badge-warning">En ruta</span> @endif</label>
+                                <input type="date" wire:model="fecha_salida" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-md-1">
+                                &nbsp;
+                            </div>
+                            <div class="form-group col-md-5">
+                                <label for="localidad_entrega">Empresa de transporte @if($estado ==8)<span class="badge badge-warning">En ruta</span>@endif</label>
+                                <input type="text" wire:model="empresa_transporte" class="form-control" readonly>
+                            </div>
+                        @endif
                     </div>
                     <div class="form-row justify-content-center">
-                       
-                        
                         <div class="form-group col-md-5">
                             <label for="localidad_entrega">Dirección</label>
                             <input type="text" wire:model="direccion_entrega" class="form-control" readonly>
@@ -220,106 +217,111 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
                                 Lista de productos
                                 @if ($canEdit)
-                                <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#addProductModal">Añadir</button>
                                 @else
-                                <button type="button" class="btn btn-secondary"  style="align-self: end !important;">Añadir</button>
+                                    <button type="button" class="btn btn-secondary"  style="align-self: end !important;">Añadir</button>
                                 @endif
                             </h5>
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
-                                <div class="table-responsive">
-                                    <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                        <thead>
-                                            <tr>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio unidad</th>
-                                                 <th>Precio total</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productos_pedido as $productoIndex => $producto)
-                                            <tr>
-                                                    <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
-                                                    </td>
-                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
-                                                    @if ($canEdit)
-                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block ; min-width: 80px;">€</td>
-                                                    @else
-                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block; min-width: 80px;" disabled>€</td>
-                                                    @endif
-                                                    <td>{{ $producto['precio_total']}} €</td>
-                                                    @if ($canEdit)
-                                                    <td class="">
-                                                        @if(Auth::user()->role != 3 && Auth::user()->role != 2)
-                                                            <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
-                                                            <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
-                                                        @endif
-                                                    </td>
-                                                    @else
-                                                    <td class="d-flex flex-nowrap">
-                                                        <button type="button" class="btn btn-secondary">X</button>
-                                                        <button class="btn btn-info">Editar</button>
-                                                    </td>
-                                                    @endif
-
+                                    <div class="table-responsive">
+                                        <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio unidad</th>
+                                                    <th>Precio total</th>
+                                                    <th>Acciones</th>
                                                 </tr>
-                                            @endforeach
-                                            <tr>
-                                                <th colspan="3">Precio estimado</th>
-                                                <th>{{ $precioSinDescuento }} €</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productos_pedido as $productoIndex => $producto)
+                                                    <tr>
+                                                        <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}
+                                                        </td>
+                                                        <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                        @if ($canEdit)
+                                                            <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block ; min-width: 80px;">€</td>
+                                                        @else
+                                                            <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block; min-width: 80px;" disabled>€</td>
+                                                        @endif
+                                                        <td>{{ $producto['precio_total']}} €</td>
+                                                        @if ($canEdit)
+                                                            <td class="">
+                                                                @if(Auth::user()->role != 3 && Auth::user()->role != 2)
+                                                                    <button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{ $productoIndex }}')">X</button>
+                                                                    <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#editProductModal" wire:click="selectProduct({{$producto['producto_pedido_id']}}, {{ $producto['precio_ud'] }}, {{ $producto['unidades'] }}, {{ $productoIndex }})">Editar</button>
+                                                                @endif
+                                                            </td>
+                                                        @else
+                                                            <td class="d-flex flex-nowrap">
+                                                                <button type="button" class="btn btn-secondary">X</button>
+                                                                <button class="btn btn-info">Editar</button>
+                                                            </td>
+                                                        @endif
+                                                    </tr>
+                                                @endforeach
+                                                <tr>
+                                                    <th colspan="3">Precio estimado</th>
+                                                    <th>{{ $precioSinDescuento }} €</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-5 d-flex align-items-center">
+                        <div class="d-flex col-12">
                             <div class="form-group col-md-6 d-flex align-items-center">
-                            <label for="descuento">Descuento</label>
-                            @if ($canEdit)
-                            <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
-                            @else
-                            <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;" disabled>
-                            @endif
-                        </div>
-                            @if ($descuento)
-                            <div class="form-group col-md-6 d-flex flex-column justify-content-center">
-                                <label for="porcentaje_descuento">Porcentaje descuento</label>
+                                <div class="form-group col-md-4 d-flex align-items-center">
+                                <label for="descuento">Descuento</label>
                                 @if ($canEdit)
-                                    <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                                    <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
                                 @else
-
-                                <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento" disabled>
+                                    <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;" disabled>
                                 @endif
                             </div>
-                         @endif
-                        </div>
-                        <div class="form-group col-md-1">
-                           &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
-                            <label for="fecha">Precio final</label>
-                            <input type="text" wire:model="precio" class="form-control" readonly>
+                            @if ($descuento)
+                                <div class="form-group col-md-4 d-flex flex-column justify-content-center">
+                                    <label for="porcentaje_descuento">Porcentaje descuento</label>
+                                    @if ($canEdit)
+                                        <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
+                                    @else
+
+                                    <input type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento" disabled>
+                                    @endif
+                                </div>
+                            @endif
+                            <div class="form-group col-md-4">
+                                <label for="fecha">Gastos de envío</label>
+                                <input type="number" min=0 wire:model="gastos_envio" wire:change='setPrecioEstimado()' class="form-control" >
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="fecha">Empresa de transporte</label>
+                                <input type="text" wire:model="transporte" class="form-control" >
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="fecha">Precio final</label>
+                                <input type="text" wire:model="precio" class="form-control" readonly>
+                            </div>
                         </div>
                     </div>
                     @if (count($productos_pedido) > 0)
-                    <div class="d-flex col-12">
-                        <div class="form-group col-md-4">
-                            <label for="subtotal">Subtotal</label>
-                            <input type="text" wire:model="subtotal" class="form-control" readonly>
+                        <div class="d-flex col-12">
+                            <div class="form-group col-md-4">
+                                <label for="subtotal">Subtotal</label>
+                                <input type="text" wire:model="subtotal" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="subtotal">Descuento total</label>
+                                <input type="text" wire:model="descuento_total" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="subtotal">Total Iva</label>
+                                <input type="text" wire:model="iva_total" class="form-control" readonly>
+                            </div>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="subtotal">Descuento total</label>
-                            <input type="text" wire:model="descuento_total" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="subtotal">Total Iva</label>
-                            <input type="text" wire:model="iva_total" class="form-control" readonly>
-                        </div>
-                    </div>
                     @endif
                 </div>
 
@@ -340,13 +342,13 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <div class="card border border-dark border-1"
                                                 style="margin-bottom: 5px !important">
                                                 <div class="card-body"
-                                                    style="
-                                                display: flex;
-                                                flex-direction: column;
-                                                flex-wrap: wrap;
-                                                align-items: center;
-                                                justify-content: center;
-                                            ">
+                                                            style="
+                                                        display: flex;
+                                                        flex-direction: column;
+                                                        flex-wrap: wrap;
+                                                        align-items: center;
+                                                        justify-content: center;
+                                                    ">
                                                     <h2 class="card-title mt-0 font-32"
                                                         style="text-align: center; margin-bottom: -0.25rem !important;">
                                                         {{ $this->getProductoNombre() }}</h2>
@@ -371,7 +373,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             @this.set('unidades_caja_producto', 0);
                                             @this.set('unidades_producto', 0);
                                             console.log('data');
-                                        });">
+                                            });">
                                             <select name="producto" id="select2-producto"
                                                 wire:model="producto_seleccionado" style="width: 100% !important">
                                                 <option value="{{ null }}">-- Selecciona un producto --
@@ -446,15 +448,15 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     <div class="row justify-content-center">
                                         <div class="col-md-12">
                                             <div class="card border border-dark border-1"
-                                                style="margin-bottom: 5px !important">
+                                                    style="margin-bottom: 5px !important">
                                                 <div class="card-body"
-                                                    style="
-                                                display: flex;
-                                                flex-direction: column;
-                                                flex-wrap: wrap;
-                                                align-items: center;
-                                                justify-content: center;
-                                            ">
+                                                        style="
+                                                    display: flex;
+                                                    flex-direction: column;
+                                                    flex-wrap: wrap;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    ">
                                                     <h2 class="card-title mt-0 font-32"
                                                         style="text-align: center; margin-bottom: -0.25rem !important;">
                                                         {{ $this->getProductoNombre() }}</h2>
@@ -472,14 +474,14 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     </div>
                                     <div class="col-md-10" wire:ignore>
                                         <div x-data="" x-init="$('#select2-producto').select2();
-                                        $('#select2-producto').on('change', function(e) {
-                                            var data = $('#select2-producto').select2('val');
-                                            @this.set('producto_seleccionado', data);
-                                            @this.set('unidades_pallet_producto', 0);
-                                            @this.set('unidades_caja_producto', 0);
-                                            @this.set('unidades_producto', 0);
-                                            console.log('data');
-                                        });">
+                                            $('#select2-producto').on('change', function(e) {
+                                                var data = $('#select2-producto').select2('val');
+                                                @this.set('producto_seleccionado', data);
+                                                @this.set('unidades_pallet_producto', 0);
+                                                @this.set('unidades_caja_producto', 0);
+                                                @this.set('unidades_producto', 0);
+                                                console.log('data');
+                                            });">
                                             <input type="text" value="{{ $productoEditarNombre}}" class="form-control" disabled>
                                             
                                         </div>
@@ -534,52 +536,53 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Opciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
-                        </div>
-                        @if(Auth::user()->role != 3 && Auth::user()->role != 2)
-
-                            <div class="col-12">
-                                <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                    datos del
-                                    pedido</button>
-                            </div>
-                        @endif
-                           
-                        @if ($bloqueado)
-                            @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)
-                                <div class="col-12">
-                                    <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
-                                </div>
-                                <div class="col-12">
-                                    <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
-                                </div>
-                            @endif
-                        @else
-                            @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento || $this->getEstadoNombre() == 'Recibido' && $EsAdmin)
-                                <div class="col-12">
-                                    <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
-                                </div>
-                                <div class="col-12">
-                                    <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
-                                </div>
-                            @endif
-                        @endif
-                        @if ($canEdit)
-                            <div class="col-12">
-                                <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
-                            </div>
-                        @endif
-
+    </div>
+    <div class="col-md-3">
+        <div class="card m-b-30">
+            <div class="card-body">
+                <h5>Opciones</h5>
+                <div class="row">
+                    <div class="col-12">
+                        <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
                     </div>
+                    @if(Auth::user()->role != 3 && Auth::user()->role != 2)
+
+                        <div class="col-12">
+                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
+                                datos del
+                                pedido</button>
+                        </div>
+                    @endif
+                        
+                    @if ($bloqueado)
+                        @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
+                            </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
+                            </div>
+                        @endif
+                    @else
+                        @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento || $this->getEstadoNombre() == 'Recibido' && $EsAdmin)
+                            <div class="col-12">
+                                <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
+                            </div>
+                            <div class="col-12">
+                                <button class="w-100 btn btn-warning mb-2" wire:click.prevent="alertaRechazar">Rechazar pedido</button>
+                            </div>
+                        @endif
+                    @endif
+                    @if ($canEdit)
+                        <div class="col-12">
+                            <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>
+    </div>
         <style>
             fieldset.scheduler-border {
                 border: 1px groove #ddd !important;
@@ -631,8 +634,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     });
             });
         </script>
-    </div>
-
+    
+</div>
     @section('scripts')
         {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>

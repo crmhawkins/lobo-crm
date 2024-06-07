@@ -228,12 +228,20 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <label for="descuento">Descuento</label>
                             <input type="checkbox" id="descuento" wire:model="descuento" class="form-checkbox" wire:change='setPrecioEstimado()' style="margin-left: 10px; width: 20px; height: 20px;">
                         </div>
-                            @if ($descuento)
+                        @if ($descuento)
                             <div class="form-group col-md-6 d-flex flex-column justify-content-center">
                             <label>Porcentaje descuento</label>
                             <input class="form-control"  type="number" wire:model="porcentaje_descuento"  wire:change='setPrecioEstimado()' placeholder="Ingrese el valor del descuento">
                             </div>
-                         @endif
+                        @endif
+                        <div class="form-group col-md-4">
+                            <label for="fecha">Gastos de envío</label>
+                            <input type="number" min=0 wire:model="gastos_envio" wire:change='setPrecioEstimado()' class="form-control" >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="fecha">Empresa de transporte</label>
+                            <input type="text" wire:model="transporte" class="form-control" >
+                        </div>
                         </div>
                         <div class="form-group col-md-1">
                            &nbsp;

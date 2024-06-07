@@ -46,11 +46,16 @@ class CreateComponent extends Component
     public $almacen_id;
     public $pedido_almacen_id;
     public $observacionesDescarga;
+    public $gastos_envio;
+    public $gastos_envio_iva;
+    public $transporte;
     public function mount()
     {
         
         $this->almacen_id = auth()->user()->almacen_id;
         $this->pedido = Pedido::find($this->identificador);
+        $this->gastos_envio = $this->pedido->gastos_envio;
+        $this->transporte = $this->pedido->transporte;
         $this->pedido_id = $this->pedido->id;
         $this->pedido_almacen_id = $this->pedido->almacen_id;
         $this->descuento = $this->pedido->descuento;

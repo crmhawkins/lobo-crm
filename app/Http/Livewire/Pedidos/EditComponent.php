@@ -78,6 +78,10 @@ class EditComponent extends Component
     public $iva_total;
     public $descuento_total;
     public $npedido_cliente;
+
+    public $gastos_envio;
+    public $transporte;
+    public $gastos_envio_iva;
     
 
 
@@ -113,6 +117,11 @@ class EditComponent extends Component
         $this->fecha_salida = $pedido->fecha_salida;
         $this->empresa_transporte = $pedido->empresa_transporte;
         $this->npedido_cliente = $pedido->npedido_cliente;
+        $this->gastos_envio = $pedido->gastos_envio;
+        if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
+            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        }
+        $this->transporte = $pedido->transporte;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
@@ -178,6 +187,8 @@ class EditComponent extends Component
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
                 'npedido_cliente' => 'nullable',
+                'gastos_envio' => 'nullable',
+                'transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -282,6 +293,8 @@ class EditComponent extends Component
                 'iva_total' => 'nullable',
                 'descuento_total' => 'nullable',
                 'npedido_cliente' => 'nullable',
+                'gastos_envio' => 'nullable',
+                'transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -330,7 +343,10 @@ class EditComponent extends Component
             if($factura){
                 $factura->update(
                     ['precio' => $this->precio,
-                    'cliente_id' => $this->cliente_id]);
+                    'cliente_id' => $this->cliente_id,
+                    'gastos_envio' => $this->gastos_envio,
+                    'transporte' => $this->transporte,]
+                );
                 $this->calcularTotales($factura);
                 
 
@@ -385,7 +401,6 @@ class EditComponent extends Component
     public function calcularTotales($factura){
         $iva= 0;
         $total = 0;
-
         //si hay pedido id
         if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
             //coger el precio del pedido y sumarle el iva
@@ -934,6 +949,11 @@ class EditComponent extends Component
     public function setPrecioEstimado()
     {
         $this->precioEstimado = 0;
+        if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
+            //dd($this->gastos_envio);
+            $this->precioEstimado = $this->gastos_envio;
+            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        }
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
@@ -952,6 +972,8 @@ class EditComponent extends Component
         }else{
             $this->descuento_total = 0;
         }
+
+       
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
@@ -976,6 +998,11 @@ class EditComponent extends Component
             }
             
         }
+
+        if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
+            $total_iva += $this->gastos_envio_iva;
+        }
+
         $this->iva_total = $total_iva;
     }
 

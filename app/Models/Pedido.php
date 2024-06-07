@@ -38,6 +38,8 @@ class Pedido extends Model
         'iva_total',
         'descuento_total',
         'npedido_cliente',
+        'gastos_envio',
+        'transporte',
     ];
 
     /**

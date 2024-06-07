@@ -62,6 +62,10 @@ class CreateComponent extends Component
     public $iva_total = 0;
     public $descuento_total = 0;
     public $npedido_cliente;
+    
+    public $gastos_envio;
+    public $transporte;
+    public $gastos_envio_iva;
 
 
     public function mount()
@@ -141,6 +145,8 @@ class CreateComponent extends Component
                 'descuento' => 'nullable',
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
+                'gastos_envio' => 'nullable',
+                'transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -240,7 +246,10 @@ class CreateComponent extends Component
                 break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
          }
-        
+         if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
+            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+            $total_iva += $this->gastos_envio_iva;
+        }
          $this->iva_total = $total_iva;
 
 
@@ -269,6 +278,8 @@ class CreateComponent extends Component
                     'iva_total' => 'nullable',
                     'descuento_total' => 'nullable',
                     'npedido_cliente' => 'nullable',
+                    'gastos_envio' => 'nullable',
+                    'transporte' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -302,6 +313,8 @@ class CreateComponent extends Component
                     'iva_total' => 'nullable',
                     'descuento_total' => 'nullable',
                     'npedido_cliente' => 'nullable',
+                    'gastos_envio' => 'nullable',
+                    'transporte' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -604,9 +617,16 @@ class CreateComponent extends Component
     public function setPrecioEstimado()
     {
         $this->precioEstimado = 0;
+        if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
+            //dd($this->gastos_envio);
+            $this->precioEstimado = $this->gastos_envio;
+            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        }
+
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
+        
         $this->precioSinDescuento = $this->precioEstimado;
         // Verificar si el descuento está activado
         if ($this->descuento) {
