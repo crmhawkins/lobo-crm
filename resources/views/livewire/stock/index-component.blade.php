@@ -98,7 +98,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             footer: true,
                         },
                         searching: false,
-                        paging: false,
+                        paging: true,
                         info: false,
                         dom: 'Bfrtip', // Este elemento define dónde se colocan los botones
                         buttons: [
