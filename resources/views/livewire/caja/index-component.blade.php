@@ -45,6 +45,38 @@
                         </div>
 
                     </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div  >
+                                <label for="example-text-input" class="col-form-label">Delegacion</label>
+                                <select class="form-control" id="select2-producto" wire:model="delegacion">
+                                    <option value="Todos">Todos</option>
+                                    @foreach ($delegaciones as $delegacion)
+                                        <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
+                                    @endforeach  
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div  >
+                                <label for="example-text-input" class="col-form-label">Fecha del Pago</label>
+                                <input type="date" class="form-control" wire:model="fechaPago">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div  >
+                                <label for="example-text-input" class="col-form-label">Fecha vencimiento</label>
+                                <input type="date" class="form-control" wire:model="fechaVencimiento">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div  >
+                                <label for="example-text-input" class="col-form-label">Fecha</label>
+                                <input type="date" class="form-control" wire:model="fecha">
+                            </div>
+                        </div>
+
+                    </div>
                     <div class="row mt-2">
                         <div class="col-12">
                             <button wire:click="descargarTodosDocumentos" class="btn btn-primary">Descargar todos los documentos</button>

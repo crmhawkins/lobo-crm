@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Livewire\Component;
 use App\Models\Caja;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\Delegacion;
 
 class IndexComponent extends Component
 {
@@ -29,6 +30,11 @@ class IndexComponent extends Component
 
     public $ingresos;
     public $gastos;
+    public $delegaciones;
+    public $delegacion;
+    public $fechaPago;
+    public $fechaVencimiento;
+    public $fecha;
     
     
 
@@ -108,12 +114,14 @@ class IndexComponent extends Component
         $this->proceedor = Proveedores::all();
         $this->clientes = Clients::all();
         $this->facturas = Facturas::all();
+        $this->delegaciones = Delegacion::all();
 
 
     }
 
     public function updated($property, $value){
-        if($property == 'filtro' || $property == 'filtroEstado'){
+        if($property == 'filtro' || $property == 'filtroEstado' || $property == 'delegacion'
+        || $property == 'fechaPago' || $property == 'fechaVencimiento' || $property == 'fecha'){
             $this->cambioMes();
         }   
     }
@@ -192,6 +200,22 @@ class IndexComponent extends Component
 
         if($this->filtroEstado != 'Todos' && $this->filtroEstado != null){
             $this->caja = $this->caja->where('estado', $this->filtroEstado);
+        }
+
+        if($this->delegacion != 'Todos' && $this->delegacion != null){
+            $this->caja = $this->caja->where('delegacion_id', $this->delegacion);
+        }
+
+        if($this->fechaPago != null){
+            $this->caja = $this->caja->where('fechaPago', $this->fechaPago);
+        }
+
+        if($this->fechaVencimiento != null){
+            $this->caja = $this->caja->where('fechaVencimiento', $this->fechaVencimiento);
+        }
+
+        if($this->fecha != null){
+            $this->caja = $this->caja->where('fecha', $this->fecha);
         }
 
         $this->calcularIngresoyGasto();
