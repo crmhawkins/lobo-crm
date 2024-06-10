@@ -249,8 +249,12 @@
                                             </td>
                                             <td>
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
-
-                                                        {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
+                                                        @if($tipo->pagado != null)
+                                                            {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
+                                                        @else
+                                                            {{ floatval($tipo->total)- $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
+                                                        @endif
+                                                        
                                                     @endif
                                             </td>
                                             <td>
