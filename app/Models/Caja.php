@@ -39,6 +39,8 @@ class Caja extends Model
         'documento_pdf',
         'importeIva',
         'total',
+        'pagado',
+        'pendiente',
     ];
 
     

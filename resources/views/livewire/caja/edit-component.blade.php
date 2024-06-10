@@ -213,25 +213,36 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                         id="total" placeholder="total" @if(!$canEdit) disabled @endif>
                                 </div>
                                 <div class="col-sm-3">
-                                    <label for="pago" class="col-sm-12 col-form-label">cuenta</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" wire:model="cuenta" nombre="cuenta"
-                                            id="cuenta" placeholder="Cuenta..." @if(!$canEdit) disabled @endif>
-                                    </div>
+                                    <label for="importe" class="col-sm-12 col-form-label">Pagado</label>
+                                    <input type="number"  step="0.1" class="form-control" wire:model="pagado" nombre="pagado"
+                                        id="pagado" placeholder="pagado">
                                 </div>
+                                <div class="col-sm-3">
+                                    <label for="importe" class="col-sm-12 col-form-label">Pendiente</label>
+                                    <input type="number"  step="0.1" class="form-control" wire:model="pendiente" nombre="pendiente"
+                                        id="pendiente" placeholder="pendiente" disabled>
+                                </div>
+                                
                             </div>
                             
                             <div class="mb-3 row d-flex align-items-center ">
 
                                 <div class="col-sm-3">
-                                    <label for="importe" class="col-sm-12 col-form-label">Número Interno</label>
+                                    <label for="nInterno" class="col-sm-12 col-form-label">Número Interno</label>
                                     <input type="text"  class="form-control" wire:model="nInterno" nombre="nInterno"
                                         id="descuento" placeholder="Número interno" >
                                 </div>
                                 <div class="col-sm-3">
-                                    <label for="importe" class="col-sm-12 col-form-label">Número factura</label>
+                                    <label for="nFactura" class="col-sm-12 col-form-label">Número factura</label>
                                     <input type="text" class="form-control" wire:model="nFactura" nombre="nFactura"
                                         id="total" placeholder="Número de factura">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="pago" class="col-sm-12 col-form-label">Número Cuenta</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" wire:model="cuenta" nombre="cuenta"
+                                            id="cuenta" placeholder="Cuenta..." @if(!$canEdit) disabled @endif>
+                                    </div>
                                 </div>
                                 
                             </div>

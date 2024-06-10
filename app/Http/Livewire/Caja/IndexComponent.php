@@ -147,28 +147,48 @@ class IndexComponent extends Component
     public function calcular_saldo($index, $id)
     {
         $movimiento = $this->caja->where('id', $id)->where('estado', '!=','Pendiente')->first();
+        $movimientoPendiente = $this->caja->where('id', $id)->where('estado', 'Pendiente')->first();
         //dd($movimiento);
 
-        if ($movimiento == null) {
+        if ($movimiento == null && $movimientoPendiente == null) {
             if($index == 0)
             {
                 return $this->saldo_array[$index] = isset($this->saldo_inicial) ? $this->saldo_inicial : 0;
             }
             return $this->saldo_array[$index] = $this->saldo_array[$index - 1];
         }
+
         if ($index == 0) {
-            
-            if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total;
-            } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
-                $this->saldo_array[$index] = $this->saldo_inicial + $movimiento->importe;
+            if($movimiento != null){
+                if ($movimiento->tipo_movimiento == 'Gasto') {
+                    $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total;
+                } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
+                    $this->saldo_array[$index] = $this->saldo_inicial + $movimiento->importe;
+                }
+            }else{
+                if ($movimientoPendiente->tipo_movimiento == 'Gasto') {
+                    $this->saldo_array[$index] = $this->saldo_inicial - $movimientoPendiente->pagado;
+                } elseif ($movimientoPendiente->tipo_movimiento == 'Ingreso') {
+                    $this->saldo_array[$index] = $this->saldo_inicial + $movimientoPendiente->importe;
+                }
             }
+           
         } else {
-            if ($movimiento->tipo_movimiento == 'Gasto') {
-                $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total;
-            } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
-                $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimiento->importe;
+
+            if($movimiento != null){
+                if ($movimiento->tipo_movimiento == 'Gasto') {
+                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total;
+                } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
+                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimiento->importe;
+                }
+            }else{
+                if ($movimientoPendiente->tipo_movimiento == 'Gasto') {
+                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimientoPendiente->pagado;
+                } elseif ($movimientoPendiente->tipo_movimiento == 'Ingreso') {
+                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimientoPendiente->importe;
+                }
             }
+
         }
         return $this->saldo_array[$index];
     }
@@ -176,6 +196,8 @@ class IndexComponent extends Component
     public function calcularIngresoyGasto(){
         $this->ingresos = $this->caja->where('tipo_movimiento', 'Ingreso')->sum('importe');
         $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->where('estado', '!=', 'Pendiente')->sum('total');
+        $pendientesPagado = $this->caja->where('estado', 'Pendiente')->sum('pagado');
+        $this->gastos += $pendientesPagado;
     }
 
     

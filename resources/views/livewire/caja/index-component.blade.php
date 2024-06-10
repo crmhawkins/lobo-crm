@@ -234,21 +234,26 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if($tipo->estado != 'Pendiente')
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
                                                         
-                                                        {{ floatval($tipo->total) }}€
+                                                        {{ floatval($tipo->pagado) }}€
+                                                    @else
+                                                        {{ floatval($tipo->pendiente) }}€
                                                     @endif
-                                                @endif
                                             </td>
                                             <td>
                                                 @if($tipo->estado == 'Pendiente')
-                                                    <span  class="badge badge-warning" >
+                                                   
                                                         @if ($tipo->tipo_movimiento == 'Gasto')
-                                                        
-                                                            {{ floatval($tipo->total) }}€
+                                                                <span  class="badge badge-warning" >
+                                                                    @if($tipo->pendiente == null)
+                                                                        {{ floatval($tipo->total) }}€
+                                                                    @else
+                                                                        {{ floatval($tipo->pendiente) }}€
+                                                                    @endif
+                                                                </span>
                                                         @endif
-                                                    </span>
+                                                    
                                                 @endif
                                             </td>
                                             <td>{{ $this->calcular_saldo($tipoIndex, $tipo->id) }}€</td>

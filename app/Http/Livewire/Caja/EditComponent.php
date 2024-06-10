@@ -52,6 +52,8 @@ class EditComponent extends Component
     public $documentoPath;
     public $nInterno;
     public $nFactura;
+    public $pagado;
+    public $pendiente;
 
 
 
@@ -86,7 +88,8 @@ class EditComponent extends Component
         $this->delegaciones = Delegacion::all();
         $this->importeIva = $caja->importeIva;
         $this->total = $caja->total;
-
+        $this->pagado = $caja->pagado;
+        $this->pendiente = $caja->pendiente;
 
     }
     public function getCliente($id)
@@ -118,6 +121,16 @@ class EditComponent extends Component
         }
     }
 
+    public function updated($property){
+        if($property === 'pagado' || $property === 'total'){
+
+            if($this->pagado !== null && $this->total !== null && is_numeric($this->pagado) && is_numeric($this->total)){
+                $this->pendiente = $this->total - $this->pagado;
+
+            }
+           
+        }
+    }
 
     public function calcularTotal(){
         if($this->importe !== null && $this->importe !== ''){
@@ -212,6 +225,8 @@ class EditComponent extends Component
             'documento_pdf' => $this->documentoPath,
             'nInterno' => $this->nInterno,
             'nFactura' => $this->nFactura,
+            'pagado' => $this->pagado,
+            'pendiente' => $this->pendiente,
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));

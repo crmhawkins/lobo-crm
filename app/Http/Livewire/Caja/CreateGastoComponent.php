@@ -46,6 +46,8 @@ class CreateGastoComponent extends Component
     public $documentoPath;
     public $nInterno;
     public $nFactura;
+    public $pagado;
+    public $pendiente;
 
 
     public function mount()
@@ -105,6 +107,14 @@ class CreateGastoComponent extends Component
 
     }
 
+    public function updated($property, $value){
+        if($property === 'pagado' || $property === 'total' ){
+            if($this->pagado !== null && $this->total !== null && is_numeric($this->pagado) && is_numeric($this->total)){
+                $this->pendiente = $this->total - $this->pagado;
+            }
+        }
+    }
+
     public function submit()
     {
         // Validación de datos
@@ -129,6 +139,8 @@ class CreateGastoComponent extends Component
                 'cuenta' => 'nullable',
                 'importeIva' => 'nullable',
                 'total' => 'nullable',
+                'pagado' => 'nullable',
+                'pendiente' => 'nullable',
                 //documento maximo 1gb
                 'documento' => 'required|mimes:pdf|max:1048576',
             ],
@@ -169,6 +181,8 @@ class CreateGastoComponent extends Component
             'estado' => $this->estado,
             'nFactura' => $this->nFactura,
             'nInterno' => $this->nInterno,
+            'pagado' => $this->pagado,
+            'pendiente' => $this->pendiente,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 

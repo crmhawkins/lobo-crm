@@ -141,6 +141,16 @@
                                     id="total" placeholder="total">
                             </div>
                             <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Pagado</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="pagado" nombre="pagado"
+                                    id="pagado" placeholder="pagado">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="importe" class="col-sm-12 col-form-label">Pendiente</label>
+                                <input type="number"  step="0.1" class="form-control" wire:model="pendiente" nombre="pendiente"
+                                    id="pendiente" placeholder="pendiente" disabled>
+                            </div>
+                            <div class="col-sm-3">
                                 <label for="pago" class="col-sm-12 col-form-label">Cuenta</label>
                                 <input type="text" class="form-control" wire:model="cuenta" nombre="cuenta"
                                     id="cuenta" placeholder="Cuenta...">
@@ -176,7 +186,7 @@
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Detalle</label>
                             <div class="col-sm-10">
-                                <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre de la categoría..." rows="4" cols="150"></textarea>
+                                <textarea wire:model="descripcion" nombre="descripcion" id="descripcion" placeholder="Nombre del concepto..." rows="4" cols="150"></textarea>
                             </div>
                         </div>
                         <div >
