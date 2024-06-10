@@ -94,6 +94,31 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
 
                             </div>
+                            <div class="card-body">
+                                <h5>Firma</h5>
+                                @if ($firma)
+                                    <div class="mb-3 row d-flex justify-content-center">
+                                        <div class="col">
+                                            @if($hasImage)
+                                                <img src="{{ asset('storage/photos/' . $firma) }}"
+                                                    style="max-width: 100% !important; text-align: center">
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="mb-3 row d-flex align-items-center">
+                                    <div class="col-sm-12">
+                                        <input type="file" class="form-control" wire:model="firma" name="firma"
+                                            id="firma" placeholder="Imagen del producto...">
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                        <button class="btn btn-success mt-2" wire:click="saveFirma()"> Guardar firma</button>
+                                    </div>
+
+                                </div>
+
+                            </div>
                             
                         </div>
                         

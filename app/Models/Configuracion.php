@@ -12,7 +12,8 @@ class Configuracion extends Model
     protected $table = 'configuracion';
 
     protected $fillable = [
-        'cuenta'
+        'cuenta',
+        'firma'
     ];
 
     public $timestamps = false;

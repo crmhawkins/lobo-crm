@@ -6,15 +6,19 @@ use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 use App\Models\DepartamentosProveedores;
+use Livewire\WithFileUploads;
 
 class EditComponent extends Component
 {
     use LivewireAlert;
+    use WithFileUploads;
 
     public $cuenta;
     public $configuracion;
     public $departamentos = [];
     public $nombreDepartamento;
+    public $firma;
+    public $hasImage = false;
 
 
     public function mount($configuracion)
@@ -22,8 +26,34 @@ class EditComponent extends Component
         $this->configuracion = $configuracion;
         $this->cuenta = $configuracion->cuenta;
         $this->departamentos = DepartamentosProveedores::all();
-
+        $this->firma = $configuracion->firma;
+        if($this->firma != null){
+            $this->hasImage = true;
+        }
+        //dd($this->firma);
     }
+
+
+   public function saveFirma(){
+
+
+    if(isset($this->firma))
+        {
+
+            $name = md5($this->firma . microtime()) . '.' . $this->firma->extension();
+
+            $this->firma->storePubliclyAs('public', 'photos/' . $name);
+
+            $validatedData['firma'] = $name;
+            $this->configuracion->update($validatedData);
+            $this->firma = $this->configuracion->firma;
+            //refresh render
+            $this->mount($this->configuracion);
+        }
+        
+        
+   }
+
 
     public function addDepartamento(){
         $this->validate([
@@ -60,16 +90,24 @@ class EditComponent extends Component
      //function getListeners update
 
     protected $listeners = [
-        'update' => 'update'
+        'update' => 'update',
+        'save' => 'save'
     ];
 
-
+    public function getListeners()
+    {
+        return [
+            'update' => 'update',
+            'save' => 'save'
+        ];
+    }
 
 
 
 
     public function render()
     {
+        
         return view('livewire.configuracion.edit-component');
     }
 }

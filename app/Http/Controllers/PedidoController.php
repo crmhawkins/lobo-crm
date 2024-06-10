@@ -20,6 +20,8 @@ class PedidoController extends Controller
         return view('pedidos.index', compact('response'));
     }
 
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -62,6 +64,18 @@ class PedidoController extends Controller
     public function edit($id)
     {
         return view('pedidos.edit', compact('id'));
+
+    }
+
+      /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function carta($id)
+    {
+        return view('pedidos.cartatransporte', compact('id'));
 
     }
 

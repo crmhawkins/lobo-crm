@@ -543,6 +543,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                 <h5>Opciones</h5>
                 <div class="row">
                     <div class="col-12">
+                        <a  href="{{ route('pedidos.cartatransporte' , $identificador) }}"  class="w-100 btn btn-info mb-2"  id="carta">Carta transporte</a>
+                    </div>
+                    <div class="col-12">
                         <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
                     </div>
                     @if(Auth::user()->role != 3 && Auth::user()->role != 2)

@@ -37,6 +37,8 @@ class Facturas extends Model
         'descuento_total_pedido',
         'recargo',
         'total_recargo',
+        'gastos_envio',
+        'transporte',
     ];
 
 

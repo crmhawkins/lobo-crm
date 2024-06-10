@@ -66,6 +66,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos-create', [PedidoController::class, 'create'])->name('pedidos.create');
     Route::get('/pedidos-edit/{id}', [PedidoController::class, 'edit'])->name('pedidos.edit');
+    Route::get('/pedidos-carta/{id}', [PedidoController::class, 'carta'])->name('pedidos.cartatransporte');
+
 
     Route::get('/productos', [ProductosController::class, 'index'])->name('productos.index');
     Route::get('/productos-create', [ProductosController::class, 'create'])->name('productos.create');
