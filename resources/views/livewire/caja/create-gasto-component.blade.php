@@ -155,6 +155,26 @@
                                 <input type="text" class="form-control" wire:model="cuenta" nombre="cuenta"
                                     id="cuenta" placeholder="Cuenta...">
                             </div>
+                            <div class="col-sm-3">
+                                <label for="pago" class="col-sm-12 col-form-label">
+                                <input type="checkbox"  wire:model="compensacion" nombre="cuenta"
+                                    id="cuenta" placeholder="Cuenta...">
+                                    ¿Compensar factura?</label>
+                            </div>
+                            @if($compensacion)
+                                <div class="col-sm-3">
+                                    <label for="pago" class="col-sm-12 col-form-label">Factura</label>
+                                    <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id">
+                                        <option value="0">-- ELIGE UNA FACTURA --</option>
+                                        @foreach ($facturas as $factura)
+                                            <option value="{{ $factura->id }}">
+                                                ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                            
                         </div>
                         
                         {{-- <div class="mb-3 row d-flex align-items-center">

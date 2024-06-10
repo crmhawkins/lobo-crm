@@ -145,7 +145,14 @@
                                                         text: 'Exportar a PDF',
                                                         titleAttr: 'PDF',
                                                         className: 'btn-secondary px-3 py-1 mb-2'
-                                                    }
+                                                    },
+                                                     
+                                                    {
+                                                        extend: 'colvis',
+                                                        text: 'Columnas',
+                                                        titleAttr: 'Columnas',
+                                                        className: 'btn-secondary px-3 py-1 mb-2'
+                                                    },
                                                     ]
                                                 });
                                             })"
@@ -167,6 +174,7 @@
                                         <th scope="col">Desglose</th>
                                         <!--<th scope="col">Estado</th> -->
                                         <th scope="col">Importe</th>
+                                        <th>Compensado</th>
                                         <th scope="col">% Iva</th>
                                         <th scope="col">Retencion</th>
                                         <th scope="col">Descuento</th>
@@ -193,11 +201,11 @@
                                             </td>
                                             <td>{{ $tipo->descripcion }}</td>
                                             @if (isset($tipo->pedido_id))
-                                            <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
+                                                <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
                                             @elseif($tipo->poveedor_id)
-                                            <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
+                                                <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
                                             @else
-                                            <td></td>
+                                                <td></td>
                                             @endif
                                             <td>{{$tipo->tipo_movimiento}}</td> 
                                             <!-- <td>
@@ -217,7 +225,13 @@
                                                     @endswitch
                                                 @endif
                                             </td> -->
-                                            <td>{{ $tipo->importe }}€</td>
+                                            <td> @if (isset($tipo->pedido_id)){{ $tipo->importe  + $this->getCompensacion($tipo->pedido_id, $tipo->tipo_movimiento) }}€ @else {{ $tipo->importe }}€ @endif</td>
+                                            <td>
+                                                @if(isset($tipo->pedido_id)){{ $this->getCompensacion($tipo->pedido_id, $tipo->tipo_movimiento) }}
+                                                @else
+                                                 {{ $this->getCompensacion($tipo->id, $tipo->tipo_movimiento) }}
+                                                @endif
+                                            </td>
                                             @if($tipo->tipo_movimiento == 'Gasto')
                                                 <td>{{ floatval($tipo->iva) }}%</td>
                                                 <td>{{ floatval($tipo->retencion) }}%</td>
@@ -235,8 +249,8 @@
                                             </td>
                                             <td>
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
-                                                        
-                                                        {{ floatval($tipo->pagado) }}€
+
+                                                        {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
                                                     @endif
                                             </td>
                                             <td>

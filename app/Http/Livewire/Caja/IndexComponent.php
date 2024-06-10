@@ -12,6 +12,7 @@ use Livewire\Component;
 use App\Models\Caja;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Delegacion;
+use App\Models\FacturasCompensadas;
 
 class IndexComponent extends Component
 {
@@ -148,6 +149,7 @@ class IndexComponent extends Component
     {
         $movimiento = $this->caja->where('id', $id)->where('estado', '!=','Pendiente')->first();
         $movimientoPendiente = $this->caja->where('id', $id)->where('estado', 'Pendiente')->first();
+        $compensacion = FacturasCompensadas::where('caja_id', $id)->sum('pagado');
         //dd($movimiento);
 
         if ($movimiento == null && $movimientoPendiente == null) {
@@ -161,13 +163,22 @@ class IndexComponent extends Component
         if ($index == 0) {
             if($movimiento != null){
                 if ($movimiento->tipo_movimiento == 'Gasto') {
-                    $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total;
+                    if($compensacion > 0){
+                        $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total + $compensacion;
+                    }else{
+                        $this->saldo_array[$index] = $this->saldo_inicial - $movimiento->total;
+                    }
+
                 } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
                     $this->saldo_array[$index] = $this->saldo_inicial + $movimiento->importe;
                 }
             }else{
                 if ($movimientoPendiente->tipo_movimiento == 'Gasto') {
-                    $this->saldo_array[$index] = $this->saldo_inicial - $movimientoPendiente->pagado;
+                    if($compensacion > 0){
+                        $this->saldo_array[$index] = $this->saldo_inicial - $movimientoPendiente->pagado + $compensacion;
+                    }else{
+                        $this->saldo_array[$index] = $this->saldo_inicial - $movimientoPendiente->pagado;
+                    }
                 } elseif ($movimientoPendiente->tipo_movimiento == 'Ingreso') {
                     $this->saldo_array[$index] = $this->saldo_inicial + $movimientoPendiente->importe;
                 }
@@ -177,13 +188,21 @@ class IndexComponent extends Component
 
             if($movimiento != null){
                 if ($movimiento->tipo_movimiento == 'Gasto') {
-                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total;
+                    if($compensacion > 0){
+                        $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total + $compensacion;
+                    }else{
+                        $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimiento->total;
+                    }
                 } elseif ($movimiento->tipo_movimiento == 'Ingreso') {
                     $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimiento->importe;
                 }
             }else{
                 if ($movimientoPendiente->tipo_movimiento == 'Gasto') {
-                    $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimientoPendiente->pagado;
+                    if($compensacion > 0){
+                        $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimientoPendiente->pagado + $compensacion;
+                    }else{
+                        $this->saldo_array[$index] = $this->saldo_array[$index - 1] - $movimientoPendiente->pagado;
+                    }
                 } elseif ($movimientoPendiente->tipo_movimiento == 'Ingreso') {
                     $this->saldo_array[$index] = $this->saldo_array[$index - 1] + $movimientoPendiente->importe;
                 }
@@ -197,10 +216,33 @@ class IndexComponent extends Component
         $this->ingresos = $this->caja->where('tipo_movimiento', 'Ingreso')->sum('importe');
         $this->gastos = $this->caja->where('tipo_movimiento', 'Gasto')->where('estado', '!=', 'Pendiente')->sum('total');
         $pendientesPagado = $this->caja->where('estado', 'Pendiente')->sum('pagado');
+        
+        foreach($this->caja as $c){
+            if($c->tipo_movimiento == 'Gasto'){
+                $compensacion = FacturasCompensadas::where('caja_id', $c->id)->sum('pagado');
+                $this->gastos -= $compensacion;
+            }else{
+                $compensacion = FacturasCompensadas::where('factura_id', $c->id)->sum('pagado');
+                $this->ingresos += $compensacion;
+            }  
+        }
+
         $this->gastos += $pendientesPagado;
     }
 
-    
+    public function getCompensacion($id, $tipo)
+    {
+        if($tipo == 'Gasto'){
+            $ingreso = $this->caja->firstWhere('id', $id);
+            $compensacion = FacturasCompensadas::where('caja_id', $ingreso->id)->sum('pagado');
+            return $compensacion;
+        }else{
+            $factura = $this->facturas->firstWhere('id', $id);
+            $compensacion = FacturasCompensadas::where('factura_id', $factura->id)->sum('pagado');
+            return $compensacion;
+        }
+       
+    }
 
     public function cambioMes()
     {

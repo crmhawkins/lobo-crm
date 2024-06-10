@@ -12,6 +12,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
 use Livewire\WithFileUploads;
+use App\Models\FacturasCompensadas;
 
 
 
@@ -54,6 +55,9 @@ class EditComponent extends Component
     public $nFactura;
     public $pagado;
     public $pendiente;
+    public $facturas_compensadas = [];
+    public $compensacion = false;
+    public $factura_id;
 
 
 
@@ -71,6 +75,13 @@ class EditComponent extends Component
         $this->fecha = $caja->fecha;
         $this->estado = $caja->estado;
         $this->tipo_movimiento = $caja->tipo_movimiento;
+        if($this->tipo_movimiento === 'Gasto'){
+            $this->facturas_compensadas = FacturasCompensadas::where('caja_id', $this->identificador)->get();
+            $this->compensacion = true;
+            $this->factura_id =  $this->facturas_compensadas->first()->factura_id;
+        }else{
+            $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $this->pedido_id)->get();
+        }
         $this->banco = $caja->banco;
         $this->delegacion_id = $caja->delegacion_id;
         $this->departamento = $caja->departamento;
@@ -109,6 +120,17 @@ class EditComponent extends Component
         return response()->download(storage_path('app/private/documentos_gastos/' . $this->documento),
         $this->nInterno.'_'.$proveedor_name.'_'.$this->fecha.'.pdf'
     );
+    }
+
+    public function getFacturaNumber($id)
+    {
+        $factura = $this->facturas->firstWhere('id', $id);
+        if(isset($factura)){
+           $nombre = $factura->numero_factura;
+            return  $nombre ;
+        }else{
+            return "Factura no encontrada";
+        }
     }
 
 

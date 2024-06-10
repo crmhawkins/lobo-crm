@@ -12,6 +12,7 @@ use App\Models\Caja;;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
 use Livewire\WithFileUploads;
+use App\Models\FacturasCompensadas;
 
 
 class CreateGastoComponent extends Component
@@ -48,15 +49,25 @@ class CreateGastoComponent extends Component
     public $nFactura;
     public $pagado;
     public $pendiente;
-
+    public $compensacion = false;
+    public $factura_id;
+    
 
     public function mount()
     {
         $this->poveedores = Proveedores::all();
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
+        $this->facturas = Facturas::where('estado', 'Pendiente')
+        ->orWhere('estado', 'Parcial')
+        ->get();
 
 
+    }
+
+    public function getCliente($id)
+    {
+         return $this->clientes->firstWhere('id', $id)->nombre;
     }
     public function render()
     {
@@ -188,6 +199,21 @@ class CreateGastoComponent extends Component
 
         // Alertas de guardado exitoso
         if ($usuariosSave) {
+
+            if($this->compensacion){
+                $factura = Facturas::find($this->factura_id);
+                $facturaCompensada = FacturasCompensadas::create([
+                    'caja_id' => $usuariosSave->id,
+                    'factura_id' => $factura->id,
+                    'importe' => $factura->total,
+                    'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
+                    'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
+                    'fecha' => $this->fecha,
+                ]);
+                
+            }
+
+
             $this->alert('success', '¡Movimiento registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

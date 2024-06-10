@@ -244,6 +244,25 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                             id="cuenta" placeholder="Cuenta..." @if(!$canEdit) disabled @endif>
                                     </div>
                                 </div>
+                                <div class="col-sm-3">
+                                    <label for="pago" class="col-sm-12 col-form-label">
+                                    <input type="checkbox"  wire:model="compensacion" nombre="cuenta"
+                                        id="cuenta" placeholder="Cuenta..." disabled>
+                                        ¿Compensar factura?</label>
+                                </div>
+                                @if($compensacion)
+                                    <div class="col-sm-3">
+                                        <label for="pago" class="col-sm-12 col-form-label">Factura</label>
+                                        <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id" disabled>
+                                            <option value="0">-- ELIGE UNA FACTURA --</option>
+                                            @foreach ($facturas as $factura)
+                                                <option value="{{ $factura->id }}">
+                                                    ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
                                 
                             </div>
                             
@@ -269,6 +288,34 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                             </div>
                         @endif
                     </form>
+
+                    <div>
+                        @if(count($facturas_compensadas) > 0 )
+                            <h5>Facturas compensadas</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Gasto</th>
+                                        <th>Factura</th>
+                                        <th>Importe</th>
+                                        <th>Compensado</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($facturas_compensadas as $factura)
+                                        <tr>
+                                            <td><a class="badge badge-info" href="{{ route('caja.edit',  $factura->caja_id) }}"> {{ $factura->caja_id }}</a></td>
+                                            <td><a class="badge badge-info" href="{{ route('facturas.edit',  $factura->factura_id) }}">{{ $this->getFacturaNumber($factura->factura_id) }}</a></td>
+                                            <td>{{ $factura->importe }}€</td>
+                                            <td>{{ $factura->pagado }}€</td>
+                                            <td>{{ $factura->fecha }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

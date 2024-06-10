@@ -45,16 +45,49 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
-                            <div class="col-sm-10">
-                                <input type="number" class="form-control" wire:model="importe" nombre="importe"
-                                    id="importe" placeholder="Importe...">
-                                @error('importe')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                        @if(!$compensacion_factura)
+                            <div class="mb-3 row d-flex align-items-center">
+                                <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" wire:model="importe" nombre="importe"
+                                        id="importe" placeholder="Importe...">
+                                    @error('importe')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="mb-3 row d-flex align-items-center">
+                                <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" wire:model="importe" nombre="importe"
+                                        id="importe" placeholder="Importe..." disabled>
+                                    @error('importe')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="mb-3 row d-flex align-items-center">
+                                <label for="nombre" class="col-sm-12 col-form-label">Importe Compensado</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" wire:model="importeCompensado" nombre="importeCompensado"
+                                        id="importeCompensado" placeholder="importeCompensado..." disabled>
+                                    @error('importeCompensado')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="mb-3 row d-flex align-items-center">
+                                <label for="nombre" class="col-sm-12 col-form-label">Importe Pendiente</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" wire:model="importeFacturaCompensada" nombre="importeFacturaCompensada"
+                                        id="importeFacturaCompensada" placeholder="importeFacturaCompensada..." >
+                                    @error('importeFacturaCompensada')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endif
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Fecha</label>
                             <div class="col-sm-10">

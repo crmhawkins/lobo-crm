@@ -10,6 +10,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Bancos;
+use App\Models\FacturasCompensadas;
 
 class CreateIngresoComponent extends Component
 {
@@ -31,7 +32,11 @@ class CreateIngresoComponent extends Component
     public $facturaSeleccionada;
     public $importeFactura;
     public $ingresos_factura = [];
-    
+    public $compensacion_factura = false;
+    public $facturas_compensadas = [];
+    public $importeFacturaCompensada;
+    public $importeCompensado;
+
 
 
     public function mount()
@@ -61,12 +66,24 @@ class CreateIngresoComponent extends Component
             $this->facturaSeleccionada = Facturas::find($id);
             $this->importeFactura = $this->facturaSeleccionada->total;
             $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
+            $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $id)->get();
+            
+
             //dd($this->ingresos_factura->sum('importe'));
             if(count($this->ingresos_factura) > 0){
                 $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+                
 
             }else{
                 $this->importe = $this->importeFactura;
+            }
+            
+            if(count($this->facturas_compensadas) > 0){
+                $this->importeFacturaCompensada = $this->importe - $this->facturas_compensadas->sum('pagado');
+                $this->importeCompensado = $this->facturas_compensadas->sum('pagado');
+                $this->compensacion_factura = true;
+            }else{
+                $this->compensacion_factura = false;
             }
 
         }
@@ -102,7 +119,7 @@ class CreateIngresoComponent extends Component
         $usuariosSave = Caja::create([
             'tipo_movimiento' => $this->tipo_movimiento,
             'metodo_pago' => $this->metodo_pago,
-            'importe' => $this->importe,
+            'importe' =>  $this->compensacion_factura ? $this->importeFacturaCompensada :  $this->importe,
             'descripcion' => $this->descripcion,
             'pedido_id' => $this->pedido_id,
             'fecha' => $this->fecha,
@@ -119,7 +136,7 @@ class CreateIngresoComponent extends Component
 
         }
 
-        if($importe <= 0 ){
+        if($importe - $this->importeCompensado <= 0 ){
             $this->facturaSeleccionada->estado = 'Pagado';
             $this->facturaSeleccionada->save();
         }else{
