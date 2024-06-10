@@ -252,7 +252,12 @@
                                                         @if($tipo->pagado != null)
                                                             {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
                                                         @else
-                                                            {{ floatval($tipo->total)- $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
+                                                            @if($tipo->estado == 'Pendiente')
+                                                                0€
+                                                            @else
+
+                                                                {{ floatval($tipo->total)- $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
+                                                            @endif
                                                         @endif
                                                         
                                                     @endif
