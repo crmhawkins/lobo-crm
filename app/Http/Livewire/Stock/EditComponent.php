@@ -183,11 +183,23 @@ class EditComponent extends Component
                 'timer' => 3000,
                 'toast' => false,
             ]);
+
             $this->addStockItem = 0;
             return;
         }
 
         $this->addStockItem = abs($this->addStockItem);
+        //si la cantidad a sumar mas la cantidad es mayor a la cantidad base de stockEntrante, se muestra un error
+        if($this->addStockItem + $this->cantidad > $this->stockentrante->cantidad){
+            $this->alert('error', '¡No se puede asignar una cantidad mayor a la cantidad base!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            $this->addStockItem = 0;
+            return;
+        }
+
         $this->cantidad = $this->cantidad + $this->addStockItem;
         $this->alert('warning', '¿Seguro que desea registrar la suma de stock?', [
             'position' => 'center',
