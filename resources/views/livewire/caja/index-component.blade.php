@@ -237,8 +237,6 @@
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
                                                         
                                                         {{ floatval($tipo->pagado) }}€
-                                                    @else
-                                                        {{ floatval($tipo->pendiente) }}€
                                                     @endif
                                             </td>
                                             <td>
