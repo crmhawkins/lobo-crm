@@ -234,10 +234,16 @@ class IndexComponent extends Component
     {
         if($tipo == 'Gasto'){
             $ingreso = $this->caja->firstWhere('id', $id);
+            if($ingreso == null){
+                return 0;
+            }
             $compensacion = FacturasCompensadas::where('caja_id', $ingreso->id)->sum('pagado');
             return $compensacion;
         }else{
             $factura = $this->facturas->firstWhere('id', $id);
+            if($factura == null){
+                return 0;
+            }
             $compensacion = FacturasCompensadas::where('factura_id', $factura->id)->sum('pagado');
             return $compensacion;
         }

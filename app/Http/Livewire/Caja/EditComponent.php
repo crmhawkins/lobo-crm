@@ -77,8 +77,11 @@ class EditComponent extends Component
         $this->tipo_movimiento = $caja->tipo_movimiento;
         if($this->tipo_movimiento === 'Gasto'){
             $this->facturas_compensadas = FacturasCompensadas::where('caja_id', $this->identificador)->get();
-            $this->compensacion = true;
-            $this->factura_id =  $this->facturas_compensadas->first()->factura_id;
+            
+            if($this->facturas_compensadas->count() > 0){
+                $this->compensacion = true;
+                $this->factura_id =  $this->facturas_compensadas->first()->factura_id;
+            }
         }else{
             $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $this->pedido_id)->get();
         }
