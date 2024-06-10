@@ -18,6 +18,7 @@ class OrdenProduccion extends Model
         'fecha',
         'estado',
         'pedido_id',
+        'observaciones',
     ];
 
 
