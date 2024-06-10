@@ -17,6 +17,11 @@ class IndexComponent extends Component
             $this->clientes = Clients::all();
         }else{
             $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
+
+            if(Auth::user()->user_department_id == 2){
+                $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)->get();
+            }
+
         }
     }
 
