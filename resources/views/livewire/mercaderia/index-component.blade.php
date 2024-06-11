@@ -108,10 +108,11 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 class="btn btn-lg btn-primary w-100 mb-1">ENTRADA DE MATERIALES</a>
                             <a href="#" wire:click.prevent="comprobarStockMateriales"
                                 class="btn btn-lg btn-primary w-100 mb-1">COMPROBAR STOCK DE MATERIALES</a>
-                            <a href="{{ route('mercaderia.create') }}" class="btn btn-lg btn-primary w-100">NUEVO
+                            <a href="{{ route('mercaderia.create') }}" class="btn btn-lg btn-primary w-100 mb-1">NUEVO
                                 MATERIAL PARA PRODUCTO</a>
+                            <a href="{{ route('mercaderia.historial') }}" class="btn btn-lg btn-primary w-100">VER HISTORIAL</a>
 
-                            <div  wire:key='{{ time() . 'juanito' }}'>
+                            <div  wire:key='{{ time() . 'lobo' }}'>
                                 <label for="categoria">Categoría de los materiales</label>
                                 <select class="form-control" name="producto" id="select2-categoria" wire:model="categoria_id"
                                     value="{{ $categoria_id }}">
