@@ -64,6 +64,12 @@ class MercaderiaController extends Controller
         return view('mercaderia.edit', compact('id'));
 
     }
+    public function historial()
+    {
+
+
+        return view('mercaderia.historial' );
+    }
 
     /**
      * Update the specified resource in storage.

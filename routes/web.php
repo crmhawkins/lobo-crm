@@ -118,6 +118,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/mercaderia', [MercaderiaController::class, 'index'])->name('mercaderia.index');
     Route::get('/mercaderia-create', [MercaderiaController::class, 'create'])->name('mercaderia.create');
     Route::get('/mercaderia-edit/{id}', [MercaderiaController::class, 'edit'])->name('mercaderia.edit');
+    Route::get('/mercaderia/historial', [MercaderiaController::class, 'historial'])->name('mercaderia.historial');
+
 
     Route::get('/orden-mercaderia', [OrdenMercaderiaController::class, 'index'])->name('orden-mercaderia.index');
     Route::get('/orden-mercaderia-create', [OrdenMercaderiaController::class, 'create'])->name('orden-mercaderia.create');
