@@ -161,7 +161,11 @@
                             {{-- Recorre los pedidos --}}
                             @foreach ($pedidos as $presup)
                             <tr>
-                                <td>{{ $presup->id }}</td>
+                                @if($presup->departamento_id == config('app.departamentos_pedidos')['Marketing']['id'])
+                                    <td>{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->id }}</td>
+                                @else
+                                    <td>{{ config('app.departamentos_pedidos')['General']['pedido'] }}{{ $presup->id }}</td>
+                                @endif
                                 <td>{{ $presup->npedido_cliente }}</td>
                                 
 
