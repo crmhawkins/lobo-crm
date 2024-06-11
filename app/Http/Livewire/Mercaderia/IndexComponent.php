@@ -35,12 +35,12 @@ class IndexComponent extends Component
         $this->mercaderias = Mercaderia::all();
         $this->categorias = MercaderiaCategoria::all();
         $this->stockMercaderiaEntrante = StockMercaderiaEntrante::all();
-        foreach($this->stockMercaderiaEntrante as $stock){
-            $mercaderia = Mercaderia::find($stock->mercaderia_id);
-            $producto = DB::table('productos_produccion')->where('producto_id', $mercaderia->id)->first();
-            $orden = DB::table('orden_produccion')->where('id', $producto->orden_id)->first();
-            dd($orden);
-        }
+        // foreach($this->stockMercaderiaEntrante as $stock){
+        //     $mercaderia = Mercaderia::find($stock->mercaderia_id);
+        //     $producto = DB::table('productos_produccion')->where('producto_id', $mercaderia->id)->first();
+        //     $orden = DB::table('orden_produccion')->where('id', $producto->orden_id)->first();
+        //     //dd($orden);
+        // }
     }
 
     public function comprobarStockMateriales()
