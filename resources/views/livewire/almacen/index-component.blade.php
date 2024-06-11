@@ -8,6 +8,8 @@
             }
         }
         </style>
+                                        
+
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -29,8 +31,9 @@
                     <h4 class="mt-0 header-title">Pedidos pendientes</h4>
                     <p class="sub-title../plugins">Pedidos en cola para su comprobación, preparación y envío.
                     </p>
-                    @if (count($pedidos_pendientes) > 0)
+                    
 
+                    @if (count($pedidos_pendientes) > 0)
                     <!-- Aquí comienza el botón desplegable para filtrar por columna -->
                     <div id="Botonesfiltros">
                         <div class="dropdown ">
@@ -68,10 +71,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
                                 @foreach ($pedidos_pendientes as $pedido)
+                                    
                                     <tr>
-                                        <td>{{ $pedido->id }}</td>
+                                        @if($pedido->departamento_id)
+                                            <td>M{{ $pedido->id }}</td>
+                                        @else
+                                            <td>G{{ $pedido->id }}</td>
+                                        @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
 
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
@@ -103,12 +110,12 @@
                     @else
                         <h2 class="text-center" style="color: #35a8e0 !important">No hay pedidos para preparar</h2>
                     @endif
-
                 </div>
             </div>
             <div class="card m-b-30">
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Pedidos en preparación</h4>
+                    
                     @if (count($pedidos_preparacion) > 0)
 
                     <div id="Botonesfiltros-preparacion">
@@ -146,7 +153,11 @@
                             <tbody>
                                 @foreach ($pedidos_preparacion as $pedido)
                                     <tr>
-                                        <td>{{ $pedido->id }}</td>
+                                        @if($pedido->departamento_id)
+                                            <td>M{{ $pedido->id }}</td>
+                                        @else
+                                            <td>G{{ $pedido->id }}</td>
+                                        @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
@@ -182,6 +193,7 @@
             <div class="card m-b-30">
                 <div class="card-body">
                     <h4 class="mt-0 header-title">Pedidos Enviados</h4>
+
                     @if (count($pedidos_enviados) > 0)
 
                     <div id="Botonesfiltros-enviados">
@@ -199,6 +211,7 @@
                             </div>
                             <!-- Aquí termina el botón desplegable -->
                             <button class="btn btn-primary ml-2" id="clear-filter-enviados">Eliminar Filtro</button>
+                            
                         </div>
                     </div>
                     <div wire:ignore.self class="modal fade" id="enRutaModal" tabindex="-1" role="dialog">
@@ -225,9 +238,11 @@
                                             <input type="text" class="form-control" id="empresa_transporte" wire:model="empresa_transporte">
                                         </div>
                                     </div>
-                                   
-                                    
-                                   <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success mt-2">Pedido en Ruta</button>
+
+                                    @if(isset($pedido))
+                                        <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success mt-2">Pedido en Ruta</button>
+                                    @endif
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -253,7 +268,11 @@
                             <tbody>
                                 @foreach ($pedidos_enviados as $pedido)
                                     <tr>
-                                        <td>{{ $pedido->id }}</td>
+                                        @if($pedido->departamento_id)
+                                            <td>M{{ $pedido->id }}</td>
+                                        @else
+                                            <td>G{{ $pedido->id }}</td>
+                                        @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
@@ -292,6 +311,7 @@
                     @else
                         <h2 class="text-center" style="color: #35a8e0 !important">No hay pedidos en proceso por enviar
                         </h2>
+
                     @endif
 
                 </div>

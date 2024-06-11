@@ -10,6 +10,7 @@ use App\Models\StockSaliente;
 use App\Models\Almacen;
 use App\Models\Productos;
 use App\Models\StockRegistro;
+use App\Models\Pedido;
 
 class Historial extends Component
 {
@@ -29,6 +30,18 @@ class Historial extends Component
     public function formatFecha($id)
     {
         return Carbon::parse(Stock::find($id)->fecha)->format('d/m/Y');
+    }
+    public function isPedidoMarketing($pedidoId)
+    {
+        $pedido = Pedido::find($pedidoId);
+        if ($pedido) {
+
+            if($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']){
+                return true;
+            }
+
+        }
+        return false;
     }
     public function mount(){
 

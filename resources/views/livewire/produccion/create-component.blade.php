@@ -52,7 +52,7 @@
                                         <option value="{{ null }}">-- Selecciona un pedido --
                                         </option>
                                         @foreach ($pedidos as $presup)
-                                            <option value="{{ $presup->id }}">{{ $presup->id }}
+                                            <option value="{{ $presup->id }}"> @if($this->isPedidoMarketing($presup->id)) {{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}@else {{ config('app.departamentos_pedidos')['General']['pedido'] }}@endif{{ $presup->id }}
                                             </option>
                                         @endforeach
                                     </select>

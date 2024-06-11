@@ -13,6 +13,7 @@ use App\Models\ModificacionesMercaderia;
 use App\Models\RoturaMercaderia;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class IndexComponent extends Component
 {
@@ -25,6 +26,7 @@ class IndexComponent extends Component
     public $cantidad;
     public $motivo;
     
+    public $stockMercaderiaEntrante;
 
     public $categoria_id;
 
@@ -32,6 +34,13 @@ class IndexComponent extends Component
     {
         $this->mercaderias = Mercaderia::all();
         $this->categorias = MercaderiaCategoria::all();
+        $this->stockMercaderiaEntrante = StockMercaderiaEntrante::all();
+        foreach($this->stockMercaderiaEntrante as $stock){
+            $mercaderia = Mercaderia::find($stock->mercaderia_id);
+            $producto = DB::table('productos_produccion')->where('producto_id', $mercaderia->id)->first();
+            $orden = DB::table('orden_produccion')->where('id', $producto->orden_id)->first();
+            dd($orden);
+        }
     }
 
     public function comprobarStockMateriales()

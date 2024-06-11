@@ -70,12 +70,15 @@ class CreateComponent extends Component
 
     public function mount()
     {
-
         $this->productos = Productos::all();
         $this->clientes = Clients::where('estado', 2)->get();
         //si el usuario autenticado es comercial, solo ve sus clientes asociados.
         if (Auth::user()->role == 3 ){
             $this->clientes = Clients::where('comercial_id', Auth::user()->id)->where('estado', 2)->get();
+        }
+        if(Auth::user()->user_department_id == 2){
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)//y estado 2
+            ->where('estado', 2)->get();
         }
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
@@ -326,28 +329,34 @@ class CreateComponent extends Component
             );
         }
         
+        if(Auth::user()->user_department_id == 2){
+            //add to validateData the department_id
+            $validatedData['departamento_id'] = config('app.departamentos_pedidos')['Marketing']['id'];
+        }else{
+            $validatedData['departamento_id'] = config('app.departamentos_pedidos')['General']['id'];
+        }
 
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
         if( $this->bloqueado){
-        Alertas::create([
-            'user_id' => 13,
-            'stage' => 2,
-            'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
-            'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de aprobación',
-            'referencia_id' => $pedidosSave->id,
-            'leida' => null,
-        ]);}
-
             Alertas::create([
                 'user_id' => 13,
-                'stage' => 3,
-                'titulo' => 'Estado del Pedido: Recibido',
-                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' ha sido recibido',
+                'stage' => 2,
+                'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
+                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de aprobación',
                 'referencia_id' => $pedidosSave->id,
                 'leida' => null,
-            ]);
+            ]);}
+
+            Alertas::create([
+                    'user_id' => 13,
+                    'stage' => 3,
+                    'titulo' => 'Estado del Pedido: Recibido',
+                    'descripcion' => 'El pedido nº ' . $pedidosSave->id.' ha sido recibido',
+                    'referencia_id' => $pedidosSave->id,
+                    'leida' => null,
+                ]);
 
         foreach ($this->productos_pedido as $productos) {
             DB::table('productos_pedido')->insert([

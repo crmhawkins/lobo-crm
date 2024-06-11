@@ -37,6 +37,13 @@ class IndexComponent extends Component
         $query = Pedido::query();
         
         $delegacion = Delegacion::where('COD', $this->delegacionSeleccionadaCOD)->first();
+        if(Auth::user()->role == 3){
+            $query->whereHas('cliente', function ($query) {
+                $query->where('comercial_id', Auth::user()->id);
+            });
+        }
+
+
         
         if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
             $query->whereHas('cliente', function ($query) {
@@ -108,10 +115,36 @@ class IndexComponent extends Component
                         ->get()
                         ->pluck('pedidos')
                         ->flatten();
+
+            if(Auth::user()->user_department_id == 2){
+                $this->pedidos = Clients::with('pedidos')->where('comercial_id', Auth::user()->id)
+                        ->where('delegacion_COD', 0)
+                        ->orWhere('delegacion_COD', 16)
+                        ->where('estado', 2)
+                        ->get()
+                        ->pluck('pedidos')
+                        ->flatten();
+            }
         }
         $this->clientes = Clients::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
+
+        
+        
         $this->delegaciones = Delegacion::all();
+
+        if(Auth::user()->role == 3){
+            $this->comercialSeleccionadoId = Auth::user()->id;
+            $this->comerciales = User::where('id', Auth::user()->id)->get();
+            $this->delegacionSeleccionadaCOD = Auth::user()->delegacion_COD;
+            $this->delegaciones = Delegacion::where('COD', Auth::user()->delegacion_COD)->get();
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
+            if(Auth::user()->user_department_id == 2){
+                $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)->where('estado', 2) ->get();
+                $this->delegaciones = Delegacion::where('COD', Auth::user()->delegacion_COD)->orWhere('COD', 0)->orWhere('COD', 16)->get();
+
+            }
+        }
     }
 
     public function getComercial($id)

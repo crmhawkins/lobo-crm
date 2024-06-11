@@ -492,6 +492,18 @@ class IndexComponent extends Component
         }
     }
 
+    public function isPedidoMarketing($pedidoId)
+    {
+        $pedido = Pedido::find($pedidoId);
+        if ($pedido) {
+
+            if($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']){
+                return true;
+            }
+
+        }
+        return false;
+    }
 public function descargarPdfs($id)
     {
 

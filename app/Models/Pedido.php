@@ -40,6 +40,7 @@ class Pedido extends Model
         'npedido_cliente',
         'gastos_envio',
         'transporte',
+        'departamento_id',
     ];
 
     /**

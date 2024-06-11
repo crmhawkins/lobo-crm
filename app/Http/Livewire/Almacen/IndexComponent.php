@@ -22,9 +22,9 @@ class IndexComponent extends Component
 {
     // public $search;
     use LivewireAlert;
-    public $pedidos_pendientes;
-    public $pedidos_preparacion;
-    public $pedidos_enviados;
+    public $pedidos_pendientes = [];
+    public $pedidos_preparacion = [];
+    public $pedidos_enviados = [];
     public $fecha_salida;
     public $empresa_transporte;
     public $pedidoEnRutaId;
@@ -33,7 +33,6 @@ class IndexComponent extends Component
     public function mount()
     {
         $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
-
         // Filtrar pedidos basados en almacen_id
         if ($userAlmacenId == 0) {
             // El usuario puede ver todos los pedidos
@@ -48,6 +47,14 @@ class IndexComponent extends Component
             $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
             ->where('almacen_id', $userAlmacenId)
             ->get();
+
+            if(Auth::user()->user_department_id == 2){
+                $this->pedidos_pendientes = Pedido::where('estado', 2)->where('almacen_id', 6)->get();
+                $this->pedidos_preparacion = Pedido::where('estado', 3)->where('almacen_id', 6)->get();
+                $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->where('almacen_id', 6)->get();
+            }
+                
+
             // $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
             // ->where('almacen_id', $userAlmacenId)
             // ->where('tipo_pedido_id', 0)

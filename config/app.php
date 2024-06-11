@@ -4,6 +4,19 @@ use Illuminate\Support\Facades\Facade;
 
 return [
 
+    'departamentos_pedidos' => //array asociativo con los departamentos de pedidos
+    [
+        'Marketing' => [
+            'nombre' => 'Marketing',
+            'id' => '1',
+            'pedido' => 'M'
+        ],
+        'General' => [
+            'nombre' => 'General',
+            'id' => '0',
+            'pedido' => 'G'
+        ],
+    ],
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -16,6 +29,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    
 
     /*
     |--------------------------------------------------------------------------

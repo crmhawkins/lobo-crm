@@ -131,7 +131,7 @@
                         <tr style="background-color:#ececec;">
                             <td data-sort='{{ $lote['order_date'] }}' >{{ $lote['fecha'] }}</td>
                             <td>{{ $lote['orden_numero'] }}</td>
-                            <td>{{ $lote['pedido_id'] }}</td>
+                            <td><a class="badge badge-info" href="{{ route('pedidos.edit', $lote['pedido_id']) }}" > @if($this->isPedidoMarketing($lote['pedido_id'])) {{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}@else {{ config('app.departamentos_pedidos')['General']['pedido'] }}@endif{{ $lote['pedido_id'] }}</a></td>
                             <td>{{ $lote['almacen'] }}</td>
                             <td>{{ $lote['producto'] }}</td>
                             <td>{{ $lote['cantidad'] }}</td>

@@ -108,6 +108,18 @@ class CreateComponent extends Component
         }
     }
 
+    public function isPedidoMarketing($pedidoId)
+    {
+        $pedido = Pedido::find($pedidoId);
+        if ($pedido) {
+
+            if($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']){
+                return true;
+            }
+
+        }
+        return false;
+    }
     public function getNombreTabla($id)
     {
         $nombre_producto = $this->productos->where('id', $id)->first()->nombre;

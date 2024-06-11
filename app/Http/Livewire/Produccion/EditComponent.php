@@ -614,7 +614,19 @@ class EditComponent extends Component
         $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
     }
+    
+    public function isPedidoMarketing($pedidoId)
+    {
+        $pedido = Pedido::find($pedidoId);
+        if ($pedido) {
 
+            if($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']){
+                return true;
+            }
+
+        }
+        return false;
+    }
     public function destroy(){
         $orden = OrdenProduccion::find($this->identificador);
         $productos = ProductosProduccion::where('orden_id', $orden->id)->get();
