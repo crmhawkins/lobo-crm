@@ -1,5 +1,10 @@
 <div class="container-fluid mx-auto">
+
     <style>
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: white;
+            background: #616f80;
+        }
         @media (max-width: 768px) {
             #filtrosSelect {
                 width: 100%;
@@ -77,13 +82,22 @@
                                 <label class=""  id="clientes"  >
                                 Clientes
                                 </label>
+                                <div x-data="" x-init="$nextTick(() => {
+                                    $('#clientesSelect').select2();
+                                    $('#clientesSelect').on('change', function(e) {
+                                        var data = $('#clientesSelect').select2('val');
+                                        @this.set('clienteSeleccionadoId', data);
+                                        console.log(data);
+                                    });
+                                })">
                                 <select class="text-white bg-secondary rounded p-1" id="clientesSelect"   wire:model="clienteSeleccionadoId">
                                     <option value='-1' >Todos</option>
                                     @foreach ( $clientes as $cliente )
                                         <option value='{{$cliente->id }}' >{{ $cliente->nombre }}</option>
                                     @endforeach
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
-                                    </select>                            
+                                    </select>   
+                                </div>                         
                             </div>
                             <div class="filtro d-flex flex-column" >
                                 <label class=""  id="estado"  >
@@ -883,6 +897,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
 
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 <!-- Responsive examples -->
