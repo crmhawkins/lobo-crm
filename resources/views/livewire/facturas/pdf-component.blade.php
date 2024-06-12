@@ -11,7 +11,6 @@
             width: 100%;
             border-collapse: collapse;
             font-family: Arial, Helvetica, sans-serif;
-            page-break-inside: avoid; /* Evita el salto de página dentro de la tabla */
         }
 
         tr.left-aligned > th,
@@ -38,10 +37,6 @@
         }
 
         .page-break {
-            page-break-after: always;
-        }
-
-        .page-break-before {
             page-break-before: always;
         }
 
@@ -56,9 +51,12 @@
 <body>
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
-            <td width="25%" style="background-color: #fff !important; padding: 0;"><img style="margin: 8px" src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto"></td>
+            <td width="25%" style="background-color: #fff !important; padding: 0;"><img style="margin: 8px"
+                    src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto"></td>
             <td width="35%" style="background-color: #fff !important"></td>
-            <th width="40%" style="background-color: #fff !important"><span style="background-color: #0196eb !important; padding: 2rem; display: block;">Administracion@serlobo.com</span></th>
+            <th width="40%" style="background-color: #fff !important"><span
+                    style="background-color: #0196eb !important; padding: 2rem; display: block;">Administracion@serlobo.com</span>
+            </th>
         </tr>
     </table>
 
@@ -76,18 +74,18 @@
                 <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">FACTURA</h1><br>
 
                 <span style="font-size: 80%"><span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
-                @if(isset($pedido) )
+                    @if(isset($pedido) )
                     @if($pedido->npedido_cliente)
-                        <span style="font-weight: bold;">Ped.Cliente:</span> {{$pedido->npedido_cliente}}<br>
+                    <span style="font-weight: bold;">Ped.Cliente:</span> {{$pedido->npedido_cliente}}<br>
                     @endif
 
                     @if($albaran->num_albaran)
-                        <span style="font-weight: bold;">Albarán:</span> {{$albaran->num_albaran}}<br>
+                    <span style="font-weight: bold;">Albarán:</span> {{$albaran->num_albaran}}<br>
                     @endif
                     @if($pedido->id)
-                        <span style="font-weight: bold;">Pedido:</span> {{$pedido->id}}<br>
+                    <span style="font-weight: bold;">Pedido:</span> {{$pedido->id}}<br>
                     @endif
-                @endif
+                    @endif
 
                     <span style="font-weight: bold;">Fecha:</span> {{$factura->fecha_emision}}<br>
                     <span style="font-weight: bold;">Vencimiento:</span> {{$factura->fecha_vencimiento}}</span>
@@ -121,8 +119,8 @@
                 <br>
                 @if(isset($cliente->observaciones))
                 <span style="font-weight: bold; color:#0196eb">Observaciones Descarga </span>
-                    <br>
-                    {{$cliente->observaciones}}
+                <br>
+                {{$cliente->observaciones}}
                 @endif
             </td>
             <td style="text-align: left !important" width="20%"></td>
@@ -130,156 +128,102 @@
     </table>
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
-    <table class="avoid-page-break">
-        @if(isset($pedido) && $factura->tipo != 2)
-            <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
-                <th style="text-align: left !important">CONCEPTO</th>
-                <th>LOTE</th>
-                <th>UNIDADES</th>
-                <th>PESO TOTAL</th>
-                <th>PRECIO</th>
-                <th>SUBTOTAL</th>
-            </tr>
-            <tr style="background-color:#fff; color: #fff;">
-                <th style="padding: 0px !important; height: 10px !important;"></th>
-            </tr>
-            @foreach ($productos as $producto)
-                <tr class="left-aligned" style="background-color:#ececec;">
-                    <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
-                    <td>{{ $producto['lote_id'] }}</td>
-                    <td>{{ $producto['cantidad'] }}</td>
-                    <td>{{ $producto['peso_kg'] }} Kg</td>
-                    <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-                    <td>{{ number_format($producto['precio_total'], 2) }} €</td>
-                </tr>
-            @endforeach
+    <?php
+    $productosPorPagina = 10; // Número de filas por página
+    $totalProductos = count($productos);
+    $paginas = ceil($totalProductos / $productosPorPagina);
+    ?>
 
-            @if(isset($pedido))
-                @if ($pedido->descuento )
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>Descuento Aplicado({{$pedido->porcentaje_descuento}}%):</td>
-                        <td>{{$pedido->descuento_total}}€<</td>
-                    </tr>
-                @endif
-            @endif
-        @else
-            <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
-                <th style="text-align: left !important">CONCEPTO</th>
-                <th>LOTE</th>
-                <th>UNIDADES</th>
-                <th>PESO TOTAL</th>
-                <th>PRECIO</th>
-                <th>SUBTOTAL</th>
-            </tr>
-            <tr style="background-color:#fff; color: #fff;">
-                <th style="padding: 0px !important; height: 10px !important;"></th>
-            </tr>
-            @foreach ($productosFactura as $producto)
-                <tr class="left-aligned" style="background-color:#ececec;">
-                    <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
-                    <td>{{ $producto['lote_id'] }}</td>
-                    <td>{{ $producto['cantidad'] }}</td>
-                    <td>{{ $producto['peso_kg'] }} Kg</td>
-                    <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-                    <td>{{ number_format($producto['precio_total'], 2) }} €</td>
-                </tr>
-            @endforeach
-        @endif
-    </table>
-
-    <table class="avoid-page-break" style="margin-top:10px;">
-        @if(isset($servicios))
+    @for ($i = 0; $i < $paginas; $i++)
+    <table>
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
-            <th style="text-align: left !important">Descripción</th>
+            <th style="text-align: left !important">CONCEPTO</th>
+            <th>LOTE</th>
             <th>UNIDADES</th>
+            <th>PESO TOTAL</th>
             <th>PRECIO</th>
             <th>SUBTOTAL</th>
         </tr>
         <tr style="background-color:#fff; color: #fff;">
             <th style="padding: 0px !important; height: 10px !important;"></th>
         </tr>
-        @foreach ($servicios as $servicio)
+
+        @foreach (array_slice($productos, $i * $productosPorPagina, $productosPorPagina) as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
-            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $servicio->descripcion }}</td>
-            <td>{{ $servicio->cantidad }}</td>
-            <td>{{ $servicio->precio }}€</td>
-            <td>{{ $servicio->total }}€</td>
+            <td style="text-align: left !important"><span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</td>
+            <td>{{ $producto['lote_id'] }}</td>
+            <td>{{ $producto['cantidad'] }}</td>
+            <td>{{ $producto['peso_kg'] }} Kg</td>
+            <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+            <td>{{ number_format($producto['precio_total'], 2) }} €</td>
         </tr>
         @endforeach
-
-        @endif
     </table>
 
-    @if(isset($pedido->gastos_envio) && $pedido->gastos_envio > 0)
-        <table style="margin-top: 2% !important">
-            <tr style="background-color:#ececec;">
-                <td></td>
-                <td>Gastos Envío ({{ $pedido->transporte }})</td>
-                <td>{{ $pedido->gastos_envio }}</td>
-            </tr>
-        </table>
+    @if ($i < $paginas - 1)
+    <div class="page-break"></div>
     @endif
+    @endfor
 
-    @if(count($productos) > 10 && count($productos) < 13)
-        <div class="page-break"></div>
+    @if(isset($pedido->gastos_envio) && $pedido->gastos_envio > 0)
+    <table style="margin-top: 2% !important">
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>Gastos Envío ({{ $pedido->transporte }})</td>
+            <td>{{ $pedido->gastos_envio }}</td>
+        </tr>
+    </table>
     @endif
 
     @if($conIva)
-        <table style="margin-top: 2% !important">
-            <tr style="background-color:#ececec;">
-                <td></td>
-                <td>BASE IMPONIBLE</td>
-                @if($factura->tipo == 2)
-                    <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
-                @else
-                    <td>{{ number_format($factura->precio , 2 , ',', '.')}}€</td>
-                @endif
-
-            </tr>
-            <tr style="background-color:#ececec;">
-                <td></td>
-                <td>IVA 21%</td>
-                @if($factura->tipo == 2)
-                    <td>{{ number_format($iva_productos , 2 , ',', '.')}}€</td>
-                @else
-                    <td>{{number_format(($factura->iva) , 2 , ',', '.')}}€</td>
-                @endif
-            </tr>
-            @if(isset($factura->total_recargo) && $factura->tipo !=2)
-                <tr style="background-color:#ececec;">
-                    <td></td>
-                    <td>Recargo {{number_format(($factura->recargo), 2 , ',', '.')}}%</td>
-                    <td>{{number_format(($factura->total_recargo), 2 , ',', '.')}}€</td>
-                </tr>
-
+    <table style="margin-top: 2% !important">
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>BASE IMPONIBLE</td>
+            @if($factura->tipo == 2)
+            <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
+            @else
+            <td>{{ number_format($factura->precio , 2 , ',', '.')}}€</td>
             @endif
-            <tr style="background-color:#ececec;">
-                <td></td>
-                <td>TOTAL</td>
-                @if($factura->tipo == 2)
-                    <td>{{ number_format($total , 2 , ',', '.')}}€</td>
-                @else
-                    <td>{{number_format(($factura->total), 2 , ',', '.')}}€</td>
-                @endif
-
-            </tr>
-        </table>
+        </tr>
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>IVA 21%</td>
+            @if($factura->tipo == 2)
+            <td>{{ number_format($iva_productos , 2 , ',', '.')}}€</td>
+            @else
+            <td>{{number_format(($factura->iva) , 2 , ',', '.')}}€</td>
+            @endif
+        </tr>
+        @if(isset($factura->total_recargo) && $factura->tipo !=2)
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>Recargo {{number_format(($factura->recargo), 2 , ',', '.')}}%</td>
+            <td>{{number_format(($factura->total_recargo), 2 , ',', '.')}}€</td>
+        </tr>
+        @endif
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>TOTAL</td>
+            @if($factura->tipo == 2)
+            <td>{{ number_format($total , 2 , ',', '.')}}€</td>
+            @else
+            <td>{{number_format(($factura->total), 2 , ',', '.')}}€</td>
+            @endif
+        </tr>
+    </table>
     @else
-        <table style="margin-top: 5% !important">
-            <tr style="background-color:#ececec;">
-                <td></td>
-                <td>Total</td>
-                @if($factura->tipo == 2)
-                    <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
-                @else
-                    <td>{{number_format(($factura->precio), 2 , ',', '.')}}€</td>
-                @endif
-            </tr>
-        </table>
+    <table style="margin-top: 5% !important">
+        <tr style="background-color:#ececec;">
+            <td></td>
+            <td>Total</td>
+            @if($factura->tipo == 2)
+            <td>{{ number_format($base_imponible , 2 , ',', '.')}}€</td>
+            @else
+            <td>{{number_format(($factura->precio), 2 , ',', '.')}}€</td>
+            @endif
+        </tr>
+    </table>
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
@@ -287,38 +231,38 @@
         <tr>
             <td style="text-align: left !important"><span style="font-weight: bold">Forma de pago: </span>
                 @switch($factura->metodo_pago)
-                    @case('giro_bancario')
-                        Giro Bancario
-                        @break
-                    @case('pagare')
-                        Pagare
-                        @break
-                    @case('confirming')
-                        Confirming
-                        @break
-                    @case('transferencia')
-                        Transferencia
-                        @break
-                    @case('otros')
-                        Otros
-                        @break
-                    @default
-                        ------------------
-                        @break
+                @case('giro_bancario')
+                Giro Bancario
+                @break
+                @case('pagare')
+                Pagare
+                @break
+                @case('confirming')
+                Confirming
+                @break
+                @case('transferencia')
+                Transferencia
+                @break
+                @case('otros')
+                Otros
+                @break
+                @default
+                ------------------
+                @break
                 @endswitch
                 <br>
                 <br>
-                <span style="font-weight: bold">Número de cuenta: </span><span> {{$configuracion->cuenta}}  </span>
+                <span style="font-weight: bold">Número de cuenta: </span><span> {{$configuracion->cuenta}} </span>
             </td>
 
             <td><span style="font-weight: bold;">Vencimiento a {{ $cliente->vencimiento_factura_pref}} días </span></td>
         </tr>
     </table>
     @if(isset($factura->descripcion))
-        <div style="margin-top: 20px;">
-            <span style="font-weight: bold; color:#0196eb">Nota:</span><br>
-            <p style=" background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
-        </div>
+    <div style="margin-top: 20px;">
+        <span style="font-weight: bold; color:#0196eb">Nota:</span><br>
+        <p style=" background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
+    </div>
     @endif
 </body>
 
