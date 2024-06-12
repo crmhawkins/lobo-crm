@@ -342,6 +342,10 @@ class EditComponent extends Component
 
 
             
+            $factura = Facturas::find($this->facturas->id);
+            $factura::where('id', $this->facturas->id)->update(['cliente_id' => $this->cliente_id]);
+
+
 
             //alerta
             $this->alert('success', 'Factura actualizada correctamente!', [

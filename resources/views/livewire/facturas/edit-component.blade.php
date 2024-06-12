@@ -91,7 +91,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <div class="col-sm-12">
                                     @if(isset($this->pedido_id))
                                         <select class="form-control" name="cliente_id" id="cliente_id"
-                                            wire:model="cliente_id" disabled>
+                                            wire:model="cliente_id" >
                                     @else
                                         <select class="form-control" name="cliente_id" id="cliente_id"
                                         wire:model="cliente_id" @if(!$canEdit) disabled @endif>
