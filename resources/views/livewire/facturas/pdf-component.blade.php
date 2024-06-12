@@ -64,8 +64,8 @@
                 ALGECIRAS (CÁDIZ) 11205, España
             </td>
             <td width="20%">&nbsp;</td>
-            <td class="bold" width="40%" style="text-align: right !important">
-                <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">FACTURA</h1><br>
+            <td class="bold"  @if($factura->tipo == 2) width="60%"  @else width="40%" @endif style="text-align: right !important">
+                <h1 style="display: inline; color:#0196eb; font-weight:bolder ;">FACTURA @if($factura->tipo == 2) RECTIFICATIVA @endif</h1><br>
                 
                 <span style="font-size: 80%"><span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
                 @if(isset($pedido) )
