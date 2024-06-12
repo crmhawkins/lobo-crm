@@ -138,11 +138,10 @@
                                 'infoEmpty': 'No hay registros disponibles',
                                 'infoFiltered': '(filtrado de _MAX_ total registros)',
                                 'search': 'Buscar:',
-                            },
-                    
-                                            });
-                                        })"
-                                        wire:key='{{ rand() }}'>
+                            }
+                        });
+                    })"
+                    wire:key='{{ rand() }}'>
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                         <thead>
                             <tr>
@@ -162,9 +161,9 @@
                             @foreach ($pedidos as $presup)
                             <tr>
                                 @if($presup->departamento_id == config('app.departamentos_pedidos')['Marketing']['id'])
-                                    <td>{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->id }}</td>
+                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->id }}</td>
                                 @else
-                                    <td>{{ config('app.departamentos_pedidos')['General']['pedido'] }}{{ $presup->id }}</td>
+                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['General']['pedido'] }}{{ $presup->id }}</td>
                                 @endif
                                 <td>{{ $presup->npedido_cliente }}</td>
                                 
