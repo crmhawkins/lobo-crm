@@ -1,4 +1,11 @@
 <div class="container-fluid">
+    <style>
+        @media (max-width: 768px) {
+            button {
+                width: fit-content !important;
+            }
+        }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -59,7 +66,7 @@
                                         <tr>
                                             <th>{{ $mercaderia->nombre }}</th>
                                             <td>{{ $this->getCantidad($mercaderia->id) }}</td>
-                                            <td><button type="button" wire:click.prevent="generarQRIndividual({{$mercaderia}})"
+                                            <td><button style="width: fit-content !important;" type="button" wire:click.prevent="generarQRIndividual({{$mercaderia}})"
                                                 class="btn btn-lg btn-primary w-50 mt-2">GENERAR CÓDIGOS QR</button></td>
                                         </tr>
                                     @endforeach

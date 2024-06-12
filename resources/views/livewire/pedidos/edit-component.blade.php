@@ -621,7 +621,15 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 
             }
 
+            
             td.suelo {}
+
+            @media(max-width: 756px){
+                .select2{
+                    width: 100% !important;
+                }
+            }
+
         </style>
         <script>
             window.addEventListener('initializeMapKit', () => {

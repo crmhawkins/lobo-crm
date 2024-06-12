@@ -1,4 +1,11 @@
 <div class="container-fluid">
+    <style>
+        @media(max-width: 756px){
+                .select2{
+                    width: 100% !important;
+                }
+            }
+    </style>
     <script src="//unpkg.com/alpinejs" defer></script>
     <div class="page-title-box">
         <div class="row align-items-center">

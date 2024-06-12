@@ -3,6 +3,15 @@ $EsAdmin = Auth::user()->isAdmin();
 $canEdit = $EsAdmin; //|| $estado == 1;
 @endphp
 <div class="container-fluid">
+    <style>
+        @media (max-width: 768px) {
+            ul> li:last-child > .dtr-data {
+                display: flex;
+                gap:10px;
+            }
+
+        }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">

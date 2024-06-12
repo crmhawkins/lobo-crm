@@ -1,4 +1,9 @@
 <div class="container-fluid">
+    <style>
+        textarea{
+            width: 100%;
+        }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">

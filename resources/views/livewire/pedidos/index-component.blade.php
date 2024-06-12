@@ -1,4 +1,14 @@
 <div class="container-fluid">
+    <style>
+        @media(max-width: 1042px) {
+            #filtrosSelect{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 14px !important;
+            }
+        }
+        
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">

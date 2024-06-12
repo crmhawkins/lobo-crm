@@ -192,7 +192,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 Lista de productos <button type="button" class="btn btn-primary" data-toggle="modal"
                                     style="align-self: end !important;" data-target="#addProductModal" wire:click="isClienteSeleccionado()">Añadir</button>
                             </h5>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-12 tabla-productos">
                                 @if (count($productos_pedido) > 0)
                                     <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
                                         <thead>
@@ -329,7 +329,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     </div>
                                 </div>
                                 @if ($producto_seleccionado != null)
-                                    <div class="row justify-content-center mt-1">
+                                    <div class="row justify-content-center mt-1 tipos-productos">
                                         <div class="col-md-3" style="text-align: center !important;">
                                             <label for="fechaVencimiento">Pallets</label>
                                         </div>
@@ -343,7 +343,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <label for="unidades">&nbsp; </label>
                                         </div>
                                     </div>
-                                    <div class="row justify-content-center mt-1">
+                                    <div class="row justify-content-center mt-1 tipos-unidades">
                                         <div class="col-md-3">
                                             <input type="number" class="form-control" wire:model="unidades_pallet_producto" wire:change='updatePallet()'>
                                         </div>
@@ -432,6 +432,43 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             td.derecha {
                 border-right: 1px black solid !important;
 
+            }
+            .select2 {
+                width: 100% !important;
+            }
+
+            @media (max-width: 768px) {
+                .tabla-productos {
+                    padding: 0px !important;
+                }
+                .tabla-productos > table{
+                    margin: 0px !important;
+                }
+                .tipos-productos{
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                }
+                .tipos-productos > div{
+                    width: 33% !important;
+                }
+
+                .tipos-unidades{
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap:10px
+                }
+                .tipos-productos > div:nth-child(4){
+                    display: none !important;
+                }
+
+                .tipos-unidades > div{
+                    width: 30% !important;
+                }
+                .tipos-unidades > div:nth-child(4){
+                    width: 100% !important;
+                }
             }
 
             td.suelo {}

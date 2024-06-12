@@ -4,6 +4,13 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 @endphp
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
+    <style>
+        @media(max-width: 756px){
+                .select2{
+                    width: 100% !important;
+                }
+            }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -110,6 +117,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             .nombre {
                                                 color: red;
                                             }
+                                            
                                         </style>
                                     @enderror
                                 </div>

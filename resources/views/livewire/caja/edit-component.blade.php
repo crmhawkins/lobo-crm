@@ -6,6 +6,11 @@ $EsAdmin = Auth::user()->isAdmin();
 $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //|| $estado == 1;
 @endphp
 <div class="container-fluid">
+    <style>
+        textarea{
+            width: 100%;
+        }
+    </style>
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
