@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Facturas;
 use App\Models\Iva;
+use App\Models\ProductoPedido;
+use App\Models\RegistroEmail;
 
 class EditComponent extends Component
 {
@@ -1122,7 +1124,38 @@ class EditComponent extends Component
     ];
 
     $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
-    Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+
+    try{
+        Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+
+        $this->alert('success', '¡Pedido enviado correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+            'timerProgressBar' => true,
+        ]);
+
+        $registroEmail = new RegistroEmail();
+        $registroEmail->factura_id = null;
+        $registroEmail->pedido_id = $pedido->id;
+        $registroEmail->cliente_id = $pedido->cliente_id;
+        $registroEmail->email = $cliente->email;
+        $registroEmail->user_id = Auth::user()->id;
+        $registroEmail->save();
+
+    }catch(\Exception $e){
+        //mostrarme el error
+        //dd($e);
+        $this->alert('error', '¡No se ha podido enviar el pedido!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+        ]);
+    }
+        
     /*--return response()->streamDownload(
         fn () => print($pdf),
         "pedido_{$pedido->id}.pdf"

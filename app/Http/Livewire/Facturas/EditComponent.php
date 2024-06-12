@@ -22,7 +22,8 @@ use App\Models\ProductosFacturas;
 use Carbon\Carbon;
 use App\Models\ServiciosFacturas;
 use App\Models\StockRegistro;
-
+use App\Models\RegistroEmail;
+use App\Models\Configuracion;
 
 class EditComponent extends Component
 {
@@ -614,32 +615,91 @@ class EditComponent extends Component
     {
 
         $factura = Facturas::find($this->identificador);
-
-        if($factura != null){
+        $configuracion = Configuracion::first();
+        if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
-            $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
-            $productofact= Productos::find($factura->producto_id);
+            $productofact = Productos::find($factura->producto_id);
             $productos = [];
-            if(isset($pedido)){
+            if($factura->tipo == 3){
+                $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+            }
+            //dd($albaran);
+           
+            if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
                 // Preparar los datos de los productos del pedido
                 foreach ($productosPedido as $productoPedido) {
                     $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    }
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
                     if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
                         $productos[] = [
                             'nombre' => $producto->nombre,
                             'cantidad' => $productoPedido->unidades,
                             'precio_ud' => $productoPedido->precio_ud,
                             'precio_total' => $productoPedido->precio_total,
                             'iva' => $producto->iva,
-                            'lote_id' => $productoPedido->lote_id,
-                            'peso_kg' =>($producto->peso_neto_unidad * $productoPedido->unidades) /1000,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
                         ];
                     }
-                }}
-            $iva=true;
+                }
+            }
+            $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+            $productosdeFactura = [];
+            foreach ($productosFactura as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+               
+                if ($stockEntrante) {
+                    $lote = $stockEntrante->orden_numero;
+                } else {
+                    $lote = "";
+                }
+                if ($producto) {
+                    if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                        $peso = "Peso no definido";
+                    } else {
+                        $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                    }
+                    $productosdeFactura[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->cantidad,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                        'lote_id' => $lote,
+                        'peso_kg' =>  $peso,
+                    ];
+                }
+            }
+            $total = 0;
+            $base_imponible = 0;
+            $iva_productos = 0;
+            $iva = true;
+            if ($factura->tipo == 2){
+                
+                foreach ($productosdeFactura as $producto) {
+                    $base_imponible += $producto['precio_total'];
+                    $iva_productos += $producto['iva'];
+                }
+                $total = $base_imponible + $iva_productos;
+
+            }
 
             $datos = [
                 'conIva' => $iva,
@@ -649,11 +709,46 @@ class EditComponent extends Component
                 'cliente' => $cliente,
                 'productos' => $productos,
                 'producto' => $productofact,
+                'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
+                
             ];
-
+            
+            //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
-        Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+        try{
+            Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+            $registroEmail = new RegistroEmail();
+            $registroEmail->factura_id = $factura->id;
+            $registroEmail->pedido_id = null;
+            $registroEmail->cliente_id = $factura->cliente_id;
+            $registroEmail->email = $cliente->email;
+            $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->save();
+
+            $this->alert('success', '¡Factura enviada por email correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+
+        }catch(\Exception $e){
+            $this->alert('error', '¡No se ha podido enviar la factura por email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
 
         /*return response()->streamDownload(
             fn () => print($pdf->output()),
@@ -714,32 +809,91 @@ class EditComponent extends Component
     {
 
         $factura = Facturas::find($this->identificador);
-
-        if($factura != null){
+        $configuracion = Configuracion::first();
+        if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
-            $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
-            $productofact= Productos::find($factura->producto_id);
+            $productofact = Productos::find($factura->producto_id);
             $productos = [];
-            if(isset($pedido)){
+            if($factura->tipo == 3){
+                $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+            }
+            //dd($albaran);
+           
+            if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
                 // Preparar los datos de los productos del pedido
                 foreach ($productosPedido as $productoPedido) {
                     $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    }
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
                     if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
                         $productos[] = [
                             'nombre' => $producto->nombre,
                             'cantidad' => $productoPedido->unidades,
                             'precio_ud' => $productoPedido->precio_ud,
                             'precio_total' => $productoPedido->precio_total,
                             'iva' => $producto->iva,
-                            'lote_id' => $productoPedido->lote_id,
-                            'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
                         ];
                     }
-                }}
-            $iva=false;
+                }
+            }
+            $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+            $productosdeFactura = [];
+            foreach ($productosFactura as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+               
+                if ($stockEntrante) {
+                    $lote = $stockEntrante->orden_numero;
+                } else {
+                    $lote = "";
+                }
+                if ($producto) {
+                    if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                        $peso = "Peso no definido";
+                    } else {
+                        $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                    }
+                    $productosdeFactura[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->cantidad,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                        'lote_id' => $lote,
+                        'peso_kg' =>  $peso,
+                    ];
+                }
+            }
+            $total = 0;
+            $base_imponible = 0;
+            $iva_productos = 0;
+            $iva = false;
+            if ($factura->tipo == 2){
+                
+                foreach ($productosdeFactura as $producto) {
+                    $base_imponible += $producto['precio_total'];
+                    $iva_productos += $producto['iva'];
+                }
+                $total = $base_imponible + $iva_productos;
+
+            }
 
             $datos = [
                 'conIva' => $iva,
@@ -749,11 +903,50 @@ class EditComponent extends Component
                 'cliente' => $cliente,
                 'productos' => $productos,
                 'producto' => $productofact,
+                'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
+                
             ];
+            
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
-        Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+        try{
+            Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+            $registroEmail = new RegistroEmail();
+            $registroEmail->factura_id = $factura->id;
+            $registroEmail->pedido_id = null;
+            $registroEmail->cliente_id = $factura->cliente_id;
+            $registroEmail->email = $cliente->email;
+            $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->save();
+
+            $this->alert('success', '¡Factura enviada por email correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+
+        }catch(\Exception $e){
+            $this->alert('error', '¡No se ha podido enviar la factura por email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+        
+
+
+
 
         /*return response()->streamDownload(
             fn () => print($pdf->output()),
