@@ -29,6 +29,7 @@ class EditComponent extends Component
     public $almacen_id ;
     public $roles;
     public $pass_old;
+    public $telefono;
 
     public function mount()
     {
@@ -44,6 +45,7 @@ class EditComponent extends Component
         $this->pass_old = $usuarios->password;
         $this->email = $usuarios->email;
         $this->inactive = $usuarios->inactive;
+        $this->telefono = $usuarios->telefono;
 
     }
 
@@ -68,6 +70,7 @@ class EditComponent extends Component
             'username' => 'required',
             'password' => 'required',
             'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'telefono' => 'nullable',
         ],
             // Mensajes de error
             [
@@ -94,6 +97,7 @@ class EditComponent extends Component
             'password' => $this->password,
             'email' => $this->email,
             'incative'=>$this->inactive,
+            'telefono' => $this->telefono,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 27, $usuarios->id));
 

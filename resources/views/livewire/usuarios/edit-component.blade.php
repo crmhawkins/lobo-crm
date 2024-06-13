@@ -68,6 +68,15 @@
 
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div>
+                                    <label for="fechaVencimiento" class="col-sm-12 col-form-label">Telefono</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" wire:model="telefono" class="form-control" name="telefono"
+                                            id="telefono" placeholder="123456789...">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-6">
                                 <label for="rol" class="col-sm-12 col-form-label">ROL (PUESTO DE TRABAJO)</label>
                                         <div class="col-sm-10">

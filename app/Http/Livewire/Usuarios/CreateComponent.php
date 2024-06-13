@@ -29,6 +29,7 @@ class CreateComponent extends Component
     public $inactive;
     public $almacen_id = 0;
     public $almacenes;
+    public $telefono;
 
 
 
@@ -55,6 +56,7 @@ class CreateComponent extends Component
             'password' => 'required',
             'almacen_id' => 'required',
             'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'telefono' => 'nullable',
 
         ],
             // Mensajes de error
