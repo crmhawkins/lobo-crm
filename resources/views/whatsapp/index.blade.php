@@ -330,7 +330,7 @@
         <div class="row no-gutters" style="height: inherit;">
             <div class="col-md-4 border-right">
                 <div class="settings-tray">
-                <img class="profile-image" src="https://i.ibb.co/KDgfpZt/logo-hawkins-oscuro-suite.jpg" alt="Profile img">
+                <img class="profile-image" src="{{ asset('assets/images/logo_la_fabrica.png') }}" alt="Profile img">
                 <span class="settings-tray--right">
                     <i class="material-icons">cached</i>
                     <i class="material-icons">message</i>
