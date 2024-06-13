@@ -517,7 +517,7 @@ class WhatsappController extends Controller
 
     public function contestarWhatsapp($phone, $texto) {
         $token = env('TOKEN_WHATSAPP', 'valorPorDefecto');
-    
+        $texto = "Hemos recibo su mensaje, un comercial se pondra en contacto con usted en el menor tiempo posible.";
         // Construir la carga útil como un array en lugar de un string JSON
         $mensajePersonalizado = [
             "messaging_product" => "whatsapp",
@@ -529,7 +529,7 @@ class WhatsappController extends Controller
             ]
         ];
     
-        $urlMensajes = 'https://graph.facebook.com/v16.0/102360642838173/messages';
+        $urlMensajes = 'https://graph.facebook.com/v19.0/367491926438581/messages';
     
         $curl = curl_init();
     
@@ -978,28 +978,51 @@ class WhatsappController extends Controller
         }
     }
 
-    public function mensajesAutomaticos($template, $nombre, $telefono, $idioma = 'es'){
-        $token = 'EAAKn6tggu1UBAMqGlFOg5DarUwE9isj74UU0C6XnsftooIUAdgiIjJZAdqnnntw0Kg7gaYmfCxFqVrDl5gtNGXENKHACfsrC59z723xNbtxyoZAhTtDYpDAFN4eE598iZCmMfdXRNmA7rlat7JfWR6YOavmiDPH2WX2wquJ0YWzzxzYo96TLC4Sb7rfpwVF78UlZBmYMPQZDZD';
+    public function mensajesAutomaticos($template, $data, $telefono, $idioma = 'es'){
+        $token = env('TOKEN_WHATSAPP', 'valorPorDefecto');
 
+        // "parameters" => [
+        //                         ["type" => "text", "text" => $nombre],
+        //                     ],
 
-        $mensajePersonalizado = [
-            "messaging_product" => "whatsapp",
-            "recipient_type" => "individual",
-            "to" => $telefono,
-            "type" => "template",
-            "template" => [
-                "name" => $template,
-                "language" => ["code" => $idioma],
-                "components" => [
-                    [
-                        "type" => "body",
-                        "parameters" => [
-                            ["type" => "text", "text" => $nombre],
+        if(count($data) > 0){
+            $mensajePersonalizado = [
+                "messaging_product" => "whatsapp",
+                "recipient_type" => "individual",
+                "to" => $telefono,
+                "type" => "template",
+                "template" => [
+                    "name" => $template,
+                    "language" => ["code" => $idioma],
+                    "components" => [
+                        [
+                            "type" => "body",
+                            "parameters" => $data,
                         ],
                     ],
                 ],
-            ],
-        ];
+            ];
+        }else{
+            $mensajePersonalizado = [
+                "messaging_product" => "whatsapp",
+                "recipient_type" => "individual",
+                "to" => $telefono,
+                "type" => "template",
+                "template" => [
+                    "name" => $template,
+                    "language" => ["code" => $idioma],
+                    "components" => [
+                        [
+                            "type" => "body",
+                            "parameters" => [
+                            ],
+                        ],
+                    ],
+                ],
+            ]; 
+        }
+
+       
 
         $urlMensajes = 'https://graph.facebook.com/v16.0/102360642838173/messages';
 
