@@ -1230,19 +1230,19 @@ class WhatsappController extends Controller
 
 			$remitenteSinPrefijo =$elemento['remitente'];
             // Busca el cliente cuyo teléfono coincide con el remitente del mensaje.
-            $cliente = Cliente::where('telefono', '+'.$remitenteSinPrefijo)->first();
+            //$cliente = Cliente::where('telefono', '+'.$remitenteSinPrefijo)->first();
 
-            // Si se encontró un cliente, añade su nombre al elemento del mensaje.
-            if ($cliente) {
-				if($cliente->nombre != ''){
-                $elemento['nombre_remitente'] = $cliente->nombre . ' ' . $cliente->apellido1;
-				}else {
-					$elemento['nombre_remitente'] = $cliente->alias;
-				}
-            } else {
-                // Si no se encuentra el cliente, puedes optar por dejar el campo vacío o asignar un valor predeterminado.
-                $elemento['nombre_remitente'] = 'Desconocido';
-            }
+            // // Si se encontró un cliente, añade su nombre al elemento del mensaje.
+            // if ($cliente) {
+			// 	if($cliente->nombre != ''){
+            //     $elemento['nombre_remitente'] = $cliente->nombre . ' ' . $cliente->apellido1;
+			// 	}else {
+			// 		$elemento['nombre_remitente'] = $cliente->alias;
+			// 	}
+            // } else {
+            //     // Si no se encuentra el cliente, puedes optar por dejar el campo vacío o asignar un valor predeterminado.
+            //     $elemento['nombre_remitente'] = 'Desconocido';
+            // }
 
             $resultado[$elemento['remitente']][] = $elemento;
 
