@@ -605,31 +605,12 @@ class EditComponent extends Component
     {
         $factura = Facturas::find($this->identificador);
 
-        //coger la factura_id y encontrarla
-
-        $factura_normal = Facturas::where('factura_rectificativa_id', $factura->id)->first();
-        if($factura_normal){
-            $factura_normal->factura_rectificativa_id = null;
-            $factura_normal->save();
-        }
-
-        $factura-> factura_id = null;
-        $factura->save();
-
-        //borrar registro que apunten a esta factura
-
-        $registro = StockRegistro::where('factura_id', $factura->id)->get();
-        foreach($registro as $reg){
-            $reg->delete();
-        }
-
-        //productos_factura
-        $productos_factura = ProductosFacturas::where('factura_id', $factura->id)->get();
-        foreach($productos_factura as $producto_factura){
-            $producto_factura->delete();
-        }
         event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
+        //no borrar la factura, dejarla con deleted_at para mantener la integridad de los datos
         $factura->delete();
+
+
+        //$factura->delete();
         return redirect()->route('facturas.index');
     }
 
