@@ -21,7 +21,7 @@ use App\Models\Facturas;
 use App\Models\Iva;
 use App\Models\ProductoPedido;
 use App\Models\RegistroEmail;
-
+use App\Models\User;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -84,6 +84,8 @@ class EditComponent extends Component
     public $gastos_envio;
     public $transporte;
     public $gastos_envio_iva;
+
+    public $registroEmails = [];
     
 
 
@@ -120,6 +122,7 @@ class EditComponent extends Component
         $this->empresa_transporte = $pedido->empresa_transporte;
         $this->npedido_cliente = $pedido->npedido_cliente;
         $this->gastos_envio = $pedido->gastos_envio;
+        $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
             $this->gastos_envio_iva = $this->gastos_envio * 0.21;
         }
@@ -1067,6 +1070,27 @@ class EditComponent extends Component
     {
         return PedidosStatus::firstWhere('id', $this->estado)->status;
     }
+
+    public function getCliente($id)
+    {
+        $cliente = Clients::find($id);
+        if ($cliente) {
+            return $cliente->nombre;
+        } else {
+            return '';
+        }
+    }
+
+    public function getUser($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            return $user->name;
+        } else {
+            return '';
+        }
+    }
+
 
     public function confirmDelete()
     {

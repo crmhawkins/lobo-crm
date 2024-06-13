@@ -346,6 +346,40 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </div>
                 </div>
             </div>
+            @if($EsAdmin && count($registroEmails) > 0)
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Correos electrónicos enviados</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Correo</th>
+                                            <th>Cliente</th>
+                                            <th>Usuario</th>
+                                            <th>Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($registroEmails as $index => $email)
+                                            <tr>
+                                                <td>{{ $email->email }}</td>
+                                                <td>{{ $this->getCliente( $email->cliente_id) }}</td>
+                                                <td>{{ $this->getUser($email->user_id) }}</td>
+                                                <td>{{ $email->updated_at }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            
+
+            @endif
         </div>
         <div class="col-md-3">
             @if ($canEdit)

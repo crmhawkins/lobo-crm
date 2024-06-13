@@ -24,7 +24,7 @@ use App\Models\ServiciosFacturas;
 use App\Models\StockRegistro;
 use App\Models\RegistroEmail;
 use App\Models\Configuracion;
-
+use App\Models\User;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -64,6 +64,7 @@ class EditComponent extends Component
     public $importeServicio;
     public $recargo = 0;
     public $total_recargo = 0;
+    public $registroEmails = [];
 
 
 
@@ -80,6 +81,7 @@ class EditComponent extends Component
         $this->cantidad = $this->facturas->cantidad;
         $this->recargo = $this->facturas->recargo ?? 0;
         $this->total_recargo = $this->facturas->total_recargo ?? 0;
+        $this->registroEmails = RegistroEmail::where('factura_id', $this->facturas->id)->get();
         if(isset($this->pedido)){
             $this->precio = $this->pedido->precio;
         }else{
@@ -139,6 +141,26 @@ class EditComponent extends Component
             
         }
 
+    }
+
+    public function getCliente($id)
+    {
+        $cliente = Clients::find($id);
+        if ($cliente) {
+            return $cliente->nombre;
+        } else {
+            return '';
+        }
+    }
+
+    public function getUser($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            return $user->name;
+        } else {
+            return '';
+        }
     }
 
     public function addArticulo()
