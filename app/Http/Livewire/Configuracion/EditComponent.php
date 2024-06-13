@@ -34,6 +34,16 @@ class EditComponent extends Component
     }
 
 
+    public function enviarWhatsappPrueba(){
+        $phone ="+34640181164";
+        $data = [];
+
+        enviarMensajeWhatsApp('hello_world',$data , $phone);
+        $this->alert('success', 'Mensaje enviado con éxito');
+
+    }
+
+
    public function saveFirma(){
 
 

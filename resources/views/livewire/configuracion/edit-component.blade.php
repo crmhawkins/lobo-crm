@@ -106,6 +106,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         </div>
                                     </div>
                                 @endif
+                               
                                 <div class="mb-3 row d-flex align-items-center">
                                     <div class="col-sm-12">
                                         <input type="file" class="form-control" wire:model="firma" name="firma"
@@ -117,7 +118,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     </div>
 
                                 </div>
-
+                                <div>
+                                    <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button>
+                                </div>
                             </div>
                             
                         </div>
