@@ -743,6 +743,7 @@ class EditComponent extends Component
             ]);
 
         }catch(\Exception $e){
+            //dd($e);
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                 'position' => 'center',
                 'timer' => 3000,

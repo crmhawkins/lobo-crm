@@ -45,6 +45,9 @@
         @if(isset($pedido))
             <p>Gracias por su pedido. Aquí están los detalles de su pedido realizado el {{ $pedido->fecha }}:</p>
         @endif
+        @if($datos['servicios'] != null)
+            <p>Gracias por su pedido. Aquí están los detalles de su factura:</p>
+        @endif
         <table>
             <tr>
                 <th>Producto</th>
@@ -52,20 +55,40 @@
                 <th>Precio por unidad</th>
                 <th>Subtotal</th>
             </tr>
-            @if(isset($datos['pedido']))
-            @foreach ($datos['productos'] as $producto)
-                <tr>
-                    <td>{{ $producto['nombre'] }}</td>
-                    <td>{{ $producto['cantidad'] }}</td>
-                    <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-                    <td>{{ number_format($producto['precio_total'], 2) }}€</td>
-                </tr>
-            @endforeach
-            @else
-            <td>{{ $datos['producto']->nombre }}</td>
-            <td>{{ $datos['producto']->cantidad }}</td>
-            <td>{{ $datos['producto']->precio}}€</td>
-            <td>{{ number_format($datos['factura']->precio, 2) }}€</td>
+            
+            @if($datos['pedido'] != null )
+
+                @foreach ($datos['productos'] as $producto)
+                
+                    <tr>
+                        <td>{{ $producto['nombre'] }}</td>
+                        <td>{{ $producto['cantidad'] }}</td>
+                        <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
+                        <td>{{ number_format($producto['precio_total'], 2) }}€</td>
+                    </tr>
+                @endforeach
+            @elseif( $datos['producto'] != null)
+                <td>{{ $datos['producto']->nombre }}</td>
+                <td>{{ $datos['producto']->cantidad }}</td>
+                <td>{{ $datos['producto']->precio}}€</td>
+                <td>{{ number_format($datos['factura']->precio, 2) }}€</td>
+            @endif
+
+            @if($datos['servicios'] != null && count($datos['servicios']) > 0)
+
+                
+                @foreach ($datos['servicios'] as $servicio )
+                    <tr>
+                        <td>{{ $servicio->descripcion }}</td>
+                        <td>{{ $servicio->cantidad }}</td>
+
+                        <td>{{ $servicio->precio }}</td>
+
+                        <td>{{ number_format($servicio->total, 2) }}€</td>
+                    </tr>
+
+                @endforeach
+                   
             @endif
         </table>
         @if($datos['conIva'])
