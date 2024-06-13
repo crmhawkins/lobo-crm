@@ -119,7 +119,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 
                                 </div>
                                 <div>
-                                    <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button>
+                                    {{-- <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button> --}}
                                 </div>
                             </div>
                             
@@ -143,6 +143,10 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <div class="col-12">
                                 <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
                                     Opciones</button>
+                            </div>
+                            <div class="col-12">
+                                <a href="{{ route('whatsapp.mensajes') }}" class="w-100 btn btn-secondary mb-2" id="whatsapp">Ver
+                                    Whatsapps</a>
                             </div>
                         </div>
                     </div>
