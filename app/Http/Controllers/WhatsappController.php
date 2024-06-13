@@ -7,6 +7,7 @@ use App\Models\Mensaje;
 use App\Models\MensajeAuto;
 use App\Models\Reserva;
 use App\Models\Whatsapp;
+use App\Models\ChatGpt;
 use App\Services\ClienteService;
 use Carbon\Carbon;
 use CURLFile;
@@ -1046,7 +1047,17 @@ class WhatsappController extends Controller
         ));
 
         $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE); // Obtener el código de estado HTTP
+
         curl_close($curl);
+        $responseDecoded = json_decode($response, true);
+
+
+        if($httpCode == 200 && isset($responseDecoded['messages'])){
+
+        }
+       
+
         // $responseJson = json_decode($response);
         return $response;
 
