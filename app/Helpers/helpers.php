@@ -29,17 +29,11 @@ if (!function_exists('enviarMensajeWhatsApp')) {
                 "template" => [
                     "name" => $template,
                     "language" => ["code" => $idioma],
-                    "components" => [
-                        [
-                            "type" => "body",
-                            "parameters" => [],
-                        ],
-                    ],
                 ],
             ];
         }
 
-        $urlMensajes = 'https://graph.facebook.com/v16.0/102360642838173/messages';
+        $urlMensajes = 'https://graph.facebook.com/v19.0/367491926438581/messages';
 
         $curl = curl_init();
 
