@@ -36,7 +36,8 @@ class User extends Authenticatable
         'seniority_months',
         'holidays_days',
         'inactive',
-        'role'
+        'role',
+        'telefono'
     ];
 
     /**
