@@ -156,7 +156,7 @@ class WhatsappController extends Controller
     {
         $fecha = Carbon::now()->format('Y-m-d_H-i-s');
 
-        Storage::disk('local')->put('Mensaje_Texto_Reicibido-'.$fecha.'.txt', json_encode($data) );
+        Storage::disk('local')->put('Mensaje_Texto_Recibido-'.$fecha.'.txt', json_encode($data) );
 
         // Whatsapp::create(['mensaje' => json_encode($data)]);
         $id = $data['entry'][0]['changes'][0]['value']['messages'][0]['id'];
@@ -192,7 +192,7 @@ class WhatsappController extends Controller
             //     'respuesta'=> $reponseChatGPT
             // ]);
 
-            return response($mensaje)->header('Content-Type', 'text/plain');
+            return response(200)->header('Content-Type', 'text/plain');
 
         }
     
