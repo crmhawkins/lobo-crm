@@ -25,6 +25,7 @@ use App\Models\StockRegistro;
 use App\Models\RegistroEmail;
 use App\Models\Configuracion;
 use App\Models\User;
+use App\Models\Emails;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -65,7 +66,8 @@ class EditComponent extends Component
     public $recargo = 0;
     public $total_recargo = 0;
     public $registroEmails = [];
-
+    public $emails = [];
+    public $emailsSeleccionados = [];
 
 
     public function mount()
@@ -141,6 +143,8 @@ class EditComponent extends Component
             
         }
 
+        $this->emails = Emails::where('cliente_id', $this->cliente_id)->get();
+
     }
 
     public function getCliente($id)
@@ -163,6 +167,10 @@ class EditComponent extends Component
         }
     }
 
+    
+
+
+    
     public function addArticulo()
     {
         
@@ -549,6 +557,46 @@ class EditComponent extends Component
                 'referencia_id' => $this->pedido->id,
                 'leida' => null,
             ]);
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+            $data = [['type' => 'text', 'text' => $this->pedido->id]];
+            $buttondata = [$this->pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null &&  $this->pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null &&  $this->pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_facturado', $data, $buttondata, $phone);
+            }
+
             $this->alert('success', '¡Presupuesto aceptado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -616,6 +664,8 @@ class EditComponent extends Component
 
     public function imprimirFacturaIva()
     {
+
+        //dd($this->emailsSeleccionados);
 
         $factura = Facturas::find($this->identificador);
         $configuracion = Configuracion::first();
@@ -725,16 +775,28 @@ class EditComponent extends Component
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
         try{
-            Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+            if(count($this->emailsSeleccionados) > 0){
+                foreach($this->emailsSeleccionados as $email){
+                    Mail::to($email)->send(new FacturaMail($pdf, $datos));
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id = $factura->id;
+                    $registroEmail->pedido_id = null;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $email;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
+            }else{
+                Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
 
-            $registroEmail = new RegistroEmail();
-            $registroEmail->factura_id = $factura->id;
-            $registroEmail->pedido_id = null;
-            $registroEmail->cliente_id = $factura->cliente_id;
-            $registroEmail->email = $cliente->email;
-            $registroEmail->user_id = Auth::user()->id;
-            $registroEmail->save();
-
+                $registroEmail = new RegistroEmail();
+                $registroEmail->factura_id = $factura->id;
+                $registroEmail->pedido_id = null;
+                $registroEmail->cliente_id = $factura->cliente_id;
+                $registroEmail->email = $cliente->email;
+                $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->save();
+            }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -920,16 +982,29 @@ class EditComponent extends Component
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
         try{
-            Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
 
-            $registroEmail = new RegistroEmail();
-            $registroEmail->factura_id = $factura->id;
-            $registroEmail->pedido_id = null;
-            $registroEmail->cliente_id = $factura->cliente_id;
-            $registroEmail->email = $cliente->email;
-            $registroEmail->user_id = Auth::user()->id;
-            $registroEmail->save();
+            if(count($this->emailsSeleccionados) > 0){
+                foreach($this->emailsSeleccionados as $email){
+                    Mail::to($email)->send(new FacturaMail($pdf, $datos));
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id = $factura->id;
+                    $registroEmail->pedido_id = null;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $email;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
+            }else{
+                Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
 
+                $registroEmail = new RegistroEmail();
+                $registroEmail->factura_id = $factura->id;
+                $registroEmail->pedido_id = null;
+                $registroEmail->cliente_id = $factura->cliente_id;
+                $registroEmail->email = $cliente->email;
+                $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->save();
+            }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

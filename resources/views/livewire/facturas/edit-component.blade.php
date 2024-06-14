@@ -43,6 +43,37 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="enviarEmailModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enviar emails</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nombreServicio">Selecciona emails</label>
+                    <br>
+                    @if(count($emails) > 0)
+                       @foreach ($emails as $email)
+                           <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $email->email }}"> {{ $email->email }} <br>
+                       @endforeach
+                    @else
+                        <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $cliente->email }}"> {{ $cliente->email }} <br>
+                    @endif
+                    <br>
+                    <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
+                    <button class="btn btn-success" id="EmailFacturar">Enviar sin Iva</button>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- end page-title -->
     <div class="row">
         <div class="col-md-9">
@@ -405,8 +436,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             @if ($estado == "pendiente")
                             <button class="w-100 btn btn-info mb-2" id="alertaFacturar">Marcar como facturada</button>
                             @endif
-                            <button class="w-100 btn btn-info mb-2" id="EmailFacturarIva">Enviar factura por correo Con IVA</button>
-                            <button class="w-100 btn btn-info mb-2" id="EmailFacturar">Enviar factura por correo Sin IVA</button>
+                            {{-- <button class="w-100 btn btn-info mb-2" id="EmailFacturarIva">Enviar factura por correo Con IVA</button>
+                            <button class="w-100 btn btn-info mb-2" id="EmailFacturar">Enviar factura por correo Sin IVA</button> --}}
+                            <button class="w-100 btn btn-info mb-2" data-toggle="modal" data-target="#enviarEmailModal" >Enviar emails</button>
                         </div>
                     </div>
                 </div>

@@ -22,6 +22,7 @@ use App\Models\Iva;
 use App\Models\ProductoPedido;
 use App\Models\RegistroEmail;
 use App\Models\User;
+use App\Models\Emails;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -85,10 +86,10 @@ class EditComponent extends Component
     public $transporte;
     public $gastos_envio_iva;
 
-    public $registroEmails = [];
-    
-
-
+    public $registroEmails = []; 
+    public $emails = [];
+    public $emailsSeleccionados = [];
+    public $cliente;
 
     public function mount()
     {
@@ -97,6 +98,7 @@ class EditComponent extends Component
         $this->clientes = Clients::where('estado', 2)->get();
         $this->cliente_id = ltrim($pedido->cliente_id,0);
         $cliente = Clients::find($this->cliente_id);
+        $this->cliente = $cliente;
         $this->estado = $pedido->estado;
         $this->estado_old = $pedido->estado;
         $this->almacenes = Almacen::all();
@@ -122,6 +124,8 @@ class EditComponent extends Component
         $this->empresa_transporte = $pedido->empresa_transporte;
         $this->npedido_cliente = $pedido->npedido_cliente;
         $this->gastos_envio = $pedido->gastos_envio;
+        $this->emails = Emails::where('cliente_id', $cliente->id)->get();
+
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
             $this->gastos_envio_iva = $this->gastos_envio * 0.21;
@@ -217,6 +221,48 @@ class EditComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+            
+
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -366,6 +412,47 @@ class EditComponent extends Component
                     'referencia_id' => $pedido->id,
                     'leida' => null,
                 ]);}
+
+
+                $dComercial = User::where('id', 14)->first();
+                $dGeneral = User::where('id', 13)->first();
+                $administrativo1 = User::where('id', 17)->first();
+                $administrativo2 = User::where('id', 18)->first();
+                $almacenAlgeciras = User::where('id', 16)->first();
+                $almacenCordoba = User::where('id', 15)->first();
+                $data = [['type' => 'text', 'text' => $pedido->id]];
+                $buttondata = [$pedido->id];
+
+                if(isset($dComercial) && $dComercial->telefono != null){
+                    $phone = '+34'.$dComercial->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
+                if(isset($dGeneral) && $dGeneral->telefono != null){
+                    $phone = '+34'.$dGeneral->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
+                if(isset($administrativo1) && $administrativo1->telefono != null){
+                    $phone = '+34'.$administrativo1->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
+                if(isset($administrativo2) && $administrativo2->telefono != null){
+                    $phone = '+34'.$administrativo2->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
+                if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                    $phone = '+34'.$almacenAlgeciras->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
+                if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                    $phone = '+34'.$almacenCordoba->telefono;
+                    enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
+                }
+
 
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
@@ -603,6 +690,47 @@ class EditComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
+            }
+
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -634,6 +762,48 @@ class EditComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_rechazado', $data, $buttondata, $phone);
+            }
+
             $this->alert('success', '¡Pedido rechazado!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -1150,8 +1320,32 @@ class EditComponent extends Component
     $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
 
     try{
-        Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
 
+        if(count($this->emailsSeleccionados) > 0){
+            foreach($this->emailsSeleccionados as $email){
+                Mail::to($email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+                $registroEmail = new RegistroEmail();
+                $registroEmail->factura_id =null;
+                $registroEmail->pedido_id = $pedido->id;
+                $registroEmail->cliente_id = $pedido->cliente_id;
+                $registroEmail->email = $email;
+                $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->save();
+            }
+        }else{
+
+            Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+
+            
+
+            $registroEmail = new RegistroEmail();
+            $registroEmail->factura_id = null;
+            $registroEmail->pedido_id = $pedido->id;
+            $registroEmail->cliente_id = $pedido->cliente_id;
+            $registroEmail->email = $cliente->email;
+            $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->save();
+        }
         $this->alert('success', '¡Pedido enviado correctamente!', [
             'position' => 'center',
             'timer' => 3000,
@@ -1161,18 +1355,9 @@ class EditComponent extends Component
             'confirmButtonText' => 'ok',
             'timerProgressBar' => true,
         ]);
-
-        $registroEmail = new RegistroEmail();
-        $registroEmail->factura_id = null;
-        $registroEmail->pedido_id = $pedido->id;
-        $registroEmail->cliente_id = $pedido->cliente_id;
-        $registroEmail->email = $cliente->email;
-        $registroEmail->user_id = Auth::user()->id;
-        $registroEmail->save();
-
     }catch(\Exception $e){
         //mostrarme el error
-        //dd($e);
+        dd($e);
         $this->alert('error', '¡No se ha podido enviar el pedido!', [
             'position' => 'center',
             'timer' => 3000,

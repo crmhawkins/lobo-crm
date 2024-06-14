@@ -21,6 +21,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
 use App\Models\StockSaliente;
 use App\Models\StockRegistro;
+use App\Models\User;
 
 class CreateComponent extends Component
 {
@@ -303,7 +304,33 @@ class CreateComponent extends Component
                         'referencia_id' =>$producto->id . $almacen->id ,
                         'leida' => null,
                     ]);
+                    
+                    $dGeneral = User::where('id', 13)->first();
+                    $administrativo1 = User::where('id', 17)->first();
+                    $administrativo2 = User::where('id', 18)->first();
+
+                    $data = [['type' => 'text', 'text' => $producto->nombre], ['type' => 'text', 'text' =>  $almacen->almacen]];
+                    $buttondata = [];
+                    
+
+                    if(isset($dGeneral) && $dGeneral->telefono != null){
+                        $phone = '+34'.$dGeneral->telefono;
+                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo1) && $administrativo1->telefono != null){
+                        $phone = '+34'.$administrativo1->telefono;
+                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo2) && $administrativo2->telefono != null){
+                        $phone = '+34'.$administrativo2->telefono;
+                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                    }
+                    
+                    
                 }
+
 
             }
             if ($producto) {
@@ -351,6 +378,49 @@ class CreateComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $this->pedido_almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $this->pedido_almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
+            }
+
+
             $this->alert('success', '¡Albarán Generado!', [
                 'position' => 'center',
                 'timer' => 3000,

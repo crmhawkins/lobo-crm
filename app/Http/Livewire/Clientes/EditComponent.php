@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ProductoPrecioCliente;
 use App\Models\Productos;
 use App\Models\AnotacionesClientePedido;
+use App\Models\Emails;
 
 class EditComponent extends Component
 {
@@ -59,6 +60,20 @@ class EditComponent extends Component
     public $anotacionesProximoPedido = [];
     public $anotacion;
 
+    public $emailAnadir;
+    public $emails = [];
+    public $emailsExistentes = [];
+
+
+    public function anadirEmail(){
+        //dd("prueba");
+        if($this->emailAnadir != ""){
+           
+            $this->emails[] = $this->emailAnadir;
+            $this->emailAnadir = "";
+        }
+    }
+
 
     public function mount()
     {
@@ -96,12 +111,27 @@ class EditComponent extends Component
         $this->productos =  Productos::all();
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
+
+        $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
+        //dd($this->emailsExistentes);
+
+
         foreach ($this->productos as $producto) {
             $this->arrProductos[$producto->id] = $this->productosAsignados->where('producto_id', $producto->id)->first() ? $this->productosAsignados->where('producto_id', $producto->id)->first()->precio : 0;
         }
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
     }
 
+
+    public function eliminarEmail($index){
+        unset($this->emails[$index]);
+    }
+
+    public function eliminarEmailExistente($id){
+        $email = Emails::find($id);
+        $email->delete();
+        $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
+    }
 
     public function render()
     {
@@ -215,6 +245,16 @@ class EditComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
         if($clienteSave){
+
+            if($this->emails != null){
+                foreach ($this->emails as $email) {
+                    $email1 = new Emails();
+                    $email1->email = $email;
+                    $email1->cliente_id = $cliente->id;
+                    $email1->save();
+                   
+                }
+            }
             foreach ($this->arrProductos as $key => $value) {
                    
                 $productoPrecioCliente = ProductoPrecioCliente::where('cliente_id', $cliente->id)->where('producto_id', $key)->first();

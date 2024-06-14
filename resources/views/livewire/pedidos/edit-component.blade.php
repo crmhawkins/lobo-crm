@@ -18,6 +18,36 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="enviarEmailModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enviar emails</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nombreServicio">Selecciona emails</label>
+                    <br>
+                    @if(count($emails) > 0)
+                       @foreach ($emails as $email)
+                           <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $email->email }}"> {{ $email->email }} <br>
+                       @endforeach
+                    @else
+                        <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $cliente->email }}"> {{ $cliente->email }} <br>
+                    @endif
+                    <br>
+                    <button class="btn btn-success" id="imprimirPedido">Enviar</button>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -580,7 +610,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         <a  href="{{ route('pedidos.cartatransporte' , $identificador) }}"  class="w-100 btn btn-info mb-2"  id="carta">Carta transporte</a>
                     </div>
                     <div class="col-12">
-                        <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button>
+                        {{-- <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button> --}}
+                        <button class="w-100 btn btn-info mb-2" data-toggle="modal" data-target="#enviarEmailModal" >Enviar emails</button>
+
                     </div>
                     @if(Auth::user()->role != 3 && Auth::user()->role != 2)
 

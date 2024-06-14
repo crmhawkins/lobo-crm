@@ -250,6 +250,42 @@
                             </div>
                         </div>
                     </div>
+                    <div wire:ignore.self class="modal fade" id="enviarEmailModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog"
+                            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Enviar Email al Transportista</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="email_transporte" class="col-sm-4 col-form-label">Email</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="email_transporte" wire:model="email_transporte">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="observaciones_transporte" class="col-sm-4 col-form-label">Observaciones</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="observaciones_transporte" wire:model="observaciones_transporte">
+                                        </div>
+                                    </div>
+
+                                    @if(isset($pedido))
+                                        <button onclick="enviarEmailTransporte({{ $pedido->id }})" class="btn btn-success mt-2">Enviar email</button>
+                                    @endif
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                         <table id="datatable-buttons_enviados" class="table table-striped table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -302,6 +338,8 @@
                                                 
                                                 <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary botones" style="color: white;">Pedido En Ruta</button>
                                             @endif
+                                            <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enviarEmailModal" class="btn btn-secondary botones" style="color: white;">Enviar Email Transporte</button>
+
                                             <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
                                         </td>
                                     </tr>
@@ -332,6 +370,17 @@
             location.reload()
         }, 1000);
     }
+
+    function enviarEmailTransporte(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('enviarEmailTransporte', id);
+        //window.livewire.emit('enRuta', id);
+        // setTimeout(() => {
+        //     location.reload()
+        // }, 1000);
+    }
+
     </script>
     <script>
         function mostrarAlbaran(id, conIva) {

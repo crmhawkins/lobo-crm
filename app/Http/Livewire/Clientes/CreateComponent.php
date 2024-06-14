@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Productos;
 use App\Models\ProductoPrecioCliente;
 use App\Models\AnotacionesClientePedido;
+use App\Models\Emails;
 
 class CreateComponent extends Component
 {
@@ -53,6 +54,19 @@ class CreateComponent extends Component
     public $arrProductos;
     public $observaciones;
     public $anotacionesProximoPedido;
+    public $emailAnadir;
+    public $emails = [];
+
+
+
+    public function anadirEmail(){
+        //dd("prueba");
+        if($this->emailAnadir != ""){
+           
+            $this->emails[] = $this->emailAnadir;
+            $this->emailAnadir = "";
+        }
+    }
 
     public function mount()
     {
@@ -79,6 +93,11 @@ class CreateComponent extends Component
         return view('livewire.clientes.create-component');
     }
 
+
+    public function eliminarEmail($index){
+        unset($this->emails[$index]);
+    }
+
     // Al hacer submit en el formulario
     public function submit()
     {
@@ -89,6 +108,8 @@ class CreateComponent extends Component
             $this->localidadenvio = $this->localidad;
             $this->codPostalenvio = $this->cod_postal;
         }
+
+        $this->email = $this->emails[0];
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -138,6 +159,17 @@ class CreateComponent extends Component
         
        
         if($clienteSave){
+
+            if($this->emails != null){
+                foreach ($this->emails as $email) {
+                    $email1 = new Emails();
+                    $email1->email = $email;
+                    $email1->cliente_id = $clienteSave->id;
+                    $email1->save();
+                   
+                }
+            }
+
             foreach ($this->arrProductos as $key => $value) {
                    $precioProductosSave =  ProductoPrecioCliente::create([
                         'cliente_id' => $clienteSave->id,
@@ -168,6 +200,31 @@ class CreateComponent extends Component
                 'referencia_id' => $clienteSave->id,
                 'leida' => null,
             ]);
+
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+
+            $data = [['type' => 'text', 'text' => $clienteSave->nombre]];
+            $buttondata = [$clienteSave->id];
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('cliente_pendiente', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('cliente_pendiente', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('cliente_pendiente', $data, $buttondata, $phone);
+            }
+
+
+
 
             $this->alert('success', '¡Cliente registrado correctamente!', [
                 'position' => 'center',

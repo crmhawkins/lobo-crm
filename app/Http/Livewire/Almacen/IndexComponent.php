@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Alertas;
 use App\Models\Almacen;
 use App\Models\StockRegistro;
+use App\Models\User;
+use App\Models\RegistroEmail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TransporteMail;
+
+
 
 class IndexComponent extends Component
 {
@@ -28,7 +34,115 @@ class IndexComponent extends Component
     public $fecha_salida;
     public $empresa_transporte;
     public $pedidoEnRutaId;
+    public $email_transporte;
+    public $observaciones_transporte;
 
+    
+
+    public function enviarEmailTransporte(){
+
+        if($this->email_transporte == null){
+            $this->alert('error', '¡Introduzca un email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        
+
+        
+
+        $identificador = $this->pedidoEnRutaId;
+        $pedido = Pedido::find($identificador);
+        if (!$pedido) {
+            $this->alert('error', 'Pedido no encontrado.');
+            return;
+        }
+        $cliente = Clients::find($pedido->cliente_id);
+
+        // Buscar el albarán asociado con el ID del pedido
+        $albaran = Albaran::where('pedido_id', $pedido->id)->first();
+        $Iva = true;
+        if (!$albaran) {
+            $this->alert('error', 'Albarán no encontrado para el pedido especificado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+
+        // Preparar los datos de los productos del pedido
+        $productos = [];
+        foreach ($productosPedido as $productoPedido) {
+            $producto = Productos::find($productoPedido->producto_pedido_id);
+            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
+            if (!isset( $stockEntrante)){
+                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+            }
+            if ($producto) {
+                //dd($producto);
+                $productos[] = [
+                    'nombre' => $producto->nombre,
+                    'cantidad' => $productoPedido->unidades,
+                    'precio_ud' => $productoPedido->precio_ud,
+                    'precio_total' => $productoPedido->precio_total,
+                    'iva' => $producto->iva,
+                    'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
+                    'productos_pallet' => isset($producto->cajas_por_pallet) ? $producto->cajas_por_pallet : null,
+                    'num_cajas' => isset($producto->unidades_por_caja) ? floor($productoPedido->unidades / $producto->unidades_por_caja) : null,
+                    'num_pallet' => isset($producto->cajas_por_pallet) ? floor(($productoPedido->unidades / $producto->unidades_por_caja) / $producto->cajas_por_pallet) : null,
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
+                    'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
+                ];
+            }
+        }
+
+        $datos = [
+        'conIva' => $Iva,
+        'pedido' => $pedido ,
+        'cliente' => $cliente,
+        'productos' => $productos,
+        'num_albaran' => $num_albaran = $albaran->num_albaran,
+        'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+        'almacen' => $this->getAlmacenObject($pedido->almacen_id),
+        ];
+
+        // Generar y mostrar el PDF
+        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+
+        try{
+            Mail::to($this->email_transporte)->send(new TransporteMail($pdf, $datos, $this->observaciones_transporte));
+
+            $registroEmail = new RegistroEmail();
+            $registroEmail->factura_id = null;
+            $registroEmail->pedido_id = $pedido->id;
+            $registroEmail->cliente_id = $pedido->cliente_id;
+            $registroEmail->email = $this->email_transporte;
+            $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->save();
+
+            $this->alert('success', '¡Email enviado!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'timerProgressBar' => true,
+            ]);
+
+        }catch(\Exception $e){
+                dd($e);
+            $this->alert('error', '¡No se ha podido enviar el email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+        
+    }
 
     public function mount()
     {
@@ -73,6 +187,10 @@ class IndexComponent extends Component
         return Clients::where('id', $id)->first()->nombre;
     }
 
+    public function getAlmacenObject($id){
+        return Almacen::find($id);
+    }
+
     public function getAlmacen($id){
         $almacen = Almacen::find($id);
         if (!$almacen){
@@ -89,7 +207,8 @@ class IndexComponent extends Component
             'enRuta',
             'mostrarAlbaran',
             'comprobarStockPedido',
-            'recarga'
+            'recarga',
+            'enviarEmailTransporte'
         ];
     }
 
@@ -120,6 +239,49 @@ class IndexComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;    
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
+            }
+
+            
+
             $this->alert('success', '¡Pedido en preparación!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -192,6 +354,49 @@ class IndexComponent extends Component
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
+
+            $dComercial = User::where('id', 14)->first();
+            $dGeneral = User::where('id', 13)->first();
+            $administrativo1 = User::where('id', 17)->first();
+            $administrativo2 = User::where('id', 18)->first();
+            $almacenAlgeciras = User::where('id', 16)->first();
+            $almacenCordoba = User::where('id', 15)->first();
+
+            $data = [['type' => 'text', 'text' => $pedido->id]];
+            $buttondata = [$pedido->id];
+
+            if(isset($dComercial) && $dComercial->telefono != null){
+                $phone = '+34'.$dComercial->telefono;
+                
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+            if(isset($dGeneral) && $dGeneral->telefono != null){
+                $phone = '+34'.$dGeneral->telefono;
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo1) && $administrativo1->telefono != null){
+                $phone = '+34'.$administrativo1->telefono;
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+            if(isset($administrativo2) && $administrativo2->telefono != null){
+                $phone = '+34'.$administrativo2->telefono;
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null && $pedido->almacen_id == 1){
+                $phone = '+34'.$almacenAlgeciras->telefono;
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+            if(isset($almacenCordoba) && $almacenCordoba->telefono != null && $pedido->almacen_id == 2){
+                $phone = '+34'.$almacenCordoba->telefono;
+                enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
+            }
+
+
             $this->alert('success', '¡Pedido en Ruta!', [
                 'position' => 'center',
                 'timer' => 3000,

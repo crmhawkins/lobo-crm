@@ -17,6 +17,7 @@ use App\Models\Alertas;
 use Illuminate\Support\Facades\DB;
 use App\Models\Iva;
 use App\Models\ServiciosFacturas;
+use App\Models\User;
 
 class CreateComponent extends Component
 {
@@ -414,7 +415,52 @@ class CreateComponent extends Component
                     'referencia_id' => $this->pedido->id,
                     'leida' => null,
                 ]);
+
+
+                $dComercial = User::where('id', 14)->first();
+                $dGeneral = User::where('id', 13)->first();
+                $administrativo1 = User::where('id', 17)->first();
+                $administrativo2 = User::where('id', 18)->first();
+                $almacenAlgeciras = User::where('id', 16)->first();
+                $almacenCordoba = User::where('id', 15)->first();
+
+                $data = [['type' => 'text', 'text' => $this->pedido->id]];
+                $buttondata = [$this->pedido->id];
+
+                if(isset($dComercial) && $dComercial->telefono != null){
+                    $phone = '+34'.$dComercial->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+                if(isset($dGeneral) && $dGeneral->telefono != null){
+                    $phone = '+34'.$dGeneral->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+                if(isset($administrativo1) && $administrativo1->telefono != null){
+                    $phone = '+34'.$administrativo1->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+                if(isset($administrativo2) && $administrativo2->telefono != null){
+                    $phone = '+34'.$administrativo2->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+                if(isset($almacenAlgeciras) && $almacenAlgeciras->telefono != null &&  $this->pedido->almacen_id == 1){
+                    $phone = '+34'.$almacenAlgeciras->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+                if(isset($almacenCordoba) && $almacenCordoba->telefono != null &&  $this->pedido->almacen_id == 2){
+                    $phone = '+34'.$almacenCordoba->telefono;
+                    enviarMensajeWhatsApp('pedido_entregado', $data, $buttondata, $phone);
+                }
+
+
             }
+
+
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

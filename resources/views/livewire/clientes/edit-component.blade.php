@@ -26,6 +26,59 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
+
+    <div wire:ignore.self class="modal fade" id="addEmailModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Añadir Email</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div class="form-group row">
+                        <label for="fecha_salida" class="col-sm-4 col-form-label">email</label>
+                        <div class="col-sm-8">
+                            <input type="string" class="form-control" id="fecha_salida" wire:model="emailAnadir">
+                        </div>
+                    </div>
+                    
+                        <button wire:click="anadirEmail()" class="btn btn-success mt-2">Añadir email</button>
+
+                </div>
+
+                @if($emails)
+                    <div class="modal-body">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($emails as $index => $email)
+                                    <tr>
+                                        <td>{{ $email }}</td>
+                                        <td>
+                                            <button wire:click="eliminarEmail({{ $index }})" class="btn btn-danger">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     @php
     $mostrarElemento = Auth::user()->isAdmin();
     @endphp
@@ -33,7 +86,6 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
-                    <form wire:submit.prevent="">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <div class="form-group row">
                             <br>
@@ -334,8 +386,16 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Correo
                                     electrónico</label>
                                 <div class="col-sm-12">
-                                    <input type="text" wire:model="email" class="form-control" name="email"
-                                        id="email" placeholder="Correo electrónico" @if(!$canEdit) disabled @endif>
+                                    <button data-toggle="modal" data-target="#addEmailModal" class="btn btn-secondary botones" style="color: white;">Añadir email</button>
+
+                                    @if($emailsExistentes)
+                                        <ul class="p-2 mt-2" style="border: 1px solid; ">
+                                            @foreach ($emailsExistentes as $email)
+                                                <li style="list-style: none" class="m-1">{{ $email->email }} - <button wire:click="eliminarEmailExistente({{ $email->id }})" class="btn btn-danger">x</button></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -636,7 +696,6 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
                             </div>
                         </div>
-                    </form>
                 </div>
             </div>
         </div>

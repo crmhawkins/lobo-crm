@@ -13,6 +13,8 @@ class Almacen extends Model
 
     protected $fillable = [
         'almacen',
+        'direccion',
+        'horario',
     ];
 
     /**
