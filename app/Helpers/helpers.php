@@ -75,7 +75,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Pedido en preparación durante más de 2 días</strong><br>El pedido nº ".$data[0]['text']." lleva más de dos días en preparación.";
+            $chatGpt->respuesta = "<strong>Pedido en preparación durante más de 2 días</strong><br>El pedido nº ".$data[0]['text']." lleva más de dos días en preparación.";
             $chatGpt->save();
         }
 
@@ -83,7 +83,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Pedido en envió más de 5 días</strong><br>El pedido nº ".$data[0]['text']." leva más de 5 días en envio.";
+            $chatGpt->respuesta = "<strong>Pedido en envió más de 5 días</strong><br>El pedido nº ".$data[0]['text']." leva más de 5 días en envio.";
             $chatGpt->save();
         }
 
@@ -91,7 +91,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Factura Vencimiento: En Tres Dias</strong><br>El pedido nº ".$data[0]['text']." vencera en 3 días.";
+            $chatGpt->respuesta = "<strong>Factura Vencimiento: En Tres Dias</strong><br>El pedido nº ".$data[0]['text']." vencera en 3 días.";
             $chatGpt->save();
         }
 
@@ -99,7 +99,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Albarán</strong><br>Generado Albarán del pedido nº ".$data[0]['text'];
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Albarán</strong><br>Generado Albarán del pedido nº ".$data[0]['text'];
             $chatGpt->save();
         }
 
@@ -107,7 +107,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Alerta de Stock Bajo</strong><br>Stock de ".$data[0]['text']." insuficiente en el almacen de ".$data[1]['text'];
+            $chatGpt->respuesta = "<strong>Alerta de Stock Bajo</strong><br>Stock de ".$data[0]['text']." insuficiente en el almacen de ".$data[1]['text'];
             $chatGpt->save();
         }
 
@@ -115,7 +115,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Preparación</strong><br>El pedido nº ".$data[0]['text']." esta en preparación";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Preparación</strong><br>El pedido nº ".$data[0]['text']." esta en preparación";
             $chatGpt->save();
         }
 
@@ -123,7 +123,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: En Ruta</strong><br>El pedido nº ".$data[0]['text']." esta en ruta";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: En Ruta</strong><br>El pedido nº ".$data[0]['text']." esta en ruta";
             $chatGpt->save();
         }
 
@@ -131,7 +131,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Revisión Pendiente: Nuevo Cliente</strong><br>Nuevo cliente a la espera de aprobación:".$data[0]['text'];
+            $chatGpt->respuesta = "<strong>Revisión Pendiente: Nuevo Cliente</strong><br>Nuevo cliente a la espera de aprobación:".$data[0]['text'];
             $chatGpt->save();
         }
 
@@ -139,7 +139,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Entregado</strong><br>El pedido nº ".$data[0]['text']." ha sido entregado";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Entregado</strong><br>El pedido nº ".$data[0]['text']." ha sido entregado";
             $chatGpt->save();
         }
 
@@ -147,7 +147,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Facturado</strong><br>Se cobro el pedido nº ".$data[0]['text'];
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Facturado</strong><br>Se cobro el pedido nº ".$data[0]['text'];
             $chatGpt->save();
         }
 
@@ -155,7 +155,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Aceptado en Almacén</strong><br>El pedido nº ".$data[0]['text']." ha sido aceptado";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Aceptado en Almacén</strong><br>El pedido nº ".$data[0]['text']." ha sido aceptado";
             $chatGpt->save();
         }
 
@@ -163,7 +163,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Pedido Bloqueado: Pendiente de Aprobación</strong><br>El pedido nº ".$data[0]['text']." esta a la espera de aprobación";
+            $chatGpt->respuesta = "<strong>Pedido Bloqueado: Pendiente de Aprobación</strong><br>El pedido nº ".$data[0]['text']." esta a la espera de aprobación";
             $chatGpt->save();
         }
 
@@ -171,7 +171,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Recibido</strong><br>El pedido nº ".$data[0]['text']." ha sido recibido";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Recibido</strong><br>El pedido nº ".$data[0]['text']." ha sido recibido";
             $chatGpt->save();
         }
 
@@ -179,7 +179,7 @@ if (!function_exists('enviarMensajeWhatsApp')) {
             $chatGpt = new ChatGpt();
             $chatGpt->id_mensaje = $responseDecoded['messages'][0]['id'];
             $chatGpt->remitente = $telefono;
-            $chatGpt->mensaje = "<strong>Estado del Pedido: Rechazado</strong><br>El pedido nº ".$data[0]['text']." ha sido rechazado";
+            $chatGpt->respuesta = "<strong>Estado del Pedido: Rechazado</strong><br>El pedido nº ".$data[0]['text']." ha sido rechazado";
             $chatGpt->save();
         }
 
