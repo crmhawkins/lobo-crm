@@ -164,23 +164,21 @@ class WhatsappController extends Controller
         $phone = $data['entry'][0]['changes'][0]['value']['messages'][0]['from'];
         $mensaje = $data['entry'][0]['changes'][0]['value']['messages'][0]['text']['body'];
 
-        //$mensajeExiste = ChatGpt::where( 'id_mensaje', $id )->get();
-        // if (count($mensajeExiste) > 0) {
+        $mensajeExiste = ChatGpt::where( 'id_mensaje', $id )->get();
+         if (count($mensajeExiste) > 0) {
 
-        // }else {
-        //     $dataRegistrar = [
-        //         'id_mensaje' => $id,
-        //         'id_three' => null,
-        //         'remitente' => $phone,
-        //         'mensaje' => $mensaje,
-        //         'respuesta' => null,
-        //         'status' => 1,
-        //         'status_mensaje' => 0,
-        //         'type' => 'text',
-        //         'date' => Carbon::now()
-        //     ];
-        //     $mensajeCreado = ChatGpt::create($dataRegistrar);
-
+         }else {
+             $dataRegistrar = [
+                 'id_mensaje' => $id,
+                 'id_three' => null,
+                 'remitente' => $phone,
+                 'mensaje' => null,
+                 'respuesta' => $mensaje,
+                 'status' => 1,
+                 'type' => 'text',
+             ];
+             $mensajeCreado = ChatGpt::create($dataRegistrar);
+            }
         //     $reponseChatGPT = $this->chatGpt($mensaje,$id);
 
             $respuestaWhatsapp = $this->contestarWhatsapp($phone, $mensaje);
