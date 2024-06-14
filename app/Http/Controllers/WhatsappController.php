@@ -171,9 +171,9 @@ class WhatsappController extends Controller
              $dataRegistrar = [
                  'id_mensaje' => $id,
                  'id_three' => null,
-                 'remitente' => $phone,
-                 'mensaje' => null,
-                 'respuesta' => $mensaje,
+                 'remitente' => '+'.$phone,
+                 'mensaje' => $mensaje,
+                 'respuesta' => null,
                  'status' => 1,
                  'type' => 'text',
              ];
@@ -187,6 +187,10 @@ class WhatsappController extends Controller
                 dd($respuestaWhatsapp);
             };
 
+            $responseChatGPT = 'Hemos recibo su mensaje, un comercial se pondra en contacto con usted en el menor tiempo posible.';
+            chatGpt::where('id_mensaje', $id)->update([
+                'respuesta'=> $responseChatGPT
+            ]);
             // $mensajeCreado->update([
             //     'respuesta'=> $reponseChatGPT
             // ]);
@@ -560,6 +564,7 @@ class WhatsappController extends Controller
         try {
             $responseJson = json_decode($response, true);
             Storage::disk('local')->put("Respuesta_Envio_Whatsapp-{$phone}.txt", $response);
+            
             return $responseJson;
         } catch (\Exception $e) {
             Log::error("Error al guardar la respuesta de WhatsApp: " . $e->getMessage());
