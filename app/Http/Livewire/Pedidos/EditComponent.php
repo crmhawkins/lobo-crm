@@ -90,6 +90,7 @@ class EditComponent extends Component
     public $emails = [];
     public $emailsSeleccionados = [];
     public $cliente;
+    public $emailNuevo;
 
     public function mount()
     {
@@ -1321,9 +1322,27 @@ class EditComponent extends Component
 
     try{
 
+        $emailsDireccion = [
+            'Alejandro.martin@serlobo.com',
+            'Ivan.ruiz@serlobo.com',
+            'Pedidos@serlobo.com'
+        ];
+        if($this->almacen_id == 2){
+            //push emailsDireccion 
+            $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
+
+        }
+            
+
+
         if(count($this->emailsSeleccionados) > 0){
+            if($this->emailNuevo != null){
+                array_push($this->emailsSeleccionados, $this->emailNuevo);
+            }
+
+            Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+
             foreach($this->emailsSeleccionados as $email){
-                Mail::to($email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
                 $registroEmail = new RegistroEmail();
                 $registroEmail->factura_id =null;
                 $registroEmail->pedido_id = $pedido->id;
@@ -1332,11 +1351,24 @@ class EditComponent extends Component
                 $registroEmail->user_id = Auth::user()->id;
                 $registroEmail->save();
             }
+
+            if($this->emailNuevo != null){
+
+                $registroEmail = new RegistroEmail();
+                $registroEmail->factura_id =null;
+                $registroEmail->pedido_id = $pedido->id;
+                $registroEmail->cliente_id = $pedido->cliente_id;
+                $registroEmail->email = $this->emailNuevo;
+                $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->save();
+            }
+
         }else{
-
-            Mail::to($cliente->email)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
-
-            
+            if($this->emailNuevo != null){
+                Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+            }else{
+                Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+            }
 
             $registroEmail = new RegistroEmail();
             $registroEmail->factura_id = null;
@@ -1345,6 +1377,18 @@ class EditComponent extends Component
             $registroEmail->email = $cliente->email;
             $registroEmail->user_id = Auth::user()->id;
             $registroEmail->save();
+
+            if($this->emailNuevo != null){
+                Mail::to($this->emailNuevo)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+                $registroEmail = new RegistroEmail();
+                $registroEmail->factura_id = null;
+                $registroEmail->pedido_id = $pedido->id;
+                $registroEmail->cliente_id = $pedido->cliente_id;
+                $registroEmail->email = $this->emailNuevo;
+                $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->save();
+            }
+
         }
         $this->alert('success', '¡Pedido enviado correctamente!', [
             'position' => 'center',

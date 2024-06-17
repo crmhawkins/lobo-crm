@@ -38,6 +38,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     @else
                         <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $cliente->email }}"> {{ $cliente->email }} <br>
                     @endif
+                    <input type="text" class="my-2" wire:model="emailNuevo" placeholder="Email adicional">
                     <br>
                     <button class="btn btn-success" id="imprimirPedido">Enviar</button>
 

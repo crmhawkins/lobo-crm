@@ -64,6 +64,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         <input type="checkbox" wire:model="emailsSeleccionados" value="{{ $cliente->email }}"> {{ $cliente->email }} <br>
                     @endif
                     <br>
+                    <input type="text" class="my-2" wire:model="emailNuevo" placeholder="Email adicional">
+                    <br>
                     <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
                     <button class="btn btn-success" id="EmailFacturar">Enviar sin Iva</button>
 

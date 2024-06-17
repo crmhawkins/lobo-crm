@@ -68,6 +68,7 @@ class EditComponent extends Component
     public $registroEmails = [];
     public $emails = [];
     public $emailsSeleccionados = [];
+    public $emailNuevo;
 
 
     public function mount()
@@ -775,9 +776,31 @@ class EditComponent extends Component
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
         try{
+
+            $emailsDireccion = [
+                'Alejandro.martin@serlobo.com',
+                'Ivan.ruiz@serlobo.com',
+                'Administracion@serlobo.com',
+                'Sandra.lopez@serlobo.com'
+            ];
+
+            $cliente = Clients::find($factura->cliente_id);
+            if($cliente != null && $cliente->comercial_id != null){
+                $comercial = User::find($cliente->comercial_id);
+                if($comercial != null && $comercial->email != null){
+                    $emailsDireccion[] = $comercial->email;
+                }
+            }
+            
+
             if(count($this->emailsSeleccionados) > 0){
+                if($this->emailNuevo != null){
+                    array_push($this->emailsSeleccionados, $this->emailNuevo);
+                }
+
+                Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+
                 foreach($this->emailsSeleccionados as $email){
-                    Mail::to($email)->send(new FacturaMail($pdf, $datos));
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
                     $registroEmail->pedido_id = null;
@@ -786,8 +809,25 @@ class EditComponent extends Component
                     $registroEmail->user_id = Auth::user()->id;
                     $registroEmail->save();
                 }
+
+                if($this->emailNuevo != null){
+
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id = $factura->id;
+                    $registroEmail->pedido_id = null;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $this->emailNuevo;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
             }else{
-                Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+                if($this->emailNuevo != null){
+                    Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                }else{
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                }
+
 
                 $registroEmail = new RegistroEmail();
                 $registroEmail->factura_id = $factura->id;
@@ -796,6 +836,17 @@ class EditComponent extends Component
                 $registroEmail->email = $cliente->email;
                 $registroEmail->user_id = Auth::user()->id;
                 $registroEmail->save();
+
+                if($this->emailNuevo != null){
+                    Mail::to($this->emailNuevo)->send(new FacturaMail($pdf, $datos));
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id = $factura->id ;
+                    $registroEmail->pedido_id = null;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $this->emailNuevo;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
             }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
@@ -983,9 +1034,31 @@ class EditComponent extends Component
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
         try{
 
+            $emailsDireccion = [
+                'Alejandro.martin@serlobo.com',
+                'Ivan.ruiz@serlobo.com',
+                'Administracion@serlobo.com',
+                'Sandra.lopez@serlobo.com'
+            ];
+
+            $cliente = Clients::find($factura->cliente_id);
+            if($cliente != null && $cliente->comercial_id != null){
+                $comercial = User::find($cliente->comercial_id);
+                if($comercial != null && $comercial->email != null){
+                    $emailsDireccion[] = $comercial->email;
+                }
+            }
+
             if(count($this->emailsSeleccionados) > 0){
+
+                if($this->emailNuevo != null){
+                    array_push($this->emailsSeleccionados, $this->emailNuevo);
+                }
+    
+                Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+
+
                 foreach($this->emailsSeleccionados as $email){
-                    Mail::to($email)->send(new FacturaMail($pdf, $datos));
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
                     $registroEmail->pedido_id = null;
@@ -994,8 +1067,27 @@ class EditComponent extends Component
                     $registroEmail->user_id = Auth::user()->id;
                     $registroEmail->save();
                 }
+
+
+                if($this->emailNuevo != null){
+
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id =$factura->id;
+                    $registroEmail->pedido_id = null ;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $this->emailNuevo;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
+
             }else{
-                Mail::to($cliente->email)->send(new FacturaMail($pdf, $datos));
+
+                if($this->emailNuevo != null){
+                    Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                }else{
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                }
+
 
                 $registroEmail = new RegistroEmail();
                 $registroEmail->factura_id = $factura->id;
@@ -1004,6 +1096,18 @@ class EditComponent extends Component
                 $registroEmail->email = $cliente->email;
                 $registroEmail->user_id = Auth::user()->id;
                 $registroEmail->save();
+
+                if($this->emailNuevo != null){
+                    Mail::to($this->emailNuevo)->send(new FacturaMail($pdf, $datos));
+                    $registroEmail = new RegistroEmail();
+                    $registroEmail->factura_id = $factura->id;
+                    $registroEmail->pedido_id = null;
+                    $registroEmail->cliente_id = $factura->cliente_id;
+                    $registroEmail->email = $this->emailNuevo;
+                    $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->save();
+                }
+
             }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
