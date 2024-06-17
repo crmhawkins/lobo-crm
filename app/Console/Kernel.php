@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Alertas;
 use App\Models\Facturas;
+use App\Models\User;
 
 class Kernel extends ConsoleKernel
 {
@@ -40,6 +41,31 @@ class Kernel extends ConsoleKernel
                         'referencia_id' => $pedido->id,
                         'leida' => null,
                     ]);
+
+                    //Enviar mensaje a director Comercial
+                    $dGeneral = User::where('id', 13)->first();
+                    $administrativo1 = User::where('id', 17)->first();
+                    $administrativo2 = User::where('id', 18)->first();
+
+                    $data = [['type' => 'text', 'text' => $pedido->id]];
+                    $buttondata = [$pedido->id];
+
+                    if(isset($dGeneral) && $dGeneral->telefono != null){
+                        $phone = '+34'.$dGeneral->telefono;
+                        enviarMensajeWhatsApp('automatico_preparacion', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo1) && $administrativo1->telefono != null){
+                        $phone = '+34'.$administrativo1->telefono;
+                        enviarMensajeWhatsApp('automatico_preparacion', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo2) && $administrativo2->telefono != null){
+                        $phone = '+34'.$administrativo2->telefono;
+                        enviarMensajeWhatsApp('automatico_preparacion', $data, $buttondata, $phone);
+                    }
+
+                   
                 }
             }
 
@@ -55,7 +81,31 @@ class Kernel extends ConsoleKernel
                         'referencia_id' => $pedido->id,
                         'leida' => null,
                     ]);
+
+                    $dGeneral = User::where('id', 13)->first();
+                    $administrativo1 = User::where('id', 17)->first();
+                    $administrativo2 = User::where('id', 18)->first();
+
+                    $data = [['type' => 'text', 'text' => $pedido->id]];
+                    $buttondata = [$pedido->id];
+                 
+                    if(isset($dGeneral) && $dGeneral->telefono != null){
+                        $phone = '+34'.$dGeneral->telefono;
+                        enviarMensajeWhatsApp('automatico_envio', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo1) && $administrativo1->telefono != null){
+                        $phone = '+34'.$administrativo1->telefono;
+                        enviarMensajeWhatsApp('automatico_envio', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo2) && $administrativo2->telefono != null){
+                        $phone = '+34'.$administrativo2->telefono;
+                        enviarMensajeWhatsApp('automatico_envio', $data, $buttondata, $phone);
+                    }
+
                 }
+
             }
 
             foreach ($FacturasVencimiento as $factura) {
@@ -71,7 +121,34 @@ class Kernel extends ConsoleKernel
                         'referencia_id' => $factura->id,
                         'leida' => null,
                     ]);
+
+                    $dGeneral = User::where('id', 13)->first();
+                    $administrativo1 = User::where('id', 17)->first();
+                    $administrativo2 = User::where('id', 18)->first();
+
+                    $data = [['type' => 'text', 'text' => $factura->numero_factura]];
+                    $buttondata = [$factura->id];
+
+                    if(isset($dGeneral) && $dGeneral->telefono != null){
+                        $phone = '+34'.$dGeneral->telefono;
+                        enviarMensajeWhatsApp('automatico_vencimiento', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo1) && $administrativo1->telefono != null){
+                        $phone = '+34'.$administrativo1->telefono;
+                        enviarMensajeWhatsApp('automatico_vencimiento', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo2) && $administrativo2->telefono != null){
+                        $phone = '+34'.$administrativo2->telefono;
+                        enviarMensajeWhatsApp('automatico_vencimiento', $data, $buttondata, $phone);
+                    }
+
+
                 }
+               
+                    
+
             }
         })->everyMinute();
 
