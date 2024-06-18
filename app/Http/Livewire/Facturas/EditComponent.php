@@ -798,7 +798,7 @@ class EditComponent extends Component
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
 
-                Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
 
                 foreach($this->emailsSeleccionados as $email){
                     $registroEmail = new RegistroEmail();
@@ -823,7 +823,7 @@ class EditComponent extends Component
             }else{
 
                 if($this->emailNuevo != null){
-                    Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
                 }else{
                     Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
                 }
@@ -838,7 +838,6 @@ class EditComponent extends Component
                 $registroEmail->save();
 
                 if($this->emailNuevo != null){
-                    Mail::to($this->emailNuevo)->send(new FacturaMail($pdf, $datos));
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id ;
                     $registroEmail->pedido_id = null;

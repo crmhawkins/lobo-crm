@@ -1326,6 +1326,7 @@ class EditComponent extends Component
             'Alejandro.martin@serlobo.com',
             'Ivan.ruiz@serlobo.com',
             'Pedidos@serlobo.com'
+            
         ];
         if($this->almacen_id == 2){
             //push emailsDireccion 
@@ -1340,7 +1341,7 @@ class EditComponent extends Component
                 array_push($this->emailsSeleccionados, $this->emailNuevo);
             }
 
-            Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+            Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
 
             foreach($this->emailsSeleccionados as $email){
                 $registroEmail = new RegistroEmail();
@@ -1379,7 +1380,6 @@ class EditComponent extends Component
             $registroEmail->save();
 
             if($this->emailNuevo != null){
-                Mail::to($this->emailNuevo)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
                 $registroEmail = new RegistroEmail();
                 $registroEmail->factura_id = null;
                 $registroEmail->pedido_id = $pedido->id;
