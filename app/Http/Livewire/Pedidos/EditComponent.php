@@ -1401,7 +1401,7 @@ class EditComponent extends Component
         ]);
     }catch(\Exception $e){
         //mostrarme el error
-        dd($e);
+        //dd($e);
         $this->alert('error', '¡No se ha podido enviar el pedido!', [
             'position' => 'center',
             'timer' => 3000,
