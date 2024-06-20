@@ -386,6 +386,16 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             <div class="card m-b-30" >
                 <div class="card-body">
                     <h5>Opciones de guardado</h5>
+                    @if(Auth::user()->isAdmin())
+
+                        <div class="row">
+                            <div class="col-12">
+                                <label>¿Es un pedido de Marketing?</label>
+                                    <input type="checkbox" wire:model="isMarketing" class="form-checkbox" style="margin-left: 10px; width: 20px; height: 20px;">
+                            </div>
+                        </div>
+
+                    @endif
                     <div class="row">
                         <div class="col-12">
                             <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar

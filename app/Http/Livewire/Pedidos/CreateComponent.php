@@ -69,6 +69,7 @@ class CreateComponent extends Component
     public $gastos_envio_iva;
     public $isAlmacenOnline = false;
     public $alertaAdmin = false;
+    public $isMarketing = false;
 
     public function mount()
     {
@@ -413,6 +414,13 @@ class CreateComponent extends Component
         }else{
             $validatedData['departamento_id'] = config('app.departamentos_pedidos')['General']['id'];
         }
+
+        if($this->isMarketing  && Auth::user()->isAdmin()){
+            $validatedData['departamento_id'] = config('app.departamentos_pedidos')['Marketing']['id'];
+        }
+
+
+        
 
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
