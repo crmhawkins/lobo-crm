@@ -59,6 +59,11 @@ class ListaAlertas extends Component
                 break;
             case 7:
                 return redirect()->to('admin/produccion-create');
+            case 8:
+                $this->alertas = Alertas::where('user_id', Auth::id())
+                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                                            ->get();
+                break;
             default:
                 $this->alertas = Alertas::where('user_id', Auth::id())
                                             ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas

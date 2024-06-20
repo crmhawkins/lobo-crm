@@ -29,6 +29,56 @@ class Kernel extends ConsoleKernel
             $FacturasVencimiento = Facturas::whereDate('fecha_vencimiento', '=', $tresDias->toDateString())->get();
             $pedidosEnPreparacion = Pedido::where('estado', 3)->where('updated_at', '<=', $tresDiasAtras)->get();
 
+            //pedidos con fecha de salida, es decir que no sea null y que hayan pasado 3 dias desde la fecha de salida y aun no tenga fecha de entrega diferente a null
+            $pedidosEnSalida = Pedido::whereNotNull('fecha_salida')->where('fecha_entrega', null)->whereDate('fecha_salida', '<=', $tresDias->toDateString())->get();
+            //dd($pedidosEnSalida);
+
+            foreach ($pedidosEnSalida as $pedido){
+                //dd($pedido);
+                //logger('pedidosEnSalida', $pedidosEnSalida);
+
+                $alertaExistente = Alertas::where('referencia_id', $pedido->id)->where('stage', 8)->first();
+                if (!$alertaExistente) {
+                    Alertas::create([
+                        'user_id' => 13,
+                        'stage' => 8,
+                        'titulo' => '',
+                        'descripcion' => 'El pedido nº ' . $pedido->id . ' lleva más de 3 días sin fecha de entrega.',
+                        'referencia_id' => $pedido->id,
+                        'leida' => null,
+                    ]);
+
+                    //Enviar mensaje a director Comercial
+                    $dGeneral = User::where('id', 13)->first();
+                    $administrativo1 = User::where('id', 17)->first();
+                    $administrativo2 = User::where('id', 18)->first();
+
+                    $data = [['type' => 'text', 'text' => $pedido->id]];
+                    $buttondata = [$pedido->id];
+
+                    if(isset($dGeneral) && $dGeneral->telefono != null){
+                        $phone = '+34'.$dGeneral->telefono;
+                        enviarMensajeWhatsApp('automatico_noentregado', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo1) && $administrativo1->telefono != null){
+                        $phone = '+34'.$administrativo1->telefono;
+                        enviarMensajeWhatsApp('automatico_noentregado', $data, $buttondata, $phone);
+                    }
+
+                    if(isset($administrativo2) && $administrativo2->telefono != null){
+                        $phone = '+34'.$administrativo2->telefono;
+                        enviarMensajeWhatsApp('automatico_noentregado', $data, $buttondata, $phone);
+                    }
+
+                   
+                }
+
+
+            }
+
+
+
             foreach ($pedidosEnPreparacion as $pedido) {
                 // Verificar si ya existe una alerta para este pedido
                 $alertaExistente = Alertas::where('referencia_id', $pedido->id)->where('stage', 4)->first();

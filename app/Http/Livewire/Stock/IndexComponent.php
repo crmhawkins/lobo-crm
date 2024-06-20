@@ -60,10 +60,13 @@ class IndexComponent extends Component
                 foreach ($this->producto_lotes as $lote) {
                     //eliminar los que producto_lotes - stockRegistro->sum <= 0
                       $stockRegistro = StockRegistro::where('stock_entrante_id', $lote->id)->sum('cantidad');
+
                          if(($lote->cantidad - $stockRegistro) <= 0){
+
                              $this->producto_lotes = $this->producto_lotes->where('id', '!=', $lote->id);
                          }else{
                             //la cantidad del lote debe ser la cantidad del lote - la cantidad de stockRegistro
+
                             $lote->cantidad = $lote->cantidad - $stockRegistro;
                          }
                  }
