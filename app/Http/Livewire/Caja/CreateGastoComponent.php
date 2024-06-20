@@ -58,6 +58,11 @@ class CreateGastoComponent extends Component
         $this->poveedores = Proveedores::all();
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
+
+        //generar numero interno de esta manera: 06(nombremesactual)_000(Siguiente numero de la base de datos)
+        $this->nInterno = date('m').'_'.str_pad(Caja::where('tipo_movimiento', 'Gasto')->count() + 1, 3, '0', STR_PAD_LEFT);
+        
+
         $this->facturas = Facturas::where('estado', 'Pendiente')
         ->orWhere('estado', 'Parcial')
         ->get();
