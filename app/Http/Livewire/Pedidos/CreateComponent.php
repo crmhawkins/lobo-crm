@@ -277,7 +277,7 @@ class CreateComponent extends Component
                 'denyButtonText' => 'No',
                 'onConfirmed' => 'isOnline',
                 'onDenied' => 'isNotOnline',
-                'timerProgressBar' => true,
+                'timer' => null
             ]);
             $this->alertaAdmin = true;
         }
