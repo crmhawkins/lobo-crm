@@ -17,13 +17,42 @@
 
 
     <div class="row" style="align-items: start !important">
-        <div class="col-md-9">
+        
+        <div class="col-md-12">
             <div class="card m-b-30">
                 <div class="table-responsive card-body">
                     <h4 class="mt-0 header-title" wire:key='rand()'>Ver movimientos de caja</h4>
                     
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12">
+                            <div class="col-md-12">
+                                <div class="card m-b-30">
+                                    <div class="d-flex flex-wrap">
+                                        <div class="col-md-4">
+                                            <h5>Elige un mes</h5>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <input type="month" class="form-control" wire:model="mes" wire:change="cambioMes">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>Acciones</h5>
+                                            <div class="d-flex flex-wrap">
+                                                <div class="col-12">
+                                                    <button class="w-100 btn btn-success mb-2" wire:click="Ingreso">Ingreso</button>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button class="w-100 btn btn-danger mb-2" wire:click="Gasto">Gasto</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
                             <div  >
                                 <label for="example-text-input" class="col-form-label">Tipo de movimiento</label>
                                 <select class="form-control" id="select2-producto" wire:model="filtro">
@@ -32,51 +61,48 @@
                                     <option value="Gasto">Gasto</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div  >
-                                <label for="example-text-input" class="col-form-label">Estado</label>
-                                <select class="form-control" wire:model="filtroEstado">
-                                    <option value="Todos">Todos</option>
-                                    <option value="Pendiente">Pendientes</option>
-                                    <option value="Pagado">Pagado</option>
-                                </select>
+                            <div >
+                                <div  >
+                                    <label for="example-text-input" class="col-form-label">Estado</label>
+                                    <select class="form-control" wire:model="filtroEstado">
+                                        <option value="Todos">Todos</option>
+                                        <option value="Pendiente">Pendientes</option>
+                                        <option value="Pagado">Pagado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div >
+                                <div  >
+                                    <label for="example-text-input" class="col-form-label">Delegacion</label>
+                                    <select class="form-control" id="select2-producto" wire:model="delegacion">
+                                        <option value="Todos">Todos</option>
+                                        @foreach ($delegaciones as $delegacion)
+                                            <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
+                                        @endforeach  
+                                    </select>
+                                </div>
+                            </div>
+                            <div >
+                                <div  >
+                                    <label for="example-text-input" class="col-form-label">Fecha del Pago</label>
+                                    <input type="date" class="form-control" wire:model="fechaPago">
+                                </div>
+                            </div>
+                            <div>
+                                <div  >
+                                    <label for="example-text-input" class="col-form-label">Fecha vencimiento</label>
+                                    <input type="date" class="form-control" wire:model="fechaVencimiento">
+                                </div>
+                            </div>
+                            <div >
+                                <div  >
+                                    <label for="example-text-input" class="col-form-label">Fecha</label>
+                                    <input type="date" class="form-control" wire:model="fecha">
+                                </div>
                             </div>
                         </div>
-
                     </div>
-                    <div class="row">
-                        <div class="col-3">
-                            <div  >
-                                <label for="example-text-input" class="col-form-label">Delegacion</label>
-                                <select class="form-control" id="select2-producto" wire:model="delegacion">
-                                    <option value="Todos">Todos</option>
-                                    @foreach ($delegaciones as $delegacion)
-                                        <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
-                                    @endforeach  
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div  >
-                                <label for="example-text-input" class="col-form-label">Fecha del Pago</label>
-                                <input type="date" class="form-control" wire:model="fechaPago">
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div  >
-                                <label for="example-text-input" class="col-form-label">Fecha vencimiento</label>
-                                <input type="date" class="form-control" wire:model="fechaVencimiento">
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div  >
-                                <label for="example-text-input" class="col-form-label">Fecha</label>
-                                <input type="date" class="form-control" wire:model="fecha">
-                            </div>
-                        </div>
-
-                    </div>
+                    
                     <div class="row mt-2">
                         <div class="col-12">
                             <button wire:click="descargarTodosDocumentos" class="btn btn-primary">Descargar todos los documentos</button>
@@ -291,27 +317,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card m-b-30">
-                <div class="card-body">
-                    <h5>Elige un mes</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="month" class="form-control" wire:model="mes" wire:change="cambioMes">
-                        </div>
-                    </div>
-                    <h5>Acciones</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" wire:click="Ingreso">Ingreso</button>
-                        </div>
-                        <div class="col-12">
-                            <button class="w-100 btn btn-danger mb-2" wire:click="Gasto">Gasto</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     @section('scripts')
