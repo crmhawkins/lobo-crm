@@ -261,7 +261,12 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         </div>
                         <div class="form-group col-md-4">
                             <label for="fecha">Precio final</label>
-                            <input type="text" wire:model="precio" class="form-control" readonly>
+                            @if(Auth::user()->isAdmin() && $isAlmacenOnline)
+                                <input type="text" wire:model="precio" class="form-control" >
+                            @else
+                            
+                                <input type="text" wire:model="precio" class="form-control" readonly>
+                            @endif
                         </div>
                     </div>
                     @endif
@@ -490,6 +495,12 @@ $canEdit = $EsAdmin; //|| $estado == 1;
     </div>
 
     @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Emitir evento Livewire cuando el DOM esté completamente cargado
+            Livewire.emit('domLoaded');
+        });
+    </script>
         {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}

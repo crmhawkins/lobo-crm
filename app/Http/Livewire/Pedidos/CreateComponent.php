@@ -67,7 +67,8 @@ class CreateComponent extends Component
     public $gastos_envio;
     public $transporte;
     public $gastos_envio_iva;
-
+    public $isAlmacenOnline = false;
+    public $alertaAdmin = false;
 
     public function mount()
     {
@@ -86,7 +87,15 @@ class CreateComponent extends Component
         $this->cliente_id = null;
         $this->almacenes = Almacen::all(); 
     }
+    public function isOnline(){
+        $this->almacen_id = 6;
+        $this->isAlmacenOnline = true;
+    }
 
+    public function isNotOnline(){
+        $this->isAlmacenOnline = false;
+
+    }
     public function selectCliente()
     {
         $cliente = Clients::find($this->cliente_id);
@@ -119,6 +128,7 @@ class CreateComponent extends Component
             ]);
         }
        
+
 
     }
 
@@ -248,8 +258,33 @@ class CreateComponent extends Component
 
     public function render()
     {
+        
+
         return view('livewire.pedidos.create-component');
     }
+
+    public function domLoaded()
+    {
+        if(Auth::user()->isAdmin() && $this->alertaAdmin == false){
+
+            //alert va a ser un pedido online? si es si, lanzar isOnline = true, si es no, isOnline = false
+            $this->alert('info', '¿El pedido es online?', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Sí',
+                'showDenyButton' => true,
+                'denyButtonText' => 'No',
+                'onConfirmed' => 'isOnline',
+                'onDenied' => 'isNotOnline',
+                'timerProgressBar' => true,
+            ]);
+            $this->alertaAdmin = true;
+        }
+        $this->emit('refreshComponent');
+    }
+
+
     // Al hacer submit en el formulario
     public function submit()
     {
@@ -525,7 +560,10 @@ class CreateComponent extends Component
             'submit',
             'alertaGuardar',
             'checkLote',
-            'closeModal'
+            'closeModal',
+            'domLoaded',
+            'isOnline',
+            'isNotOnline'
         ];
     }
 
@@ -576,6 +614,18 @@ class CreateComponent extends Component
         $producto = Productos::find($this->producto_seleccionado);
         $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
+    }
+
+    public function updated($property){
+        if($property == 'precio' && $this->isAlmacenOnline){
+            
+            $this->descuento_total = $this->subtotal - $this->precio;
+            if($this->descuento_total > 0)
+            {
+                $this->descuento = 1;
+                $this->porcentaje_descuento = ($this->descuento_total / $this->subtotal) * 100;
+            }
+        }
     }
 
     public function deleteArticulo($id)
