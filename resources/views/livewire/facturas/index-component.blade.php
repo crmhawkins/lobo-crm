@@ -369,6 +369,9 @@
                                                 @if($this->hasPedido($fact->id))
                                                     <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
                                                 @endif
+                                                @if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
+                                                    <button  onclick="enviarRecordatorio({{ $fact->id }})" class="btn btn-danger botones" style="color: white;">Recordatorio Impago</button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -888,6 +891,13 @@
     function mostrarAlbaran(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('albaran', id, conIva);
+        setTimeout(() => {
+            location.reload()
+        }, 5000);
+    }
+    function enviarRecordatorio(id) {
+        // Suponiendo que tu descarga se realiza aquí
+        window.livewire.emit('enviarRecordatorio', id);
         setTimeout(() => {
             location.reload()
         }, 5000);

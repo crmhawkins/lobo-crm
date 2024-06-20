@@ -144,6 +144,8 @@ class IndexComponent extends Component
         
     }
 
+    
+
     public function mount()
     {
         $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado

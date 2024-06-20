@@ -148,6 +148,8 @@ class EditComponent extends Component
 
     }
 
+   
+
     public function getPedido(){
         $pedido = Pedido::find($this->pedido_id);
         $factura = Facturas::find($this->facturas->id);
