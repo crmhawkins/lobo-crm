@@ -23,7 +23,7 @@ use App\Http\Controllers\CajaController;
 use App\Http\Controllers\Test;
 use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
-
+use App\Http\Controllers\VerEmailsController;
 use App\Http\Controllers\ConfiguracionController;
 
 /*
@@ -144,6 +144,10 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
     //ruta configuracion
     Route::get('/configuracion', [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
+
+
+    //ruta ver emails
+    Route::get('/ver-emails', [VerEmailsController::class, 'index'])->name('ver-emails.index');
 });
 
 Route::get('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'hookWhatsapp'])->name('whatsapp.hookWhatsapp');
@@ -152,4 +156,3 @@ Route::post('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'proce
 // Route::get('/cron','SiteController@obtenerAudioMedia2')->name('admin.estadisticas.obtenerAudioMedia2');
 //Route::get('/cron', [App\Http\Controllers\WhatsappController::class, 'cron'])->name('whatsapp.cron');
 Route::get('/mensajes-whatsapp', [App\Http\Controllers\WhatsappController::class, 'whatsapp'])->name('whatsapp.mensajes');
-

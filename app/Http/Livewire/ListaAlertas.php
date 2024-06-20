@@ -11,14 +11,37 @@ class ListaAlertas extends Component
 
     public $alertas;
 
+    public $alertasTipo1;
+    public $alertasTipo2;
+    public $alertasTipo3;
+    public $alertasTipo4;
+    public $alertasTipo5;
+    public $alertasTipo6;
+    public $alertasTipo7;
+    public $alertasTipo8;
+
     public function mount()
     {
         $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+            ->get();
+    }
 
 
+    public function limpiarAlertas()
+    {
+        $this->alertas = Alertas::where('user_id', Auth::id())
+            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+            ->get();
 
+        foreach ($this->alertas as $alerta) {
+            $alerta->leida = true;
+            $alerta->save();
+        }
+
+        $this->alertas = Alertas::where('user_id', Auth::id())
+            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+            ->get();
     }
 
     public function render()
@@ -34,44 +57,41 @@ class ListaAlertas extends Component
 
         switch ($stage) {
             case 1:
-                return redirect()->to('admin/clientes-edit/'.$referenciaId);
+                return redirect()->to('admin/clientes-edit/' . $referenciaId);
             case 2:
-                return redirect()->to('admin/pedidos-edit/'.$referenciaId);
+                return redirect()->to('admin/pedidos-edit/' . $referenciaId);
             case 3:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
                 break;
             case 4:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
                 break;
             case 5:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
                 break;
             case 6:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
                 break;
             case 7:
                 return redirect()->to('admin/produccion-create');
             case 8:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
                 break;
             default:
                 $this->alertas = Alertas::where('user_id', Auth::id())
-                                            ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
-                                            ->get();
-            break;
+                    ->whereNull('leida') // Opcional: Cargar solo notificaciones no leídas
+                    ->get();
+                break;
         }
     }
 }
-
-
-

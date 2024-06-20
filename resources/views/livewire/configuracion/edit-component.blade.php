@@ -148,6 +148,10 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <a href="{{ route('whatsapp.mensajes') }}" class="w-100 btn btn-secondary mb-2" id="whatsapp">Ver
                                     Whatsapps</a>
                             </div>
+                            <div class="col-12">
+                                <a href="{{ route('ver-emails.index') }}" class="w-100 btn btn-secondary mb-2" id="emails">Ver
+                                    Emails</a> 
+                            </div>
                         </div>
                     </div>
                 </div>
