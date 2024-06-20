@@ -49,6 +49,62 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="viewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gestion de cobros</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (count($gestionesPedido) > 0)
+                        <ul>
+                            @foreach ($gestionesPedido as $gestion)
+                                <li>{{ $gestion->gestion }} - <span class="badge badge-warning text-uppercase">{{ $gestion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $gestion->id }}')">Completar</button></li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" id="addModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Añadir gestión</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea wire:model="gestion" class="form-control gestion" name="gestion"
+                        id="gestion" placeholder="gestion"></textarea>
+                    <br>
+                    @error('gestion')
+                        <span class="text-danger">{{ $message }}</span>
+
+                        <style>
+                            .gestion {
+                                color: red;
+                            }
+                        </style>
+                    @enderror
+                    <button class="btn btn-success" wire:click="addAnotacion" data-dismiss="modal">Añadir</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -648,7 +704,18 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
                     @endif
-
+                    <div class="col-12">
+                        @if(count($gestionesPedido) > 0 )
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
+                                    gestiones de cobro</button>
+                            </div>
+                        @endif
+                        <div class="col-12">
+                            <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
+                                gestion cobro </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

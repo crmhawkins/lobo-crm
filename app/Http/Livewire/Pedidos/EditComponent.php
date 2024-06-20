@@ -23,6 +23,7 @@ use App\Models\ProductoPedido;
 use App\Models\RegistroEmail;
 use App\Models\User;
 use App\Models\Emails;
+use App\Models\GestionPedidos;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -92,6 +93,9 @@ class EditComponent extends Component
     public $cliente;
     public $emailNuevo;
 
+    public $gestionesPedido = [];
+    public $gestion;
+
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
@@ -143,11 +147,32 @@ class EditComponent extends Component
                 'borrar' => 0,
             ];
         }
+        $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
+
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
 
     }
 
+    public function completarAnotacion($id){
+        $gestion = GestionPedidos::find($id);
+        $gestion->update([
+            'estado' => 'completado'
+        ]);
+        $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
+    }
+
+    public function addAnotacion(){
+        if($this->gestion !== null){
+            $gestion = GestionPedidos::create([
+                'pedido_id' => $this->identificador,
+                'gestion' => $this->gestion,
+                'estado' => 'pendiente'
+            ]);
+            $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
+            $this->gestion = null;
+        }
+    }
 
     public function selectCliente()
     {
