@@ -666,12 +666,36 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
             @endif
     </div>
+    <div wire:ignore.self class="modal fade" id="viewModal2" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Anotaciones próximo pedido</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (count($anotacionesProximoPedido) > 0)
+                        <ul>
+                            @foreach ($anotacionesProximoPedido as $anotacion)
+                                <li>{{ $anotacion->anotacion }} - <span class="badge badge-warning text-uppercase">{{ $anotacion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $anotacion->id }}')">Completar</button></li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-md-3">
         <div class="card m-b-30">
             <div class="card-body">
                 <h5>Opciones</h5>
                 <div class="row">
-                    <div class="col-12">
                         @if(count($gestionesPedido) > 0 )
                             <div class="col-12">
                                 <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
@@ -682,7 +706,6 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
                                 gestion cobro </button>
                         </div>
-                    </div>
                     <div class="col-12">
                         <a  href="{{ route('pedidos.cartatransporte' , $identificador) }}"  class="w-100 btn btn-primary mb-2"  id="carta">Carta transporte</a>
                     </div>
@@ -724,7 +747,13 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
                     @endif
-                    
+                        @if(count($anotacionesProximoPedido) > 0 )
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal2">Ver
+                                    Anotaciones</button>
+                            </div>
+                        @endif
+                        
                 </div>
             </div>
         </div>

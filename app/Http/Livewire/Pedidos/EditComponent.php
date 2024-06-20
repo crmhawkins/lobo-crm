@@ -24,6 +24,7 @@ use App\Models\RegistroEmail;
 use App\Models\User;
 use App\Models\Emails;
 use App\Models\GestionPedidos;
+use App\Models\AnotacionesClientePedido;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -97,6 +98,8 @@ class EditComponent extends Component
     public $gestionesPedido = [];
     public $gestion;
 
+    public $anotacionesProximoPedido;
+
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
@@ -150,7 +153,22 @@ class EditComponent extends Component
             ];
         }
         $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
-
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
+        //alert si hay anotaciones pendientes con botón para cerrar y boton para ver anotaciones
+        if (count($this->anotacionesProximoPedido) > 0) {
+            $this->alert('info', '¡El cliente tiene anotaciones pendientes!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Cerrar',
+                //'showDenyButton' => true,
+                //'denyButtonText' => 'Ver anotaciones',
+                'onConfirmed' => '',
+                //'onDenied' => 'verAnotaciones',
+                'timerProgressBar' => true,
+            ]);
+        }
+       
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
 
@@ -162,6 +180,13 @@ class EditComponent extends Component
             'estado' => 'completado'
         ]);
         $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
+    }
+    public function completarAnotacion2($id){
+        $anotacion = AnotacionesClientePedido::find($id);
+        $anotacion->update([
+            'estado' => 'completado'
+        ]);
+        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
     }
 
     public function addAnotacion(){
