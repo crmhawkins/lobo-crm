@@ -92,6 +92,7 @@ class EditComponent extends Component
     public $emailsSeleccionados = [];
     public $cliente;
     public $emailNuevo;
+    public $fecha_entrega;
 
     public $gestionesPedido = [];
     public $gestion;
@@ -130,6 +131,7 @@ class EditComponent extends Component
         $this->npedido_cliente = $pedido->npedido_cliente;
         $this->gastos_envio = $pedido->gastos_envio;
         $this->emails = Emails::where('cliente_id', $cliente->id)->get();
+        $this->fecha_entrega = $pedido->fecha_entrega;
 
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
@@ -224,6 +226,7 @@ class EditComponent extends Component
                 'npedido_cliente' => 'nullable',
                 'gastos_envio' => 'nullable',
                 'transporte' => 'nullable',
+                'fecha_entrega' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -372,6 +375,7 @@ class EditComponent extends Component
                 'npedido_cliente' => 'nullable',
                 'gastos_envio' => 'nullable',
                 'transporte' => 'nullable',
+                'fecha_entrega' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -683,6 +687,7 @@ class EditComponent extends Component
                 'porcentaje_descuento'=> 'nullable',
                 'bloqueado'=> 'nullable',
                 'npedido_cliente' => 'nullable',
+                'fecha_entrega' => 'nullable',
             ],
             // Mensajes de error
             [

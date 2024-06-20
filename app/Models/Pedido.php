@@ -41,6 +41,7 @@ class Pedido extends Model
         'gastos_envio',
         'transporte',
         'departamento_id',
+        'fecha_entrega',
     ];
 
     /**

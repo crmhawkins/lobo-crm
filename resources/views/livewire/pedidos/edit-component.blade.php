@@ -2,6 +2,9 @@
 $mostrarElemento = Auth::user()->role == 2;
 $EsAdmin = Auth::user()->isAdmin();
 $canEdit = $EsAdmin; //|| $estado == 1;
+
+$mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::user()->isAdmin();
+
 @endphp
 <div class="container-fluid">
     <div class="page-title-box">
@@ -269,11 +272,16 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <label for="npedido_cliente" >Nº Pedido Cliente</label>
                             <input wire:model="npedido_cliente" class="form-control">
                         </div>
+                        
+                        
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
                         <div class="form-group col-md-5">
-                           
+                            @if($mostrarElemento2)
+                                <label for="fecha_entrega" >Fecha entrega</label>
+                                <input type="date" wire:model="fecha_entrega" class="form-control">
+                            @endif
                         </div>
                     </div>
                     <div class="form-row mb-4 justify-content-center">
@@ -664,7 +672,19 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                 <h5>Opciones</h5>
                 <div class="row">
                     <div class="col-12">
-                        <a  href="{{ route('pedidos.cartatransporte' , $identificador) }}"  class="w-100 btn btn-info mb-2"  id="carta">Carta transporte</a>
+                        @if(count($gestionesPedido) > 0 )
+                            <div class="col-12">
+                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
+                                    gestiones de cobro</button>
+                            </div>
+                        @endif
+                        <div class="col-12">
+                            <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
+                                gestion cobro </button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <a  href="{{ route('pedidos.cartatransporte' , $identificador) }}"  class="w-100 btn btn-primary mb-2"  id="carta">Carta transporte</a>
                     </div>
                     <div class="col-12">
                         {{-- <button class="w-100 btn btn-info mb-2"  id="imprimirPedido">Enviar por Email</button> --}}
@@ -674,7 +694,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     @if(Auth::user()->role != 3 && Auth::user()->role != 2)
 
                         <div class="col-12">
-                            <button class="w-100 btn btn-primary mb-2" wire:click.prevent="alertaGuardar">Guardar
+                            <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
                                 datos del
                                 pedido</button>
                         </div>
@@ -704,18 +724,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
                     @endif
-                    <div class="col-12">
-                        @if(count($gestionesPedido) > 0 )
-                            <div class="col-12">
-                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal">Ver
-                                    gestiones de cobro</button>
-                            </div>
-                        @endif
-                        <div class="col-12">
-                            <button class="w-100 btn btn-dark mb-2" id="añadirAnotacion" data-toggle="modal" data-target="#addModal">Añadir
-                                gestion cobro </button>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
         </div>
