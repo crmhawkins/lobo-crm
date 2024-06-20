@@ -397,11 +397,14 @@ class EditComponent extends Component
                     ['precio' => $this->precio,
                     'cliente_id' => $this->cliente_id,
                     'gastos_envio' => $this->gastos_envio,
-                    'transporte' => $this->transporte,]
+                    'transporte' => $this->transporte,
+                    'descuento' => $this->descuento,
+                    'porcentaje_descuento' => $this->porcentaje_descuento,
+                    ]
                 );
                 $this->calcularTotales($factura);
                 
-
+                //dd($factura);
             }
 
             if( $this->bloqueado && $this->estado == 1){
@@ -412,9 +415,9 @@ class EditComponent extends Component
                     'descripcion' => 'El pedido nº' . $pedido->id .' esta a la espera de aprobación',
                     'referencia_id' => $pedido->id,
                     'leida' => null,
-                ]);}
-
-
+                ]);
+            
+            
                 $dComercial = User::where('id', 14)->first();
                 $dGeneral = User::where('id', 13)->first();
                 $administrativo1 = User::where('id', 17)->first();
@@ -453,7 +456,8 @@ class EditComponent extends Component
                     $phone = '+34'.$almacenCordoba->telefono;
                     enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
                 }
-
+            
+            }
 
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
@@ -499,9 +503,8 @@ class EditComponent extends Component
             //coger el precio del pedido y sumarle el iva
             $total = $factura->precio + $this->iva_total;
             $iva = $this->iva_total;
-
             $factura->iva = $iva;
-            $factura->iva_total_pedido = $this->iva_total;
+            $factura->iva_total_pedido = $iva;
             $factura->descuento_total_pedido = $this->descuento_total;
             $factura->subtotal_pedido = $this->subtotal;
             $factura->total = $total;
@@ -520,7 +523,7 @@ class EditComponent extends Component
                 $total = $total + $iva;
 
                 $factura->iva = $iva;
-                $factura->iva_total_pedido = $this->iva_total;
+                $factura->iva_total_pedido = $iva;
                 $factura->descuento_total_pedido = $this->descuento_total;
                 $factura->subtotal_pedido = $this->subtotal;
                 $factura->total = $total;

@@ -148,6 +148,17 @@ class EditComponent extends Component
 
     }
 
+    public function getPedido(){
+        $pedido = Pedido::find($this->pedido_id);
+        $factura = Facturas::find($this->facturas->id);
+        $this->iva_total_pedido = $factura->iva_total_pedido;
+        $this->descuento_total_pedido = $factura->descuento_total_pedido;
+        $this->iva_total_pedido = $factura->iva_total_pedido;
+        $this->subtotal_pedido = $factura->subtotal_pedido;
+        $this->precio = $this->pedido->precio;
+        $this->descuento = $pedido->porcentaje_descuento;
+    }
+
     public function getCliente($id)
     {
         $cliente = Clients::find($id);
@@ -420,6 +431,7 @@ class EditComponent extends Component
                 }
 
 
+
                 $this->facturas->precio = $total;
                 
                 $this->facturas->iva_total_pedido = $total * 21 / 100;
@@ -445,6 +457,9 @@ class EditComponent extends Component
             
         }else{
             // Guardar datos validados
+
+            //$pedido = Pedido::find($this->pedido_id);
+            $this->getPedido();
             $facturasSave = $this->facturas->update([
                 'numero_factura' => $this->numero_factura,
                 'cliente_id' => $this->cliente_id,
@@ -880,17 +895,24 @@ class EditComponent extends Component
         $total = 0;
         $recargo = $this->recargo;
         $recargo_total = 0;
+        //busca la factura en la base de datos que debe estar actualizada
+        $factura = Facturas::find($factura->id);
+        //dd($factura);
+        //dd($factura);
         //si hay pedido id
         if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
             $recargo_total = (($factura->precio * $recargo) / 100);
             //coger el precio del pedido y sumarle el iva
             $total = $factura->precio + $recargo_total +  $factura->iva_total_pedido;
+            //dd($factura->precio);
             $iva = $factura->iva_total_pedido;
-
+            //dd($iva);
             $factura->iva = $iva;
             $factura->total = $total;
             $factura->recargo = $recargo;
             $factura->total_recargo = $recargo_total;
+            $this->total = $total;
+            //dd($factura);
             $factura->save();
             
         }else{
