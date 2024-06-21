@@ -103,7 +103,7 @@
                                 <h5>Correos electrónicos enviados</h5>
                                 <div class="row">
                                     <div class="col-12">
-                                        <table id="datatable-buttons" class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                        <table id="datatable-buttons" class="table ms-3 table-striped table-bordered dt-responsive nowrap" wire:key='{{ rand() }}'>
                                             <thead>
                                                 <tr>
                                                     <th>Correo</th>

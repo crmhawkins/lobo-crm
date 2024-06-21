@@ -94,6 +94,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
 
                             </div>
+                            
+
                             <div class="card-body">
                                 <h5>Firma</h5>
                                 @if ($firma)
@@ -108,7 +110,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 @endif
                                
                                 <div class="mb-3 row d-flex align-items-center">
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-4">
                                         <input type="file" class="form-control" wire:model="firma" name="firma"
                                             id="firma" placeholder="Imagen del producto...">
                                         @error('nombre')
@@ -121,6 +123,67 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <div>
                                     {{-- <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button> --}}
                                 </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Configurar Almacenes</label>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Almacen</th>
+                                            <th>Dirección</th>
+                                            <th>Horario</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <!-- Formulario para añadir un nuevo almacén -->
+                                        <tr>
+                                            <td>
+                                                <input type="text" wire:model="newAlmacen.almacen" class="form-control" placeholder="almacen">
+                                                @error('newAlmacen.almacen') <span class="text-danger">{{ $message }}</span> @enderror
+                                            </td>
+                                            <td>
+                                                <input type="text" wire:model="newAlmacen.direccion" class="form-control" placeholder="Dirección">
+                                                @error('newAlmacen.direccion') <span class="text-danger">{{ $message }}</span> @enderror
+                                            </td>
+                                            <td>
+                                                <input type="text" wire:model="newAlmacen.horario" class="form-control" placeholder="Horario">
+                                                @error('newAlmacen.horario') <span class="text-danger">{{ $message }}</span> @enderror
+                                            </td>
+                                            <td>
+                                                <button wire:click="addAlmacen" class="btn btn-success">Añadir</button>
+                                            </td>
+                                        </tr>
+                                        @if(count($almacenes) > 0)
+                                            <!-- Fin del formulario para añadir un nuevo almacén -->
+                                            @foreach ($almacenes as $almacen)
+                                                <tr>
+                                                    @if(isset($editableAlmacen['id']) && $editableAlmacen['id'] == $almacen->id)
+                                                        <td>
+                                                            <input type="text" wire:model="editableAlmacen.almacen" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" wire:model="editableAlmacen.direccion" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" wire:model="editableAlmacen.horario" class="form-control">
+                                                        </td>
+                                                        <td>
+                                                            <button wire:click="saveAlmacen" class="btn btn-success">Guardar</button>
+                                                        </td>
+                                                    @else
+                                                        <td>{{ $almacen->almacen }}</td>
+                                                        <td>{{ $almacen->direccion }}</td>
+                                                        <td>{{ $almacen->horario }}</td>
+                                                        <td>
+                                                            <button wire:click="edit({{ $almacen->id }})" class="btn btn-primary">Editar</button>
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
                             </div>
                             
                         </div>

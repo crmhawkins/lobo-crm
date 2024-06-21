@@ -7,6 +7,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 use App\Models\DepartamentosProveedores;
 use Livewire\WithFileUploads;
+use App\Models\Almacen;
 
 class EditComponent extends Component
 {
@@ -19,7 +20,47 @@ class EditComponent extends Component
     public $nombreDepartamento;
     public $firma;
     public $hasImage = false;
+    public $almacenes = [];
+    public $almacenNombre;
+    public $almacenDireccion;
+    public $almacenHorario;
+    public $editableAlmacen = [];
+    public $newAlmacen = [
+        'almacen' => '',
+        'direccion' => '',
+        'horario' => ''
+    ];
+    protected $rules = [
+        'editableAlmacen.almacen' => 'required|string',
+        'editableAlmacen.direccion' => 'required|string',
+        'editableAlmacen.horario' => 'required|string',
+        'newAlmacen.almacen' => 'required|string',
+        'newAlmacen.direccion' => 'required|string',
+        'newAlmacen.horario' => 'required|string',
+    ];
 
+    public function addAlmacen()
+    {
+        $this->validate([
+            'newAlmacen.almacen' => 'required|string',
+            'newAlmacen.direccion' => 'required|string',
+            'newAlmacen.horario' => 'required|string',
+        ]);
+
+        Almacen::create($this->newAlmacen);
+
+        $this->almacenes = Almacen::all();  // Refrescar la lista de almacenes
+        $this->newAlmacen = [  // Limpiar el formulario de nuevo almacén
+            'almacen' => '',
+            'direccion' => '',
+            'horario' => ''
+        ];
+
+        
+
+        $this->alert('success', 'Almacén agregado con éxito');
+
+    }
 
     public function mount($configuracion)
     {
@@ -30,7 +71,24 @@ class EditComponent extends Component
         if($this->firma != null){
             $this->hasImage = true;
         }
+        $this->almacenes = Almacen::all();
         //dd($this->firma);
+    }
+
+    
+    public function edit($id)
+    {
+        $this->editableAlmacen = $this->almacenes->find($id)->toArray();
+    }
+
+    public function saveAlmacen()
+    {
+
+        $almacen = Almacen::find($this->editableAlmacen['id']);
+        $almacen->update($this->editableAlmacen);
+
+        $this->almacenes = Almacen::all();  // Refrescar la lista de almacenes
+        $this->editableAlmacen = [];  // Limpiar el campo editable
     }
 
 
