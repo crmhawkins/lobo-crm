@@ -175,7 +175,7 @@ class IndexComponent extends Component
     public function updateStock($tipo){
         $mercaderiaEntrante = StockMercaderiaEntrante::where('mercaderia_id', $this->mercaderiaSeleccionada->id)->first();
         if(!$mercaderiaEntrante){
-            return false;
+            $mercaderiaEntrante = 0;
         }
 
         if($tipo == 'Resta' || $tipo == 'Rotura'){
@@ -186,7 +186,7 @@ class IndexComponent extends Component
             $mercaderiaEntranteNew = StockMercaderiaEntrante::create([
                 'mercaderia_id' => $this->mercaderiaSeleccionada->id,
                 'cantidad' => -abs($this->cantidad),
-                'tipo' => 'Entrante',
+                'tipo' => 'Saliente',
             ]);
 
         }else{

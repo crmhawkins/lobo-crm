@@ -258,7 +258,7 @@ class CreateComponent extends Component
     {
         $currentStock = $this->getStock($mercaderiaId);
         $currentProductionUsage = $this->getStockGastado($mercaderiaId);
-        $resultingQuantity = $currentStock - $currentProductionUsage - $newProductionQuantity;
+        $resultingQuantity = $currentStock - $newProductionQuantity;
 
         return $resultingQuantity >= 0;
     }
