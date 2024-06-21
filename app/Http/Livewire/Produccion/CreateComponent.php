@@ -52,7 +52,14 @@ class CreateComponent extends Component
         $this->mercaderias = Mercaderia::all();
         $this->productos = Productos::all();
         $this->ordenes_mercaderias = OrdenProduccion::all();
-        $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
+        //$this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
+        //$this->numero debe de ser el numero siguiente del ultimo orden de produccion. Es decir, hay que coger el ultimo orden de produccion y sumarle 1. Teniendo en cuenta que el numero tiene este formato: 24/0001 teniendo en cuenta que 24 hace referencia al año actual y 0001 hace referencia al numero de orden de produccion.
+        $lastOrdenProduccion = OrdenProduccion::latest()->first();
+        $lastNumero = $lastOrdenProduccion->numero;
+        $lastNumero = explode('/', $lastNumero);
+        $lastNumero = $lastNumero[1];
+        $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $lastNumero + 1);
+        
         $user = Auth::user();
         $this->almacen_id = $user->almacen_id;
         $this->pedidos = Pedido::all();

@@ -132,7 +132,7 @@ class EditComponent extends Component
                 'borrar' => 0,
             ];
         }
-        $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
+        $this->numero = $orden->numero;
         $this->almacen_id = $orden->almacen_id;
         $this->pedidos = Pedido::all();
         $this->pedido_id = $orden->pedido_id;
