@@ -261,29 +261,35 @@ class CreateComponent extends Component
             }
             $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
             $almacen = Almacen::find($almacen_id);
-
-            if ($stockEntrante) {
-
-                $stockRegistro = new StockRegistro();
-                $stockRegistro->stock_entrante_id = $stockEntrante->id;
-                $stockRegistro->cantidad = $productoPedido->unidades;
-                $stockRegistro->tipo = "Venta";
-                $stockRegistro->motivo = "Salida";
-                $stockRegistro->pedido_id = $pedido->id;
+            $hasStockRegistro = StockRegistro::where('pedido_id' , $this->pedido_id)->first();
+            if(!$hasStockRegistro){
                 
-                $stockRegistro->save();
+                if ($stockEntrante) {
 
-                $stockSaliente = StockSaliente::create([
-                    'stock_entrante_id' => $stockEntrante->id,
-                    'producto_id' => $producto->id,
-                    'cantidad_salida' => $productoPedido->unidades,
-                    'fecha_salida' => Carbon::now(),
-                    'pedido_id' => $pedido->id,
-                    'tipo' => 'Pedido',
-                    'motivo_salida' => 'Venta',
-                    'almacen_origen_id' => $almacen->id,
-                ]);
+                    $stockRegistro = new StockRegistro();
+                    $stockRegistro->stock_entrante_id = $stockEntrante->id;
+                    $stockRegistro->cantidad = $productoPedido->unidades;
+                    $stockRegistro->tipo = "Venta";
+                    $stockRegistro->motivo = "Salida";
+                    $stockRegistro->pedido_id = $pedido->id;
+                    
+                    $stockRegistro->save();
+    
+                    $stockSaliente = StockSaliente::create([
+                        'stock_entrante_id' => $stockEntrante->id,
+                        'producto_id' => $producto->id,
+                        'cantidad_salida' => $productoPedido->unidades,
+                        'fecha_salida' => Carbon::now(),
+                        'pedido_id' => $pedido->id,
+                        'tipo' => 'Pedido',
+                        'motivo_salida' => 'Venta',
+                        'almacen_origen_id' => $almacen->id,
+                    ]);
+                }
+
+
             }
+            
             $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
             $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
             foreach($productoLotes as $productoLote){
