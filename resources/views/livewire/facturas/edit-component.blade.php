@@ -76,6 +76,41 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="transporteModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enviar email Transportista</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nombreServicio">Email</label>
+                    <input type="text" class="my-2" wire:model="emailTransporte" placeholder="Email Transportista">
+                    <br>
+                    <select wire:model="destinosValue">
+                        <option value="0">Selecciona un destino</option>
+                        @foreach ($destinos as $key =>  $destino)
+                            <option value="{{ $key }}">{{ $destino }}</option>
+                        @endforeach
+                    </select>
+                    <br>
+                    @if($destinosValue == 4)
+                        <input type="text" class="my-2" wire:model="otroDestino" placeholder="Otro destino">
+                        <br>
+                    @endif
+                    <br>
+                    <button class="btn btn-success" id="enviarTransporte">Enviar Email</button>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- end page-title -->
     <div class="row">
         <div class="col-md-9">
@@ -438,6 +473,10 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             @if ($estado == "pendiente")
                             <button class="w-100 btn btn-info mb-2" id="alertaFacturar">Marcar como facturada</button>
                             @endif
+                            @if($tipo == 2)
+                                <button class="w-100 btn btn-dark mb-2" data-toggle="modal" data-target="#transporteModal" >Enviar email a transportista</button>
+
+                            @endif
                             {{-- <button class="w-100 btn btn-info mb-2" id="EmailFacturarIva">Enviar factura por correo Con IVA</button>
                             <button class="w-100 btn btn-info mb-2" id="EmailFacturar">Enviar factura por correo Sin IVA</button> --}}
                             <button class="w-100 btn btn-info mb-2" data-toggle="modal" data-target="#enviarEmailModal" >Enviar emails</button>
@@ -525,6 +564,19 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.livewire.emit('imprimirFacturaIva');
+                }
+            });
+        });
+
+        $("#enviarTransporte").on("click", () => {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                icon: 'info',
+                showConfirmButton: true,
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('enviarTransporte');
                 }
             });
         });

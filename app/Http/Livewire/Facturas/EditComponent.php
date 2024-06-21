@@ -26,6 +26,8 @@ use App\Models\RegistroEmail;
 use App\Models\Configuracion;
 use App\Models\User;
 use App\Models\Emails;
+use App\Models\Almacen;
+use App\Mail\TransporteRecogida;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -69,7 +71,16 @@ class EditComponent extends Component
     public $emails = [];
     public $emailsSeleccionados = [];
     public $emailNuevo;
+    public $destinos = [
+        '1' => 'Algeciras',
+        '2' => 'Córdoba',
+        '3' => 'Madrid',
+        '4' => 'Otro'
+    ];
 
+    public $destinosValue;
+    public $otroDestino;
+    public $emailTransporte;
 
     public function mount()
     {
@@ -299,7 +310,7 @@ class EditComponent extends Component
                 'total' => 'nullable',
                 'metodo_pago' => 'nullable',
                 'producto_id' => 'nullable',
-                'cantidad' => 'nullable'
+                'cantidad' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -367,8 +378,6 @@ class EditComponent extends Component
                             'producto_pedido_id' => $producto_pedido['producto_pedido_id'],
                                 'cantidad' => $producto_pedido['descontar_ud'],
                         ]);
-
-
 
                         $productosFactura = new ProductosFacturas();
                         $productosFactura->factura_id = $this->facturas->id;
@@ -556,7 +565,8 @@ class EditComponent extends Component
             'cancelarFactura',
             'imprimirFacturaIva',
             'imprimirFactura',
-            'listarPresupuesto'
+            'listarPresupuesto',
+            'enviarTransporte'
         ];
     }
     public function aceptarFactura()
@@ -891,6 +901,253 @@ class EditComponent extends Component
         }
 
     }
+
+
+
+    public function enviarTransporte(){
+        
+        //si emailTransporte es null, alert
+        if($this->emailTransporte == null){
+            $this->alert('error', '¡No se ha podido enviar la factura por email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        //si destino es null o 0, alert
+        if($this->destinosValue == null || $this->destinosValue == 0){
+            $this->alert('error', '¡Destino sin seleccionar!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+        //si destino es 4, ver si otroDestino es null, alert
+        if($this->destinosValue == 4 && $this->otroDestino == null){
+            $this->alert('error', '¡Indique otro destino!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+        $almacen = null;
+        switch($this->destinosValue){
+            case 1:
+                $almacen = Almacen::where('almacen', 'Algeciras')->first();
+                //dd($almacen);
+                if($almacen == null){
+                    $this->alert('error', '¡Almacen no encontrado!', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                    ]);
+                    return;
+                }
+
+                $this->otroDestino = $almacen->direccion;
+            break;
+            case 2:
+                $almacen = Almacen::where('almacen', 'Córdoba')->first();
+
+                if($almacen == null){
+                    $this->alert('error', '¡Almacen no encontrado!', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                    ]);
+                    return;
+                }
+
+                $this->otroDestino = $almacen->direccion;
+            break;
+            case 3:
+                $almacen = Almacen::where('almacen', 'Madrid')->first();
+
+                if($almacen == null){
+                    $this->alert('error', '¡Almacen no encontrado!', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                    ]);
+                    return;
+                }
+
+                $this->otroDestino = $almacen->direccion;
+            break;
+            case 4:
+                $this->otroDestino = $this->otroDestino;
+            break;
+
+
+
+        }
+
+
+
+        $factura = Facturas::find($this->identificador);
+        $configuracion = Configuracion::first();
+        if ($factura != null) {
+            $pedido = Pedido::find($factura->pedido_id);
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact = Productos::find($factura->producto_id);
+            $productos = [];
+            if($factura->tipo == 3){
+                $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+            }
+            //dd($albaran);
+           
+            if (isset($pedido)) {
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    }
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
+                    if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
+                        $productos[] = [
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
+                        ];
+                    }
+                }
+            }
+            $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+            $productosdeFactura = [];
+            foreach ($productosFactura as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+               
+                if ($stockEntrante) {
+                    $lote = $stockEntrante->orden_numero;
+                } else {
+                    $lote = "";
+                }
+                if ($producto) {
+                    if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                        $peso = "Peso no definido";
+                    } else {
+                        $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                    }
+                    $productosdeFactura[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->cantidad,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                        'lote_id' => $lote,
+                        'peso_kg' =>  $peso,
+                    ];
+                }
+            }
+            $total = 0;
+            $base_imponible = 0;
+            $iva_productos = 0;
+            $iva = true;
+            if ($factura->tipo == 2){
+                
+                foreach ($productosdeFactura as $producto) {
+                    $base_imponible += $producto['precio_total'];
+                    $iva_productos += $producto['iva'];
+                }
+                $total = $base_imponible + $iva_productos;
+
+            }
+
+            $datos = [
+                'conIva' => $iva,
+                'albaran' => $albaran,
+                'factura' => $factura,
+                'pedido' => $pedido,
+                'cliente' => $cliente,
+                'productos' => $productos,
+                'producto' => $productofact,
+                'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
+                'destino' => $this->otroDestino,
+                
+            ];
+            
+            //dd($datos);
+        // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+        $pdf = Pdf::loadView('livewire.facturas.pdf3-component',$datos)->setPaper('a4', 'vertical')->output();
+        try{
+
+            $emailsDireccion = [
+                'Alejandro.martin@serlobo.com',
+                'Administracion@serlobo.com',
+                'vanessa.casanova@serlobo.com',
+                'Sandra.lopez@serlobo.com'
+            ];
+
+            Mail::to($this->emailTransporte)->cc($this->emailTransporte)->bcc($emailsDireccion)->send(new TransporteRecogida($pdf, $datos));
+                
+            $registroEmail = new RegistroEmail();
+            $registroEmail->factura_id = $factura->id;
+            $registroEmail->pedido_id = null;
+            $registroEmail->cliente_id = $factura->cliente_id;
+            $registroEmail->email = $this->emailTransporte;
+            $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->save();
+
+            
+            $this->alert('success', '¡Enviado al transportista correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+
+        }catch(\Exception $e){
+            //dd($e);
+            $this->alert('error', '¡No se ha podido enviar la factura por email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
+
+        /*return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "factura_{$factura->id}.pdf");*/
+        }else{
+            return redirect('admin/facturas');
+        }
+
+
+
+    }
+
+
 
     public function calcularTotales($factura){
         $iva= 0;
