@@ -24,6 +24,7 @@ use App\Models\RegistroEmail;
 use Illuminate\Support\Facades\Log;
 use App\Models\Emails;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\ProductosFacturas;
 
 class IndexComponent extends Component
 {
@@ -300,7 +301,8 @@ class IndexComponent extends Component
             'actualizarTabla',
             'limpiarFiltros',
             'descargarFacturas',
-            'enviarRecordatorio'
+            'enviarRecordatorio',
+            'pdfRectificada'
         ];
     }
 
@@ -502,8 +504,169 @@ class IndexComponent extends Component
         }
     }
 
+    public function pdfRectificada($id, $iva){
+
+        $factura = Facturas::find($id);
+        $configuracion = Configuracion::first();
+
+        $facturasRectificativas = Facturas::where('factura_id', $id)->get();
 
 
+        if ($factura != null) {
+            $pedido = Pedido::find($factura->pedido_id);
+            $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
+            $cliente = Clients::find($factura->cliente_id);
+            $productofact = Productos::find($factura->producto_id);
+            $productos = [];
+           
+            //dd($albaran);
+           
+            if (isset($pedido)) {
+                $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                // Preparar los datos de los productos del pedido
+                foreach ($productosPedido as $productoPedido) {
+                    $producto = Productos::find($productoPedido->producto_pedido_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                    if (!isset($stockEntrante)) {
+                        $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    }
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
+                    if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
+                        $productos[] = [
+                            'id' => $producto->id,
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->unidades,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' => $productoPedido->precio_total,
+                            'iva' => $producto->iva,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
+                        ];
+                    }
+                }
+            }
+            $arrProductosFactura = [];
+            
+            foreach ($facturasRectificativas as $facturaRectificativa){
+                $productosdeFactura = [];
+                $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
+
+                foreach($productosFactura as $productoPedido){
+                    $producto = Productos::find($productoPedido->producto_id);
+                    $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+
+                    if ($stockEntrante) {
+                        $lote = $stockEntrante->orden_numero;
+                    } else {
+                        $lote = "";
+                    }
+
+                    if ($producto) {
+                        if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                            $peso = "Peso no definido";
+                        } else {
+                            $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                        }
+                        $arrProductosFactura[] = [
+                            'id' => $producto->id,
+                            'nombre' => $producto->nombre,
+                            'cantidad' => $productoPedido->cantidad,
+                            'precio_ud' => $productoPedido->precio_ud,
+                            'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                            'lote_id' => $lote,
+                            'peso_kg' =>  $peso,
+                        ];
+                    }
+
+                }
+
+
+            }
+
+            $totalRectificado = 0;
+            $base_imponible_rectificado = 0;
+            $iva_productos_rectificado = 0;
+
+            foreach ($arrProductosFactura as $producto) {
+                $base_imponible_rectificado += $producto['precio_total'];
+                $iva_productos_rectificado += $producto['iva'];
+                
+            }
+
+            $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
+            $total = $factura->total - $totalRectificado;
+            $base_imponible = $factura->precio - $base_imponible_rectificado;
+            $iva_productos = $factura->iva_total_pedido - $iva_productos_rectificado;
+
+
+            //dd($productos);
+            //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
+            foreach($productos as $index => $producto){
+                foreach($arrProductosFactura as $productoFactura){
+                    if($producto['id'] == $productoFactura['id']){
+                        $productos[$index]['cantidad'] -= $productoFactura['cantidad'];
+                        $productos[$index]['precio_total'] -= $productoFactura['precio_total'];
+                        $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100) ;
+                        //dd($producto['cantidad']);
+                    }
+                }
+            }
+
+
+            //sumar 
+            
+
+            $datos = [
+                'conIva' => $iva,
+                'albaran' => $albaran,
+                'factura' => $factura,
+                'pedido' => $pedido,
+                'cliente' => $cliente,
+                'productos' => $productos,
+                'producto' => $productofact,
+                'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
+                
+            ];
+            
+            // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+            $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical');
+
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                // "factura_{$factura->numero_factura}.pdf");
+                "{$factura->numero_factura}.pdf"
+            );
+
+
+        } else {
+            return redirect('admin/facturas');
+        }
+
+    }
+
+    public function hasRectificativa($facturaId)
+    {
+        $factura = Facturas::find($facturaId);
+        $facturaRectificativa = Facturas::where('factura_id', $facturaId)->get();
+
+        return count($facturaRectificativa) > 0;
+       
+    }
 
     public function enviarRecordatorio($id){
         $factura = Facturas::find($id);

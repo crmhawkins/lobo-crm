@@ -366,6 +366,9 @@
                                                 </a>
                                                 <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
                                                 <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
+                                                @if($this->hasRectificativa($fact->id))
+                                                    <button  onclick="descargarFacturaRectificada({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Rectificada</button>
+                                                @endif
                                                 @if($this->hasPedido($fact->id))
                                                     <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
                                                 @endif
@@ -888,6 +891,15 @@
             location.reload()
         }, 5000);
     }
+
+    function descargarFacturaRectificada(id, conIva) {
+        // Suponiendo que tu descarga se realiza aquí
+        window.livewire.emit('pdfRectificada', id, conIva);
+        setTimeout(() => {
+            location.reload()
+        }, 5000);
+    }
+
     function mostrarAlbaran(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('albaran', id, conIva);
