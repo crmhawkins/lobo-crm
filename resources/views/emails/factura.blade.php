@@ -127,6 +127,7 @@
             <p>Observaciones:</p>
             <p>{{ $datos['pedido']->observaciones }}</p>
         @endif
+        <p>SU PEDIDO HA SALIDO DE NUESTRAS INSTALACIONES A FECHA {{ $pedido->fecha_salida }} CON LA EMPRESA {{ $pedido->empresa_transporte }}</p>
         <div class="footer">
             <p>Si tiene alguna pregunta acerca de su pedido, no dude en contactarnos.</p>
             <p>Saludos cordiales,</p>

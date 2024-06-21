@@ -1384,7 +1384,6 @@ class EditComponent extends Component
             'Alejandro.martin@serlobo.com',
             'Ivan.ruiz@serlobo.com',
             'Pedidos@serlobo.com'
-            
         ];
         if($this->almacen_id == 2){
             //push emailsDireccion 

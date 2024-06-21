@@ -18,6 +18,7 @@ class FacturaMail extends Mailable
     public $cliente;
     public $pedido;
     public $productos;
+    public $factura;
 
 
     public function __construct($pdf,$datos)
@@ -27,12 +28,13 @@ class FacturaMail extends Mailable
         $this->cliente = $datos['cliente'];
         $this->pedido =$datos['pedido'];
         $this->productos =$datos['productos'];
+        $this->factura = $datos['factura'];
     }
 
     public function build()
     {
         return $this->view('emails.factura')
-                    ->subject('Su Pedido')
+                    ->subject('Factura nº '. $this->factura->numero_factura . ' - ' . $this->cliente->nombre)
                     ->attachData($this->pdf, 'Factura.pdf', [
                         'mime' => 'application/pdf',
                     ])

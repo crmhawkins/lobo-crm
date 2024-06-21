@@ -29,7 +29,7 @@ class PedidoMail extends Mailable
     public function build()
     {
         return $this->view('emails.pedido')
-                    ->subject('Su Pedido')
+                    ->subject('Pedido nº '. $this->pedido->id . ' - ' . $this->cliente->nombre)
                     ->attachData($this->pdf, 'pedido.pdf', [
                         'mime' => 'application/pdf',
                     ])

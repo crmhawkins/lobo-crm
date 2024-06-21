@@ -1078,7 +1078,7 @@ class EditComponent extends Component
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
     
-                Mail::to($email)->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
 
 
                 foreach($this->emailsSeleccionados as $email){
@@ -1143,6 +1143,7 @@ class EditComponent extends Component
             ]);
 
         }catch(\Exception $e){
+            dd($e);
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                 'position' => 'center',
                 'timer' => 3000,
