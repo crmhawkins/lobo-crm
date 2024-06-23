@@ -1,4 +1,4 @@
-<div class="container-fluid">
+    <div class="container-fluid">
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -100,7 +100,7 @@
                                                     {{$this->stockentrante->orden_numero }}
                                                 </td>
                                                 <td width="35%">
-                                                    {{$this->stockentrante->cantidad  }} Unidades
+                                                    {{$cantidadStockSaliente}} Unidades
                                                     </div>
                                                 </td>
                                             </tr>

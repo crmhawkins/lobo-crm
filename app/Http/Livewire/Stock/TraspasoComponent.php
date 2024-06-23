@@ -13,6 +13,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\Models\StockSaliente;
+use App\Models\StockRegistro;
 
 class TraspasoComponent extends Component
 {
@@ -32,11 +33,18 @@ class TraspasoComponent extends Component
     public $stockentrante;
     public $stock;
     public $almacenActual;
+    public $almacenOnline = 3;
+    public $qr_IdsOnline = [
+        '1' => '1',
+    ];
+
+    public $cantidadStockRegistro;
+    public $cantidadStockSaliente;
 
     public function mount()
     {
-        $this->stockentrante = StockEntrante::find( $this->identificador);
-        $this->stock = Stock::find(  $this->stockentrante->stock_id);
+        $this->stockentrante = StockEntrante::find($this->identificador);
+        $this->stock = Stock::find($this->stockentrante->stock_id);
         $this->estado =  $this->stock->estado;
         $this->qr_id =  $this->stock->qr_id;
         $this->productos = Productos::all();
@@ -44,8 +52,8 @@ class TraspasoComponent extends Component
         $user = Auth::user();
         $this->almacen_id =  $this->stock->almacen_id;
         $this->almacenActual = $this->almacenes->find($this->stock->almacen_id);
-
-
+        $this->cantidadStockRegistro = StockRegistro::where('stock_entrante_id', $this->stockentrante->id)->sum('cantidad');
+        $this->cantidadStockSaliente = $this->stockentrante->cantidad - $this->cantidadStockRegistro;
     }
 
     public function render()
@@ -57,7 +65,7 @@ class TraspasoComponent extends Component
     public function update()
     {
 
-        if($this->almacenDestino == null){
+        if ($this->almacenDestino == null || $this->almacenDestino == 0) {
             $this->alert('error', '¡Selecciona almacén!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -66,7 +74,7 @@ class TraspasoComponent extends Component
             return;
         }
 
-        if($this->cantidad == null){
+        if ($this->cantidad == null) {
             $this->alert('error', '¡Ingresa una cantidad!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -75,66 +83,165 @@ class TraspasoComponent extends Component
             return;
         }
 
-         $oldCantidad = $this->stockentrante->cantidad;
-         if($this->cantidad <= $oldCantidad){
+        $oldCantidad = $this->stockentrante->cantidad - $this->cantidadStockRegistro;
+        if ($this->cantidad <= $oldCantidad) {
             $nuevaCantidad = $oldCantidad - $this->cantidad;
-         }else{
+        } else {
             $this->alert('error', '¡No se puede mandar una cantidad mayor a la disponible!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
             ]);
             return;
-         }
+        }
 
 
-         if( 0 > $this->cantidad ){
+        if (0 > $this->cantidad) {
             $this->alert('error', '¡No se puede mandar una cantidad negativa!', [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
             ]);
             return;
-         }
-         if ($nuevaCantidad == 0){
+        }
+        if ($nuevaCantidad == 0) {
             $this->stock->update([
                 'estado' => 2,
             ]);
-         }
-         //se crea el nuevo stock en almacen
+        }
+
+
+        if ($this->almacenDestino == $this->almacenOnline) {
+
+            //dd($this->stockentrante);
+            //producto
+            $idProducto = $this->stockentrante->producto_id;
+
+            //qr del producto en almacenOnline
+            if (!array_key_exists($idProducto, $this->qr_IdsOnline)) {
+                $this->alert('error', '¡No se ha encontrado el producto en el almacen online!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+                return;
+            }
+            $qrProducto = Stock::where('almacen_id', $this->almacenOnline)->where('qr_id', $this->qr_IdsOnline[$idProducto])->first();
+
+            if ($qrProducto == null) {
+
+                $this->alert('error', '¡No se ha encontrado el producto en el almacen online!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+                return;
+            }
+
+
+            //stockentrante del producto en almacenOnline
+            $stockEntranteProducto = StockEntrante::where('stock_id', $qrProducto->id)->first();
+
+            //dd($stockEntranteProducto);
+
+            if ($stockEntranteProducto == null) {
+                $this->alert('error', '¡No se ha encontrado el producto en el almacen online!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+                return;
+            }
+
+
+            $stockRegistro = StockRegistro::create([
+                'stock_entrante_id' => $stockEntranteProducto->id,
+                'cantidad' => -abs($this->cantidad),
+                'tipo' => 'Traspaso',
+                'motivo' => 'Entrada',
+            ]);
+
+            //stock saliente
+            $stockSaliente = StockSaliente::create([
+                'stock_entrante_id' => $this->stockentrante->id,
+                'producto_id' => $this->stockentrante->producto_id,
+                'cantidad_salida' => $this->cantidad,
+                'fecha_salida' => Carbon::now(),
+                'almacen_origen_id' => $this->almacenActual->id,
+                'tipo' => 'Traspaso',
+            ]);
+
+            $stockRegistro = StockRegistro::create([
+                'stock_entrante_id' => $this->stockentrante->id,
+                'cantidad' => $this->cantidad,
+                'tipo' => 'Traspaso',
+                'motivo' => 'Salida',
+            ]);
+
+
+            if ($stockRegistro) {
+                $this->alert('success', '¡Stock actualizado correctamente!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmed',
+                    'confirmButtonText' => 'ok',
+                    'timerProgressBar' => true,
+                ]);
+            } else {
+                $this->alert('error', '¡No se ha podido guardar la información del Stock!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+            }
+
+
+            return;
+        }
+        //se crea el nuevo stock en almacen
         $mercaderiaSave = Stock::create(
             [
                 'estado' =>  $this->estado,
                 'fecha' => Carbon::now(),
                 'almacen_id' => $this->almacenDestino,
                 'observaciones' => $this->observaciones,
-            ]);
+            ]
+        );
 
         $mercaderiaproductoSave = StockEntrante::create([
-                'producto_id' => $this->stockentrante->producto_id,
-                'lote_id' => $this->stockentrante->lote_id ,
-                'stock_id' => $mercaderiaSave->id,
-                'cantidad' => $this->cantidad,
-                'orden_numero' => $this->stockentrante->orden_numero,
-            ]);
-        
-        
+            'producto_id' => $this->stockentrante->producto_id,
+            'lote_id' => $this->stockentrante->lote_id,
+            'stock_id' => $mercaderiaSave->id,
+            'cantidad' => $this->cantidad,
+            'orden_numero' => $this->stockentrante->orden_numero,
+        ]);
 
-        if($mercaderiaproductoSave){
-            $productUpdate =$this->stockentrante->update([
-                'cantidad' => $nuevaCantidad,
+
+
+        if ($mercaderiaproductoSave) {
+            // $productUpdate = $this->stockentrante->update([
+            //     'cantidad' => $nuevaCantidad,
+            // ]);
+
+            $productUpdate = StockRegistro::create([
+                'stock_entrante_id' => $this->stockentrante->id,
+                'cantidad' => abs($this->cantidad),
+                'tipo' => 'Traspaso',
+                'motivo' => 'Salida'
             ]);
 
-            
-    
+
+
             $stockSaliente = StockSaliente::create([
                 'stock_entrante_id' => $mercaderiaproductoSave->id,
                 'producto_id' => $mercaderiaproductoSave->producto_id,
                 'cantidad_salida' => $this->cantidad,
                 'fecha_salida' => Carbon::now(),
                 'almacen_origen_id' => $this->almacenActual->id,
+                'tipo' => 'Traspaso',
             ]);
-        
         }
 
 
@@ -155,7 +262,6 @@ class TraspasoComponent extends Component
                 'toast' => false,
             ]);
         }
-
     }
 
     // Elimina el producto
@@ -219,5 +325,4 @@ class TraspasoComponent extends Component
         $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
     }
-
 }
