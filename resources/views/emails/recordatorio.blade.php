@@ -43,26 +43,44 @@
 </head>
 <body>
     <div class="container">
+        @if($tipo == 'impago')
+            <div class="headerWarning">
+                <h2>Factura vencida</h2>
+            </div>
+            <br>
+            <p>Estimado/a {{ $cliente->nombre }}, <br>
+                <br>
+                Espero que este mensaje le encuentre bien. 
+                Nos dirigimos a usted para informarle que la factura con número {{ $factura->numero_factura }} 
+                por un monto de {{ $factura->total }}€ ha vencido.
+                <br><br>
+                Agradecemos mucho su confianza en nuestros servicios y entendemos que a veces pueden surgir situaciones que afecten el 
+                cumplimiento de los plazos establecidos. Por ello, le solicitamos amablemente que proceda con el pago del 
+                importe pendiente a la brevedad posible, para evitar cualquier inconveniente adicional.
+                <br><br>
+                Agradecemos de antemano su pronta atención a este asunto y quedamos a su disposición para cualquier consulta que pueda surgir al respecto.
+                <br><br>
+                Quedamos a la espera de su respuesta y le enviamos un cordial saludo.
+            
+            </p>
+        @else
         <div class="headerWarning">
-            <h2>Factura vencida</h2>
+            <h2>Factura Pendiente</h2>
         </div>
         <br>
         <p>Estimado/a {{ $cliente->nombre }}, <br>
             <br>
-            Espero que este mensaje le encuentre bien. 
-            Nos dirigimos a usted para informarle que la factura con número {{ $factura->numero_factura }} 
-            por un monto de {{ $factura->total }}€ ha vencido.
+            Esperamos que se encuentre bien. Nos dirigimos a usted para recordarle que la fecha de vencimiento de su factura número {{ $factura->numero_factura }} está próxima.
             <br><br>
-            Agradecemos mucho su confianza en nuestros servicios y entendemos que a veces pueden surgir situaciones que afecten el 
-            cumplimiento de los plazos establecidos. Por ello, le solicitamos amablemente que proceda con el pago del 
-            importe pendiente a la brevedad posible, para evitar cualquier inconveniente adicional.
+            La fecha de vencimiento es el {{ $factura->fecha_vencimiento }}. Le agradecemos realizar el pago correspondiente antes de esta fecha para evitar cualquier inconveniente.
             <br><br>
-            Agradecemos de antemano su pronta atención a este asunto y quedamos a su disposición para cualquier consulta que pueda surgir al respecto.
+            Si ya ha efectuado el pago, por favor, ignore este mensaje. En caso contrario, le solicitamos que realice el pago a la brevedad. Puede encontrar los detalles de la factura y las instrucciones de pago adjuntas a este correo.
             <br><br>
-            Quedamos a la espera de su respuesta y le enviamos un cordial saludo.
-        
+            Para cualquier duda o consulta, no dude en contactarnos. Estamos a su disposición para asistirle en lo que necesite.
+            <br><br>
+            Agradecemos su atención y colaboración.
         </p>
-
+        @endif
 
         <div class="header">
             <h2>Detalles de su Factura</h2>

@@ -19,6 +19,8 @@ class RecordatorioMail extends Mailable
     public $pedido;
     public $productos;
     public $factura;
+    public $tipo;
+    public $subject;
 
 
     public function __construct($pdf,$datos)
@@ -29,12 +31,18 @@ class RecordatorioMail extends Mailable
         $this->pedido =$datos['pedido'];
         $this->productos =$datos['productos'];
         $this->factura = $datos['factura'];
+        $this->tipo = $datos['tipo'];
+        if($this->tipo == 'impago'){
+            $this->subject = 'Recordatorio de Pago de Factura Vencida';
+        }else{
+            $this->subject = 'Aviso de Vencimiento de Factura';
+        }
     }
 
     public function build()
     {
         return $this->view('emails.recordatorio')
-                    ->subject('Recordatorio de Pago de Factura Vencida')
+                    ->subject($this->subject)
                     ->attachData($this->pdf, 'Factura.pdf', [
                         'mime' => 'application/pdf',
                     ])

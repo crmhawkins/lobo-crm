@@ -686,7 +686,7 @@ class IndexComponent extends Component
        
     }
 
-    public function enviarRecordatorio($id){
+    public function enviarRecordatorio($id, $tipo){
         $factura = Facturas::find($id);
         $configuracion = Configuracion::first();
         if ($factura != null) {
@@ -788,6 +788,7 @@ class IndexComponent extends Component
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
+                'tipo' => $tipo,
                 
             ];
 
@@ -798,8 +799,6 @@ class IndexComponent extends Component
 
             $emailsDireccion = [
                 'Alejandro.martin@serlobo.com',
-                'Ivan.ruiz@serlobo.com',
-                'Administracion@serlobo.com',
                 'Sandra.lopez@serlobo.com'
             ];
 

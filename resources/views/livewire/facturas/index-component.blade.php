@@ -373,7 +373,9 @@
                                                     <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
                                                 @endif
                                                 @if((new DateTime($fact->fecha_vencimiento)) <= (new DateTime()) && $fact->estado != 'Pagado')
-                                                    <button  onclick="enviarRecordatorio({{ $fact->id }})" class="btn btn-danger botones" style="color: white;">Recordatorio Impago</button>
+                                                    <button  onclick="enviarRecordatorio({{ $fact->id }}, 'impago')" class="btn btn-danger botones" style="color: white;">Recordatorio Impago</button>
+                                                @elseif($fact->estado == 'Pendiente')
+                                                    <button  onclick="enviarRecordatorio({{ $fact->id }}, 'vencimiento')" class="btn btn-warning botones" style="color: white;">Recordatorio Vencimiento</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -907,9 +909,10 @@
             location.reload()
         }, 5000);
     }
-    function enviarRecordatorio(id) {
+    function enviarRecordatorio(id, tipo) {
         // Suponiendo que tu descarga se realiza aquí
-        window.livewire.emit('enviarRecordatorio', id);
+        // window.livewire.emit('enviarRecordatorio', id);
+        window.livewire.emit('enviarRecordatorio', id, tipo);
         setTimeout(() => {
             location.reload()
         }, 5000);
