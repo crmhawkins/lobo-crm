@@ -25,8 +25,12 @@ use App\Models\User;
 use App\Models\Emails;
 use App\Models\GestionPedidos;
 use App\Models\AnotacionesClientePedido;
+use Livewire\WithFileUploads;
+
 class EditComponent extends Component
 {
+
+    use WithFileUploads;
     use LivewireAlert;
     public $identificador;
     public $porcentaje_descuento = 3; // Nuevo campo para el descuento personalizado
@@ -99,6 +103,55 @@ class EditComponent extends Component
     public $gestion;
 
     public $anotacionesProximoPedido;
+    public $documento;
+    public $documentoSubido;
+    public $documentoPath;
+
+
+    public function addDocumento(){
+        if($this->documentoSubido !== null){
+                
+            $this->documentoSubido->storeAs('documentos_justificativos', $this->documentoSubido->hashName() , 'private');
+            //dd($this->documentoSubido->hashName() );
+            $this->documentoPath = $this->documentoSubido->hashName();
+            //eliminar el documento anterior cuyo nombre es $documento
+            $pedido = Pedido::find($this->identificador);
+            $documentoAnterior = $pedido->documento;
+            if($documentoAnterior !== null){
+                unlink(storage_path('app/private/documentos_justificativos/' . $documentoAnterior));
+            }
+
+        }else{
+            $this->documentoPath = $this->documento;
+        }
+
+        $pedido = Pedido::find($this->identificador);
+        $pedido->update([
+            'documento' => $this->documentoPath
+        ]);
+
+        $this->documento = $this->documentoPath;
+
+        $this->documentoSubido = null;
+
+        $this->alert('success', '¡Documento subido correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+        ]);
+
+    }
+
+    public function descargarDocumento()
+    {
+        if($this->documento === null || $this->documento === ''){
+            return;
+        }
+
+        return response()->download(storage_path('app/private/documentos_justificativos/' . $this->documento),
+        'justificativo.pdf'
+    );
+    }
 
     public function mount()
     {
@@ -135,6 +188,7 @@ class EditComponent extends Component
         $this->gastos_envio = $pedido->gastos_envio;
         $this->emails = Emails::where('cliente_id', $cliente->id)->get();
         $this->fecha_entrega = $pedido->fecha_entrega;
+        $this->documento = $pedido->documento;
 
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
@@ -843,6 +897,11 @@ class EditComponent extends Component
                 'toast' => false,
             ]);
         }
+    }
+
+
+    public function addAdjunto(){
+        
     }
 
     public function rechazarPedido()

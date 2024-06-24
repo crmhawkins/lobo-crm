@@ -42,6 +42,7 @@ class Pedido extends Model
         'transporte',
         'departamento_id',
         'fecha_entrega',
+        'documento',
     ];
 
     /**

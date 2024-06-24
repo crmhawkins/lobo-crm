@@ -108,6 +108,33 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="documentoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog"
+            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Añadir Documento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="documento" class="col-sm-12 col-form-label">Documento de justificativo</label>
+                        <input type="file" class="btn btn-info text-dark" wire:model="documentoSubido">
+                     
+                        @error('documento') <span class="error">{{ $message }}</span> @enderror
+                     
+                    </div>
+                    <br>
+                    <button class="btn btn-success" wire:click="addDocumento" data-dismiss="modal">Añadir</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -747,12 +774,21 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
                     @endif
-                        @if(count($anotacionesProximoPedido) > 0 )
-                            <div class="col-12">
-                                <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal2">Ver
-                                    Anotaciones</button>
-                            </div>
-                        @endif
+                    
+                    @if(count($anotacionesProximoPedido) > 0 )
+                        <div class="col-12">
+                            <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal2">Ver
+                                Anotaciones</button>
+                        </div>
+                    @endif
+                    <div class="col-12">
+                        <button class="w-100 btn btn-warning mb-2" id="documentoModal" data-toggle="modal" data-target="#documentoModal">Añadir Documento</button>
+                    </div>
+                    @if($documento)
+                        <div class="col-12">
+                            <button class="w-100 btn btn-secondary mb-2" wire:click="descargarDocumento">Descargar Documento</button>
+                        </div>
+                    @endif
                         
                 </div>
             </div>
