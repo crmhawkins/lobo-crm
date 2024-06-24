@@ -94,6 +94,15 @@ class IndexComponent extends Component
     {
         $query = Facturas::query();
 
+        //los del rol 3 solo pueden ver sus facturas
+        $user = Auth::user();
+        $user_rol = $user->role;
+        
+        
+        
+
+
+
         if ($this->tipoFactura == -1) {
             $query->where('tipo', 1)->orWhere('tipo', null);
         }elseif($this->tipoFactura == 2){
@@ -146,6 +155,15 @@ class IndexComponent extends Component
             $query->where('fecha_emision', '<=', $this->fecha_max);
         }
 
+        if ($user_rol == 3) {
+            //comercial
+            $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
+            $query->where(function ($query) use ($clientes_comercial) {
+                foreach ($clientes_comercial as $cliente) {
+                    $query->orWhere('cliente_id', $cliente->id);
+                }
+            });
+        }
         
         $this->facturas = $query->get();
         $this->calcularTotales($this->facturas);
