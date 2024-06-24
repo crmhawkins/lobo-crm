@@ -51,9 +51,6 @@ class IndexComponent extends Component
         }
 
         
-
-        
-
         $identificador = $this->pedidoEnRutaId;
         $pedido = Pedido::find($identificador);
         if (!$pedido) {

@@ -597,15 +597,15 @@
                             </div>
                             <div class="col-sm-1"></div>
                             <div class="col-sm-5">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Anotaciones Proximo Pedido</label>
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Crédito</label>
                                 <div class="col-sm-12">
-                                    <textarea type="textarea" wire:model="anotacionesProximoPedido" class="form-control"
-                                        name="anotacionesProximoPedido" id="anotacionesProximoPedido" placeholder="Anotaciones próximo pedido..."></textarea>
-                                    @error('anotacionesProximoPedido')
+                                    <input type="number" wire:model="credito" class="form-control "
+                                        name="credito" id="credito" placeholder="Crédito">
+                                    @error('credito')
                                         <span class="text-danger">{{ $message }}</span>
 
                                         <style>
-                                            .anotacionesProximoPedido {
+                                            .credito {
                                                 color: red;
                                             }
                                         </style>

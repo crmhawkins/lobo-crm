@@ -689,10 +689,34 @@ class EditComponent extends Component
 
     public function aceptarPedido()
     {
-        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+
+        $cliente = Clients::find($this->cliente_id);
+
+        //Traer todas las facturas del cliente
+        $facturas = Facturas::where('cliente_id', $cliente->id)->where('estado', '!=', 'Pagado')->get();
+        //sum total de facturas
+        $totalFacturas = 0;
+        foreach ($facturas as $factura) {
+            $totalFacturas += $factura->total;
+        }
+        
+        $pedido = Pedido::find($this->identificador);
+        
+        //confirming
+        $confirmig = $cliente->credito - $totalFacturas - $this->precio;
+        //dd($totalFacturas , $this->precio, $confirmig, $cliente->credito);
+
+        if($this->porcentaje_descuento > $this->porcentaje_bloq || $cliente->credito !== null && $confirmig < 0){
             $this->bloqueado=true;
+            if($this->porcentaje_descuento > $this->porcentaje_bloq){
+                $bloqueadopor = '1';
+            }else{
+                $bloqueadopor = '2';
+            }
+
         }else{$this->bloqueado=false;}
 
+        //dd($this->bloqueado);
         $validatedData = $this->validate(
             [
                 'cliente_id' => 'required',
@@ -724,20 +748,33 @@ class EditComponent extends Component
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
-        if($this->bloqueado){
-
+        if($this->bloqueado){ 
+            if($bloqueadopor == '1'){
+                return $this->alert('warning', 'El pedido ha sido bloqueado por superar el porcentaje de descuento permitido. ¿Desea aceptar el pedido? ', [
+                    'position' => 'center',
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'updateWithoutRestrictions',
+                    'confirmButtonText' => 'Sí',
+                    'showDenyButton' => true,
+                    'denyButtonText' => 'No',
+                    'timerProgressBar' => true,
+                    'timer' => null,
+                ]);
+            }else{
+                return $this->alert('warning', 'El pedido ha sido bloqueado por superar el crédito del cliente. ¿Desea aceptar el pedido? ', [
+                    'position' => 'center',
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'updateWithoutRestrictions',
+                    'confirmButtonText' => 'Sí',
+                    'showDenyButton' => true,
+                    'denyButtonText' => 'No',
+                    'timerProgressBar' => true,
+                    'timer' => null,
+                ]);
             
-
-            return $this->alert('info', 'El pedido ha sido bloqueado por superar el porcentaje de descuento permitido. ¿Desea aceptar el pedido? ', [
-                'position' => 'center',
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'updateWithoutRestrictions',
-                'confirmButtonText' => 'Sí',
-                'showDenyButton' => true,
-                'denyButtonText' => 'No',
-                'timerProgressBar' => true,
-            ]);
+            }
         }
         $pedidosSave = $pedido->update(['estado' => 2]);
         if ($pedidosSave) {

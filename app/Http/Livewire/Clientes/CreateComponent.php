@@ -56,7 +56,7 @@ class CreateComponent extends Component
     public $anotacionesProximoPedido;
     public $emailAnadir;
     public $emails = [];
-
+    public $credito;
 
 
     public function anadirEmail(){
@@ -136,6 +136,7 @@ class CreateComponent extends Component
                 'comercial_id'=> 'nullable',
                 'cuenta'=> 'nullable',
                 'observaciones'=> 'nullable',
+                'credito'=> 'nullable',
 
 
             ],

@@ -63,6 +63,7 @@ class EditComponent extends Component
     public $emailAnadir;
     public $emails = [];
     public $emailsExistentes = [];
+    public $credito;
 
 
     public function anadirEmail(){
@@ -111,6 +112,7 @@ class EditComponent extends Component
         $this->productos =  Productos::all();
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
+        $this->credito = $cliente->credito;
 
         $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
         //dd($this->emailsExistentes);
@@ -189,6 +191,7 @@ class EditComponent extends Component
                 'comercial_id'=> 'nullable',
                 'cuenta'=> 'nullable',
                 'observaciones'=> 'nullable',
+                'credito'=> 'nullable',
 
             ],
             // Mensajes de error
@@ -240,7 +243,8 @@ class EditComponent extends Component
             'comercial_id'=> $this->comercial_id,
             'cuenta_contable'=> $this->cuenta_contable,
             'cuenta'=> $this->cuenta,
-            'observaciones'=> $this->observaciones
+            'observaciones'=> $this->observaciones,
+            'credito'=> $this->credito,
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 

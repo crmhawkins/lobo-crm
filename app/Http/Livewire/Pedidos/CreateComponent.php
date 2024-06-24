@@ -136,10 +136,13 @@ class CreateComponent extends Component
     public function aceptarPedido($id)
     {
         //si el rol es 2 , directamente se acepta el pedido
-
-        if($this->porcentaje_descuento > $this->porcentaje_bloq){
+        
+        if($this->porcentaje_descuento > $this->porcentaje_bloq ||$cliente->credito ){
             $this->bloqueado=true;
-        }else{$this->bloqueado=false;
+      
+        
+        }else{
+            $this->bloqueado=false;
         }
 
         $validatedData = $this->validate(
@@ -539,7 +542,7 @@ class CreateComponent extends Component
         // Alertas de guardado exitoso
         if ($pedidosSave) {
             //si el rol es 2 , directamente se acepta el pedido
-            if (Auth::user()->role == 2) {
+            if (Auth::user()->role == 2 || Auth::user()->role == 1) {
                 $this->aceptarPedido($pedidosSave->id);
             } 
             $this->alert('success', '¡Pedido registrado correctamente!', [

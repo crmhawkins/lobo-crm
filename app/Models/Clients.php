@@ -50,7 +50,8 @@ class Clients extends Model
         "delegacion_COD",
         "comercial_id",
         "cuenta",
-        "observaciones"
+        "observaciones",
+        "credito"
     ];
 
     /**

@@ -695,6 +695,25 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
+                            <div class="form-group col-sm-1 invisible">
+                                &nbsp;
+                            </div>
+                            <div class="col-sm-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Crédito</label>
+                                <div class="col-sm-12">
+                                    <input type="number" wire:model="credito" class="form-control "
+                                        name="credito" id="credito" placeholder="Crédito">
+                                    @error('credito')
+                                        <span class="text-danger">{{ $message }}</span>
+    
+                                        <style>
+                                            .credito {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>
@@ -726,6 +745,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     Anotación próximo pedido </button>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>

@@ -43,7 +43,7 @@
                     <p class="sub-title../plugins">Listado completo de todas nuestros facturas, para editar o ver la
                         informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
-                    @if(Auth::user()->role != 3)
+                    @if(Auth::user()->role != 3 && Auth::user()->role != 7)
                         <div class="col-12 mb-1">
                             <a href="facturas-create" class="btn btn-lg w-100 btn-primary">Crear factura</a>
                         </div>
