@@ -263,7 +263,7 @@
                     <div class="row">
                         <div class="col-12">
                             <button class="w-100 btn btn-info mb-2" wire:click="GenerarAlbaran(true)">Generar Albarán de Envio</button>
-                            <button class="btn btn-warning" wire:click="registrarStock">Registrar stock (NO TOCAR)</button>
+                            {{-- <button class="btn btn-warning" wire:click="registrarStock">Registrar stock (NO TOCAR)</button> --}}
                     </div>
 
                 </div>
