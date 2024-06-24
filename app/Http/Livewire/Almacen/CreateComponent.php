@@ -252,104 +252,106 @@ class CreateComponent extends Component
 
         // Preparar los datos de los productos del pedido
         $productos = [];
-        foreach ($productosPedido as $productoPedido) {
-            $producto = Productos::find($productoPedido->producto_pedido_id);
-            $stockSeguridad =  $producto->stock_seguridad;
-            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-            if (!isset( $stockEntrante)){
-                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
-            }
-            $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
-            $almacen = Almacen::find($almacen_id);
-            $hasStockRegistro = StockRegistro::where('pedido_id' , $this->pedido_id)->first();
-            if(!$hasStockRegistro){
+        $hasStockRegistro = StockRegistro::where('pedido_id' , $this->pedido_id)->first();
+        if(!$hasStockRegistro){
+            foreach ($productosPedido as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_pedido_id);
+                $stockSeguridad =  $producto->stock_seguridad;
+                $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
+                if (!isset( $stockEntrante)){
+                    $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+                }
+                $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
+                $almacen = Almacen::find($almacen_id);
                 
-                if ($stockEntrante) {
-
-                    $stockRegistro = new StockRegistro();
-                    $stockRegistro->stock_entrante_id = $stockEntrante->id;
-                    $stockRegistro->cantidad = $productoPedido->unidades;
-                    $stockRegistro->tipo = "Venta";
-                    $stockRegistro->motivo = "Salida";
-                    $stockRegistro->pedido_id = $pedido->id;
                     
-                    $stockRegistro->save();
-    
-                    $stockSaliente = StockSaliente::create([
-                        'stock_entrante_id' => $stockEntrante->id,
-                        'producto_id' => $producto->id,
-                        'cantidad_salida' => $productoPedido->unidades,
-                        'fecha_salida' => Carbon::now(),
-                        'pedido_id' => $pedido->id,
-                        'tipo' => 'Pedido',
-                        'motivo_salida' => 'Venta',
-                        'almacen_origen_id' => $almacen->id,
-                    ]);
+                    if ($stockEntrante) {
+
+                        $stockRegistro = new StockRegistro();
+                        $stockRegistro->stock_entrante_id = $stockEntrante->id;
+                        $stockRegistro->cantidad = $productoPedido->unidades;
+                        $stockRegistro->tipo = "Venta";
+                        $stockRegistro->motivo = "Salida";
+                        $stockRegistro->pedido_id = $pedido->id;
+                        
+                        $stockRegistro->save();
+        
+                        $stockSaliente = StockSaliente::create([
+                            'stock_entrante_id' => $stockEntrante->id,
+                            'producto_id' => $producto->id,
+                            'cantidad_salida' => $productoPedido->unidades,
+                            'fecha_salida' => Carbon::now(),
+                            'pedido_id' => $pedido->id,
+                            'tipo' => 'Pedido',
+                            'motivo_salida' => 'Venta',
+                            'almacen_origen_id' => $almacen->id,
+                        ]);
+                    }
+
+
+                
+                
+                $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
+                $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+                foreach($productoLotes as $productoLote){
+                    //sumatorio de cantidad lotes segun el stockRegistro
+                    $stockRegistro = StockRegistro::where('stock_entrante_id', $productoLote->id)->sum('cantidad');
+                    $productoLote->cantidad = $productoLote->cantidad - $stockRegistro;
                 }
+                $sumatorioCantidad = $productoLotes->sum('cantidad');
 
+                if ($sumatorioCantidad < $stockSeguridad) {
+                    $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
+                    if (!$alertaExistente) {
+                        Alertas::create([
+                            'user_id' => 13,
+                            'stage' => 7,
+                            'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
+                            'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
+                            'referencia_id' =>$producto->id . $almacen->id ,
+                            'leida' => null,
+                        ]);
+                        
+                        $dGeneral = User::where('id', 13)->first();
+                        $administrativo1 = User::where('id', 17)->first();
+                        $administrativo2 = User::where('id', 18)->first();
 
-            }
-            
-            $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
-            $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
-            foreach($productoLotes as $productoLote){
-                //sumatorio de cantidad lotes segun el stockRegistro
-                $stockRegistro = StockRegistro::where('stock_entrante_id', $productoLote->id)->sum('cantidad');
-                $productoLote->cantidad = $productoLote->cantidad - $stockRegistro;
-            }
-            $sumatorioCantidad = $productoLotes->sum('cantidad');
+                        $data = [['type' => 'text', 'text' => $producto->nombre], ['type' => 'text', 'text' =>  $almacen->almacen]];
+                        $buttondata = [];
+                        
 
-            if ($sumatorioCantidad < $stockSeguridad) {
-                $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
-                if (!$alertaExistente) {
-                    Alertas::create([
-                        'user_id' => 13,
-                        'stage' => 7,
-                        'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
-                        'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
-                        'referencia_id' =>$producto->id . $almacen->id ,
-                        'leida' => null,
-                    ]);
-                    
-                    $dGeneral = User::where('id', 13)->first();
-                    $administrativo1 = User::where('id', 17)->first();
-                    $administrativo2 = User::where('id', 18)->first();
+                        if(isset($dGeneral) && $dGeneral->telefono != null){
+                            $phone = '+34'.$dGeneral->telefono;
+                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                        }
 
-                    $data = [['type' => 'text', 'text' => $producto->nombre], ['type' => 'text', 'text' =>  $almacen->almacen]];
-                    $buttondata = [];
-                    
+                        if(isset($administrativo1) && $administrativo1->telefono != null){
+                            $phone = '+34'.$administrativo1->telefono;
+                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                        }
 
-                    if(isset($dGeneral) && $dGeneral->telefono != null){
-                        $phone = '+34'.$dGeneral->telefono;
-                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                        if(isset($administrativo2) && $administrativo2->telefono != null){
+                            $phone = '+34'.$administrativo2->telefono;
+                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
+                        }
+                        
+                        
                     }
 
-                    if(isset($administrativo1) && $administrativo1->telefono != null){
-                        $phone = '+34'.$administrativo1->telefono;
-                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
-                    }
 
-                    if(isset($administrativo2) && $administrativo2->telefono != null){
-                        $phone = '+34'.$administrativo2->telefono;
-                        enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
-                    }
-                    
-                    
                 }
-
-
-            }
-            if ($producto) {
-                $productos[] = [
-                    'nombre' => $producto->nombre,
-                    'cantidad' => $productoPedido->unidades,
-                    'precio_ud' => $productoPedido->precio_ud,
-                    'precio_total' => $productoPedido->precio_total,
-                    'iva' => $producto->iva,
-                    'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
-                    'lote_id' => $stockEntrante->orden_numero,
-                    'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
-                ];
+                if ($producto) {
+                    $productos[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->unidades,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' => $productoPedido->precio_total,
+                        'iva' => $producto->iva,
+                        'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
+                        'lote_id' => $stockEntrante->orden_numero,
+                        'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
+                    ];
+                }
             }
         }
 
