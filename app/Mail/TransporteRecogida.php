@@ -21,6 +21,7 @@ class TransporteRecogida extends Mailable
     public $factura;
     public $productosFactura;
     public $num_albaran;
+    public $almacen;
 
 
     public function __construct($pdf,$datos)
@@ -33,7 +34,7 @@ class TransporteRecogida extends Mailable
         $this->factura = $datos['factura'];
         $this->productosFactura = $datos['productosFactura'];
         $this->num_albaran = $datos['num_albaran'];
-
+        $this->almacen = $datos['almacen'];
         //dd($this->productosFactura);
 
     }

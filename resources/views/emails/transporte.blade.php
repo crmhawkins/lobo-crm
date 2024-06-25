@@ -37,13 +37,45 @@
 </head>
 <body>
     <div class="container">
-
+        <div class="header">
+            <h2>Detalles de su Envío</h2>
+        </div>
+        <br>
         <p>Buenas tardes,</p>
-        <p>Adjunto os envío el <strong>albarán {{ $num_albaran }}</strong></p>
+        <p>Os envío adjunto el <strong>albarán {{ $num_albaran }}</strong></p>
         @if(!$datos['hasproductosFactura'])
             @php($pesoTotal = 0)
             @if(count($productos) > 0)
-                @foreach ($productos as $producto )
+
+                <table>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Nº Pallets</th>
+                        <th>Nº Cajas</th>
+                        <th>Unidades</th>
+                        <th>Peso</th>
+                    </tr>
+                    @foreach ($productos as $producto)
+                            @php($pesoTotal += $producto['peso_kg'])
+                            @php($numeroCajas = $producto['num_cajas'] - ($producto['num_pallet'] * $producto['productos_pallet']) )
+                            @php($unidades = $producto['cantidad'] - ($producto['num_cajas'] * $producto['productos_caja']) )
+                        <tr>
+                            <td>{{ $producto['nombre'] }}</td>
+                            <td>{{ $producto['num_pallet'] }}</td>
+                            <td>{{ $numeroCajas }}</td>
+                            <td>{{ $unidades }}</td>
+                            <td>{{ $producto['peso_kg'] }}kg</td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <th colspan="4">Peso total</th>
+                        <th>{{ $pesoTotal }}kg</th>
+                    </tr>
+                </table>
+
+
+
+                {{-- @foreach ($productos as $producto )
                     @php($pesoTotal += $producto['peso_kg'])
                     <p>
                         @php($numeroCajas = $producto['num_cajas'] - ($producto['num_pallet'] * $producto['productos_pallet']) )
@@ -56,7 +88,7 @@
                     </p>
                 
                 @endforeach
-                <p>peso Total : <strong>{{ $pesoTotal }}</strong> kg</p>
+                <p>peso Total : <strong>{{ $pesoTotal }}</strong> kg</p> --}}
             @endif
         @else
             @php($pesoTotal = 0)
@@ -78,7 +110,7 @@
             @endif
 
         @endif
-        
+        <br><br>
         <p>Los datos y direccion de <strong>Entrega</strong> es:</p>
         <p><strong>{{ $cliente->nombre }} </strong></p>
         <p><strong>{{ $cliente->direccionenvio }} </strong></p>

@@ -1090,7 +1090,7 @@ class EditComponent extends Component
                 $total = $base_imponible + $iva_productos;
 
             }
-            
+            $almacenOrigen = Almacen::where('id', $pedido->almacen_id)->first();
             //dd($productosdeFactura);
             $datos = [
                 'conIva' => $iva,
@@ -1109,7 +1109,8 @@ class EditComponent extends Component
                 'iva_productos' => $iva_productos,
                 'destino' => $this->otroDestino,
                 'observacionesEmail' => $this->observacionesEmail,
-                'hasproductosFactura' => true
+                'hasproductosFactura' => true,
+                'almacen' => $almacenOrigen,
                 
             ];
 
@@ -1152,7 +1153,7 @@ class EditComponent extends Component
             ]);
 
         }catch(\Exception $e){
-            dd($e);
+            //dd($e);
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                 'position' => 'center',
                 'timer' => 3000,

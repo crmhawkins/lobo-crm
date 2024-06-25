@@ -37,7 +37,10 @@
 </head>
 <body>
     <div class="container">
-
+        <div class="header">
+            <h2>Detalles de su Recogida</h2>
+        </div>
+        <br>
         <p>Buenas tardes,</p>
         <p>Adjunto os envío el <strong>albarán {{ $num_albaran }}</strong></p>
         @if(!$datos['hasproductosFactura'])
@@ -61,23 +64,37 @@
         @else
             @php($pesoTotal = 0)
             @if(isset($productosFactura) && count($productosFactura) > 0)
-                @foreach ($productosFactura as $product )
-                    @php($pesoTotal += $product['peso_kg'])
-                    <p>
+
+            <table>
+                <tr>
+                    <th>Producto</th>
+                    <th>Nº Pallets</th>
+                    <th>Nº Cajas</th>
+                    <th>Unidades</th>
+                    <th>Peso</th>
+                </tr>
+                @foreach ($productosFactura as $product)
+                        @php($pesoTotal += $product['peso_kg'])
                         @php($numeroCajas = $product['num_cajas'] - ($product['num_pallet'] * $product['productos_pallet']) )
                         @php($unidades = $product['cantidad'] - ($product['num_cajas'] * $product['productos_caja']) )
-                        Producto: <strong>{{ $product['nombre'] }} </strong> | 
-                        Nº Pallets: <strong>{{ $product['num_pallet'] }}  </strong> | 
-                        Nº Cajas: <strong>{{ $numeroCajas }}</strong> |
-                        Unidades: <strong>{{ $unidades }}</strong> |
-                        Peso: <strong>{{ $product['peso_kg'] }}kg</strong>
-                    </p>
-            
+                    <tr>
+                        <td>{{ $product['nombre'] }}</td>
+                        <td>{{ $product['num_pallet'] }}</td>
+                        <td>{{ $numeroCajas }}</td>
+                        <td>{{ $unidades }}</td>
+                        <td>{{ $product['peso_kg'] }}kg</td>
+                    </tr>
                 @endforeach
-                <p>peso Total : <strong>{{ $pesoTotal }}</strong> kg</p>
+                <tr>
+                    <th colspan="4">Peso total</th>
+                    <th>{{ $pesoTotal }}kg</th>
+                </tr>
+            </table>
+
             @endif
 
         @endif
+        <br><br>
         <p style="text-transform: uppercase;">RETIRAR MERCANCIA: <strong>@if(isset($datos['destino'])) {{ $datos['destino']}}  @endif</strong></p>
         <p style="color:red; text-transform: uppercase; font-weight: bold;">@if(isset($datos['observacionesEmail'])) {{ $datos['observacionesEmail']}} @endif</p>
         <br>
