@@ -818,7 +818,8 @@ class EditComponent extends Component
                  'Alejandro.martin@serlobo.com',
                  'Ivan.ruiz@serlobo.com',
                  'Administracion@serlobo.com',
-                 'Sandra.lopez@serlobo.com'
+                 'Sandra.lopez@serlobo.com',
+                 'vanessa.casanova@serlobo.com'
             ];
 
             $cliente = Clients::find($factura->cliente_id);
@@ -1347,7 +1348,8 @@ class EditComponent extends Component
                 'Alejandro.martin@serlobo.com',
                 'Ivan.ruiz@serlobo.com',
                 'Administracion@serlobo.com',
-                'Sandra.lopez@serlobo.com'
+                'Sandra.lopez@serlobo.com',
+                'vanessa.casanova@serlobo.com'
             ];
 
             $cliente = Clients::find($factura->cliente_id);

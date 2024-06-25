@@ -658,7 +658,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                 </div>
             </div>
         </div>
-        @if($EsAdmin && count($registroEmails) > 0)
+        @if(($EsAdmin || Auth::user()->role == 7) && count($registroEmails) > 0)
                 <div class="card m-b-30">
                     <div class="card-body">
                         <h5>Correos electrónicos enviados</h5>
