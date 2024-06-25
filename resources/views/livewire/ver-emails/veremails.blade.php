@@ -50,6 +50,19 @@
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
                                     </select>    
                             </div>
+
+                            <div class="filtro d-flex flex-column" >
+                                <label class=""  id="tipos"  >
+                                Tipos
+                                </label>
+                                <select class="text-white bg-secondary rounded p-1" id="tipoEmailSeleccionadoId"   wire:model="tipoEmailSeleccionadoId">
+                                    <option value='-1' >Todos</option>
+                                    @foreach ( $tipoEmails as $tipo )
+                                        <option value='{{$tipo->id }}' >{{ $tipo->nombre }}</option>
+                                    @endforeach
+                                    <!-- Agrega más ítems según las columnas de tu tabla -->
+                                    </select>    
+                            </div>
                             
                             <div class="filtro d-flex flex-column" >
                                 <label class=""  id="estado"  >

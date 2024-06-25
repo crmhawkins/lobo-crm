@@ -17,6 +17,8 @@ class Veremails extends Component
     public $clienteSeleccionadoId = null;
     public $fecha_max = null;
     public $fecha_min = null;
+    public $tipoEmails = [];
+    public $tipoEmailSeleccionadoId = null;
 
 
     public function getTipo($id){
@@ -54,6 +56,7 @@ class Veremails extends Component
 
         $this->registroEmails = RegistroEmail::all();
         $this->clientes = Clients::all();
+        $this->tipoEmails = TipoEmails::all();
     }
 
     public function getPedido($id)
@@ -96,6 +99,9 @@ class Veremails extends Component
             $query->where('updated_at', '<=', $this->fecha_max);
         }
 
+        if ($this->tipoEmailSeleccionadoId > 0) {
+            $query->where('tipo_id', $this->tipoEmailSeleccionadoId);
+        }
 
         $this->registroEmails = $query->get();
     }
@@ -114,6 +120,7 @@ class Veremails extends Component
             'clienteSeleccionadoId' => 'numeric',
             'fecha_max' => 'date',
             'fecha_min' => 'date',
+            'tipoEmailSeleccionadoId' => 'numeric',
         ]);
 
         if ($field == 'fecha_max' && $this->fecha_min) {
@@ -127,6 +134,7 @@ class Veremails extends Component
                 'fecha_min' => 'before_or_equal:fecha_max',
             ]);
         }
+
 
         $this->filtrar();
     }
