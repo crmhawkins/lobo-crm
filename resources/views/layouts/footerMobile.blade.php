@@ -160,7 +160,7 @@
                         <span>CLIENTES</span>
                     </a></div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 6 || $user_rol == 7)
+                @if ($user_rol == 1 || $user_rol == 6 || $user_rol == 7 || ($user_rol == 3 && Auth::user()->user_department_id == 2 ))
                     <div class="col-6">
                         <a class="footer-button" href="{{ route('facturas.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-invoice"
@@ -208,7 +208,7 @@
                         </a>
                     </div>
                 @endif
-                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5|| $user_rol == 7 || $user_rol == 2)
+                @if ($user_rol == 1 || $user_rol == 4 || $user_rol == 5|| $user_rol == 7 || $user_rol == 2 || ($user_rol == 3 && Auth::user()->user_department_id == 2 ))
                   @if($user_rol !=2)
                     <div class="col-6"><a class="footer-button" href="{{ route('almacen.index') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-3d"
