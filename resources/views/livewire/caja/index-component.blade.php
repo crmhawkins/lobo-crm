@@ -71,13 +71,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div >
-                                <div  >
+                            <div>
+                                <div>
                                     <label for="example-text-input" class="col-form-label">Delegacion</label>
                                     <select class="form-control" id="select2-producto" wire:model="delegacion">
                                         <option value="Todos">Todos</option>
                                         @foreach ($delegaciones as $delegacion)
                                             <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
+                                        @endforeach  
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <label for="example-text-input" class="col-form-label">proveedores</label>
+                                    <select class="form-control" id="select2-producto" wire:model="proveedorId">
+                                        <option value="Todos">Todos</option>
+                                        @foreach ($proveedores as $proveedor)
+                                            <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
                                         @endforeach  
                                     </select>
                                 </div>

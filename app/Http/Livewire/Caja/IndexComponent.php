@@ -19,7 +19,7 @@ class IndexComponent extends Component
     use LivewireAlert;
 
     public $caja;
-    public $proceedor;
+    public $proveedores;
     public $fechas;
     public $dias;
     public $mes;
@@ -36,10 +36,8 @@ class IndexComponent extends Component
     public $fechaPago;
     public $fechaVencimiento;
     public $fecha;
+    public $proveedorId;
     
-    
-
-
     public $filtro;
     public $filtroEstado;
 
@@ -112,7 +110,7 @@ class IndexComponent extends Component
         $this->caja = Caja::orderBy('fecha')->get();
         $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
         $this->cambioMes();
-        $this->proceedor = Proveedores::all();
+        $this->proveedores = Proveedores::all();
         $this->clientes = Clients::all();
         $this->facturas = Facturas::all();
         $this->delegaciones = Delegacion::all();
@@ -122,7 +120,7 @@ class IndexComponent extends Component
 
     public function updated($property, $value){
         if($property == 'filtro' || $property == 'filtroEstado' || $property == 'delegacion'
-        || $property == 'fechaPago' || $property == 'fechaVencimiento' || $property == 'fecha'){
+        || $property == 'fechaPago' || $property == 'fechaVencimiento' || $property == 'fecha' || $property == 'proveedorId'){
             $this->cambioMes();
         }   
     }
@@ -288,6 +286,10 @@ class IndexComponent extends Component
             $this->caja = $this->caja->where('fecha', $this->fecha);
         }
 
+        if($this->proveedorId != null){
+            $this->caja = $this->caja->where('poveedor_id', $this->proveedorId);
+        }
+
         $this->calcularIngresoyGasto();
 
         // Reiniciar saldo_array
@@ -295,7 +297,7 @@ class IndexComponent extends Component
     }
     public function proveedorNombre($id)
     {
-        return $this->proceedor->find($id)->nombre;
+        return $this->proveedores->find($id)->nombre;
     }
     public function Gasto()
     {
