@@ -114,7 +114,8 @@ class IndexComponent extends Component
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
         $emailsDireccion = [
             'Alejandro.martin@serlobo.com',
-            'Sandra.lopez@serlobo.com'
+            'Sandra.lopez@serlobo.com',
+            'vanessa.casanova@serlobo.com'
         ];
         try{
             Mail::to($this->email_transporte)->bcc( $emailsDireccion)->send(new TransporteMail($pdf, $datos, $this->observaciones_transporte));
