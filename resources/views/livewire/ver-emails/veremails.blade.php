@@ -111,6 +111,7 @@
                                                     <th>Usuario</th>
                                                     <th>Fecha</th>
                                                     <th>Pedido o Factura </th>
+                                                    <th>Tipo</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -127,6 +128,7 @@
                                                         @else
                                                             <td>-</td>
                                                         @endif
+                                                        <td>{{ $this->getTipo($email->tipo_id) }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

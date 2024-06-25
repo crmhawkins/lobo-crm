@@ -814,10 +814,10 @@ class IndexComponent extends Component
 
             $this->emailsSeleccionados = $this->emailsSeleccionados->pluck('email')->toArray();
             //dd($this->emailsSeleccionados);
-
+            
             if(count($this->emailsSeleccionados) > 0){
                 
-
+                //
                 Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
 
                 foreach($this->emailsSeleccionados as $email){
@@ -827,6 +827,11 @@ class IndexComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $email;
                     $registroEmail->user_id = Auth::user()->id;
+                    if($tipo == 'impago'){
+                        $registroEmail->tipo_id = 5;
+                    }else{
+                        $registroEmail->tipo_id = 6;
+                    }
                     $registroEmail->save();
                 }
 
@@ -840,6 +845,11 @@ class IndexComponent extends Component
                 $registroEmail->cliente_id = $factura->cliente_id;
                 $registroEmail->email = $cliente->email;
                 $registroEmail->user_id = Auth::user()->id;
+                if($tipo == 'impago'){
+                    $registroEmail->tipo_id = 5;
+                }else{
+                    $registroEmail->tipo_id = 6;
+                }
                 $registroEmail->save();
 
             }

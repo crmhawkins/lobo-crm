@@ -671,6 +671,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             <th>Cliente</th>
                                             <th>Usuario</th>
                                             <th>Fecha</th>
+                                            <th>Tipo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -680,6 +681,8 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                 <td>{{ $this->getCliente( $email->cliente_id) }}</td>
                                                 <td>{{ $this->getUser($email->user_id) }}</td>
                                                 <td>{{ $email->updated_at }}</td>
+                                                <td>{{ $this->getTipo($email->tipo_id) }}</td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>

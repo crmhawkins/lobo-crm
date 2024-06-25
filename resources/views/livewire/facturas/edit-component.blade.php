@@ -438,6 +438,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <th>Cliente</th>
                                             <th>Usuario</th>
                                             <th>Fecha</th>
+                                            <th>Tipo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -447,6 +448,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                 <td>{{ $this->getCliente( $email->cliente_id) }}</td>
                                                 <td>{{ $this->getUser($email->user_id) }}</td>
                                                 <td>{{ $email->updated_at }}</td>
+                                                <td>{{ $this->getTipo($email->tipo_id) }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

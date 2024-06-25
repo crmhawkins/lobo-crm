@@ -8,7 +8,7 @@ use App\Models\Clients;
 use App\Models\User;
 use App\Models\Facturas;
 use App\Models\Pedido;
-
+use App\Models\TipoEmails;
 class Veremails extends Component
 {
 
@@ -17,6 +17,18 @@ class Veremails extends Component
     public $clienteSeleccionadoId = null;
     public $fecha_max = null;
     public $fecha_min = null;
+
+
+    public function getTipo($id){
+
+        $tipo = TipoEmails::find($id);
+        if($tipo){
+            return $tipo->nombre;
+        }else{
+            return '';
+        }
+
+    }
 
     public function getCliente($id)
     {

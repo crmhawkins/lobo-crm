@@ -28,6 +28,7 @@ use App\Models\User;
 use App\Models\Emails;
 use App\Models\Almacen;
 use App\Mail\TransporteRecogida;
+use App\Models\TipoEmails;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -83,6 +84,18 @@ class EditComponent extends Component
     public $emailTransporte;
     public $anotacionesEmail;
     public $observacionesEmail;
+
+
+    public function getTipo($id){
+
+        $tipo = TipoEmails::find($id);
+        if($tipo){
+            return $tipo->nombre;
+        }else{
+            return '';
+        }
+
+    }
 
     public function mount()
     {
@@ -845,6 +858,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $email;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
 
@@ -856,6 +870,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $this->emailNuevo;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
             }else{
@@ -873,6 +888,7 @@ class EditComponent extends Component
                 $registroEmail->cliente_id = $factura->cliente_id;
                 $registroEmail->email = $cliente->email;
                 $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->tipo_id = 1;
                 $registroEmail->save();
 
                 if($this->emailNuevo != null){
@@ -882,6 +898,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $this->emailNuevo;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
             }
@@ -1139,6 +1156,7 @@ class EditComponent extends Component
             $registroEmail->cliente_id = $factura->cliente_id;
             $registroEmail->email = $this->emailTransporte;
             $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->tipo_id = 4;
             $registroEmail->save();
 
             
@@ -1377,6 +1395,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $email;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
 
@@ -1389,6 +1408,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $this->emailNuevo;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
 
@@ -1407,6 +1427,7 @@ class EditComponent extends Component
                 $registroEmail->cliente_id = $factura->cliente_id;
                 $registroEmail->email = $cliente->email;
                 $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->tipo_id = 1;
                 $registroEmail->save();
 
                 if($this->emailNuevo != null){
@@ -1417,6 +1438,7 @@ class EditComponent extends Component
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $this->emailNuevo;
                     $registroEmail->user_id = Auth::user()->id;
+                    $registroEmail->tipo_id = 1;
                     $registroEmail->save();
                 }
 

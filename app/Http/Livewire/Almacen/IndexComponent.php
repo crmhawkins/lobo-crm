@@ -126,6 +126,7 @@ class IndexComponent extends Component
             $registroEmail->cliente_id = $pedido->cliente_id;
             $registroEmail->email = $this->email_transporte;
             $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->tipo_id = 3;
             $registroEmail->save();
 
             $this->alert('success', '¡Email enviado!', [

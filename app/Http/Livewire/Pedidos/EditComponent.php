@@ -26,6 +26,7 @@ use App\Models\Emails;
 use App\Models\GestionPedidos;
 use App\Models\AnotacionesClientePedido;
 use Livewire\WithFileUploads;
+use App\Models\TipoEmails;
 
 class EditComponent extends Component
 {
@@ -106,6 +107,18 @@ class EditComponent extends Component
     public $documento;
     public $documentoSubido;
     public $documentoPath;
+
+
+    public function getTipo($id){
+
+        $tipo = TipoEmails::find($id);
+        if($tipo){
+            return $tipo->nombre;
+        }else{
+            return '';
+        }
+
+    }
 
 
     public function addDocumento(){
@@ -1503,6 +1516,7 @@ class EditComponent extends Component
                 $registroEmail->cliente_id = $pedido->cliente_id;
                 $registroEmail->email = $email;
                 $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->tipo_id = 2;
                 $registroEmail->save();
             }
 
@@ -1514,6 +1528,7 @@ class EditComponent extends Component
                 $registroEmail->cliente_id = $pedido->cliente_id;
                 $registroEmail->email = $this->emailNuevo;
                 $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->tipo_id = 2;
                 $registroEmail->save();
             }
 
@@ -1530,6 +1545,7 @@ class EditComponent extends Component
             $registroEmail->cliente_id = $pedido->cliente_id;
             $registroEmail->email = $cliente->email;
             $registroEmail->user_id = Auth::user()->id;
+            $registroEmail->tipo_id = 2;
             $registroEmail->save();
 
             if($this->emailNuevo != null){
@@ -1539,6 +1555,7 @@ class EditComponent extends Component
                 $registroEmail->cliente_id = $pedido->cliente_id;
                 $registroEmail->email = $this->emailNuevo;
                 $registroEmail->user_id = Auth::user()->id;
+                $registroEmail->tipo_id = 2;
                 $registroEmail->save();
             }
 
