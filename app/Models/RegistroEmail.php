@@ -16,7 +16,8 @@ class RegistroEmail extends Model
         'pedido_id',
         'cliente_id',
         'email',
-        'user_id'
+        'user_id',
+        'tipo_id',
     ];
 
     public function factura()
