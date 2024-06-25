@@ -81,6 +81,8 @@ class EditComponent extends Component
     public $destinosValue;
     public $otroDestino;
     public $emailTransporte;
+    public $anotacionesEmail;
+    public $observacionesEmail;
 
     public function mount()
     {
@@ -96,6 +98,8 @@ class EditComponent extends Component
         $this->recargo = $this->facturas->recargo ?? 0;
         $this->total_recargo = $this->facturas->total_recargo ?? 0;
         $this->registroEmails = RegistroEmail::where('factura_id', $this->facturas->id)->get();
+        $this->anotacionesEmail = $this->facturas->anotacionesEmail;
+        $this->observacionesEmail = $this->facturas->observacionesEmail;
         if(isset($this->pedido)){
             $this->precio = $this->pedido->precio;
         }else{
@@ -796,8 +800,14 @@ class EditComponent extends Component
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
+                'anotacionesEmail' => $this->anotacionesEmail,
                 
             ];
+
+            //update factura con anotaciones email
+            $factura = Facturas::find($this->identificador);
+            $factura->anotacionesEmail = $this->anotacionesEmail;
+            $factura->save();
             
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -805,10 +815,10 @@ class EditComponent extends Component
         try{
 
             $emailsDireccion = [
-                'Alejandro.martin@serlobo.com',
-                'Ivan.ruiz@serlobo.com',
-                'Administracion@serlobo.com',
-                'Sandra.lopez@serlobo.com'
+                 'Alejandro.martin@serlobo.com',
+                 'Ivan.ruiz@serlobo.com',
+                 'Administracion@serlobo.com',
+                 'Sandra.lopez@serlobo.com'
             ];
 
             $cliente = Clients::find($factura->cliente_id);
@@ -1056,6 +1066,10 @@ class EditComponent extends Component
                         'cantidad' => $productoPedido->cantidad,
                         'precio_ud' => $productoPedido->precio_ud,
                         'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'num_cajas' => isset($producto->unidades_por_caja) ? floor($productoPedido->cantidad / $producto->unidades_por_caja) : null,
+                        'num_pallet' => isset($producto->cajas_por_pallet) ? floor(($productoPedido->cantidad / $producto->unidades_por_caja) / $producto->cajas_por_pallet) : null,
+                        'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
+                        'productos_pallet' => isset($producto->cajas_por_pallet) ? $producto->cajas_por_pallet : null,
                         'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
                         'lote_id' => $lote,
                         'peso_kg' =>  $peso,
@@ -1075,10 +1089,12 @@ class EditComponent extends Component
                 $total = $base_imponible + $iva_productos;
 
             }
-
+            
+            //dd($productosdeFactura);
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
+                'num_albaran' => $num_albaran = $albaran->num_albaran,
                 'factura' => $factura,
                 'pedido' => $pedido,
                 'cliente' => $cliente,
@@ -1091,8 +1107,15 @@ class EditComponent extends Component
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
                 'destino' => $this->otroDestino,
+                'observacionesEmail' => $this->observacionesEmail,
+                'hasproductosFactura' => true
                 
             ];
+
+            //update factura con anotaciones email
+            $factura = Facturas::find($this->identificador);
+            $factura->observacionesEmail = $this->observacionesEmail;
+            $factura->save();
             
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -1100,10 +1123,10 @@ class EditComponent extends Component
         try{
 
             $emailsDireccion = [
-                'Alejandro.martin@serlobo.com',
-                'Administracion@serlobo.com',
-                'vanessa.casanova@serlobo.com',
-                'Sandra.lopez@serlobo.com'
+                 'Alejandro.martin@serlobo.com',
+                 'Administracion@serlobo.com',
+                 'vanessa.casanova@serlobo.com',
+                 'Sandra.lopez@serlobo.com'
             ];
 
             Mail::to($this->emailTransporte)->cc($this->emailTransporte)->bcc($emailsDireccion)->send(new TransporteRecogida($pdf, $datos));
@@ -1128,7 +1151,7 @@ class EditComponent extends Component
             ]);
 
         }catch(\Exception $e){
-            //dd($e);
+            dd($e);
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -1306,8 +1329,14 @@ class EditComponent extends Component
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
+                'anotacionesEmail' => $this->anotacionesEmail,
                 
             ];
+
+            //update factura con anotaciones email
+            $factura = Facturas::find($this->identificador);
+            $factura->anotacionesEmail = $this->anotacionesEmail;
+            $factura->save();
             
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -1400,7 +1429,7 @@ class EditComponent extends Component
             ]);
 
         }catch(\Exception $e){
-            dd($e);
+            //dd($e);
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                 'position' => 'center',
                 'timer' => 3000,

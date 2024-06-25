@@ -20,6 +20,7 @@ class TransporteMail extends Mailable
     public $productos;
     public $observaciones;
     public $almacen;
+    public $num_albaran;
 
 
     public function __construct($pdf,$datos, $observaciones)
@@ -31,12 +32,13 @@ class TransporteMail extends Mailable
         $this->productos =$datos['productos'];
         $this->observaciones = $observaciones;
         $this->almacen = $datos['almacen'];
+        $this->num_albaran = $datos['num_albaran'];
     }
 
     public function build()
     {
         return $this->view('emails.transporte')
-                    ->subject('Albaran')
+                    ->subject('Albarán nº '. $this->num_albaran. ' - ' . $this->cliente->nombre . ' - ' . $this->cliente->localidad)
                     ->attachData($this->pdf, 'Albaran.pdf', [
                         'mime' => 'application/pdf',
                     ])

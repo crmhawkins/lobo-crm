@@ -107,6 +107,7 @@ class IndexComponent extends Component
         'num_albaran' => $num_albaran = $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         'almacen' => $this->getAlmacenObject($pedido->almacen_id),
+        'hasproductosFactura' => false,
         ];
 
         // Generar y mostrar el PDF
@@ -134,7 +135,7 @@ class IndexComponent extends Component
             ]);
 
         }catch(\Exception $e){
-                dd($e);
+                //dd($e);
             $this->alert('error', '¡No se ha podido enviar el email!', [
                 'position' => 'center',
                 'timer' => 3000,

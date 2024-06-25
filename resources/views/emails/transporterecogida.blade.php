@@ -78,15 +78,10 @@
             @endif
 
         @endif
-        
-        <p>Los datos y direccion de <strong>Entrega</strong> es:</p>
-        <p><strong>{{ $cliente->nombre }} </strong></p>
-        <p><strong>{{ $cliente->direccionenvio }} </strong></p>
-        <p><strong>{{ $cliente->codPostalenvio }} - {{ $cliente->localidadenvio }}({{ $cliente->provinciaenvio }})</strong></p>
+        <p style="text-transform: uppercase;">RETIRAR MERCANCIA: <strong>@if(isset($datos['destino'])) {{ $datos['destino']}}  @endif</strong></p>
+        <p style="color:red; text-transform: uppercase; font-weight: bold;">@if(isset($datos['observacionesEmail'])) {{ $datos['observacionesEmail']}} @endif</p>
         <br>
-        <p style="color:red; text-transform: uppercase; font-weight: bold;">@if(isset($observaciones)) {{ $observaciones }} @endif</p>
-        <br>
-        <p style="text-transform: uppercase;">RETIRAR MERCANCIA: <strong>@if(isset($almacen)) {{ $almacen->direccion }}  @endif</strong></p>
+        <p style="text-transform: uppercase;">ENTREGAR MERCANCIA: <strong>@if(isset($almacen)) {{ $almacen->direccion }}  @endif</strong></p>
         <p>HORARIO RECOGIDAS (ALMACÉN): <strong>@if(isset($almacen)) {{ $almacen->horario }}  @endif</strong></p>
 
     </div>

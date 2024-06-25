@@ -41,6 +41,8 @@ class Facturas extends Model
         'total_recargo',
         'gastos_envio',
         'transporte',
+        'anotacionesEmail',
+        'observacionesEmail',
     ];
 
 

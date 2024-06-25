@@ -19,6 +19,8 @@ class TransporteRecogida extends Mailable
     public $pedido;
     public $productos;
     public $factura;
+    public $productosFactura;
+    public $num_albaran;
 
 
     public function __construct($pdf,$datos)
@@ -29,13 +31,18 @@ class TransporteRecogida extends Mailable
         $this->pedido =$datos['pedido'];
         $this->productos =$datos['productos'];
         $this->factura = $datos['factura'];
+        $this->productosFactura = $datos['productosFactura'];
+        $this->num_albaran = $datos['num_albaran'];
+
+        //dd($this->productosFactura);
+
     }
 
     public function build()
     {
-        return $this->view('emails.factura')
-                    ->subject('Factura nº '. $this->factura->numero_factura . ' - ' . $this->cliente->nombre)
-                    ->attachData($this->pdf, 'Factura.pdf', [
+        return $this->view('emails.transporterecogida')
+                    ->subject('Albarán nº '. $this->num_albaran . ' - ' . $this->cliente->nombre . ' - ' . $this->cliente->localidad)
+                    ->attachData($this->pdf, 'Albaran.pdf', [
                         'mime' => 'application/pdf',
                     ])
                     ->with([

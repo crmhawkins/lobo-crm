@@ -329,9 +329,9 @@
                                         <td>
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary botones"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8 )
-                                                @if($pedido->tipo_pedido_id == 0)
+                                                @if($pedido->tipo_pedido_id == 0 && Auth::user()->role != 7)
                                                     <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
-                                                @else
+                                                @elseif($pedido->tipo_pedido_id != 0)
                                                     <button class="btn btn-secondary botones" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
                                                 @endif
                                             @else

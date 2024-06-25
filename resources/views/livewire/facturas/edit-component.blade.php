@@ -66,6 +66,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     <br>
                     <input type="text" class="my-2" wire:model="emailNuevo" placeholder="Email adicional">
                     <br>
+                    <textarea wire:model="anotacionesEmail" class="form-control mb-1" placeholder="Anotaciones"> </textarea>
+                    <br>
                     <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
                     <button class="btn btn-success" id="EmailFacturar">Enviar sin Iva</button>
 
@@ -98,9 +100,18 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </select>
                     <br>
                     @if($destinosValue == 4)
-                        <input type="text" class="my-2" wire:model="otroDestino" placeholder="Otro destino">
-                        <br>
+                    <br>
+                    <div class="d-flex  align-items-center">
+                        <label for="nombreServicio">Otro Destino: &nbsp;</label>
+                        <textarea type="text" class="my-2" wire:model="otroDestino" placeholder="Introduzca Destino"></textarea>
+                    </div>
                     @endif
+                    <br>
+                    <div class="d-flex  align-items-center">
+                        <label for="nombreServicio">Observaciones: &nbsp;</label> 
+                        <textarea type="text" class="my-2" wire:model="observacionesEmail" placeholder="Observaciones"></textarea>
+                    </div>
+                    
                     <br>
                     <button class="btn btn-success" id="enviarTransporte">Enviar Email</button>
 
