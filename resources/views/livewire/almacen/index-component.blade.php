@@ -239,8 +239,9 @@
                                         </div>
                                     </div>
 
-                                    @if(isset($pedido))
-                                        <button onclick="enRuta({{ $pedido->id }})" class="btn btn-success mt-2">Pedido en Ruta</button>
+                                    @if(isset($pedidoEnRutaId))
+                                    
+                                        <button onclick="enRuta({{ $pedidoEnRutaId }})" class="btn btn-success mt-2">Pedido {{$pedidoEnRutaId}} en Ruta</button>
                                     @endif
 
                                 </div>
