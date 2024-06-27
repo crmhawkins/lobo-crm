@@ -165,7 +165,7 @@
                                     header: true,
                                     footer: true,
                                 },
-                                searching: false,
+                                searching: true,
                                 ordering: false,
                                 paging: false,
                                 info: false,
@@ -190,7 +190,15 @@
                                                         titleAttr: 'Columnas',
                                                         className: 'btn-secondary px-3 py-1 mb-2'
                                                     },
-                                                    ]
+                                                    ],
+                                                language: {
+                                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                'zeroRecords': 'No se encontraron registros',
+                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'infoEmpty': 'No hay registros disponibles',
+                                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                'search': 'Buscar:',
+                            }
                                                 });
                                             })"
                                             wire:key='{{ rand() }}'>
