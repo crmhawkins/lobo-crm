@@ -70,6 +70,7 @@ class CreateComponent extends Component
     public $isAlmacenOnline = false;
     public $alertaAdmin = false;
     public $isMarketing = false;
+    public $cliente;
 
     public function mount()
     {
@@ -100,6 +101,7 @@ class CreateComponent extends Component
     public function selectCliente()
     {
         $cliente = Clients::find($this->cliente_id);
+        $this->cliente = $cliente;
         $this->localidad_entrega = $cliente->localidadenvio;
         $this->provincia_entrega = $cliente->provinciaenvio;
         $this->direccion_entrega = $cliente->direccionenvio;
@@ -137,10 +139,9 @@ class CreateComponent extends Component
     {
         //si el rol es 2 , directamente se acepta el pedido
         
-        if($this->porcentaje_descuento > $this->porcentaje_bloq ||$cliente->credito ){
+        if($this->porcentaje_descuento > $this->porcentaje_bloq || (isset( $this->cliente) && ( $this->cliente->credito < $this->precio ))){
             $this->bloqueado=true;
       
-        
         }else{
             $this->bloqueado=false;
         }

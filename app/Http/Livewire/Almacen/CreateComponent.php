@@ -368,45 +368,85 @@ class CreateComponent extends Component
                 if (!isset( $stockEntrante)){
                     $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
                 }
+                $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
+
                 $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
                 $almacen = Almacen::find($almacen_id);
-                
-                    
-                    if ($stockEntrante) {
 
-                        $stockRegistro = new StockRegistro();
-                        $stockRegistro->stock_entrante_id = $stockEntrante->id;
-                        $stockRegistro->cantidad = $productoPedido->unidades;
-                        $stockRegistro->tipo = "Venta";
-                        $stockRegistro->motivo = "Salida";
-                        $stockRegistro->pedido_id = $pedido->id;
-                        
-                        $stockRegistro->save();
-        
-                        $stockSaliente = StockSaliente::create([
-                            'stock_entrante_id' => $stockEntrante->id,
-                            'producto_id' => $producto->id,
-                            'cantidad_salida' => $productoPedido->unidades,
-                            'fecha_salida' => Carbon::now(),
-                            'pedido_id' => $pedido->id,
-                            'tipo' => 'Pedido',
-                            'motivo_salida' => 'Venta',
-                            'almacen_origen_id' => $almacen->id,
-                        ]);
+                
+                $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
+                $cantidadRestante = $productoPedido->unidades;
+
+                // Array para guardar los IDs de los lotes ya utilizados
+                $arrStockDescartados = [];
+                array_push($arrStockDescartados, $stockEntrante->id);
+
+                // Primero, intenta usar el stockEntrante inicial
+                if ($cantidadStockDisponible >= $cantidadRestante) {
+                    // Suficiente stock en este lote para completar el pedido
+                    $cantidad = $cantidadRestante;
+                    $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
+                    $cantidadRestante = 0; // Pedido completado
+                } else {
+                    // No es suficiente stock en este lote, usar todo lo disponible
+                    $cantidad = $cantidadStockDisponible;
+                    $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
+                    $cantidadRestante -= $cantidad; // Reducir la cantidad restante del pedido
+                }
+
+                // Si aún queda cantidad por cubrir, buscar en otros lotes
+                if ($cantidadRestante > 0) {
+                    $stockEntrantes = StockEntrante::where('producto_id', $producto->id)
+                        ->where('cantidad', '>', 0)
+                        ->whereNotIn('id', $arrStockDescartados)
+                        ->get();
+
+
+                    //quitar los lotes que no sean del almacen
+                    $stockEntrantes = $stockEntrantes->filter(function ($stockEntrante) use ($almacen_id) {
+                        $stock = Stock::find($stockEntrante->stock_id);
+                        return $stock->almacen_id == $almacen_id;
+                    });
+
+
+
+                    foreach ($stockEntrantes as $stockEntrante) {
+
+                        //comprobar que es de ese almacen
+
+                        $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
+                        $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
+
+                        if ($cantidadStockDisponible >= $cantidadRestante) {
+                            // Suficiente stock en este lote para completar el pedido
+                            $cantidad = $cantidadRestante;
+                            $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
+                            $cantidadRestante = 0; // Pedido completado
+                            break;
+                        } else {
+                            // No es suficiente stock en este lote, usar todo lo disponible
+                            $cantidad = $cantidadStockDisponible;
+                            $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
+                            $cantidadRestante -= $cantidad; // Reducir la cantidad restante del pedido
+                            array_push($arrStockDescartados, $stockEntrante->id); // Añadir este lote al array de descartados
+                        }
                     }
+                }
 
 
-                
+
+
                 
                 $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
                 $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
+                //dd($productoLotes);
                 foreach($productoLotes as $productoLote){
                     //sumatorio de cantidad lotes segun el stockRegistro
                     $stockRegistro = StockRegistro::where('stock_entrante_id', $productoLote->id)->sum('cantidad');
                     $productoLote->cantidad = $productoLote->cantidad - $stockRegistro;
                 }
                 $sumatorioCantidad = $productoLotes->sum('cantidad');
-
+                //dd($sumatorioCantidad);
                 if ($sumatorioCantidad < $stockSeguridad) {
                     $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
                     if (!$alertaExistente) {
@@ -559,6 +599,27 @@ class CreateComponent extends Component
             fn () => print($pdf),
             "albaran_{$num_albaran}.pdf"
         );
+    }
+
+    public function registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen) {
+        $stockRegistro = new StockRegistro();
+        $stockRegistro->stock_entrante_id = $stockEntrante->id;
+        $stockRegistro->cantidad = $cantidad;
+        $stockRegistro->tipo = "Venta";
+        $stockRegistro->motivo = "Salida";
+        $stockRegistro->pedido_id = $pedido->id;
+        $stockRegistro->save();
+
+        StockSaliente::create([
+            'stock_entrante_id' => $stockEntrante->id,
+            'producto_id' => $producto->id,
+            'cantidad_salida' => $cantidad,
+            'fecha_salida' => Carbon::now(),
+            'pedido_id' => $pedido->id,
+            'tipo' => 'Pedido',
+            'motivo_salida' => 'Venta',
+            'almacen_origen_id' => $almacen->id,
+        ]);
     }
 
     //tras escanear el qr
