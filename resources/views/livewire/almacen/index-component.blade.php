@@ -277,7 +277,7 @@
                                     </div>
 
                                     @if(isset($pedido))
-                                        <button onclick="enviarEmailTransporte({{ $pedido->id }})" class="btn btn-success mt-2">Enviar email</button>
+                                        <button onclick="enviarEmailTransporte({{ $pedidoEnRutaId }})" class="btn btn-success mt-2">Enviar email pedido {{ $pedidoEnRutaId }}</button>
                                     @endif
 
                                 </div>
