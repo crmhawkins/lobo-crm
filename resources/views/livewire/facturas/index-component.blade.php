@@ -171,6 +171,7 @@
                         
                         <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
                             $('#datatable-buttons').DataTable({
+                            stateSave: true,
                                 responsive: true,
                                 layout: {
                                     topStart: {
@@ -234,7 +235,7 @@
                         })" wire:key='{{ rand() }}'>
                             <!-- Tu tabla de datos aquí -->
                         </div>
-                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}' >
                             <thead>
                                     <tr>
                                         <th scope="col">Descarga</th>
@@ -407,6 +408,7 @@
                                     searching: false,
                                     ordering: false, 
                                     info: false,
+                                    stateSave: true,
                                                     });
                                                 })"
                                                 wire:key='{{ rand() }}'> 
@@ -452,6 +454,7 @@
                     <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
                         $('#datatable222-buttons').DataTable({
                             responsive: true,
+                            stateSave: true,
                             layout: {
                                 topStart: {
                                     buttons: [
@@ -624,6 +627,9 @@
                     <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
                         $('#datatable333-buttons').DataTable({
                             responsive: true,
+                            stateSave: true,
+
+
                             layout: {
                                 topStart: {
                                     buttons: [
@@ -887,35 +893,35 @@
      }
   
     function descargarFactura(id, conIva) {
-        // Suponiendo que tu descarga se realiza aquí
+
+        // Realiza la acción de descarga
         window.livewire.emit('pdf', id, conIva);
-        setTimeout(() => {
-            location.reload()
-        }, 5000);
+
+         
     }
 
     function descargarFacturaRectificada(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('pdfRectificada', id, conIva);
-        setTimeout(() => {
-            location.reload()
-        }, 5000);
+        // setTimeout(() => {
+        //     location.reload()
+        // }, 5000);
     }
 
     function mostrarAlbaran(id, conIva) {
         // Suponiendo que tu descarga se realiza aquí
         window.livewire.emit('albaran', id, conIva);
-        setTimeout(() => {
-            location.reload()
-        }, 5000);
+        // setTimeout(() => {
+        //     location.reload()
+        // }, 5000);
     }
     function enviarRecordatorio(id, tipo) {
         // Suponiendo que tu descarga se realiza aquí
         // window.livewire.emit('enviarRecordatorio', id);
         window.livewire.emit('enviarRecordatorio', id, tipo);
-        setTimeout(() => {
-            location.reload()
-        }, 5000);
+        // setTimeout(() => {
+        //     location.reload()
+        // }, 5000);
     }
     </script>
 <script src="../assets/js/jquery.slimscroll.js"></script>

@@ -139,17 +139,29 @@
                 <tr style="background-color:#ececec;">
                     <td colspan="3"></td>
                     <td>BASE IMPONIBLE</td>
-                    <td>{{ number_format($datos['factura']->precio, 2) }}€</td>
+                    @if(isset($datos['rectificada']))
+                        <td>{{ number_format($datos['base_imponible'], 2) }}€</td>
+                    @else
+                        <td>{{ number_format($datos['factura']->precio, 2) }}€</td>
+                    @endif
                 </tr>
                 <tr style="background-color:#ececec;">
                     <td colspan="3"></td>
                     <td>IVA 21%</td>
-                    <td>{{number_format($datos['factura']->precio * 0.21, 2)}}€</td>
+                    @if(isset($datos['rectificada']))
+                        <td>{{number_format($datos['iva_productos'], 2)}}€</td>
+                    @else
+                        <td>{{number_format($datos['factura']->precio * 0.21, 2)}}€</td>
+                    @endif
                 </tr>
                 <tr style="background-color:#ececec;">
                     <td colspan="3"></td>
                     <td>TOTAL</td>
-                    <td>{{number_format($datos['factura']->precio * 1.21, 2)}}€</td>
+                    @if(isset($datos['rectificada']))
+                    <td>{{number_format($datos['total'], 2)}}€</td>
+                    @else
+                        <td>{{number_format($datos['factura']->precio * 1.21, 2)}}€</td>
+                    @endif
                 </tr>
             </table>
         @else
