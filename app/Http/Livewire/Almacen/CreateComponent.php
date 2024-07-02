@@ -360,27 +360,27 @@ class CreateComponent extends Component
         // Preparar los datos de los productos del pedido
         $productos = [];
         $hasStockRegistro = StockRegistro::where('pedido_id' , $this->pedido_id)->first();
-        if(!$hasStockRegistro){
+        if (!$hasStockRegistro) {
             foreach ($productosPedido as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_pedido_id);
-                $stockSeguridad =  $producto->stock_seguridad;
-                $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-                if (!isset( $stockEntrante)){
-                    $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
+                $stockSeguridad = $producto->stock_seguridad;
+                $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+        
+                if (!isset($stockEntrante)) {
+                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
                 }
+        
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
-
                 $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
                 $almacen = Almacen::find($almacen_id);
-
-                
+        
                 $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
                 $cantidadRestante = $productoPedido->unidades;
-
+        
                 // Array para guardar los IDs de los lotes ya utilizados
                 $arrStockDescartados = [];
                 array_push($arrStockDescartados, $stockEntrante->id);
-
+        
                 // Primero, intenta usar el stockEntrante inicial
                 if ($cantidadStockDisponible >= $cantidadRestante) {
                     // Suficiente stock en este lote para completar el pedido
@@ -393,30 +393,24 @@ class CreateComponent extends Component
                     $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
                     $cantidadRestante -= $cantidad; // Reducir la cantidad restante del pedido
                 }
-
+        
                 // Si aún queda cantidad por cubrir, buscar en otros lotes
                 if ($cantidadRestante > 0) {
                     $stockEntrantes = StockEntrante::where('producto_id', $producto->id)
                         ->where('cantidad', '>', 0)
                         ->whereNotIn('id', $arrStockDescartados)
                         ->get();
-
-
-                    //quitar los lotes que no sean del almacen
+        
+                    // Filtrar los lotes que no sean del almacén
                     $stockEntrantes = $stockEntrantes->filter(function ($stockEntrante) use ($almacen_id) {
                         $stock = Stock::find($stockEntrante->stock_id);
                         return $stock->almacen_id == $almacen_id;
                     });
-
-
-
+        
                     foreach ($stockEntrantes as $stockEntrante) {
-
-                        //comprobar que es de ese almacen
-
                         $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
                         $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
-
+        
                         if ($cantidadStockDisponible >= $cantidadRestante) {
                             // Suficiente stock en este lote para completar el pedido
                             $cantidad = $cantidadRestante;
@@ -432,75 +426,9 @@ class CreateComponent extends Component
                         }
                     }
                 }
-
-
-
-
-                
-                $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
-                $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
-                //dd($productoLotes);
-                foreach($productoLotes as $productoLote){
-                    //sumatorio de cantidad lotes segun el stockRegistro
-                    $stockRegistro = StockRegistro::where('stock_entrante_id', $productoLote->id)->sum('cantidad');
-                    $productoLote->cantidad = $productoLote->cantidad - $stockRegistro;
-                }
-                $sumatorioCantidad = $productoLotes->sum('cantidad');
-                //dd($sumatorioCantidad);
-                if ($sumatorioCantidad < $stockSeguridad) {
-                    $alertaExistente = Alertas::where('referencia_id', $producto->id . $almacen->id )->where('stage', 7)->first();
-                    if (!$alertaExistente) {
-                        Alertas::create([
-                            'user_id' => 13,
-                            'stage' => 7,
-                            'titulo' => $producto->nombre.' - Alerta de Stock Bajo',
-                            'descripcion' =>'Stock de '.$producto->nombre. ' insuficiente en el almacen de ' . $almacen->almacen,
-                            'referencia_id' =>$producto->id . $almacen->id ,
-                            'leida' => null,
-                        ]);
-                        
-                        $dGeneral = User::where('id', 13)->first();
-                        $administrativo1 = User::where('id', 17)->first();
-                        $administrativo2 = User::where('id', 18)->first();
-
-                        $data = [['type' => 'text', 'text' => $producto->nombre], ['type' => 'text', 'text' =>  $almacen->almacen]];
-                        $buttondata = [];
-                        
-
-                        if(isset($dGeneral) && $dGeneral->telefono != null){
-                            $phone = '+34'.$dGeneral->telefono;
-                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
-                        }
-
-                        if(isset($administrativo1) && $administrativo1->telefono != null){
-                            $phone = '+34'.$administrativo1->telefono;
-                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
-                        }
-
-                        if(isset($administrativo2) && $administrativo2->telefono != null){
-                            $phone = '+34'.$administrativo2->telefono;
-                            enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
-                        }
-                        
-                        
-                    }
-
-
-                }
-                if ($producto) {
-                    $productos[] = [
-                        'nombre' => $producto->nombre,
-                        'cantidad' => $productoPedido->unidades,
-                        'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' => $productoPedido->precio_total,
-                        'iva' => $producto->iva,
-                        'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
-                        'lote_id' => $stockEntrante->orden_numero,
-                        'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) /1000 ,
-                    ];
-                }
             }
         }
+        
 
         $num_albaran = Albaran::count() + 1;
         $fecha_albaran = Carbon::now()->format('Y-m-d');
@@ -602,25 +530,57 @@ class CreateComponent extends Component
     }
 
     public function registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen) {
-        $stockRegistro = new StockRegistro();
-        $stockRegistro->stock_entrante_id = $stockEntrante->id;
-        $stockRegistro->cantidad = $cantidad;
-        $stockRegistro->tipo = "Venta";
-        $stockRegistro->motivo = "Salida";
-        $stockRegistro->pedido_id = $pedido->id;
-        $stockRegistro->save();
-
-        StockSaliente::create([
-            'stock_entrante_id' => $stockEntrante->id,
-            'producto_id' => $producto->id,
-            'cantidad_salida' => $cantidad,
-            'fecha_salida' => Carbon::now(),
-            'pedido_id' => $pedido->id,
-            'tipo' => 'Pedido',
-            'motivo_salida' => 'Venta',
-            'almacen_origen_id' => $almacen->id,
-        ]);
+        // Verificar si ya existe un registro de salida para este pedido y lote
+        $existingRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)
+            ->where('pedido_id', $pedido->id)
+            ->where('motivo', 'Salida')
+            ->where('tipo', 'Venta')
+            ->first();
+    
+        if ($existingRegistro) {
+            // Actualizar el registro existente
+            $existingRegistro->cantidad += $cantidad;
+            if ($existingRegistro->cantidad < 0) {
+                $existingRegistro->cantidad = 0; // Evitar cantidades negativas
+            }
+            $existingRegistro->save();
+        } else {
+            // Crear un nuevo registro de salida
+            $stockRegistro = new StockRegistro();
+            $stockRegistro->stock_entrante_id = $stockEntrante->id;
+            $stockRegistro->cantidad = $cantidad;
+            $stockRegistro->tipo = "Venta";
+            $stockRegistro->motivo = "Salida";
+            $stockRegistro->pedido_id = $pedido->id;
+            $stockRegistro->save();
+        }
+    
+        $existingSaliente = StockSaliente::where('stock_entrante_id', $stockEntrante->id)
+            ->where('pedido_id', $pedido->id)
+            ->first();
+    
+        if ($existingSaliente) {
+            // Actualizar el registro existente
+            $existingSaliente->cantidad_salida += $cantidad;
+            if ($existingSaliente->cantidad_salida < 0) {
+                $existingSaliente->cantidad_salida = 0; // Evitar cantidades negativas
+            }
+            $existingSaliente->save();
+        } else {
+            // Crear un nuevo registro de salida
+            StockSaliente::create([
+                'stock_entrante_id' => $stockEntrante->id,
+                'producto_id' => $producto->id,
+                'cantidad_salida' => $cantidad,
+                'fecha_salida' => Carbon::now(),
+                'pedido_id' => $pedido->id,
+                'tipo' => 'Pedido',
+                'motivo_salida' => 'Venta',
+                'almacen_origen_id' => $almacen->id,
+            ]);
+        }
     }
+    
 
     //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
