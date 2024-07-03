@@ -631,6 +631,41 @@ class CreateComponent extends Component
     public function updated($property){
         if($property == 'precio' && $this->isAlmacenOnline){
             
+            //controlar valores no numericos
+
+            if(!is_numeric($this->precio)){
+              //comprobar si ha metido un numero con coma y cambiarlo a punto
+                if(strpos($this->precio, ',') !== false){
+                    $this->precio = str_replace(',', '.', $this->precio);
+                    //comprobar si ahora no es un numero y tirar alerta si no lo es
+                    if(!is_numeric($this->precio)){
+                        //alerta debe introducir un valor numerico
+                        $this->alert('error', '¡Debe introducir un valor numérico!', [
+                            'position' => 'center',
+                            'timer' => 1500,
+                            'toast' => false,
+                            'showConfirmButton' => false,
+                            'timerProgressBar' => true,
+                            'onClose' => $this->emit('closeModal'),
+                            'allowOutsideClick' => false,
+                        ]);
+                        $this->precio = 0;
+                    }
+                }else{
+                    //alerta debe introducir un valor numerico
+                    $this->alert('error', '¡Debe introducir un valor numérico!', [
+                        'position' => 'center',
+                        'timer' => 1500,
+                        'toast' => false,
+                        'showConfirmButton' => false,
+                        'timerProgressBar' => true,
+                        'onClose' => $this->emit('closeModal'),
+                        'allowOutsideClick' => false,
+                    ]);
+                    $this->precio = 0;
+                }   
+            }
+
             $this->descuento_total = $this->subtotal - $this->precio;
             if($this->descuento_total > 0)
             {
