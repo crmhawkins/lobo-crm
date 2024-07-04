@@ -192,6 +192,7 @@ class EditComponent extends Component
         $this->observaciones = $pedido->observaciones;
         $this->tipo_pedido_id = $pedido->tipo_pedido_id;
         $this->precio = $pedido->precio;
+        //dd($this->precio);
         $this->bloqueado = $pedido->bloqueado;
         $this->porcentaje_descuento = $pedido->porcentaje_descuento;
         $this->porcentaje_bloq = is_null($cliente->porcentaje_bloq) ? 10 : $cliente->porcentaje_bloq;
@@ -235,8 +236,12 @@ class EditComponent extends Component
                 'timerProgressBar' => true,
             ]);
         }
-       
-        $this->setPrecioEstimado();
+       $this->gastos_envio = $pedido->gastos_envio; 
+       $this->transporte = $pedido->transporte;
+       $this->subtotal = $pedido->subtotal;
+       $this->descuento_total = $pedido->descuento_total;
+       $this->iva_total = $pedido->iva_total;
+       // $this->setPrecioEstimado();
         $this->emit('refreshComponent');
 
     }
