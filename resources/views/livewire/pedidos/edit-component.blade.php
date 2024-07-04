@@ -425,7 +425,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="fecha">Precio final</label>
-                                <input type="text" wire:model="precio" class="form-control" readonly>
+                                <input type="text" wire:model="precio" class="form-control" >
                             </div>
                         </div>
                     </div>
