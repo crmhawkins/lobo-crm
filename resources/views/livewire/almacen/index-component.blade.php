@@ -251,6 +251,38 @@
                             </div>
                         </div>
                     </div>
+                    <div wire:ignore.self class="modal fade" id="enFechaEntrega" tabindex="-1" role="dialog">
+                        <div class="modal-dialog"
+                            style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Añadir Fecha entrega</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <div class="form-group row">
+                                        <label for="fecha_salida" class="col-sm-4 col-form-label">Fecha de entrega</label>
+                                        <div class="col-sm-8">
+                                            <input type="date" class="form-control" id="fecha_entrega" wire:model="fecha_entrega">
+                                        </div>
+                                    </div>
+                                    
+
+                                    @if(isset($pedidoEnRutaId))
+                                    
+                                        <button onclick="fechaEntrega({{ $pedidoEnRutaId }})" class="btn btn-success mt-2">Añadir entrega a Pedido {{$pedidoEnRutaId}}</button>
+                                    @endif
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div wire:ignore.self class="modal fade" id="enviarEmailModal" tabindex="-1" role="dialog">
                         <div class="modal-dialog"
                             style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
@@ -331,7 +363,16 @@
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary botones"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8 )
                                                 @if($pedido->tipo_pedido_id == 0 && Auth::user()->role != 7)
+                                                    @if($this->hasFactura($pedido->id))
+                                                    <a href="facturas-edit/{{ $pedido->id }}" class="btn btn-success botones">Ver Factura</a>
+                                                    <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
+
+                                                    @else
                                                     <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
+
+                                                    @endif
+
+
                                                 @elseif($pedido->tipo_pedido_id != 0)
                                                     <button class="btn btn-secondary botones" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
                                                 @endif
@@ -366,6 +407,16 @@
         // Suponiendo que tu descarga se realiza aquí
 
         window.livewire.emit('enRuta', id);
+        //window.livewire.emit('enRuta', id);
+        setTimeout(() => {
+            location.reload()
+        }, 1000);
+    }
+
+    function fechaEntrega(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('fechaEntrega', id);
         //window.livewire.emit('enRuta', id);
         setTimeout(() => {
             location.reload()

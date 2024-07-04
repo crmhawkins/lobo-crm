@@ -36,8 +36,16 @@ class IndexComponent extends Component
     public $pedidoEnRutaId;
     public $email_transporte;
     public $observaciones_transporte;
+    public $fecha_entrega;
 
     
+    public function hasFactura($pedidoId){
+        $factura = Facturas::where('pedido_id', $pedidoId)->first();
+        if ($factura){
+            return $factura->id;
+        }
+        return false;
+    }
 
     public function enviarEmailTransporte(){
 
@@ -213,8 +221,35 @@ class IndexComponent extends Component
             'mostrarAlbaran',
             'comprobarStockPedido',
             'recarga',
-            'enviarEmailTransporte'
+            'enviarEmailTransporte',
+            'fechaEntrega'
         ];
+    }
+
+    public function fechaEntrega($id){
+
+
+        $pedido = Pedido::find($id);
+        if($this->fecha_entrega == null){
+            $this->alert('error', '¡Introduzca una fecha de entrega!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+        $pedido->update(['fecha_entrega' => $this->fecha_entrega,
+                        'estado' => 5
+                    ]);
+        
+
+
+        $this->alert('success', '¡Fecha de entrega actualizada!', [ 
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'timerProgressBar' => true,
+        ]);
     }
 
     public function completarPedido($id){

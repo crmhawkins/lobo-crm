@@ -386,7 +386,7 @@ class CreateComponent extends Component
         $pedidosSave =false;
         // Alertas de guardado exitoso
         if (isset($this->idpedido)){
-        $pedidosSave = $this->pedido->update(['estado' => 5]);
+        //$pedidosSave = $this->pedido->update(['estado' => 5]);
         }
         if ($facturasSave) {
             if($this->idpedido == null){
