@@ -236,12 +236,19 @@ class EditComponent extends Component
                 'timerProgressBar' => true,
             ]);
         }
-       $this->gastos_envio = $pedido->gastos_envio; 
-       $this->transporte = $pedido->transporte;
-       $this->subtotal = $pedido->subtotal;
-       $this->descuento_total = $pedido->descuento_total;
-       $this->iva_total = $pedido->iva_total;
-       // $this->setPrecioEstimado();
+
+        if(isset($this->almacen_id) && $this->almacen_id == 6){
+            $this->gastos_envio = $pedido->gastos_envio; 
+            $this->transporte = $pedido->transporte;
+            $this->subtotal = $pedido->subtotal;
+            $this->descuento_total = $pedido->descuento_total;
+            $this->iva_total = $pedido->iva_total;
+        }else{
+            $this->setPrecioEstimado();
+        }
+
+       
+       // 
         $this->emit('refreshComponent');
 
     }
