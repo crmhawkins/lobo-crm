@@ -34,7 +34,7 @@ class Historial extends Component
     public $comerciales = [];
     public $comercial_id = 0;
     public $delegaciones = [];
-    public $delegacion_id = 0;
+    public $delegacion_id = -1;
 
     public function formatFecha($id)
     {
