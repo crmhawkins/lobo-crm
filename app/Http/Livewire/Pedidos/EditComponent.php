@@ -243,6 +243,9 @@ class EditComponent extends Component
             $this->subtotal = $pedido->subtotal;
             $this->descuento_total = $pedido->descuento_total;
             $this->iva_total = $pedido->iva_total;
+            if($this->precio !== null && $this->precio !== 0){
+                $this->iva_total = ($this->precio * 0.21);
+            }
         }else{
             $this->setPrecioEstimado();
         }
