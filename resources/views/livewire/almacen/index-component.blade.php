@@ -365,7 +365,7 @@
                                                 @if($pedido->tipo_pedido_id == 0 && Auth::user()->role != 7)
                                                     @if($this->hasFactura($pedido->id))
                                                     <a href="facturas-edit/{{ $pedido->id }}" class="btn btn-success botones">Ver Factura</a>
-                                                    <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
+                                                    <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
 
                                                     @else
                                                     <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
@@ -374,13 +374,13 @@
 
 
                                                 @elseif($pedido->tipo_pedido_id != 0)
-                                                    <button class="btn btn-secondary botones" wire:click="completarPedido('{{ $pedido->id }}')">Completado </button>
+                                                    <button class="btn btn-secondary botones" onclick="completarPedido('{{ $pedido->id }}')">Completado </button>
                                                 @endif
                                             @else
                                                 
-                                                <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary botones" style="color: white;">Pedido En Ruta</button>
+                                                <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enRutaModal" class="btn btn-secondary botones" style="color: white;">Pedido En Ruta</button>
                                             @endif
-                                            <button  wire:click="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enviarEmailModal" class="btn btn-secondary botones" style="color: white;">Enviar Email Transporte</button>
+                                            <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enviarEmailModal" class="btn btn-secondary botones" style="color: white;">Enviar Email Transporte</button>
 
                                             <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
                                         </td>
@@ -413,6 +413,15 @@
         }, 1000);
     }
 
+    function completarPedido(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('completarPedido', id);
+        //window.livewire.emit('enRuta', id);
+        setTimeout(() => {
+            location.reload()
+        }, 1000);
+    }
     function fechaEntrega(id) {
         // Suponiendo que tu descarga se realiza aquí
 
@@ -421,6 +430,10 @@
         setTimeout(() => {
             location.reload()
         }, 1000);
+    }
+
+    function asignarPedidoEnRutaId(id) {
+        window.livewire.emit('asignarPedidoEnRutaId', id);
     }
 
     function enviarEmailTransporte(id) {

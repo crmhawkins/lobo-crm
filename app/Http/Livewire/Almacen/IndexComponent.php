@@ -222,7 +222,9 @@ class IndexComponent extends Component
             'comprobarStockPedido',
             'recarga',
             'enviarEmailTransporte',
-            'fechaEntrega'
+            'fechaEntrega',
+            'asignarPedidoEnRutaId',
+            'completarPedido'
         ];
     }
 
@@ -356,6 +358,8 @@ class IndexComponent extends Component
     {
         $this->pedidoEnRutaId = $pedidoId;
     }
+
+
 
  
 
