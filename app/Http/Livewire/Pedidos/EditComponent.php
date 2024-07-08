@@ -181,6 +181,8 @@ class EditComponent extends Component
 
         $this->documentosSubidos = null;
 
+        $this->documentos = PedidosDocuments::where('pedido_id', $this->identificador)->get();
+
         $this->alert('success', '¡Documentos subidos correctamente!', [
             'position' => 'center',
             'timer' => 3000,

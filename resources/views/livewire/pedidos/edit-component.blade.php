@@ -824,11 +824,11 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                         </div>
                     @endif
                     
-                    @if($documento)
+                    {{-- @if($documento)
                         <div class="col-12">
                             <button class="w-100 btn btn-secondary mb-2" wire:click="descargarDocumento2">Descargar Documento</button>
                         </div>
-                    @endif
+                    @endif --}}
                         
                 </div>
             </div>
