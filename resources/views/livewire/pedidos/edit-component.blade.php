@@ -144,7 +144,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
             </div>
             <div class="modal-body">
                 @foreach ($documentos as $documento)
-                    <div class="documento-item">
+                    <div class="documento-item my-2">
                         <span>{{ $documento->original_name }}</span>
                         <button wire:click="descargarDocumento({{ $documento->id }})" class="btn btn-info">Descargar</button>
                         <button wire:click="eliminarDocumento({{ $documento->id }})" class="btn btn-danger">Eliminar</button>
