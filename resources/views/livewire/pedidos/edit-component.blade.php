@@ -108,7 +108,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
             </div>
         </div>
     </div>
-    <div wire:ignore.self class="modal fade" id="documentoModal" tabindex="-1" role="dialog">
+    {{-- <div wire:ignore.self class="modal fade" id="documentoModal" tabindex="-1" role="dialog">
         <div class="modal-dialog"
             style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
             <div class="modal-content">
@@ -120,21 +120,50 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                 </div>
                 <div class="modal-body">
                     <div>
-                        <label for="documento" class="col-sm-12 col-form-label">Documento de justificativo</label>
-                        <input type="file" class="btn btn-info text-dark" wire:model="documentoSubido">
-                     
-                        @error('documento') <span class="error">{{ $message }}</span> @enderror
-                     
+                        <label for="documentosSubidos" class="col-sm-12 col-form-label">Documentos</label>
+                        <input type="file" class="btn btn-info text-dark" wire:model="documentosSubidos" multiple>
+                        @error('documentosSubidos.*') <span class="error">{{ $message }}</span> @enderror
                     </div>
                     <br>
-                    <button class="btn btn-success" wire:click="addDocumento" data-dismiss="modal">Añadir</button>
+                    <button class="btn btn-success" wire:click="addDocumentos" data-dismiss="modal">Añadir</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
+    </div> --}}
+<div wire:ignore.self class="modal fade" id="documentosModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Documentos del Pedido</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @foreach ($documentos as $documento)
+                    <div class="documento-item">
+                        <span>{{ $documento->original_name }}</span>
+                        <button wire:click="descargarDocumento({{ $documento->id }})" class="btn btn-info">Descargar</button>
+                        <button wire:click="eliminarDocumento({{ $documento->id }})" class="btn btn-danger">Eliminar</button>
+                    </div>
+                @endforeach
+                <br>
+                <label for="documentoNuevo" class="col-sm-12 col-form-label">Subir Documento</label>
+                <input type="file" class="btn btn-info text-dark" wire:model="documentosSubidos" multiple>
+                @error('documentosSubidos') <span class="error">{{ $message }}</span> @enderror
+                <br><br>
+                <button class="btn btn-success" wire:click="addDocumentos" wire:loading.attr="disabled">Añadir</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
+</div>
+    
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -784,12 +813,20 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 Anotaciones</button>
                         </div>
                     @endif
-                    <div class="col-12">
+                    {{-- <div class="col-12">
                         <button class="w-100 btn btn-warning mb-2" id="documentoModal" data-toggle="modal" data-target="#documentoModal">Añadir Documento</button>
-                    </div>
+                    </div> --}}
+                    @if($documentos)
+                        <div class="col-12">
+                            <h5>Documentos Adjuntos</h5>
+                            <button class="w-100 btn btn-warning mb-2" data-toggle="modal" data-target="#documentosModal">Gestionar Documentos</button>
+
+                        </div>
+                    @endif
+                    
                     @if($documento)
                         <div class="col-12">
-                            <button class="w-100 btn btn-secondary mb-2" wire:click="descargarDocumento">Descargar Documento</button>
+                            <button class="w-100 btn btn-secondary mb-2" wire:click="descargarDocumento2">Descargar Documento</button>
                         </div>
                     @endif
                         
