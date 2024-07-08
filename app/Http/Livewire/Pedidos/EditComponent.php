@@ -159,6 +159,15 @@ class EditComponent extends Component
 
     public function addDocumentos()
     {
+        if($this->documentosSubidos == null){
+            //alert
+            $this->alert('error', '¡Cargando documento espere!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
         if ($this->documentosSubidos !== null) {
             foreach ($this->documentosSubidos as $documento) {
                 $documento->storeAs('documentos_pedidos', $documento->hashName(), 'private');
