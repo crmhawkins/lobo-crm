@@ -362,14 +362,13 @@
                                         <td>
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary botones"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8 )
-                                                @if($pedido->tipo_pedido_id == 0 && Auth::user()->role != 7)
+                                                @if($pedido->tipo_pedido_id == 0)
                                                     @if($this->hasFactura($pedido->id))
-                                                    <a href="facturas-edit/{{ $pedido->id }}" class="btn btn-success botones">Ver Factura</a>
-                                                    <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
+                                                        <a href="facturas-edit/{{ $pedido->id }}" class="btn btn-success botones">Ver Factura</a>
+                                                        <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
 
-                                                    @else
-                                                    <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
-
+                                                    @elseif(Auth::user()->role != 7)
+                                                        <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
                                                     @endif
 
 
