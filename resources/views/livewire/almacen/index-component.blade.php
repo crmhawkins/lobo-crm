@@ -373,7 +373,7 @@
 
 
                                                 @elseif($pedido->tipo_pedido_id != 0)
-                                                    <button class="btn btn-secondary botones" onclick="completarPedido('{{ $pedido->id }}')">Completado </button>
+                                                    <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-danger botones" style="color: white;">Fecha entrega</button>
                                                 @endif
                                             @else
                                                 
