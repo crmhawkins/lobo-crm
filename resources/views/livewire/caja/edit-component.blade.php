@@ -252,13 +252,13 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                 <div class="col-sm-3">
                                     <label for="pago" class="col-sm-12 col-form-label">
                                     <input type="checkbox"  wire:model="compensacion" nombre="cuenta"
-                                        id="cuenta" placeholder="Cuenta..." disabled>
+                                        id="cuenta" placeholder="Cuenta..." >
                                         ¿Compensar factura?</label>
                                 </div>
                                 @if($compensacion)
                                     <div class="col-sm-3">
                                         <label for="pago" class="col-sm-12 col-form-label">Factura</label>
-                                        <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id" disabled>
+                                        <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id" >
                                             <option value="0">-- ELIGE UNA FACTURA --</option>
                                             @foreach ($facturas as $factura)
                                                 <option value="{{ $factura->id }}">

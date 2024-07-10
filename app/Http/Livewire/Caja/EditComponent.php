@@ -257,6 +257,31 @@ class EditComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));
 
         if ($tipoSave) {
+            if($this->compensacion){
+                $factura = Facturas::find($this->factura_id);
+                //comprobar si ya existe una compensación
+                $facturaCompensada = FacturasCompensadas::where('caja_id', $this->identificador)->first();
+                if($facturaCompensada !== null){
+                    $facturaCompensada->update([
+                        'caja_id' => $caja->id,
+                        'factura_id' => $factura->id,
+                        'importe' => $factura->total,
+                        'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
+                        'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
+                        'fecha' => $this->fecha,
+                    ]);
+                }else{
+                    $facturaCompensada = FacturasCompensadas::create([
+                        'caja_id' => $caja->id,
+                        'factura_id' => $factura->id,
+                        'importe' => $factura->total,
+                        'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
+                        'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
+                        'fecha' => $this->fecha,
+                    ]);
+                }
+                
+            }
             $this->alert('success', '¡Movimiento de caja actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
