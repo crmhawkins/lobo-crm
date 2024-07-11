@@ -406,6 +406,8 @@ class EditComponent extends Component
                 'gastos_envio' => 'nullable',
                 'transporte' => 'nullable',
                 'fecha_entrega' => 'nullable',
+                'fecha_salida' => 'nullable',
+                'empresa_transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -555,6 +557,8 @@ class EditComponent extends Component
                 'gastos_envio' => 'nullable',
                 'transporte' => 'nullable',
                 'fecha_entrega' => 'nullable',
+                'fecha_salida' => 'nullable',
+                'empresa_transporte' => 'nullable',
             ],
             // Mensajes de error
             [

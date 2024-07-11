@@ -288,14 +288,14 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                         @if($fecha_salida != null && $empresa_transporte != null)
                             <div class="form-group col-md-5">
                                 <label for="localidad_entrega">Fecha de Salida @if($estado ==8)<span class="badge badge-warning">En ruta</span> @endif</label>
-                                <input type="date" wire:model="fecha_salida" class="form-control" readonly>
+                                <input type="date" wire:model="fecha_salida" class="form-control" >
                             </div>
                             <div class="form-group col-md-1">
                                 &nbsp;
                             </div>
                             <div class="form-group col-md-5">
                                 <label for="localidad_entrega">Empresa de transporte @if($estado ==8)<span class="badge badge-warning">En ruta</span>@endif</label>
-                                <input type="text" wire:model="empresa_transporte" class="form-control" readonly>
+                                <input type="text" wire:model="empresa_transporte" class="form-control" >
                             </div>
                         @endif
                     </div>
