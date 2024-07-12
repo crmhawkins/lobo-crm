@@ -157,6 +157,17 @@ class EditComponent extends Component
 
     // }
 
+
+
+    public function hasFactura(){
+        $factura = Facturas::where('pedido_id', $this->identificador)->first();
+        if($factura){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function addDocumentos()
     {
         if($this->documentosSubidos == null){
