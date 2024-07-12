@@ -240,9 +240,7 @@ class IndexComponent extends Component
             ]);
             return;
         }
-        $pedido->update(['fecha_entrega' => $this->fecha_entrega,
-                        'estado' => 5
-                    ]);
+        $pedido->update(['fecha_entrega' => $this->fecha_entrega]);
         
 
 
