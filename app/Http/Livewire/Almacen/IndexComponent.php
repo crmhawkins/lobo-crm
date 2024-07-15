@@ -241,9 +241,11 @@ class IndexComponent extends Component
             return;
         }
         $pedido->update(['fecha_entrega' => $this->fecha_entrega]);
+
+        if($pedido->tipo_pedido_id != 0){
+            $pedido->update(['estado' => 5]);
+        }
         
-
-
         $this->alert('success', '¡Fecha de entrega actualizada!', [ 
             'position' => 'center',
             'timer' => 3000,
