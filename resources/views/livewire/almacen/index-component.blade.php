@@ -364,10 +364,12 @@
                                             @if ($pedido->estado ==8 )
                                                 @if($pedido->tipo_pedido_id == 0)
                                                     @if($pedido->fecha_entrega == null)
-                                                        {{-- <a href="facturas-edit/{{ $pedido->id }}" class="btn btn-success botones">Ver Factura</a> --}}
                                                         <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-success botones" style="color: white;">Fecha entrega</button>
-
-                                                    @elseif(Auth::user()->role != 7 && $pedido->fecha_entrega != null)
+                                                    @endif
+    
+                                                    @if($this->hasFactura($pedido->id))
+                                                        <a href="facturas-edit/{{ $this->hasFactura($pedido->id) }}" class="btn btn-success botones">Ver Factura</a>
+                                                    @else
                                                         <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
                                                     @endif
 

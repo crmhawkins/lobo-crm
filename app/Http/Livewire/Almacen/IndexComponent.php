@@ -242,7 +242,12 @@ class IndexComponent extends Component
         }
         $pedido->update(['fecha_entrega' => $this->fecha_entrega]);
 
+        //el pedido tiene factura?
+        $factura = Facturas::where('pedido_id', $id)->first();
+
         if($pedido->tipo_pedido_id != 0){
+            $pedido->update(['estado' => 5]);
+        }elseif($factura){
             $pedido->update(['estado' => 5]);
         }
         

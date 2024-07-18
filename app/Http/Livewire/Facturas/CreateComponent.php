@@ -379,6 +379,18 @@ class CreateComponent extends Component
             );
         }
         
+        //si el pedido ya tiene factura, no se puede crear otra
+        if($this->idpedido != null){
+            $factura = Facturas::where('pedido_id', $this->idpedido)->first();
+            if($factura){
+                $this->alert('error', '¡El pedido ya tiene una factura asociada!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+                return;
+            }
+        }
         
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
@@ -386,7 +398,9 @@ class CreateComponent extends Component
         $pedidosSave =false;
         // Alertas de guardado exitoso
         if (isset($this->idpedido)){
-        $pedidosSave = $this->pedido->update(['estado' => 5]);
+            if($this->pedido->fecha_entrega != null || $this->pedido->fecha_entrega != ''){
+                $pedidosSave = $this->pedido->update(['estado' => 5]);
+            }
         }
         if ($facturasSave) {
             if($this->idpedido == null){
