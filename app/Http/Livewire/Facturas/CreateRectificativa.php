@@ -78,7 +78,7 @@ class CreateRectificativa extends Component
 
         if($year = 24){
             if($lastNumber == 30){
-                $lastNumber = 31;
+                $lastNumber = 31; //FACTURA EN HOLDED
             }
         }
 

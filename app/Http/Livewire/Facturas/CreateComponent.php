@@ -102,14 +102,15 @@ class CreateComponent extends Component
 
         }
 
+       
         // si es el numero F240428, que lo excluya y coja el siguiente
         if($year = 24){
             if($lastNumber == 428){
-                $lastNumber = 429;
+                $lastNumber = 429; //FACTURA EN HOLDED
             }
         }
         
-
+        //dd($lastNumber);
         // Genera el nuevo número de factura con relleno para asegurar 4 dígitos
         $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
@@ -228,6 +229,11 @@ class CreateComponent extends Component
         if($this->isFacturaRectificativa){
             $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }else{
+            if($year = 24){
+                if($lastNumber == 428){
+                    $lastNumber = 429; //FACTURA EN HOLDED
+                }
+            }
             $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }
         //dd("prueba");
