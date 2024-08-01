@@ -77,7 +77,7 @@ class CreateRectificativa extends Component
         }
 
         if($year = 24){
-            if($lastnumber == 30){
+            if($lastNumber == 30){
                 $lastNumber = 31;
             }
         }
