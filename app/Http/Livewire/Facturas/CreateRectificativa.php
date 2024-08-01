@@ -75,6 +75,13 @@ class CreateRectificativa extends Component
                 $lastNumber = 1;
             }
         }
+
+        if($year = 24){
+            if($lastnumber == 30){
+                $lastNumber = 31;
+            }
+        }
+
         $this->clientes = Clients::where('estado', 2)->get();
 
         $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
