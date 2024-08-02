@@ -118,6 +118,8 @@ class IndexComponent extends Component
 
     }
 
+   
+
     public function updated($property, $value){
         if($property == 'filtro' || $property == 'filtroEstado' || $property == 'delegacion'
         || $property == 'fechaPago' || $property == 'fechaVencimiento' || $property == 'fecha' || $property == 'proveedorId'){

@@ -165,8 +165,7 @@
                     <h5>Acciones</h5>
                     <div class="row">
                         <div class="col-12">
-                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar
-                                nuevo ingreso </button>
+                            <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar nuevo ingreso </button>
                         </div>
                     </div>
                 </div>

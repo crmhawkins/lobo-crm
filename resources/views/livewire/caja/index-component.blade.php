@@ -238,7 +238,7 @@
                                         <tr>
                                             <td>{{ $tipo->fecha }}</td>
                                             <td>{{ $tipo->nInterno }}</td>
-                                            <td>{{ $tipo->nFactura }}</td>
+                                            <td>{{ $tipo->nFactura  }}</td>
                                             <td >
                                                 <span @if($tipo->estado == "Pendiente") class="badge badge-warning" @elseif($tipo->estado == "Pagado") class="badge badge-success"  @endif>
                                                 {{ $tipo->estado }}

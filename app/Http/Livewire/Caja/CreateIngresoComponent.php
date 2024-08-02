@@ -109,7 +109,7 @@ class CreateIngresoComponent extends Component
                     'metodo_pago' => 'required',
                     'importe' => 'required',
                     'descripcion' => 'required',
-                    'pedido_id' => 'required',
+                    'pedido_id' => 'nullable',
                     'fecha' => 'required',
                     'banco' => 'nullable'
 
