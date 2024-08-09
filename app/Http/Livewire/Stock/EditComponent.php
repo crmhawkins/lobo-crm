@@ -177,6 +177,7 @@ class EditComponent extends Component
 
     public function  addStock(){
 
+        //dd($this->almacen_id);
         if($this->motivo == null){
             $this->alert('error', '¡Debe indicar un motivo para sumar stock!', [
                 'position' => 'center',
@@ -188,9 +189,10 @@ class EditComponent extends Component
             return;
         }
 
+
         $this->addStockItem = abs($this->addStockItem);
         //si la cantidad a sumar mas la cantidad es mayor a la cantidad base de stockEntrante, se muestra un error
-        if($this->addStockItem + $this->cantidad > $this->stockentrante->cantidad){
+        if($this->addStockItem + $this->cantidad > $this->stockentrante->cantidad && $this->almacen_id != 6){
             $this->alert('error', '¡No se puede asignar una cantidad mayor a la cantidad base!', [
                 'position' => 'center',
                 'timer' => 3000,
