@@ -316,12 +316,15 @@ class CreateComponent extends Component
              $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
              //ver que iva tiene el producto
                 $iva = Iva::find($producto->iva_id);
+                //dd($iva);
                 if($iva){
                     //dd($iva);
                     if($this->descuento == 1){
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                       
                     }else{
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                        
                     }
                 }
              
@@ -329,15 +332,21 @@ class CreateComponent extends Component
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto && $productoPedido['precio_ud'] != 0) {
                 $this->bloqueado = true;
-                break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
+                //dd('bloqueado');
+                //break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
          }
+
          if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
             $this->gastos_envio_iva = $this->gastos_envio * 0.21;
             $total_iva += $this->gastos_envio_iva;
         }
+
+         //dd($total_iva);
+
          $this->iva_total = $total_iva;
 
+        
 
         // Validación de datos
         //si el rol es 2
