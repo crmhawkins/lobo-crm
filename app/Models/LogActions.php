@@ -12,8 +12,7 @@ class LogActions extends Model
 
     protected $fillable = [
         'action',
-        'description',
-        'category_id',
+        'description'
     ];
 
     /**

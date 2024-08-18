@@ -15,24 +15,7 @@ class Logs extends Model
         'description',
         'date',
         'user_id',
-        'reference',
-        'logs_action_id',
-        'pedido_id',
-        'factura_id',
-        'albaran_id',
-        'caja_id',
-        'cliente_id',
-        'registroemail_id',
-        'modificaciones_mercaderia_id',
-        'modificaciones_stock_id',
-        'producto_id',
-        'proveedor_id',
-        'rotura_stock_id',
-        'servicios_facturas_id',
-        'stock_id',
-        'stock_entrante_id',
-        'stock_registro_id',
-        'user_create_id',
+        'reference'
 
     ];
 

@@ -26,7 +26,7 @@ class LogEvent
      *
      * @return void
      */
-    public function __construct($user, $action_id, $reference )
+    public function __construct($user, $action_id, $reference)
     {
         $this->user = $user;
         $this->action_id = $action_id;

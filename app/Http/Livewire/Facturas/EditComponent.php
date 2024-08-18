@@ -698,7 +698,7 @@ class EditComponent extends Component
     {
         $factura = Facturas::find($this->identificador);
 
-        //event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
+        event(new \App\Events\LogEvent(Auth::user(), 19, $factura->id));
         //no borrar la factura, dejarla con deleted_at para mantener la integridad de los datos
         $factura->delete();
 
