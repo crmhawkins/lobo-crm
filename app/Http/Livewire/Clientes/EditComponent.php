@@ -246,7 +246,7 @@ class EditComponent extends Component
             'observaciones'=> $this->observaciones,
             'credito'=> $this->credito,
         ]);
-        event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
         if($clienteSave){
 

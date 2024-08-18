@@ -36,12 +36,16 @@ class LogEventListener
         $descripcion = str_replace('{dia}', substr($event->fecha, 0, 10), $descripcion);
         $action = LogActions::where('id', $event->action_id)->first()->action;
 
+        
+
         Logs::create([
             'user_id' => $event->user->id,
             'action' => $action,
             'description' => $descripcion,
             'date' => $event->fecha,
-            'reference' => $event->reference
+            'reference' => $event->reference,
+            'logs_action_id' => $event->action_id,
+
         ]);
 
     }

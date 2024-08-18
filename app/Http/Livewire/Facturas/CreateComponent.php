@@ -410,7 +410,7 @@ class CreateComponent extends Component
         
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
-        event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
         $pedidosSave =false;
         // Alertas de guardado exitoso
         if (isset($this->idpedido)){

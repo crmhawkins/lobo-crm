@@ -608,7 +608,7 @@ class EditComponent extends Component
                 DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->delete();
             }
         }
-        event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
+       // event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
 
         // Alertas de guardado exitoso
         if ($pedidosSave) {
@@ -805,7 +805,7 @@ class EditComponent extends Component
                 }
             }
         }
-        event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
+       // event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
 
         // Alertas de guardado exitoso
         if ($pedidosSave) {
@@ -1542,7 +1542,7 @@ class EditComponent extends Component
         // Luego, elimina el pedido
         $pedido = Pedido::find($pedidoId);
         if ($pedido) {
-            event(new \App\Events\LogEvent(Auth::user(), 10, $pedido->id));
+           // event(new \App\Events\LogEvent(Auth::user(), 10, $pedido->id));
             $pedido->delete();
         }
 
