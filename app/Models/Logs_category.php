@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LogActions extends Model
+class Logs_category extends Model
 {
     use HasFactory;
-    protected $table = "log_actions";
+
+    protected $table = "logs_category";
 
     protected $fillable = [
-        'action',
-        'description',
-        'category_id',
+        'name',
     ];
 
     /**
@@ -22,6 +21,7 @@ class LogActions extends Model
      * @var array
      */
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at',
+        'created_at', 'updated_at',
     ];
+
 }
