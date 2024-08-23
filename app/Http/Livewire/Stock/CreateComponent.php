@@ -187,6 +187,19 @@ class CreateComponent extends Component
             ]
         );
 
+        //comprobar si ya hay un lote con ese qr_id
+        $loteExistente = Stock::where('qr_id', $this->qr_id)->first();
+
+        if ($loteExistente) {
+            $this->alert('error', '¡No se ha podido guardar la entrada del stock! Ya existe un lote con ese QR.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+        
+
         $mercaderiaSave = Stock::create($validatedData);
         $dia = Carbon::now();
         foreach ($this->productos_pedido as $productosIndex => $productos) {
