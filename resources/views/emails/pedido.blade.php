@@ -63,8 +63,16 @@
                 <th colspan="3">Total</th>
                 <th>{{ number_format($pedido->precio, 2) }} €</th>
             </tr>
+            <tr>
+                <th colspan="3">Total Iva</th>
+                <th>{{ number_format($pedido->iva_total, 2) }} €</th>
+            </tr>
+            <tr>
+                <th colspan="3">Total con Iva</th>
+                <th>{{ number_format($pedido->precio + $pedido->iva_total , 2) }} €</th>
+            </tr>
         </table>
-        <p>Iva no Incluido.</p>
+        {{-- <p>Iva no Incluido.</p> --}}
         @if ($pedido->descuento)
             <p>Se ha aplicado un descuento en su pedido.</p>
         @endif

@@ -32,14 +32,20 @@
             border: 1px solid #ddd;
             padding: 8px;
         }
-        .details-table th {
+        .details-table th , .footer-table td {
             background-color: #f2f2f2;
             color: black;
+        }
+        .footer-table td{
+            font-weight: bold;
+            padding: 10px 0px;
         }
         .footer-table {
             margin-top: 20px;
             width: 100%;
             text-align: center;
+            border: 1px solid #ddd;
+
         }
     </style>
 </head>
@@ -85,11 +91,18 @@
             <td>Total Pedido: {{ number_format($pedido->precio, 2) }}€</td>
         </tr>
         <tr>
-            <td>Descuento Aplicado: {{ $pedido->descuento ? 'Sí' : 'No' }}</td>
+            <td>Total Iva: {{ number_format($pedido->iva_total, 2) }}€</td>
         </tr>
+        <tr>
+            <td>Total + Iva: {{ number_format($pedido->iva_total + $pedido->precio, 2) }}€</td>
+        </tr>
+        {{-- <tr>
+            <td>Descuento Aplicado: {{ $pedido->descuento ? 'Sí' : 'No' }}</td>
+        </tr> --}}
     </table>
-
-    <p>Observaciones: {{ $pedido->observaciones }}</p>
+    @if($pedido->observaciones)
+        <p>Observaciones: {{ $pedido->observaciones }}</p>
+    @endif
 
     <p class="footer-table">
         Gracias por su pedido.<br>
