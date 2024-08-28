@@ -337,10 +337,10 @@ class CreateComponent extends Component
             }
          }
 
-         if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
-            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
-            $total_iva += $this->gastos_envio_iva;
-        }
+        //  if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
+        //     $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        //     $total_iva += $this->gastos_envio_iva;
+        // }
 
          //dd($total_iva);
 
@@ -857,7 +857,7 @@ class CreateComponent extends Component
         $this->precioEstimado = 0;
         if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
             //dd($this->gastos_envio);
-            $this->precioEstimado = $this->gastos_envio;
+            // $this->precioEstimado = $this->gastos_envio;
             $this->gastos_envio_iva = $this->gastos_envio * 0.21;
         }
 
