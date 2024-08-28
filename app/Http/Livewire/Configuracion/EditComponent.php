@@ -25,6 +25,10 @@ class EditComponent extends Component
     public $almacenDireccion;
     public $almacenHorario;
     public $editableAlmacen = [];
+    public $texto_factura;
+    public $texto_pedido;
+    public $texto_albaran;
+    public $texto_email;
     public $newAlmacen = [
         'almacen' => '',
         'direccion' => '',
@@ -72,6 +76,10 @@ class EditComponent extends Component
             $this->hasImage = true;
         }
         $this->almacenes = Almacen::all();
+        $this->texto_factura = $configuracion->texto_factura;
+        $this->texto_pedido = $configuracion->texto_pedido;
+        $this->texto_albaran = $configuracion->texto_albaran;
+        $this->texto_email = $configuracion->texto_email;
         //dd($this->firma);
     }
 
@@ -148,7 +156,12 @@ class EditComponent extends Component
         ]);
 
         $this->configuracion->update([
-            'cuenta' => $this->cuenta
+            'cuenta' => $this->cuenta,
+            'texto_factura' => $this->texto_factura,
+            'texto_pedido' => $this->texto_pedido,
+            'texto_albaran' => $this->texto_albaran,
+            'texto_email' => $this->texto_email
+
         ]);
 
         $this->alert('success', 'Configuración actualizada con éxito');

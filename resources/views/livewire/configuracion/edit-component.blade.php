@@ -34,9 +34,65 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
                                     Opciones de Configuración</h5>
                             </div>
-                            <div class="form-group col-sm-1 invisible">
-                                &nbsp;
+                            
+                            
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Texto Legal Facturas</label>
+                                <div class="col-sm-12">
+                                    <textarea type="text" wire:model="texto_factura" class="form-control"> </textarea>
+                                    @error('texto_factura')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        <style>
+                                            .nombre {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
                             </div>
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Texto Legal Pedidos</label>
+                                <div class="col-sm-12">
+                                    <textarea type="text" wire:model="texto_pedido" class="form-control"> </textarea>
+                                    @error('texto_pedido')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        <style>
+                                            .nombre {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Texto Legal Albaran</label>
+                                <div class="col-sm-12">
+                                    <textarea type="text" wire:model="texto_albaran" class="form-control"> </textarea>
+                                    @error('texto_albaran')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        <style>
+                                            .nombre {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Texto Legal Email</label>
+                                <div class="col-sm-12">
+                                    <textarea type="text" wire:model="texto_email" class="form-control"> </textarea>
+                                    @error('texto_email')
+                                        <span class="text-danger">{{ $message }}</span>
+                                        <style>
+                                            .nombre {
+                                                color: red;
+                                            }
+                                        </style>
+                                    @enderror
+                                </div>
+                            </div>
+                            
                             <div class="col-md-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Cuenta del banco</label>
                                 <div class="col-sm-12">
@@ -52,7 +108,37 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @enderror
                                 </div>
                             </div>
+
                             <div class="col-md-5">
+                                <h5>Firma</h5>
+                                @if ($firma)
+                                    <div class="mb-3 row d-flex justify-content-center col-12">
+                                        <div class="col-12">
+                                            @if($hasImage)
+                                                <img src="{{ asset('storage/photos/' . $firma) }}"
+                                                    style="max-width: 100% !important; text-align: center">
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                               
+                                <div class="mb-3 row d-flex align-items-center">
+                                    <div class="col-sm-12">
+                                        <input type="file" class="form-control" wire:model="firma" name="firma"
+                                            id="firma" placeholder="Imagen del producto...">
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                        <button class="btn btn-success mt-2" wire:click="saveFirma()"> Guardar firma</button>
+                                    </div>
+
+                                </div>
+                                <div>
+                                    {{-- <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button> --}}
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Departamentos Proveedores</label>
                                 <div class="col-sm-12">
                                     <div class="d-flex gap-2">
@@ -94,37 +180,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
 
                             </div>
-                            
-
-                            <div class="card-body">
-                                <h5>Firma</h5>
-                                @if ($firma)
-                                    <div class="mb-3 row d-flex justify-content-center">
-                                        <div class="col">
-                                            @if($hasImage)
-                                                <img src="{{ asset('storage/photos/' . $firma) }}"
-                                                    style="max-width: 100% !important; text-align: center">
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
-                               
-                                <div class="mb-3 row d-flex align-items-center">
-                                    <div class="col-sm-4">
-                                        <input type="file" class="form-control" wire:model="firma" name="firma"
-                                            id="firma" placeholder="Imagen del producto...">
-                                        @error('nombre')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                        <button class="btn btn-success mt-2" wire:click="saveFirma()"> Guardar firma</button>
-                                    </div>
-
-                                </div>
-                                <div>
-                                    {{-- <button class="btn btn-danger" wire:click="enviarWhatsappPrueba()">Probar Whatsapp</button> --}}
-                                </div>
-                            </div>
-                            <div class="col-md-5">
+                            <div class="col-md-12">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Configurar Almacenes</label>
                                 <table class="table table-striped">
                                     <thead>

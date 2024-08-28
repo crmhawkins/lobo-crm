@@ -13,7 +13,11 @@ class Configuracion extends Model
 
     protected $fillable = [
         'cuenta',
-        'firma'
+        'firma',
+        'texto_factura',
+        'texto_pedido',
+        'texto_albaran',
+        'texto_email'
     ];
 
     public $timestamps = false;
