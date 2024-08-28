@@ -210,10 +210,13 @@ class IndexComponent extends Component
             // Llama a la función descargarPdfs para generar el PDF de la factura
             $pdf = $this->descargarPdfs($facturaId);
 
+            $factura = Facturas::find($facturaId);
+
+
             // Verifica si el PDF es válido antes de agregarlo a la matriz
             if ($pdf !== null) {
                 // Agrega el PDF a la matriz
-                $pdfs["factura_{$facturaId}.pdf"] = $pdf->output();
+                $pdfs["{$factura->numero_factura}.pdf"] = $pdf->output();
             } else {
                 // Si el PDF es nulo, puedes registrar un mensaje de error o realizar alguna otra acción
                 Log::error("Error al generar el PDF para la factura {$facturaId}");
