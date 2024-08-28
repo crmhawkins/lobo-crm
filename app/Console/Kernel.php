@@ -10,6 +10,9 @@ use Carbon\Carbon;
 use App\Models\Alertas;
 use App\Models\Facturas;
 use App\Models\User;
+use App\Models\StockMercaderiaEntrante;
+use App\Models\MercaderiaProduccion;
+use App\Models\Mercaderia;
 
 class Kernel extends ConsoleKernel
 {
@@ -28,10 +31,48 @@ class Kernel extends ConsoleKernel
             $pedidosEnEnvio = Pedido::where('estado', 8)->where('updated_at', '<=', $cincoDiasAtras)->get();
             $FacturasVencimiento = Facturas::whereDate('fecha_vencimiento', '=', $tresDias->toDateString())->get();
             $pedidosEnPreparacion = Pedido::where('estado', 3)->where('updated_at', '<=', $tresDiasAtras)->get();
-
+            // $mercaderiaCantidad = StockMercaderiaEntrante::All();
+            // $mercaderiaProduccion = MercaderiaProduccion::All();
+            $mercaderias = Mercaderia::all();
             //pedidos con fecha de salida, es decir que no sea null y que hayan pasado 3 dias desde la fecha de salida y aun no tenga fecha de entrega diferente a null
             $pedidosEnSalida = Pedido::whereNotNull('fecha_salida')->where('fecha_entrega', null)->whereDate('fecha_salida', '<=', $tresDias->toDateString())->get();
             //dd($pedidosEnSalida);
+
+            foreach ($mercaderias as $mercaderia){
+                
+                //coger la cantidad y en produccion
+                $cantidad = StockMercaderiaEntrante::where('mercaderia_id', $mercaderia->id)->get()->sum('cantidad');
+                $produccion = MercaderiaProduccion::where('mercaderia_id', $mercaderia->id)->get()->sum('cantidad');
+
+
+                //si la cantidad es un 20% menor a la produccion se envia una alerta
+
+                if($cantidad < ($produccion * 0.2)){
+                    
+                    $alertaExistente = Alertas::where('referencia_id', $mercaderia->id)->where('stage', 9)->first();
+                    
+                    if (!$alertaExistente) {
+                        Alertas::create([
+                            'user_id' => 13,
+                            'stage' => 9,
+                            'titulo' => 'Stock de Mercaderia Bajo',
+                            'descripcion' => 'La mercaderia ' . $mercaderia->nombre . ' tiene un stock bajo.',
+                            'referencia_id' => $mercaderia->id,
+                            'leida' => null,
+                        ]);
+
+                        // //Enviar mensaje a director Comercial
+                        // $dGeneral = User::where('id', 13)->first();
+                        // $administrativo1 = User::where('id', 17)->first();
+                        // $administrativo2 = User::where('id', 18)->first();
+
+                        // $data = [['type' => 'text', 'text' => $mercaderia->nombre]];
+                        // $buttondata = [$mercaderia->id];
+                    }
+                }
+
+
+            }
 
             foreach ($pedidosEnSalida as $pedido){
                 //dd($pedido);
