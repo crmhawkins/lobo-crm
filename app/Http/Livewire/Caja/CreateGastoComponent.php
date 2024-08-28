@@ -115,7 +115,7 @@ class CreateGastoComponent extends Component
             $this->importeIva = $this->importe * $this->iva / 100;
             
             $retencionTotal = $this->importe * $this->retencion / 100;
-            $this->total = $this->importe + $this->importeIva + $retencionTotal;
+            $this->total = $this->importe + $this->importeIva - $retencionTotal;
             if($this->descuento !== null){
                 $this->total = round($this->total - ($this->total * $this->descuento / 100) , 2);   
             }
