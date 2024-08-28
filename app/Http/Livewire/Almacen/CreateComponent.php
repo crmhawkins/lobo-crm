@@ -22,6 +22,7 @@ use App\Models\Alertas;
 use App\Models\StockSaliente;
 use App\Models\StockRegistro;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class CreateComponent extends Component
 {
@@ -281,6 +282,12 @@ class CreateComponent extends Component
                         'referencia_id' =>$producto->id . $almacen->id ,
                         'leida' => null,
                     ]);
+
+                    Mail::send([], [], function ($message) use ($producto, $almacen) {
+                        $message->to('Alejandro.martin@serlobo.com')
+                                ->subject($producto->nombre.' - Alerta de Stock Bajo')
+                                ->html('<h1>Alerta de Stock Bajo</h1><p>El stock de '.$producto->nombre.' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>');
+                    });
                     
                     $dGeneral = User::where('id', 13)->first();
                     $administrativo1 = User::where('id', 17)->first();

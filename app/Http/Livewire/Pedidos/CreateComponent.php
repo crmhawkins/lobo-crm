@@ -18,6 +18,8 @@ use App\Models\ProductoPrecioCliente;
 use App\Models\Almacen;
 use App\Models\Iva;
 use App\Models\User;
+use App\Mail\PedidoMail;
+use Illuminate\Support\Facades\Mail;
 
 class CreateComponent extends Component
 {
@@ -438,6 +440,13 @@ class CreateComponent extends Component
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
+        Mail::send([], [], function ($message) use ($pedidosSave) {
+            $message->to('Alejandro.martin@serlobo.com')
+                    ->subject('Nuevo Pedido Creado')
+                    ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->nombre_cliente . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
+        });
+
+
         if( $this->bloqueado){
             Alertas::create([
                 'user_id' => 13,
@@ -496,6 +505,8 @@ class CreateComponent extends Component
                     'referencia_id' => $pedidosSave->id,
                     'leida' => null,
                 ]);
+
+
 
                 $dGeneral = User::where('id', 13)->first();
                 $dComercial = User::where('id', 14)->first();
