@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Configuracion;
 
 class TransporteMail extends Mailable
 {
@@ -21,6 +22,7 @@ class TransporteMail extends Mailable
     public $observaciones;
     public $almacen;
     public $num_albaran;
+    public $configuracion;
 
 
     public function __construct($pdf,$datos, $observaciones)
@@ -33,6 +35,7 @@ class TransporteMail extends Mailable
         $this->observaciones = $observaciones;
         $this->almacen = $datos['almacen'];
         $this->num_albaran = $datos['num_albaran'];
+        $this->configuracion = Configuracion::first();
     }
 
     public function build()
@@ -43,7 +46,8 @@ class TransporteMail extends Mailable
                         'mime' => 'application/pdf',
                     ])
                     ->with([
-                        'cliente' => $this->cliente
+                        'cliente' => $this->cliente,
+                        'configuracion' => $this->configuracion,
                     ]);
     }
 }

@@ -15,6 +15,7 @@ use App\Models\Evento;
 use App\Models\ProductoLote;
 use App\Models\Productos;
 use App\Models\ServicioPack;
+use App\Models\Configuracion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -314,6 +315,7 @@ class EditComponent extends Component
         $listaServicios = [];
         $listaPacks = [];
         $packs = ServicioPack::all();
+        $configuracion = Configuracion::where('id', 1)->first();
 
         foreach ($presupuesto->servicios()->get() as $servicio) {
             $listaServicios[] = ['id' => $servicio->id, 'numero_monitores' => $servicio->pivot->numero_monitores, 'precioFinal' => $servicio->pivot->precio_final, 'existente' => 1];
@@ -327,6 +329,7 @@ class EditComponent extends Component
         $datos =  [
             'presupuesto' => $presupuesto, 'factura' => $factura, 'cliente' => $cliente,
             'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs,
+            'configuracion' => $configuracion
         ];
 
         $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical')->output(); //

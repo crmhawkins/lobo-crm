@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\RegistroEmail;
 use Illuminate\Support\Facades\Log;
 use App\Models\Emails;
+
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\ProductosFacturas;
 
@@ -386,6 +387,7 @@ class IndexComponent extends Component
             }
         }
 
+        $configuracion = Configuracion::where('id', 1)->first();
         $datos = [
             'conIva' => false,
             'pedido' => $pedido,
@@ -394,6 +396,7 @@ class IndexComponent extends Component
             'num_albaran' => $num_albaran = $albaran->num_albaran,
             'fecha_albaran' => $fecha_albaran = $albaran->fecha,
             'nota' => $nota ?? null,
+            'configuracion' => $configuracion,
         ];
 
         // Generar y mostrar el PDF

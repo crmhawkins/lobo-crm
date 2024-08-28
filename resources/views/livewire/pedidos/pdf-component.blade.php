@@ -47,9 +47,16 @@
             border: 1px solid #ddd;
 
         }
+        div.breakNow {
+            page-break-inside: avoid;
+            page-break-after: always;
+        }
     </style>
 </head>
 <body>
+    <footer style="margin-top: 100px; page-break-after: avoid;position: fixed; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+        <p>{{ $configuracion->texto_pedido }}</p>
+    </footer>
     <table class="header-table">
         <tr>
             <td><img src="{{ public_path('images/logo_head.png') }}" alt="Logo" class="logo"></td>

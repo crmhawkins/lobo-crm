@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Configuracion;
 
 class TransporteRecogida extends Mailable
 {
@@ -22,6 +23,7 @@ class TransporteRecogida extends Mailable
     public $productosFactura;
     public $num_albaran;
     public $almacen;
+    public $configuracion;
 
 
     public function __construct($pdf,$datos)
@@ -35,6 +37,7 @@ class TransporteRecogida extends Mailable
         $this->productosFactura = $datos['productosFactura'];
         $this->num_albaran = $datos['num_albaran'];
         $this->almacen = $datos['almacen'];
+        $this->configuracion = Configuracion::first();
         //dd($this->productosFactura);
 
     }
@@ -47,7 +50,8 @@ class TransporteRecogida extends Mailable
                         'mime' => 'application/pdf',
                     ])
                     ->with([
-                        'cliente' => $this->cliente
+                        'cliente' => $this->cliente,
+                        'configuracion' => $this->configuracion,
                     ]);
     }
 }

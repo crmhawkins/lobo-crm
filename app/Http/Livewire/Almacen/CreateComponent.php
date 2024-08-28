@@ -21,6 +21,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Alertas;
 use App\Models\StockSaliente;
 use App\Models\StockRegistro;
+use App\Models\Configuracion;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -452,6 +453,7 @@ class CreateComponent extends Component
 
         $num_albaran = Albaran::count() + 1;
         $fecha_albaran = Carbon::now()->format('Y-m-d');
+        $configuracion = Configuracion::where('id', 1)->first();
 
         $datos = [
             'pedido' => $pedido,
@@ -459,7 +461,8 @@ class CreateComponent extends Component
             'observaciones' => $pedido->observaciones,
             'productos' => $productos,
             'num_albaran' => $num_albaran,
-            'fecha_albaran' => $fecha_albaran
+            'fecha_albaran' => $fecha_albaran,
+            'configuracion' => $configuracion,
         ];
 
         // Crear una instancia del modelo Albaran

@@ -138,7 +138,10 @@
         <div class="footer">
             <p>Si tiene alguna pregunta acerca de su pedido, no dude en contactarnos.</p>
             <p>Saludos cordiales,</p>
+            <br>
+            <p>{{ $configuracion->texto_email }}</p>
         </div>
+
     </div>
 </body>
 </html>

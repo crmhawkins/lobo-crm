@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Configuracion;
 
 class RecordatorioMail extends Mailable
 {
@@ -21,6 +22,7 @@ class RecordatorioMail extends Mailable
     public $factura;
     public $tipo;
     public $subject;
+    public $configuracion;
 
 
     public function __construct($pdf,$datos)
@@ -37,6 +39,7 @@ class RecordatorioMail extends Mailable
         }else{
             $this->subject = 'Aviso de Vencimiento de Factura';
         }
+        $this->configuracion = Configuracion::first();
     }
 
     public function build()
@@ -47,7 +50,8 @@ class RecordatorioMail extends Mailable
                         'mime' => 'application/pdf',
                     ])
                     ->with([
-                        'cliente' => $this->cliente
+                        'cliente' => $this->cliente,
+                        'configuracion' => $this->configuracion,
                     ]);
     }
 }

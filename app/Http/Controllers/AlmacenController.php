@@ -6,6 +6,7 @@ use App\Models\Albaran;
 use App\Models\Clients;
 use App\Models\Pedido;
 use App\Models\Productos;
+use App\Models\Configuracion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,6 +96,9 @@ class AlmacenController extends Controller
     {
 
         $albaran = Albaran::where('id', $id)->first();
+        $configuracion = Configuracion::where('id', 1)->first();
+        
+
         if ($albaran != null) {
             $pedido = Pedido::where('id', $albaran->pedido_id)->first();
             if($pedido->tipo_pedido_id == 0 || $pedido->tipo_pedido_id == 1){
@@ -107,7 +111,7 @@ class AlmacenController extends Controller
             }
 
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-            $pdf = Pdf::loadView('livewire.almacen.pdf-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
+            $pdf = Pdf::loadView('livewire.almacen.pdf-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente", "configuracion"));
             return $pdf->stream();
             }else{
                 $productos = Productos::all();
@@ -119,7 +123,7 @@ class AlmacenController extends Controller
             }
 
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-            $pdf = Pdf::loadView('livewire.almacen.ticket-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente"));
+            $pdf = Pdf::loadView('livewire.almacen.ticket-component', compact('albaran', 'productos_pedido', 'base_imponible', 'pedido', "productos", "cliente", "configuracion"));
             return $pdf->stream();
             }
 

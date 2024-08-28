@@ -13,6 +13,7 @@ use App\Models\Productos;
 use App\Models\StockEntrante;
 use App\Models\User;
 use App\Models\Delegacion;
+use App\Models\Configuracion;
 
 use Illuminate\Support\Facades\DB;
 //pdf
@@ -212,6 +213,7 @@ class IndexComponent extends Component
         // Buscar el albarán asociado con el ID del pedido
 		//$factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();
+        $configuracion = Configuracion::where('id', 1)->first();
         if (!$albaran) {
             $this->alert('error', 'Albarán no encontrado para el pedido especificado.', [
                 'position' => 'center',
@@ -258,6 +260,7 @@ class IndexComponent extends Component
         'productos' => $productos,
         'num_albaran' => $num_albaran = $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+        'configuracion' => $configuracion,
         ];
 
         // Generar y mostrar el PDF

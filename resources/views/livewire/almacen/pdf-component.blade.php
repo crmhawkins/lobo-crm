@@ -33,6 +33,9 @@
         .footer {
             width: 100%;
         }
+
+        div.breakNow { page-break-inside:avoid; page-break-after:always; }
+
     </style>
 </head>
 
@@ -171,8 +174,11 @@
             </div>
         </div>
     @endif
+    <footer style="margin-top: 100px; page-break-after: avoid;position: fixed; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+        <p>{{ $configuracion->texto_albaran }}</p>
     
-
+    </footer>
+    
 </body>
 
 </html>

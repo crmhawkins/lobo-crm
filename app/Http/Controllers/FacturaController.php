@@ -13,6 +13,7 @@ use App\Models\Pedido;
 use App\Models\Presupuesto;
 use App\Models\Presupuestos;
 use App\Models\Productos;
+use App\Models\Configuracion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Spatie\Browsershot\Browsershot;
@@ -123,7 +124,7 @@ class FacturaController extends Controller
     {
 
         $factura = Facturas::find($id);
-
+        $configuracion = Configuracion::where('id', 1)->first();
         if($factura != null){
             $pedido = Pedido::find($factura->pedido_id);
             $albaran =  Albaran :: where('pedido_id', $factura->pedido_id)->first();
@@ -167,6 +168,7 @@ class FacturaController extends Controller
                 'precio' => $pedido->precio,
                 'descuento' => $pedido->descuento,
                 'productos' => $productos,
+                'configuracion' => $configuracion,
             ];
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
@@ -266,6 +268,7 @@ class FacturaController extends Controller
     public function certificado($id){
 
         // Datos a enviar al certificado
+        $configuracion = Configuracion::where('id', 1)->first();
         $factura = Facturas::where('id', $id)->first();
         $presupuesto = Presupuesto::where('id', $factura->id_presupuesto)->first();
         $alumno = Alumno::where('id', $presupuesto->alumno_id)->first();
@@ -283,7 +286,7 @@ class FacturaController extends Controller
         $cursoFechaCelebracionConBarras = $diaMes."/".$numeroMes."/".$anioMes;
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-        $pdf = PDF::loadView('livewire.facturas.certificado-component', compact('cursoCelebracion', 'cursoFechaCelebracion', 'cursoFechaCelebracionConBarras', 'alumno', 'curso'));
+        $pdf = PDF::loadView('livewire.facturas.certificado-component', compact('cursoCelebracion', 'cursoFechaCelebracion', 'cursoFechaCelebracionConBarras', 'alumno', 'curso', 'configuracion', 'factura', 'presupuesto'));
 
         // Establece la orientación horizontal del papel
         $pdf->setPaper('A4', 'landscape');

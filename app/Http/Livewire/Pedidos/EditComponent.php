@@ -24,6 +24,7 @@ use App\Models\RegistroEmail;
 use App\Models\User;
 use App\Models\Emails;
 use App\Models\GestionPedidos;
+use App\Models\Configuracion;
 use App\Models\AnotacionesClientePedido;
 use Livewire\WithFileUploads;
 use App\Models\TipoEmails;
@@ -1573,6 +1574,7 @@ class EditComponent extends Component
         }
     }
 
+    $configuracion = Configuracion::first();
     $datos = [
         'pedido' => $pedido,
         'cliente' => $cliente,
@@ -1585,6 +1587,7 @@ class EditComponent extends Component
         'precio' => $pedido->precio,
         'descuento' => $pedido->descuento,
         'productos' => $productos,
+        'configuracion' => $configuracion,
     ];
 
     $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
@@ -1592,13 +1595,13 @@ class EditComponent extends Component
     try{
 
         $emailsDireccion = [
-            'Alejandro.martin@serlobo.com',
-            'Ivan.ruiz@serlobo.com',
-            'Pedidos@serlobo.com'
+            // 'Alejandro.martin@serlobo.com',
+            // 'Ivan.ruiz@serlobo.com',
+            // 'Pedidos@serlobo.com'
         ];
         if($this->almacen_id == 2){
             //push emailsDireccion 
-            $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
+            // $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
 
         }
             

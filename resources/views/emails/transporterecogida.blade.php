@@ -102,5 +102,8 @@
         <p>HORARIO RECOGIDAS (ALMACÉN): <strong>@if(isset($almacen)) {{ $almacen->horario }}  @endif</strong></p>
 
     </div>
+    <div>
+        <p>{{ $configuracion->texto_email }}</p>
+    </div>
 </body>
 </html>

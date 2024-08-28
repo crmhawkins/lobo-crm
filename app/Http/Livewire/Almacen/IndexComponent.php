@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Models\Alertas;
 use App\Models\Almacen;
+use App\Models\Configuracion;
 use App\Models\StockRegistro;
 use App\Models\User;
 use App\Models\RegistroEmail;
@@ -107,6 +108,8 @@ class IndexComponent extends Component
             }
         }
 
+        $configuracion = Configuracion::where('id', 1)->first();
+
         $datos = [
         'conIva' => $Iva,
         'pedido' => $pedido ,
@@ -116,6 +119,7 @@ class IndexComponent extends Component
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         'almacen' => $this->getAlmacenObject($pedido->almacen_id),
         'hasproductosFactura' => false,
+        'configuracion' => $configuracion,
         ];
 
         // Generar y mostrar el PDF
@@ -519,7 +523,7 @@ class IndexComponent extends Component
                 ];
             }
         }
-
+        $configuracion = Configuracion::where('id', 1)->first();
         $datos = [
         'conIva' => $Iva,
         'pedido' => $pedido ,
@@ -527,6 +531,7 @@ class IndexComponent extends Component
         'productos' => $productos,
         'num_albaran' => $num_albaran = $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+        'configuracion' => $configuracion,
         ];
 
         // Generar y mostrar el PDF
