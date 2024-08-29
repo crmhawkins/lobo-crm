@@ -198,6 +198,7 @@
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                         <th>Fecha</th>
                         <th>N.º Lote</th>
+                        <th>QR</th>
                         <th>Pedido</th>
                         <th>Almacen</th>
                         <th>Producto</th>
@@ -211,6 +212,7 @@
                         <tr style="background-color:#ececec;">
                             <td data-sort='{{ $lote['order_date'] }}' >{{ $lote['fecha'] }}</td>
                             <td>{{ $lote['orden_numero'] }}</td>
+                            <td>{{ $lote['qr'] }}</td>
                             <td>
                                 @if($lote['pedido_id'] != null && $lote['pedido_id'] != '-')
                                     <a class="badge badge-info" href="{{ route('pedidos.edit', $lote['pedido_id']) }}" > 
@@ -280,6 +282,7 @@
                     <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                         <th>Fecha</th>
                         <th>N.º Lote</th>
+                        <th>QR</th>
                         <th>Almacen</th>
                         <th>Producto</th>
                         <th>Cantidad (en Botellas)</th>
@@ -291,6 +294,7 @@
                         <tr style="background-color:#ececec;">
                             <td data-sort='{{ $lote['order_date'] }}'>{{ $lote['fecha'] }}</td>
                             <th>{{ $lote['orden_numero'] }}</th>
+                            <th>{{ $lote['qr'] }}</th>
                             <th>{{ $lote['almacen'] }}</th>
                             <th>{{ $lote['producto'] }}</th>
                             <td>{{ $lote['cantidad'] }}</td>

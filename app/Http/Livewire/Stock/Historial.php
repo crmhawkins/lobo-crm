@@ -68,8 +68,10 @@ class Historial extends Component
         //dd($this->producto_lotes);
         $arrayProductosLotes = [];
         foreach ($this->producto_lotes as $loteIndex => $lote) {
+           
             if($lote->stockEntrante == null) {
                 //dd($lote);
+                $qr = stock::where('id', $lote->stock_id)->first() ?  stock::where('id', $lote->stock_id)->first()->qr_id : 'No asignado';
                 $arrayProductosLotes[] = [
                     'lote_id' => $lote->lote_id,
                     'orden_numero' => $lote->orden_numero,
@@ -79,8 +81,10 @@ class Historial extends Component
                     'order_date' => Carbon::parse($lote->created_at)->format('Ymd'),
                     'cantidad' => abs($lote->cantidad),
                     'cajas' => floor(abs($lote->cantidad)/ $this->getUnidadeCaja($lote->producto_id) ),
+                    'qr' => $qr,
                 ];
             }else{
+                $qr = stock::where('id', $lote->stockEntrante->stock_id)->first() ?  stock::where('id', $lote->stockEntrante->stock_id)->first()->qr_id : 'No asignado';
                 $arrayProductosLotes[] = [
                     'lote_id' => $lote->stockEntrante->lote_id,
                     'orden_numero' => $lote->stockEntrante->orden_numero,
@@ -90,6 +94,7 @@ class Historial extends Component
                     'order_date' => Carbon::parse($lote->created_at)->format('Ymd'),
                     'cantidad' => abs($lote->cantidad),
                     'cajas' => floor(abs($lote->cantidad)/ $this->getUnidadeCaja($lote->stockEntrante->producto_id) ),
+                    'qr' => $qr,
                 ];
             }
             
@@ -121,7 +126,6 @@ class Historial extends Component
 
                     // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
                     if($this->allData->contains('id_salida', $salida->id)) continue;
-
                     $this->allData->push([
                         'id_salida' => $salida->id,
                         'interno' => $salida->stock_entrante_id,
@@ -136,6 +140,7 @@ class Historial extends Component
                         'tipo' => $salida->pedido_id ? 'Venta' : 'Salida',
                         'created_at' => $salida->created_at,
                         'pedido_id' => $salida->pedido_id ?? '',
+                        'qr' => $stock->qr_id,
                     ]);
                 }
 
@@ -161,6 +166,7 @@ class Historial extends Component
                         'tipo' => 'Modificación',
                         'created_at' => $modificacion->created_at,
                         'pedido_id' => '-',
+                        'qr' => $stock->qr_id,
                     ]);
                 }
 
@@ -183,6 +189,7 @@ class Historial extends Component
                         'tipo' => 'Rotura',
                         'created_at' => $rotura->created_at,
                         'pedido_id' => '-',
+                        'qr' => $stock->qr_id,
                     ]);
                 }
             }
