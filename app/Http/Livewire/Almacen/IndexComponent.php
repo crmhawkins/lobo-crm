@@ -135,14 +135,14 @@ class IndexComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
-        $pdf->output();
+        //$pdf->output();
         $emailsDireccion = [
             'Alejandro.martin@serlobo.com',
             'Sandra.lopez@serlobo.com',
             'vanessa.casanova@serlobo.com'
         ];
         try{
-            Mail::to($this->email_transporte)->bcc( $emailsDireccion)->send(new TransporteMail($pdf, $datos, $this->observaciones_transporte));
+            Mail::to($this->email_transporte)->bcc( $emailsDireccion)->send(new TransporteMail($pdf->output(), $datos, $this->observaciones_transporte));
 
             $registroEmail = new RegistroEmail();
             $registroEmail->factura_id = null;

@@ -1603,7 +1603,7 @@ class EditComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
 
-            $pdf->output();
+            //$pdf->output();
 
     try{
 
@@ -1625,7 +1625,7 @@ class EditComponent extends Component
                 array_push($this->emailsSeleccionados, $this->emailNuevo);
             }
 
-            Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+            Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
 
             foreach($this->emailsSeleccionados as $email){
                 $registroEmail = new RegistroEmail();
@@ -1652,7 +1652,7 @@ class EditComponent extends Component
 
         }else{
             if($this->emailNuevo != null){
-                Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+                Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
             }else{
                 Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
             }

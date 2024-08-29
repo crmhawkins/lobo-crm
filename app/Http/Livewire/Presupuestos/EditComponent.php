@@ -2067,7 +2067,7 @@ class EditComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
 
-        $pdf->output();
+        //$pdf->output();
 
         if ($this->contrato_id === null) {
             // Guardar datos validados
@@ -2089,7 +2089,7 @@ class EditComponent extends Component
         }
 
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             $filename
         );
     }

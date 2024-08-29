@@ -923,7 +923,7 @@ class IndexComponent extends Component
                     $width = $canvas->get_width();
                     $canvas->text($width - 100, 15, $text, $font, $size);
                 });
-                $pdf->output();
+                //$pdf->output();
             }
 
            
@@ -1051,7 +1051,7 @@ class IndexComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
 
-            $pdf->output();
+            //$pdf->output();
             }
         }
         if ($factura != null){
@@ -1077,9 +1077,8 @@ class IndexComponent extends Component
                 
                 if(count($this->emailsSeleccionados) > 0){
                     
-                    //
-                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
-                    // Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
+                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    // Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach($this->emailsSeleccionados as $email){
                         $registroEmail = new RegistroEmail();
@@ -1097,9 +1096,9 @@ class IndexComponent extends Component
                     }
     
                 }else{
-    
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
-                    // Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf, $datos));
+
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    // Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;

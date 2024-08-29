@@ -2052,12 +2052,12 @@ class CreateComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
 
-        $pdf->output();
+        //$pdf->output();
 
         $this->confirmed();
 
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             $filename
         );
     }
