@@ -545,7 +545,7 @@ class CreateComponent extends Component
             return;
         }
 
-        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -619,7 +619,7 @@ class CreateComponent extends Component
     //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
     {
-
+        //dd("hola");
         if($this->pedido_almacen_id == null){
             $this->alert('error', 'No tienes un almacén asignado.', [
                 'position' => 'center',
