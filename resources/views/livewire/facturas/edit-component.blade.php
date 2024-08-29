@@ -68,7 +68,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     <br>
                     <textarea wire:model="anotacionesEmail" class="form-control mb-1" placeholder="Anotaciones"> </textarea>
                     <br>
-                    <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
+                    @if($cliente->delegacion['id'] !== 15 && $cliente->delegacion['id'] !== 14 && $cliente->delegacion['id'] !== 13 && $cliente->delegacion['id'] !== 7)
+                        <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
+                    @endif
                     <button class="btn btn-success" id="EmailFacturar">Enviar sin Iva</button>
 
                 </div>
