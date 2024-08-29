@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 
@@ -5,6 +7,7 @@
     <style>
         body {
             font-size: 80% !important;
+            position: relative;
         }
 
         table {
@@ -50,13 +53,45 @@
             page-break-inside: avoid;
             page-break-after: always;
         }
+
+        /* Footer with page number */
+        .footer {
+            position: fixed;
+            bottom: 10;
+            right: 0;
+            text-align: center;
+            font-size: 80%;
+            color: #555;
+        }
+
+        /* .footer .pagenum:before {
+            content: counter(page);
+        }
+
+        .footer .pagecount:before {
+            content: counter(page);
+        } */
+        /* #pageFooter:after {
+            counter-increment: page;
+            content:"Page " counter(page);
+            left: 0; 
+            top: 100%;
+            white-space: nowrap; 
+            z-index: 20;
+            -moz-border-radius: 5px; 
+            -moz-box-shadow: 0px 0px 4px #222;  
+            background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);  
+        } */
+        
+
+        #pageFooter:after {
+            content: counter(page);
+        }
     </style>
 </head>
 
 <body>
-    <footer style="margin-top: 100px; page-break-after: avoid;position: fixed; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
-        <p>{{ $configuracion->texto_factura }}</p>
-    </footer>
+    
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
             <td width="25%" style="background-color: #fff !important; padding: 0;">
@@ -70,6 +105,7 @@
             </th>
         </tr>
     </table>
+
     <!-- Parte superior: Logo, Dirección, Factura -->
     <table class="header">
         <tr width="100%">
@@ -141,9 +177,11 @@
         $productosPorPagina = 10;
         $numeroPaginasProductos = ceil(count($productos) / $productosPorPagina);
         $ultimoProductoEnPagina = count($productos) % $productosPorPagina;
+        
     @endphp
 
     @for ($i = 0; $i < $numeroPaginasProductos; $i++)
+    
         <table class="avoid-page-break">
             <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                 <th style="text-align: left !important">CONCEPTO</th>
@@ -227,7 +265,8 @@
 
     @if($conIva)
     <!-- Salto de página si en la última página hay más de 4 productos -->
-    @if(($i == $numeroPaginasProductos - 1 && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4))
+    @if(($i == $numeroPaginasProductos - 1 && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4 ) || ($i == 1 && $productosPorPagina > 10))
+        
         <div class="page-break"></div>
     @endif
 
@@ -282,7 +321,7 @@
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
-    <table class="footer">
+    <table class="footer-tab">
         <tr>
             <td style="text-align: left !important">
                 <span style="font-weight: bold">Forma de pago:</span>
@@ -321,7 +360,16 @@
             <p style="background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
         </div>
     @endif
-
+    @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4 ) )
+        
+        <div class="page-break"></div>
+    @endif
+    
+    <footer style="margin-top: 100px; page-break-after: avoid;position: absolute; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+        <strong>Condiciones legales</strong>
+        <p>{{ $configuracion->texto_factura }}</p>
+        
+    </footer>
 </body>
 
 </html>

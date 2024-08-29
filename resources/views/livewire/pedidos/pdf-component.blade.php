@@ -55,6 +55,7 @@
 </head>
 <body>
     <footer style="margin-top: 100px; page-break-after: avoid;position: fixed; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+        <strong>Condiciones legales</strong>
         <p>{{ $configuracion->texto_pedido }}</p>
     </footer>
     <table class="header-table">

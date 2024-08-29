@@ -14,6 +14,8 @@ use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 use ZipArchive;
@@ -430,6 +432,17 @@ class IndexComponent extends Component
 
         // Generar y mostrar el PDF
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
         return response()->streamDownload(
             fn () => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"
@@ -541,9 +554,23 @@ class IndexComponent extends Component
                 'iva_productos' => $iva_productos,
                 
             ];
-            
-            // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
+          
+
+            $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
+
+            // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
+            // $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
 
             return response()->streamDownload(
                 fn () => print($pdf->output()),
@@ -698,6 +725,17 @@ class IndexComponent extends Component
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical');
+            $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
 
             return response()->streamDownload(
                 fn () => print($pdf->output()),
@@ -873,7 +911,17 @@ class IndexComponent extends Component
                 
                 // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
                 $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical')->output();
-              
+                $pdf->render();
+
+                $totalPages = $pdf->getCanvas()->get_page_count();
+    
+                $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                    $text = "Página $pageNumber de $totalPages";
+                    $font = $fontMetrics->getFont('Helvetica', 'normal');
+                    $size = 10;
+                    $width = $canvas->get_width();
+                    $canvas->text($width - 100, 15, $text, $font, $size);
+                });
 
             }
 
@@ -990,21 +1038,32 @@ class IndexComponent extends Component
                 ];
     
                 $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+                $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
             }
         }
         if ($factura != null){
             try{
                 //dd($datos);
                 $emailsDireccion = [
-                    // 'Alejandro.martin@serlobo.com',
-                    // 'Sandra.lopez@serlobo.com'
+                    'Alejandro.martin@serlobo.com',
+                    'Sandra.lopez@serlobo.com'
                 ];
     
                 $cliente = Clients::find($factura->cliente_id);
                 if($cliente != null && $cliente->comercial_id != null){
                     $comercial = User::find($cliente->comercial_id);
                     if($comercial != null && $comercial->email != null){
-                        // $emailsDireccion[] = $comercial->email;
+                        $emailsDireccion[] = $comercial->email;
                     }
                 }
     
@@ -1016,8 +1075,8 @@ class IndexComponent extends Component
                 if(count($this->emailsSeleccionados) > 0){
                     
                     //
-                    // Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
-                    Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
+                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
+                    // Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
 
                     foreach($this->emailsSeleccionados as $email){
                         $registroEmail = new RegistroEmail();
@@ -1036,8 +1095,8 @@ class IndexComponent extends Component
     
                 }else{
     
-                    // Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
-                    Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf, $datos));
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf, $datos));
+                    // Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf, $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
@@ -1152,6 +1211,17 @@ public function descargarPdfs($id)
             
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
+            $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
             return $pdf;
 
 

@@ -297,6 +297,17 @@ class IndexComponent extends Component
 
         // Generar y mostrar el PDF
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
         return response()->streamDownload(
             fn () => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"

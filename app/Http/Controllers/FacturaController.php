@@ -173,6 +173,17 @@ class FacturaController extends Controller
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos);
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
         return $pdf->stream();
         }else{
             return redirect('admin/facturas');
@@ -290,6 +301,17 @@ class FacturaController extends Controller
 
         // Establece la orientación horizontal del papel
         $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
 
         return $pdf->stream();
 

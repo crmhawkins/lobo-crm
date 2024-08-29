@@ -1591,17 +1591,28 @@ class EditComponent extends Component
     ];
 
     $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+    $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
 
     try{
 
         $emailsDireccion = [
-            // 'Alejandro.martin@serlobo.com',
-            // 'Ivan.ruiz@serlobo.com',
-            // 'Pedidos@serlobo.com'
+            'Alejandro.martin@serlobo.com',
+            'Ivan.ruiz@serlobo.com',
+            'Pedidos@serlobo.com'
         ];
         if($this->almacen_id == 2){
             //push emailsDireccion 
-            // $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
+            $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
 
         }
             
