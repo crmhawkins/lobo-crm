@@ -54,7 +54,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             <label for="fechaVencimiento">Almacén</label>
                             <select name="almacen" id="select2-almacen" wire:model="almacen_id"
                             wire:change='setLotes' style="width: 100% !important">
-                            <option value="{{ null }}">-- Selecciona un almacén --
+                            <option value="{{ null }}">Todos
                             </option>
                             @foreach ($almacenes as $presup)
                             <option value="{{ $presup->id }}">{{ $presup->almacen }}

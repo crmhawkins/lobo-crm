@@ -105,18 +105,25 @@ class IndexComponent extends Component
     }
 
     public function mount()
-    {
-        $this->mes = Carbon::now()->format('Y-m'); // Año-mes actual
-        $this->caja = Caja::orderBy('fecha')->get();
-        $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
-        $this->cambioMes();
-        $this->proveedores = Proveedores::all();
-        $this->clientes = Clients::all();
-        $this->facturas = Facturas::all();
-        $this->delegaciones = Delegacion::all();
+{
+    $this->mes = session('caja_filtro_mes', Carbon::now()->format('Y-m'));
+    $this->filtro = session('caja_filtro', null);
+    $this->filtroEstado = session('caja_filtro_estado', null);
+    $this->delegacion = session('caja_filtro_delegacion', null);
+    $this->fechaPago = session('caja_filtro_fecha_pago', null);
+    $this->fechaVencimiento = session('caja_filtro_fecha_vencimiento', null);
+    $this->fecha = session('caja_filtro_fecha', null);
+    $this->proveedorId = session('caja_filtro_proveedor_id', null);
 
+    $this->caja = Caja::orderBy('fecha')->get();
+    $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
+    $this->cambioMes();
+    $this->proveedores = Proveedores::all();
+    $this->clientes = Clients::all();
+    $this->facturas = Facturas::all();
+    $this->delegaciones = Delegacion::all();
+}
 
-    }
 
    
 
@@ -252,51 +259,59 @@ class IndexComponent extends Component
 
     public function cambioMes()
     {
+        // Guardar los filtros en la sesión
+        session([
+            'caja_filtro' => $this->filtro,
+            'caja_filtro_estado' => $this->filtroEstado,
+            'caja_filtro_delegacion' => $this->delegacion,
+            'caja_filtro_fecha_pago' => $this->fechaPago,
+            'caja_filtro_fecha_vencimiento' => $this->fechaVencimiento,
+            'caja_filtro_fecha' => $this->fecha,
+            'caja_filtro_proveedor_id' => $this->proveedorId,
+            'caja_filtro_mes' => $this->mes,
+        ]);
+
         list($year, $month) = explode('-', $this->mes);
         $fechaInicio  = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $fechaFin = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
-        // Formato de las fechas para comparación en la base de datos
         $fechaInicio = $fechaInicio->format('Y-m-d');
         $fechaFin = $fechaFin->format('Y-m-d');
 
-        // Obtener registros de la tabla Caja que están entre fechaInicio y fechaFin
         $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->orderBy('fecha')->get();
 
-        //si filtro es diferente de todos
-        if($this->filtro != 'Todos' && $this->filtro != null){
+        if ($this->filtro != 'Todos' && $this->filtro != null) {
             $this->caja = $this->caja->where('tipo_movimiento', $this->filtro);
         }
 
-        if($this->filtroEstado != 'Todos' && $this->filtroEstado != null){
+        if ($this->filtroEstado != 'Todos' && $this->filtroEstado != null) {
             $this->caja = $this->caja->where('estado', $this->filtroEstado);
         }
 
-        if($this->delegacion != 'Todos' && $this->delegacion != null){
+        if ($this->delegacion != 'Todos' && $this->delegacion != null) {
             $this->caja = $this->caja->where('delegacion_id', $this->delegacion);
         }
 
-        if($this->fechaPago != null){
+        if ($this->fechaPago != null) {
             $this->caja = $this->caja->where('fechaPago', $this->fechaPago);
         }
 
-        if($this->fechaVencimiento != null){
+        if ($this->fechaVencimiento != null) {
             $this->caja = $this->caja->where('fechaVencimiento', $this->fechaVencimiento);
         }
 
-        if($this->fecha != null){
+        if ($this->fecha != null) {
             $this->caja = $this->caja->where('fecha', $this->fecha);
         }
 
-        if($this->proveedorId != null){
+        if ($this->proveedorId != null) {
             $this->caja = $this->caja->where('poveedor_id', $this->proveedorId);
         }
 
         $this->calcularIngresoyGasto();
-
-        // Reiniciar saldo_array
         $this->saldo_array = [];
     }
+
     public function proveedorNombre($id)
     {
         return $this->proveedores->find($id)->nombre;

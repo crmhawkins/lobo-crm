@@ -108,6 +108,7 @@
                                     <option value='vencidas' >Vencidas</option>
                                     <option value='pendientes' >Pendientes</option>
                                     <option value='pagadas' >Pagadas</option>
+                                    <option value="Parcial">Parcial</option>
                                     <!-- Agrega más ítems según las columnas de tu tabla -->
                                     </select>                            
                             </div>

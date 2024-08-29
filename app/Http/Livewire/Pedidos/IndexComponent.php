@@ -35,54 +35,59 @@ class IndexComponent extends Component
 
     public function updatePedidos()
     {
+        // Guardar los filtros en la sesión
+        session([
+            'pedido_filtro_delegacionSeleccionadaCOD' => $this->delegacionSeleccionadaCOD,
+            'pedido_filtro_comercialSeleccionadoId' => $this->comercialSeleccionadoId,
+            'pedido_filtro_clienteSeleccionadoId' => $this->clienteSeleccionadoId,
+            'pedido_filtro_estadoSeleccionado' => $this->estadoSeleccionado,
+            'pedido_filtro_fecha_min' => $this->fecha_min,
+            'pedido_filtro_fecha_max' => $this->fecha_max,
+        ]);
+
         $query = Pedido::query();
         
         $delegacion = Delegacion::where('COD', $this->delegacionSeleccionadaCOD)->first();
-        if(Auth::user()->role == 3){
+        if (Auth::user()->role == 3) {
             $query->whereHas('cliente', function ($query) {
                 $query->where('comercial_id', Auth::user()->id);
             });
         }
 
-
-        
         if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
             $query->whereHas('cliente', function ($query) {
                 $query->where('delegacion_COD', $this->delegacionSeleccionadaCOD);
             });
         }
 
-        if($this->estadoSeleccionado && $this->estadoSeleccionado != -1){
+        if ($this->estadoSeleccionado && $this->estadoSeleccionado != -1) {
             $estado = $this->getEstadoId($this->estadoSeleccionado);
-            $query->where('estado',  $estado);
+            $query->where('estado', $estado);
         }
 
-        if($this->clienteSeleccionadoId && $this->clienteSeleccionadoId != -1){
+        if ($this->clienteSeleccionadoId && $this->clienteSeleccionadoId != -1) {
             $query->where('cliente_id', $this->clienteSeleccionadoId);
         }
 
-        if($this->comercialSeleccionadoId && $this->comercialSeleccionadoId != -1){
+        if ($this->comercialSeleccionadoId && $this->comercialSeleccionadoId != -1) {
             $query->whereHas('cliente', function ($query) {
                 $query->where('comercial_id', $this->comercialSeleccionadoId);
             });
         }
 
-        //rango entre fecha min y fecha max
-        if($this->fecha_min){
+        // Rango entre fecha min y fecha max
+        if ($this->fecha_min) {
             $query->where('fecha', '>=', $this->fecha_min);
         }
-        if($this->fecha_max){
+        if ($this->fecha_max) {
             $query->where('fecha', '<=', $this->fecha_max);
         }
 
-
-        
         $this->pedidos = $query->get();
-
-        //dd($this->pedidos);
 
         $this->emit('refreshComponent');
     }
+
     public function limpiarFiltros()
     {
         $this->delegacionSeleccionadaCOD = -1;
@@ -91,8 +96,20 @@ class IndexComponent extends Component
         $this->clienteSeleccionadoId = -1;
         $this->fecha_min = null;
         $this->fecha_max = null;
+
+        // Limpiar filtros de la sesión
+        session()->forget([
+            'pedido_filtro_delegacionSeleccionadaCOD',
+            'pedido_filtro_comercialSeleccionadoId',
+            'pedido_filtro_clienteSeleccionadoId',
+            'pedido_filtro_estadoSeleccionado',
+            'pedido_filtro_fecha_min',
+            'pedido_filtro_fecha_max'
+        ]);
+
         $this->updatePedidos();
     }
+
     public function updated($propertyName)
     {
         if (
@@ -109,44 +126,59 @@ class IndexComponent extends Component
 
     public function mount()
     {
-        if(Auth::user()->role != 3){
-            $this->pedidos = Pedido::all();
-        }else{
-            $this->pedidos = Clients::with('pedidos')->where('comercial_id', Auth::user()->id)
-                        ->get()
-                        ->pluck('pedidos')
-                        ->flatten();
+        // Recuperar filtros desde la sesión si existen
+        $this->delegacionSeleccionadaCOD = session('pedido_filtro_delegacionSeleccionadaCOD', -1);
+        $this->comercialSeleccionadoId = session('pedido_filtro_comercialSeleccionadoId', -1);
+        $this->clienteSeleccionadoId = session('pedido_filtro_clienteSeleccionadoId', -1);
+        $this->estadoSeleccionado = session('pedido_filtro_estadoSeleccionado', -1);
+        $this->fecha_min = session('pedido_filtro_fecha_min', null);
+        $this->fecha_max = session('pedido_filtro_fecha_max', null);
 
-            if(Auth::user()->user_department_id == 2){
+        if (Auth::user()->role != 3) {
+            $this->pedidos = Pedido::all();
+        } else {
+            $this->pedidos = Clients::with('pedidos')->where('comercial_id', Auth::user()->id)
+                ->get()
+                ->pluck('pedidos')
+                ->flatten();
+
+            if (Auth::user()->user_department_id == 2) {
                 $this->pedidos = Clients::with('pedidos')->where('comercial_id', Auth::user()->id)
-                        ->where('delegacion_COD', 0)
-                        ->orWhere('delegacion_COD', 16)
-                        ->where('estado', 2)
-                        ->get()
-                        ->pluck('pedidos')
-                        ->flatten();
+                    ->where('delegacion_COD', 0)
+                    ->orWhere('delegacion_COD', 16)
+                    ->where('estado', 2)
+                    ->get()
+                    ->pluck('pedidos')
+                    ->flatten();
             }
         }
         $this->clientes = Clients::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
-
-        
-        
         $this->delegaciones = Delegacion::all();
 
-        if(Auth::user()->role == 3){
+        if (Auth::user()->role == 3) {
             $this->comercialSeleccionadoId = Auth::user()->id;
             $this->comerciales = User::where('id', Auth::user()->id)->get();
             $this->delegacionSeleccionadaCOD = Auth::user()->delegacion_COD;
             $this->delegaciones = Delegacion::where('COD', Auth::user()->delegacion_COD)->get();
             $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
-            if(Auth::user()->user_department_id == 2){
-                $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)->where('estado', 2) ->get();
-                $this->delegaciones = Delegacion::where('COD', Auth::user()->delegacion_COD)->orWhere('COD', 0)->orWhere('COD', 16)->get();
-
+            if (Auth::user()->user_department_id == 2) {
+                $this->clientes = Clients::where('comercial_id', Auth::user()->id)
+                    ->orWhere('delegacion_COD', 0)
+                    ->orWhere('delegacion_COD', 16)
+                    ->where('estado', 2)
+                    ->get();
+                $this->delegaciones = Delegacion::where('COD', Auth::user()->delegacion_COD)
+                    ->orWhere('COD', 0)
+                    ->orWhere('COD', 16)
+                    ->get();
             }
+        }else{
+            $this->updatePedidos();
+
         }
     }
+
 
     public function getComercial($id)
     {

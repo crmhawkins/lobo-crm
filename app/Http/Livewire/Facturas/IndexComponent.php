@@ -59,25 +59,34 @@ class IndexComponent extends Component
     {
         $user = Auth::user();
         $user_rol = $user->role;
+    
+        // Recuperar filtros desde la sesión si existen
+        $this->tipoFactura = session('factura_filtro_tipoFactura', -1);
+        $this->delegacionSeleccionadaCOD = session('factura_filtro_delegacionSeleccionadaCOD', -1);
+        $this->comercialSeleccionadoId = session('factura_filtro_comercialSeleccionadoId', -1);
+        $this->estadoSeleccionado = session('factura_filtro_estadoSeleccionado', -1);
+        $this->clienteSeleccionadoId = session('factura_filtro_clienteSeleccionadoId', -1);
+        $this->fecha_min = session('factura_filtro_fecha_min', null);
+        $this->fecha_max = session('factura_filtro_fecha_max', null);
+    
         $this->pedidos = Pedido::all();
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
-
+    
         if ($user_rol == 3) {
-            //comercial
+            // Comercial
             $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
-
+    
             foreach ($clientes_comercial as $cliente) {
                 $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
             }
-
+    
         } else {
-            $this->facturas = Facturas::where('tipo', 1)->orWhere('tipo', null)->get();
-            //por cada factura se calcula el total de iva y el total de importes y el totales con iva
-            $this->calcularTotales($this->facturas);
+            $this->updateFacturas();
         }
     }
+    
 
     public function getFacturaAsociada($id)
     {
@@ -93,25 +102,31 @@ class IndexComponent extends Component
 
     public function updateFacturas()
     {
+        // Guardar los filtros en la sesión
+        session([
+            'factura_filtro_tipoFactura' => $this->tipoFactura,
+            'factura_filtro_delegacionSeleccionadaCOD' => $this->delegacionSeleccionadaCOD,
+            'factura_filtro_comercialSeleccionadoId' => $this->comercialSeleccionadoId,
+            'factura_filtro_estadoSeleccionado' => $this->estadoSeleccionado,
+            'factura_filtro_clienteSeleccionadoId' => $this->clienteSeleccionadoId,
+            'factura_filtro_fecha_min' => $this->fecha_min,
+            'factura_filtro_fecha_max' => $this->fecha_max,
+        ]);
+
         $query = Facturas::query();
 
-        //los del rol 3 solo pueden ver sus facturas
+        // Los del rol 3 solo pueden ver sus facturas
         $user = Auth::user();
         $user_rol = $user->role;
-        
-        
-        
-
-
 
         if ($this->tipoFactura == -1) {
             $query->where('tipo', 1)->orWhere('tipo', null);
-        }elseif($this->tipoFactura == 2){
+        } elseif ($this->tipoFactura == 2) {
             $query->where('tipo', 2);
-        }elseif($this->tipoFactura == 3){
+        } elseif ($this->tipoFactura == 3) {
             $query->where('tipo', 3);
         }
-        
+
         if ($this->delegacionSeleccionadaCOD && $this->delegacionSeleccionadaCOD != -1) {
             $query->whereHas('cliente', function ($query) {
                 $query->where('delegacion_COD', $this->delegacionSeleccionadaCOD);
@@ -135,6 +150,9 @@ class IndexComponent extends Component
                 case 'pagadas':
                     $query->where('estado', 'Pagado');
                     break;
+                case 'Parcial':
+                    $query->where('estado', 'Parcial');
+                    break;
                 case 'pendientes':
                     $query->where('estado', 'Pendiente')
                         ->whereDate('fecha_vencimiento', '>', now());
@@ -148,16 +166,16 @@ class IndexComponent extends Component
             $query->where('cliente_id', $this->clienteSeleccionadoId);
         }
 
-        //rango entre fecha min y fecha max
-        if($this->fecha_min){
+        // Rango entre fecha min y fecha max
+        if ($this->fecha_min) {
             $query->where('fecha_emision', '>=', $this->fecha_min);
         }
-        if($this->fecha_max){
+        if ($this->fecha_max) {
             $query->where('fecha_emision', '<=', $this->fecha_max);
         }
 
         if ($user_rol == 3) {
-            //comercial
+            // Comercial
             $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
             $query->where(function ($query) use ($clientes_comercial) {
                 foreach ($clientes_comercial as $cliente) {
@@ -165,25 +183,38 @@ class IndexComponent extends Component
                 }
             });
         }
-        
+
         $this->facturas = $query->get();
         $this->calcularTotales($this->facturas);
 
-        //dd($this->pedidos);
-
         $this->emit('refreshComponent');
     }
+
+
     public function limpiarFiltros()
-    {
-        $this->delegacionSeleccionadaCOD = -1;
-        $this->comercialSeleccionadoId = -1;
-        $this->estadoSeleccionado = -1;
-        $this->clienteSeleccionadoId = -1;
-        $this->tipoFactura = -1;
-        $this->fecha_min = null;
-        $this->fecha_max = null;
-        $this->updateFacturas();
-    }
+{
+    $this->delegacionSeleccionadaCOD = -1;
+    $this->comercialSeleccionadoId = -1;
+    $this->estadoSeleccionado = -1;
+    $this->clienteSeleccionadoId = -1;
+    $this->tipoFactura = -1;
+    $this->fecha_min = null;
+    $this->fecha_max = null;
+
+    // Limpiar filtros de la sesión
+    session()->forget([
+        'factura_filtro_tipoFactura',
+        'factura_filtro_delegacionSeleccionadaCOD',
+        'factura_filtro_comercialSeleccionadoId',
+        'factura_filtro_estadoSeleccionado',
+        'factura_filtro_clienteSeleccionadoId',
+        'factura_filtro_fecha_min',
+        'factura_filtro_fecha_max'
+    ]);
+
+    $this->updateFacturas();
+}
+    
     public function updated($propertyName)
     {
         if (
@@ -199,8 +230,6 @@ class IndexComponent extends Component
             $this->updateFacturas();
         }
     }
-
-    
 
     public function descargarFacturas($array) {
         $this->arrDescargaFacturas = $array;

@@ -31,12 +31,16 @@ class IndexComponent extends Component
     public $categoria_id;
 
     public function mount()
-    {   
-        $historial = [];
+    {
+        $this->categoria_id = session('mercaderia_filtro_categoria_id', 0);
+
         $this->mercaderias = Mercaderia::all();
         $this->categorias = MercaderiaCategoria::all();
         $this->stockMercaderiaEntrante = StockMercaderiaEntrante::all();
-        
+
+        if ($this->categoria_id != 0) {
+            $this->mercaderias = Mercaderia::where('categoria_id', $this->categoria_id)->get();
+        }
     }
 
     public function comprobarStockMateriales()
@@ -98,9 +102,6 @@ class IndexComponent extends Component
             return;
         }
 
-
-        
-        
         $update =  $this->updateStock('Suma');
 
         if($update){
@@ -230,11 +231,8 @@ class IndexComponent extends Component
 
     public function updated($propertyName)
     {
-        if (
-            $propertyName == 'categoria_id' 
-
-        ) {
-            $this->updateMateriales();
+        if ($propertyName == 'categoria_id') {
+            $this->cambioCategoria();
         }
     }
 
@@ -256,10 +254,14 @@ class IndexComponent extends Component
         return $this->categorias->where('id', $id)->first()->nombre;
     }
 
-    public function cambioCategoria(){
-        if($this->categoria_id == 0){
+    public function cambioCategoria()
+    {
+        // Guardar el filtro de categoría en la sesión
+        session(['mercaderia_filtro_categoria_id' => $this->categoria_id]);
+    
+        if ($this->categoria_id == 0) {
             $this->mercaderias = Mercaderia::all();
-        }else{
+        } else {
             $this->mercaderias = Mercaderia::where('categoria_id', $this->categoria_id)->get();
         }
         $this->emit('refreshComponent');
