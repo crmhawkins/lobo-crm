@@ -1924,7 +1924,7 @@ class EditComponent extends Component
             'evento' => $evento, 'listaServicios' => $listaServicios, 'listaPacks' => $listaPacks, 'packs' => $packs, 'observaciones' => '', 'servicios' => Servicio::all(),
         ];
 
-        $pdf = Pdf::loadView('livewire.presupuestos.contract-component', $datos)->setPaper('a4', 'vertical')->output(); //
+        $pdf = Pdf::loadView('livewire.presupuestos.contract-component', $datos)->setPaper('a4', 'vertical'); //
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -1937,7 +1937,7 @@ class EditComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             'export_protocol.pdf'
         );
     }
@@ -2054,7 +2054,7 @@ class EditComponent extends Component
             File::makeDirectory($path, $mode = 0777, true, true);
         }
 
-        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta); //
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -2066,6 +2066,8 @@ class EditComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+
+        $pdf->output();
 
         if ($this->contrato_id === null) {
             // Guardar datos validados

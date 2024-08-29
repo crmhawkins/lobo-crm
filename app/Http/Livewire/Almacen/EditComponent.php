@@ -332,7 +332,7 @@ class EditComponent extends Component
             'configuracion' => $configuracion
         ];
 
-        $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical')->output(); 
+        $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical'); 
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -345,7 +345,7 @@ class EditComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             'export_protocol.pdf'
         );
     }

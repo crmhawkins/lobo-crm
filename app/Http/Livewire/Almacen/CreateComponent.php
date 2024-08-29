@@ -558,7 +558,7 @@ class CreateComponent extends Component
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             "albaran_{$num_albaran}.pdf"
         );
     }

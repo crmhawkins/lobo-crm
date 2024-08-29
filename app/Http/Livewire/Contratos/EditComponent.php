@@ -590,7 +590,7 @@ class EditComponent extends Component
         $this->confirmed();
 
         return response()->streamDownload(
-            fn () => print($pdf),
+            fn () => print($pdf->output()),
             $filename
         );
     }

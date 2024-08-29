@@ -2039,7 +2039,7 @@ class CreateComponent extends Component
             File::makeDirectory($path, $mode = 0777, true, true);
         }
 
-        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); //
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta); //
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -2051,6 +2051,8 @@ class CreateComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+
+        $pdf->output();
 
         $this->confirmed();
 

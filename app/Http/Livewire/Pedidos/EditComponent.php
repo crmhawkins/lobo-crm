@@ -1590,7 +1590,7 @@ class EditComponent extends Component
         'configuracion' => $configuracion,
     ];
 
-    $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+    $pdf = PDF::loadView('livewire.pedidos.pdf-component', $datos)->setPaper('a4', 'vertical');
     $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -1602,6 +1602,8 @@ class EditComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+
+            $pdf->output();
 
     try{
 

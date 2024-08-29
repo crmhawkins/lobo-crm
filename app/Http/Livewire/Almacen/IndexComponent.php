@@ -123,7 +123,7 @@ class IndexComponent extends Component
         ];
 
         // Generar y mostrar el PDF
-        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+        $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -135,6 +135,7 @@ class IndexComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+        $pdf->output();
         $emailsDireccion = [
             'Alejandro.martin@serlobo.com',
             'Sandra.lopez@serlobo.com',

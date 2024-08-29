@@ -443,6 +443,7 @@ class IndexComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+        
         return response()->streamDownload(
             fn () => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"
@@ -910,7 +911,7 @@ class IndexComponent extends Component
                 ];
                 
                 // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-                $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical')->output();
+                $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical');
                 $pdf->render();
 
                 $totalPages = $pdf->getCanvas()->get_page_count();
@@ -922,7 +923,7 @@ class IndexComponent extends Component
                     $width = $canvas->get_width();
                     $canvas->text($width - 100, 15, $text, $font, $size);
                 });
-
+                $pdf->output();
             }
 
            
@@ -1037,7 +1038,7 @@ class IndexComponent extends Component
                     
                 ];
     
-                $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical')->output();
+                $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
                 $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();
@@ -1049,6 +1050,8 @@ class IndexComponent extends Component
                 $width = $canvas->get_width();
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
+
+            $pdf->output();
             }
         }
         if ($factura != null){
