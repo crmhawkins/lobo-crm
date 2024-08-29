@@ -341,7 +341,7 @@ class CreateComponent extends Component
         if (!$pedido) {
             abort(404, 'Pedido no encontrado');
         }
-
+       
             // Verificar que todos los productos tienen un lote_id asignado
         foreach ($this->productos_pedido as $productoPedido) {
             if (empty($productoPedido['lote_id'])) {
@@ -364,19 +364,19 @@ class CreateComponent extends Component
 
         $cliente = Clients::find($pedido->cliente_id);
         $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
-
+        //dd($this->productos_pedido);
         // Preparar los datos de los productos del pedido
         $productos = [];
         $hasStockRegistro = StockRegistro::where('pedido_id' , $this->pedido_id)->first();
         if (!$hasStockRegistro) {
-            foreach ($productosPedido as $productoPedido) {
-                
-                $producto = Productos::find($productoPedido->producto_pedido_id);
+            foreach ($this->productos_pedido as $productoPedido) {
+                //dd($productoPedido['producto_pedido_id']);
+                $producto = Productos::find($productoPedido['producto_pedido_id']);
                 $stockSeguridad = $producto->stock_seguridad;
-                $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
         
                 if (!isset($stockEntrante)) {
-                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
                 }
         
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
@@ -385,7 +385,7 @@ class CreateComponent extends Component
         
                 $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
                 
-                $cantidadRestante = $productoPedido->unidades;
+                $cantidadRestante = $productoPedido['unidades_old'];
                 
         
                 // Array para guardar los IDs de los lotes ya utilizados
@@ -400,53 +400,8 @@ class CreateComponent extends Component
                     $cantidad = $cantidadRestante;
                     $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
                     $cantidadRestante = 0; // Pedido completado
-                } else {
-                    // No es suficiente stock en este lote, usar todo lo disponible
-                    $cantidad = $cantidadStockDisponible;
-                    
-                    $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
-                    $cantidadRestante -= $cantidad; // Reducir la cantidad restante del pedido
-                    
-                }
+                } 
                
-                // Si aún queda cantidad por cubrir, buscar en otros lotes
-                if ($cantidadRestante > 0) {
-                    
-                    $stockEntrantes = StockEntrante::where('producto_id', $producto->id)
-                        ->where('cantidad', '>', 0)
-                        ->whereNotIn('id', $arrStockDescartados)
-                        ->get();
-        
-                    // Filtrar los lotes que no sean del almacén
-                    $stockEntrantes = $stockEntrantes->filter(function ($stockEntrante) use ($almacen_id) {
-                        $stock = Stock::find($stockEntrante->stock_id);
-                        return $stock->almacen_id == $almacen_id;
-                    });
-        
-                    foreach ($stockEntrantes as $stockEntrante) {
-                        $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
-                        $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
-                        $cantidad = $cantidadRestante;
-                        
-        
-                        if ($cantidadStockDisponible >= $cantidadRestante) {
-                            
-                            // Suficiente stock en este lote para completar el pedido
-                            $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
-                            $cantidadRestante = 0; // Pedido completado
-                            break;
-                        } else if($cantidadStockDisponible > 0){
-                            // No es suficiente stock en este lote, usar todo lo disponible
-                            $cantidad = $cantidadStockDisponible;
-                           
-                            $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
-                            $cantidadRestante -= $cantidad; // Reducir la cantidad restante del pedido
-                            array_push($arrStockDescartados, $stockEntrante->id); // Añadir este lote al array de descartados
-                        }else{
-                            continue;
-                        }
-                    }
-                }
             }
         }
         
@@ -682,6 +637,7 @@ class CreateComponent extends Component
         $cantidadStock = 0;
         $stockRegistro = StockRegistro::where('stock_entrante_id', $entradaStock->id)->sum('cantidad');
         $cantidadStock = $entradaStock->cantidad - $stockRegistro;
+        //dd($cantidadStock >= $this->productos_pedido[$rowIndex]['unidades_old']);
         // Si el stock del lote es suficiente
         if ($cantidadStock >= $this->productos_pedido[$rowIndex]['unidades_old']) {
             $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
@@ -696,6 +652,9 @@ class CreateComponent extends Component
                 'precio_total' => $cantidadStock * $this->productos_pedido[$rowIndex]['precio_ud'],
                 'lote_id' => $entradaStock->id
             ];
+
+        
+
             $this->alert('warning', 'Cantidad insuficiente en este lote, por favor escanea otro lote para completar la cantidad.', [
                 'position' => 'center',
                 'timer' => 3000,
