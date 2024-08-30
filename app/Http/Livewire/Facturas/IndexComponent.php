@@ -101,6 +101,19 @@ class IndexComponent extends Component
 
         return $factura->factura_id;
     }
+    public function getNumberFacturaAsociada($id)
+    {
+        
+        $factura = Facturas::where('id', $id)->first();
+
+        $facturaNormal = Facturas::where('id', $factura->factura_id)->first();
+
+        if(!$factura){
+            return 'No definido';
+        }
+
+        return $facturaNormal->numero_factura;
+    }
 
     public function updateFacturas()
     {
@@ -677,18 +690,20 @@ class IndexComponent extends Component
             $totalRectificado = 0;
             $base_imponible_rectificado = 0;
             $iva_productos_rectificado = 0;
-
+            //dd($arrProductosFactura);
             foreach ($arrProductosFactura as $producto) {
                 $base_imponible_rectificado += $producto['precio_total'];
                 $iva_productos_rectificado += $producto['iva'];
                 
             }
 
+            //dd($base_imponible_rectificado);
             $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
             $total = $factura->total - $totalRectificado;
             $base_imponible = $factura->precio - $base_imponible_rectificado;
             $iva_productos = $factura->iva_total_pedido - $iva_productos_rectificado;
 
+            //dd($totalRectificado, $base_imponible_rectificado, $iva_productos_rectificado, $total, $base_imponible, $iva_productos);
 
             //dd($productos);
             //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos

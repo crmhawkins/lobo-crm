@@ -8,6 +8,12 @@ use App\Models\Productos;
 use App\Models\Pedido;
 use App\Models\Clients;
 use App\Models\Facturas;
+use App\Models\Albaran;
+use App\Models\Stock;
+use App\Models\StockEntrante;
+use App\Models\StockRegistro;
+use App\Models\StockSaliente;
+
 use App\Policies\ClientsEmailPolicy;
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -18,8 +24,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Iva;
 
 use App\Models\ProductosFacturas;
-use App\Models\StockEntrante;
-use App\Models\StockRegistro;
 
 class CreateRectificativa extends Component
 {
@@ -250,6 +254,7 @@ class CreateRectificativa extends Component
             $facturaNormal->save(); 
 
             if(count($this->productos_pedido) > 0){
+                    dd($this->productos_pedido);
                 foreach ($this->productos_pedido as $producto) {
                     //dd($this->productos_pedido[1] , StockEntrante::where('id', $this->productos_pedido[1]['lote_id'])->first());
 
@@ -287,6 +292,119 @@ class CreateRectificativa extends Component
                     }
                 }
             }
+
+            //calcular total, importe y iva de la factura rectificativa
+            //dd($this->facturaSeleccionadaId);
+            $factura = Facturas::where('id', $this->facturaSeleccionadaId)->first();
+            $facturaRectificativa = Facturas::where('id', $facturasSave->factura_id)->first();
+
+
+            //cambiar total factura, iva total e importe.
+            if ($factura != null) {
+                $pedido = Pedido::find($factura->pedido_id);
+                $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
+                $cliente = Clients::find($factura->cliente_id);
+                $productofact = Productos::find($factura->producto_id);
+                $productos = [];
+               
+                //dd($albaran);
+                if (isset($pedido)) {
+                    $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                    // Preparar los datos de los productos del pedido
+                    foreach ($productosPedido as $productoPedido) {
+                        $producto = Productos::find($productoPedido->producto_pedido_id);
+                        $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                        if (!isset($stockEntrante)) {
+                            $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                        }
+                        if ($stockEntrante) {
+                            $lote = $stockEntrante->orden_numero;
+                        } else {
+                            $lote = "";
+                        }
+                        if ($producto) {
+                            if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                                $peso = "Peso no definido";
+                            } else {
+                                $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                            }
+                            $productos[] = [
+                                'id' => $producto->id,
+                                'nombre' => $producto->nombre,
+                                'cantidad' => $productoPedido->unidades,
+                                'precio_ud' => $productoPedido->precio_ud,
+                                'precio_total' => $productoPedido->precio_total,
+                                'iva' => $producto->iva,
+                                'lote_id' => $lote,
+                                'peso_kg' =>  $peso,
+                            ];
+                        }
+                    }
+                }
+                //dd($productos);
+                $arrProductosFactura = [];
+                
+                if ($facturaRectificativa){
+                    $productosdeFactura = [];
+                    $productosFactura = DB::table('productos_factura')->where('factura_id', $facturasSave->id)->get();
+                    foreach($productosFactura as $productoPedido){
+                        $producto = Productos::find($productoPedido->producto_id);
+                        $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+    
+                        if ($stockEntrante) {
+                            $lote = $stockEntrante->orden_numero;
+                        } else {
+                            $lote = "";
+                        }
+    
+                        if ($producto) {
+                            if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                                $peso = "Peso no definido";
+                            } else {
+                                $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                            }
+                            $arrProductosFactura[] = [
+                                'id' => $producto->id,
+                                'nombre' => $producto->nombre,
+                                'cantidad' => $productoPedido->cantidad,
+                                'precio_ud' => $productoPedido->precio_ud,
+                                'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                                'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                                'lote_id' => $lote,
+                                'peso_kg' =>  $peso,
+                            ];
+                        }
+    
+                    }
+    
+    
+                }
+    
+                $totalRectificado = 0;
+                $base_imponible_rectificado = 0;
+                $iva_productos_rectificado = 0;
+    
+                foreach ($arrProductosFactura as $producto) {
+                    $base_imponible_rectificado += $producto['precio_total'];
+                    $iva_productos_rectificado += $producto['iva'];
+                    
+                }
+    
+                $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
+                $total = $factura->total - $totalRectificado;
+                $base_imponible = $factura->precio - $base_imponible_rectificado;
+                $iva_productos = $factura->iva_total_pedido - $iva_productos_rectificado;
+
+                $facturasSave->precio = $base_imponible;
+                $facturasSave->iva_total_pedido = $iva_productos;
+                $facturasSave->total = $total;
+
+                //dd($base_imponible, $iva_productos, $total);
+                $facturasSave->save();
+
+            }
+
+
 
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',

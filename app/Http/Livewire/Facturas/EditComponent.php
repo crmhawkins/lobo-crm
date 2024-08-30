@@ -145,6 +145,9 @@ class EditComponent extends Component
         $this->iva_total_pedido = $this->facturas->iva_total_pedido;
         $this->subtotal_pedido = $this->facturas->subtotal_pedido;
         $this->tipo = $this->facturas->tipo;
+        if($this->tipo == 2){
+            $this->precio = $this->facturas->precio;
+        }
         
         if(!$this->facturas->descuento){
             if(isset($this->pedido)){
@@ -199,6 +202,17 @@ class EditComponent extends Component
         }
     }
 
+    public function getClienteDelegacion($id)
+    {
+        $cliente = Clients::find($id)->with('delegacion');
+        dd($cliente->delegacion);
+        if ($cliente) {
+            return $cliente->delegacion_COD;
+        } else {
+            return '';
+        }
+    }
+
     public function getUser($id)
     {
         $user = User::find($id);
@@ -231,6 +245,8 @@ class EditComponent extends Component
             $this->servicios[$index]['delete'] = true;
         }
     }
+
+    
 
 
     public function getNombreTabla($id)
@@ -416,7 +432,140 @@ class EditComponent extends Component
             $factura = Facturas::find($this->facturas->id);
             $factura::where('id', $this->facturas->id)->update(['cliente_id' => $this->cliente_id]);
 
+    
+    
+                //dd($productos);
+                //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
+                // foreach($productos as $index => $producto){
+                //     foreach($arrProductosFactura as $productoFactura){
+                //         if($producto['id'] == $productoFactura['id']){
+                //             $productos[$index]['cantidad'] -= $productoFactura['cantidad'];
+                //             $productos[$index]['precio_total'] -= $productoFactura['precio_total'];
+                //             $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100) ;
+                //             //dd($producto['cantidad']);
+                //         }
+                //     }
+                // }
+    
+                //$facturaRectificativa
+                //dd($total , $base_imponible, $iva_productos);
+                
+                
+            $pedido = Pedido::find($this->facturas->pedido_id);
+            $factura = Facturas::where('id', $this->facturas->factura_id)->first();
+            $facturaRectificativa = Facturas::where('id', $this->facturas->id)->first();
 
+
+            //cambiar total factura, iva total e importe.
+            if ($factura != null) {
+                $pedido = Pedido::find($factura->pedido_id);
+                $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
+                $cliente = Clients::find($factura->cliente_id);
+                $productofact = Productos::find($factura->producto_id);
+                $productos = [];
+               
+                //dd($albaran);
+               
+                if (isset($pedido)) {
+                    $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+                    // Preparar los datos de los productos del pedido
+                    foreach ($productosPedido as $productoPedido) {
+                        $producto = Productos::find($productoPedido->producto_pedido_id);
+                        $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                        if (!isset($stockEntrante)) {
+                            $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+                        }
+                        if ($stockEntrante) {
+                            $lote = $stockEntrante->orden_numero;
+                        } else {
+                            $lote = "";
+                        }
+                        if ($producto) {
+                            if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                                $peso = "Peso no definido";
+                            } else {
+                                $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                            }
+                            $productos[] = [
+                                'id' => $producto->id,
+                                'nombre' => $producto->nombre,
+                                'cantidad' => $productoPedido->unidades,
+                                'precio_ud' => $productoPedido->precio_ud,
+                                'precio_total' => $productoPedido->precio_total,
+                                'iva' => $producto->iva,
+                                'lote_id' => $lote,
+                                'peso_kg' =>  $peso,
+                            ];
+                        }
+                    }
+                }
+                $arrProductosFactura = [];
+                
+                if ($facturaRectificativa){
+                    $productosdeFactura = [];
+                    $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
+    
+                    foreach($productosFactura as $productoPedido){
+                        $producto = Productos::find($productoPedido->producto_id);
+                        $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+    
+                        if ($stockEntrante) {
+                            $lote = $stockEntrante->orden_numero;
+                        } else {
+                            $lote = "";
+                        }
+    
+                        if ($producto) {
+                            if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                                $peso = "Peso no definido";
+                            } else {
+                                $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                            }
+                            $arrProductosFactura[] = [
+                                'id' => $producto->id,
+                                'nombre' => $producto->nombre,
+                                'cantidad' => $productoPedido->cantidad,
+                                'precio_ud' => $productoPedido->precio_ud,
+                                'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
+                                'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                                'lote_id' => $lote,
+                                'peso_kg' =>  $peso,
+                            ];
+                        }
+    
+                    }
+    
+    
+                }
+    
+                $totalRectificado = 0;
+                $base_imponible_rectificado = 0;
+                $iva_productos_rectificado = 0;
+    
+                foreach ($arrProductosFactura as $producto) {
+                    $base_imponible_rectificado += $producto['precio_total'];
+                    $iva_productos_rectificado += $producto['iva'];
+                    
+                }
+    
+                $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
+                $total = $factura->total - $totalRectificado;
+                $base_imponible = $factura->precio - $base_imponible_rectificado;
+                $iva_productos = $factura->iva_total_pedido - $iva_productos_rectificado;
+
+                $facturaRectificativa->precio = $base_imponible;
+                $facturaRectificativa->iva_total_pedido = $iva_productos;
+                $facturaRectificativa->total = $total;
+                $facturaRectificativa->save();
+
+
+
+
+
+
+    
+    
+            } 
 
             //alerta
             $this->alert('success', 'Factura actualizada correctamente!', [
@@ -824,7 +973,19 @@ class EditComponent extends Component
             
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
+        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
+            //$pdf->output();
         try{
 
             $emailsDireccion = [
@@ -849,7 +1010,7 @@ class EditComponent extends Component
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
 
-                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
 
                 foreach($this->emailsSeleccionados as $email){
                     $registroEmail = new RegistroEmail();
@@ -876,9 +1037,9 @@ class EditComponent extends Component
             }else{
 
                 if($this->emailNuevo != null){
-                    Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
                 }else{
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
                 }
 
 
@@ -1138,7 +1299,19 @@ class EditComponent extends Component
             
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-        $pdf = Pdf::loadView('livewire.facturas.pdf3-component',$datos)->setPaper('a4', 'vertical')->output();
+        $pdf = Pdf::loadView('livewire.facturas.pdf3-component',$datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
+            //$pdf->output();
         try{
 
             $emailsDireccion = [
@@ -1148,7 +1321,7 @@ class EditComponent extends Component
                  'Sandra.lopez@serlobo.com'
             ];
 
-            Mail::to($this->emailTransporte)->cc($this->emailTransporte)->bcc($emailsDireccion)->send(new TransporteRecogida($pdf, $datos));
+            Mail::to($this->emailTransporte)->cc($this->emailTransporte)->bcc($emailsDireccion)->send(new TransporteRecogida($pdf->output(), $datos));
                 
             $registroEmail = new RegistroEmail();
             $registroEmail->factura_id = $factura->id;
@@ -1360,7 +1533,19 @@ class EditComponent extends Component
             
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
-        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical')->output();
+        $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+
+            $totalPages = $pdf->getCanvas()->get_page_count();
+
+            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                $text = "Página $pageNumber de $totalPages";
+                $font = $fontMetrics->getFont('Helvetica', 'normal');
+                $size = 10;
+                $width = $canvas->get_width();
+                $canvas->text($width - 100, 15, $text, $font, $size);
+            });
+            //$pdf->output();
         try{
 
             $emailsDireccion = [
@@ -1385,7 +1570,7 @@ class EditComponent extends Component
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
     
-                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
 
 
                 foreach($this->emailsSeleccionados as $email){
@@ -1415,9 +1600,9 @@ class EditComponent extends Component
             }else{
 
                 if($this->emailNuevo != null){
-                    Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($cliente->email)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
                 }else{
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
                 }
 
 
@@ -1431,7 +1616,7 @@ class EditComponent extends Component
                 $registroEmail->save();
 
                 if($this->emailNuevo != null){
-                    Mail::to($this->emailNuevo)->send(new FacturaMail($pdf, $datos));
+                    Mail::to($this->emailNuevo)->send(new FacturaMail($pdf->output(), $datos));
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
                     $registroEmail->pedido_id = null;

@@ -528,8 +528,8 @@
                                         @endif
                                          <td>
                                             <a href="{{ route('facturas.edit', ['id' => $this->getFacturaAsociada($fact->id)]) }}"
-                                                class="btn btn-primary" target="_blank"> &nbsp;Factura
-                                                {{ $this->getFacturaAsociada($fact->id) }}</a>
+                                                class="btn btn-primary" target="_blank"> &nbsp;
+                                                {{ $this->getNumberFacturaAsociada($fact->id) }}</a>
                                         </td> 
                                         <td>{{ $this->getComercial($fact->cliente_id)}}</td>
                                         <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
@@ -547,8 +547,8 @@
                                                     Ver/Editar
                                                 @endif
                                             </a>
-                                            <button  onclick="descargarFactura({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
-                                            <button  onclick="descargarFactura({{ $fact->id }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
+                                            <button  onclick="descargarFacturaRectificada({{ $this->getFacturaAsociada($fact->id) }}, true)" class="btn btn-primary botones" style="color: white;">Factura Con IVA</button>
+                                            <button  onclick="descargarFacturaRectificada({{ $this->getFacturaAsociada($fact->id) }}, false)" class="btn btn-primary botones" style="color: white;">Factura Sin IVA</button>
                                             @if($this->hasPedido($fact->id))
                                                 <button  onclick="mostrarAlbaran({{ $fact->id }}, true)" class="btn btn-primary botones" style="color: white;">Albarán</button>
                                             @endif

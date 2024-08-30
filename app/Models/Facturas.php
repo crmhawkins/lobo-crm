@@ -43,6 +43,9 @@ class Facturas extends Model
         'transporte',
         'anotacionesEmail',
         'observacionesEmail',
+        'factura_intermedia_id',
+        'factura_rectificativa_id',
+        'factura_id',
     ];
 
 
@@ -55,6 +58,18 @@ class Facturas extends Model
     {
         return $this->belongsTo(Pedido::class, 'pedido_id');
     }
+
+    public function producto()
+    {
+        return $this->belongsTo(Productos::class, 'producto_id');
+    }
+
+    public function factura_intermedia()
+    {
+        return $this->belongsTo(Facturas::class, 'factura_intermedia_id');
+    }
+
+
 
     /**
      * Mutaciones de fecha.

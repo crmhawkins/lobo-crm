@@ -5,6 +5,7 @@
     <style>
         body {
             font-size: 80% !important;
+            position: relative;
         }
 
         table {
@@ -45,24 +46,52 @@
                 page-break-inside: avoid;
             }
         }
+
         div.breakNow {
             page-break-inside: avoid;
             page-break-after: always;
+        }
+
+        /* Footer with page number */
+        .footer {
+            position: fixed;
+            bottom: 10;
+            right: 0;
+            text-align: center;
+            font-size: 80%;
+            color: #555;
+        }
+
+        .footer .pagenum:before {
+            content: counter(page);
+        }
+
+        .footer .pagecount:before {
+            content: counter(pages);
+        }
+
+        #pageFooter:after {
+            content: counter(page);
         }
     </style>
 </head>
 
 <body>
-    <footer style="margin-top: 100px; page-break-after: avoid;position: fixed; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
-        <p>{{ $configuracion->texto_factura }}</p>
-    </footer>
+    
     <table class="header-1" style="margin-bottom: 5%">
         <tr width="100%">
-            <td width="25%" style="background-color: #fff !important; padding: 0;"><img style="margin: 8px" src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto"></td>
+            <td width="25%" style="background-color: #fff !important; padding: 0;">
+                <img style="margin: 8px" src="{{ public_path('images/LOGO-LOBO-COLOR.png') }}" alt="logo" width="100%" height="auto">
+            </td>
             <td width="35%" style="background-color: #fff !important"></td>
-            <th width="40%" style="background-color: #fff !important"><span style="background-color: #0196eb !important; padding: 2rem; display: block;">Administracion@serlobo.com</span></th>
+            <th width="40%" style="background-color: #fff !important">
+                <span style="background-color: #0196eb !important; padding: 2rem; display: block;">
+                    Administracion@serlobo.com
+                </span>
+            </th>
         </tr>
     </table>
+
     <!-- Parte superior: Logo, Dirección, Factura -->
     <table class="header">
         <tr width="100%">
@@ -74,7 +103,7 @@
             </td>
             <td width="20%">&nbsp;</td>
             <td class="bold" @if($factura->tipo == 2) width="60%" @else width="40%" @endif style="text-align: right !important">
-                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA RECTIFICADA</h1><br>
+                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA RECTIFICATIVA</h1><br>
                 <span style="font-size: 80%">
                     <span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
                     @if(isset($pedido))
@@ -94,6 +123,7 @@
             </td>
         </tr>
     </table>
+
     <div style="margin-left: -10%; width: 250%; border-bottom: 2px solid #bbbbbb"></div>
 
     <!-- Información del Cliente y Dirección de Envío -->
@@ -130,12 +160,13 @@
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     @php
-        $productosPorPagina = 13;
+        $productosPorPagina = 10;
         $numeroPaginasProductos = ceil(count($productos) / $productosPorPagina);
         $ultimoProductoEnPagina = count($productos) % $productosPorPagina;
     @endphp
 
     @for ($i = 0; $i < $numeroPaginasProductos; $i++)
+    
         <table class="avoid-page-break">
             <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                 <th style="text-align: left !important">CONCEPTO</th>
@@ -218,8 +249,9 @@
     @endif
 
     @if($conIva)
-    <!-- Condición para hacer un salto de página -->
-    @if($i == $numeroPaginasProductos - 1 && $ultimoProductoEnPagina > 4)
+    <!-- Salto de página si en la última página hay más de 4 productos -->
+    @if(($i == $numeroPaginasProductos - 1 && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4 ) || ($i == 1 && $productosPorPagina > 10))
+        
         <div class="page-break"></div>
     @endif
 
@@ -233,6 +265,7 @@
                 <td></td>
                 <td>IVA 21%</td>
                 <td>{{ number_format($iva_productos, 2, ',', '.')}}€</td>
+                
             </tr>
             @if(isset($factura->total_recargo) && $factura->tipo != 2)
                 <tr style="background-color:#ececec;">
@@ -245,6 +278,7 @@
                 <td></td>
                 <td>TOTAL</td>
                 <td>{{ number_format($total, 2, ',', '.')}}€</td>
+              
             </tr>
         </table>
     @else
@@ -253,12 +287,13 @@
                 <td></td>
                 <td>Total</td>
                 <td>{{ number_format($base_imponible, 2, ',', '.')}}€</td>
+                
             </tr>
         </table>
     @endif
 
     <!-- Información adicional: Albarán, Pedido, Pallet, Transferencia -->
-    <table class="footer">
+    <table class="footer-tab">
         <tr>
             <td style="text-align: left !important">
                 <span style="font-weight: bold">Forma de pago:</span>
@@ -297,7 +332,16 @@
             <p style="background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
         </div>
     @endif
-
+    @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 3) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 3 ) )
+        
+        <div class="page-break"></div>
+    @endif
+    
+    <footer style="margin-top: 100px; page-break-after: avoid;position: absolute; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+        <strong>Condiciones legales</strong>
+        <p>{{ $configuracion->texto_factura }}</p>
+        
+    </footer>
 </body>
 
 </html>
