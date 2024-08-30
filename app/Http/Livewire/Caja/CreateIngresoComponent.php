@@ -46,8 +46,12 @@ class CreateIngresoComponent extends Component
     public function mount()
     {
 
-        $this->facturas = Facturas::where('estado', 'Pendiente')
-        ->orWhere('estado', 'Parcial')
+        $this->facturas = Facturas::where(function($query) {
+            $query->where('estado', 'Pendiente')
+                  ->orWhere('estado', 'Parcial');
+        })
+        ->whereNull('factura_id')
+        ->orderBy('id', 'asc')
         ->get();
         $this->clientes = Clients::all();
         $this->bancos = Bancos::all();
@@ -79,7 +83,6 @@ class CreateIngresoComponent extends Component
            
             }
 
-
             //dd($this->ingresos_factura->sum('importe'));
             if(count($this->ingresos_factura) > 0){
                 $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
@@ -90,11 +93,39 @@ class CreateIngresoComponent extends Component
             }
             
             if(count($this->facturas_compensadas) > 0){
+                //dd("hola");
                 $this->importeFacturaCompensada = $this->importe - $total;
                 $this->importeCompensado = $total;
                 $this->compensacion_factura = true;
             }else{
                 $this->compensacion_factura = false;
+            }
+
+            //si esta factura tiene factura rectificativa
+            $facturaRectificativa = Facturas::where('id' , $this->facturaSeleccionada->factura_rectificativa_id)->first();
+            if($facturaRectificativa){
+                //dd($facturaRectificativa);
+                $this->importeFactura = $facturaRectificativa->total;
+                //dd($facturaRectificativa);
+                $this->ingresos_factura = Caja::where('pedido_id', $facturaRectificativa->id)->get();
+                $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $facturaRectificativa->id)->get();
+                $total = 0;
+                foreach ($this->facturas_compensadas as $factura) {
+                    
+                    $total += $factura->pagado;
+               
+                }
+
+                if(count($this->ingresos_factura) > 0){
+                    $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+
+                }else{
+                    $this->importe = $this->importeFactura;
+                }
+
+
+
+                
             }
 
         }
@@ -127,6 +158,7 @@ class CreateIngresoComponent extends Component
             );
         
         // Guardar datos validados
+        
         $usuariosSave = Caja::create([
             'tipo_movimiento' => $this->tipo_movimiento,
             'metodo_pago' => $this->metodo_pago,
@@ -139,7 +171,7 @@ class CreateIngresoComponent extends Component
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
 
-        $this->importeFactura = $this->facturaSeleccionada->total;
+        //$this->importeFactura = $this->facturaSeleccionada->total;
         $this->ingresos_factura = Caja::where('pedido_id', $this->facturaSeleccionada->id)->get();
         $importe = $this->importeFactura;
         if(count($this->ingresos_factura) > 0){
@@ -148,7 +180,11 @@ class CreateIngresoComponent extends Component
         }
 
         if($importe - $this->importeCompensado <= 0 ){
+            
             $this->facturaSeleccionada->estado = 'Pagado';
+
+
+
             $this->facturaSeleccionada->save();
         }else{
             $this->facturaSeleccionada->estado = 'Parcial';
