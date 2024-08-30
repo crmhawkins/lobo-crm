@@ -103,7 +103,7 @@
             </td>
             <td width="20%">&nbsp;</td>
             <td class="bold" @if($factura->tipo == 2) width="60%" @else width="40%" @endif style="text-align: right !important">
-                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA INTERMEDIA</h1><br>
+                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA RECTIFICATIVA</h1><br>
                 <span style="font-size: 80%">
                     <span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
                     @if(isset($pedido))
