@@ -103,7 +103,7 @@
             </td>
             <td width="20%">&nbsp;</td>
             <td class="bold" @if($factura->tipo == 2) width="60%" @else width="40%" @endif style="text-align: right !important">
-                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA FINAL</h1><br>
+                <h1 style="display: inline; color:#0196eb; font-weight:bolder;">FACTURA INTERMEDIA</h1><br>
                 <span style="font-size: 80%">
                     <span style="font-weight: bold;">#{{$factura->numero_factura}}</span><br>
                     @if(isset($pedido))
@@ -181,10 +181,6 @@
             </tr>
 
             @foreach (array_slice($productos, $i * $productosPorPagina, $productosPorPagina) as $producto)
-            @if ($producto['cantidad'] == 0)
-                @continue
-            @endif
-                
                 <tr class="left-aligned" style="background-color:#ececec;">
                     <td style="text-align: left !important">
                         <span style="font-weight: bold !important;"> {{ $producto['nombre'] }}</span>
@@ -193,7 +189,7 @@
                     <td>{{ $producto['cantidad'] }}</td>
                     <td>{{ $producto['peso_kg'] }} Kg</td>
                     <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-                    <td>{{ number_format($producto['precio_total'], 2) }} €</td>
+                    <td>-{{ number_format($producto['precio_total'], 2) }} €</td>
                 </tr>
             @endforeach
         </table>
