@@ -1654,7 +1654,7 @@ class EditComponent extends Component
             if($this->emailNuevo != null){
                 Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
             }else{
-                Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf, $cliente,$pedido,$productos));
+                Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
             }
 
             $registroEmail = new RegistroEmail();
