@@ -1573,9 +1573,14 @@ class EditComponent extends Component
             ];
         }
     }
+    $iva= true;
+    if($cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
+        $iva = false;
+    }
 
     $configuracion = Configuracion::first();
     $datos = [
+        'conIva' => $iva,
         'pedido' => $pedido,
         'cliente' => $cliente,
         'localidad_entrega' => $pedido->localidad_entrega,
@@ -1625,7 +1630,8 @@ class EditComponent extends Component
                 array_push($this->emailsSeleccionados, $this->emailNuevo);
             }
 
-            Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
+            Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos, $iva));
+            // Mail::to('ivan.mayol@hawkins.es')->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos, $iva));
 
             foreach($this->emailsSeleccionados as $email){
                 $registroEmail = new RegistroEmail();
@@ -1652,9 +1658,13 @@ class EditComponent extends Component
 
         }else{
             if($this->emailNuevo != null){
-                Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
+                Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos,  $iva));
+                // Mail::to('ivan.mayol@hawkins.es')->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos, $iva));
+
             }else{
-                Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos));
+                Mail::to($cliente->email)->bcc($emailsDireccion)->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos,  $iva));
+                // Mail::to('ivan.mayol@hawkins.es')->send(new PedidoMail($pdf->output(), $cliente,$pedido,$productos, $iva));
+
             }
 
             $registroEmail = new RegistroEmail();

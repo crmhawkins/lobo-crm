@@ -19,13 +19,16 @@ class PedidoMail extends Mailable
     public  $pedido;
     public  $productos;
     public $configuracion;
+    public $iva;
 
-    public function __construct($pdf, $cliente,$pedido,$productos)
+    public function __construct($pdf, $cliente,$pedido,$productos,$iva)
     {
         $this->pdf = $pdf;
         $this->cliente = $cliente;
         $this->pedido =$pedido;
         $this->productos =$productos;
+        $this->iva =$iva;
+        
         $this->configuracion = Configuracion::first();
     }
 

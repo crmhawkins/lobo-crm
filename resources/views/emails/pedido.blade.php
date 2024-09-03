@@ -63,14 +63,16 @@
                 <th colspan="3">Total</th>
                 <th>{{ number_format($pedido->precio, 2) }} €</th>
             </tr>
-            <tr>
-                <th colspan="3">Total Iva</th>
-                <th>{{ number_format($pedido->iva_total, 2) }} €</th>
-            </tr>
-            <tr>
-                <th colspan="3">Total con Iva</th>
-                <th>{{ number_format($pedido->precio + $pedido->iva_total , 2) }} €</th>
-            </tr>
+            @if($iva)
+                <tr>
+                    <th colspan="3">Total Iva</th>
+                    <th>{{ number_format($pedido->iva_total, 2) }} €</th>
+                </tr>
+                <tr>
+                    <th colspan="3">Total con Iva</th>
+                    <th>{{ number_format($pedido->precio + $pedido->iva_total , 2) }} €</th>
+                </tr>
+            @endif
         </table>
         {{-- <p>Iva no Incluido.</p> --}}
         @if ($pedido->descuento)

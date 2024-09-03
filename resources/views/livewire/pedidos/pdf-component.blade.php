@@ -98,12 +98,14 @@
         <tr>
             <td>Total Pedido: {{ number_format($pedido->precio, 2) }}€</td>
         </tr>
-        <tr>
-            <td>Total Iva: {{ number_format($pedido->iva_total, 2) }}€</td>
-        </tr>
-        <tr>
-            <td>Total + Iva: {{ number_format($pedido->iva_total + $pedido->precio, 2) }}€</td>
-        </tr>
+        @if($conIva)
+            <tr>
+                <td>Total Iva: {{ number_format($pedido->iva_total, 2) }}€</td>
+            </tr>
+            <tr>
+                <td>Total + Iva: {{ number_format($pedido->iva_total + $pedido->precio, 2) }}€</td>
+            </tr>
+        @endif
         {{-- <tr>
             <td>Descuento Aplicado: {{ $pedido->descuento ? 'Sí' : 'No' }}</td>
         </tr> --}}

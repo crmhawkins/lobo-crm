@@ -931,8 +931,7 @@ class IndexComponent extends Component
                     $iva = false;
                 }
 
-                
-
+            
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
                
@@ -1085,7 +1084,7 @@ class IndexComponent extends Component
                 $pedido = Pedido::find($factura->pedido_id);
                 $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
                 $cliente = Clients::find($factura->cliente_id);
-                if($cliente->delegacion['id'] !== 15 && $cliente->delegacion['id'] !== 14 && $cliente->delegacion['id'] !== 13 && $cliente->delegacion['id'] !== 7){
+                if($cliente->delegacion['id'] !== 15 || $cliente->delegacion['id'] !== 14 || $cliente->delegacion['id'] !== 13 || $cliente->delegacion['id'] !== 7){
                     $iva = false;
                 }
                 $productofact = Productos::find($factura->producto_id);

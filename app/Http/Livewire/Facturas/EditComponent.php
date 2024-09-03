@@ -938,6 +938,7 @@ class EditComponent extends Component
             $base_imponible = 0;
             $iva_productos = 0;
             $iva = true;
+            
             if ($factura->tipo == 2){
                 
                 foreach ($productosdeFactura as $producto) {
