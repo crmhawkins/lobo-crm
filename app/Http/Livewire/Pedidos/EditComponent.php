@@ -1574,8 +1574,11 @@ class EditComponent extends Component
         }
     }
     $iva= true;
-    if($cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
-        $iva = false;
+    if($cliente->delegacion){
+
+        if($cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
+            $iva = false;
+        }
     }
 
     $configuracion = Configuracion::first();
