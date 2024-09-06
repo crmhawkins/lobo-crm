@@ -927,7 +927,7 @@ class IndexComponent extends Component
                 $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
                 $cliente = Clients::find($factura->cliente_id);
                 if($cliente->delegacion){
-                    if($cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
+                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
                         $iva = false;
                     }
                 }
@@ -1086,7 +1086,7 @@ class IndexComponent extends Component
                 $cliente = Clients::find($factura->cliente_id);
                 if($cliente->delegacion){
 
-                    if($cliente->delegacion['id'] !== 15 || $cliente->delegacion['id'] !== 14 || $cliente->delegacion['id'] !== 13 || $cliente->delegacion['id'] !== 7){
+                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
                         $iva = false;
                     }
                 }
@@ -1172,7 +1172,7 @@ class IndexComponent extends Component
                 }
                 if($cliente->delegacion){
 
-                    if($cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
+                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
                         $iva = false;
                     }
                 }
@@ -1210,6 +1210,7 @@ class IndexComponent extends Component
 
             //$pdf->output();
             }
+            //dd($cliente->delegacion['COD'] , $iva);
         }
         if ($factura != null){
             try{
@@ -1235,7 +1236,7 @@ class IndexComponent extends Component
                 if(count($this->emailsSeleccionados) > 0){
                     
                     Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    // Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                     //Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach($this->emailsSeleccionados as $email){
                         $registroEmail = new RegistroEmail();
@@ -1255,7 +1256,7 @@ class IndexComponent extends Component
                 }else{
 
                     Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    // Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
+                     //Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;

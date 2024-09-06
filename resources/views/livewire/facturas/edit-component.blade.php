@@ -70,7 +70,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     <br>
                     @if($cliente->delegacion)
                         @if($cliente->delegacion)
-                            @if($cliente->delegacion['id'] !== 15 && $cliente->delegacion['id'] !== 14 && $cliente->delegacion['id'] !== 13 && $cliente->delegacion['id'] !== 7)
+                            @if($cliente->delegacion && !in_array($cliente->delegacion['id'], [15, 14, 13, 7]))
                                 <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
                             @endif
                         @endif

@@ -1576,7 +1576,7 @@ class EditComponent extends Component
     $iva= true;
     if($cliente->delegacion){
 
-        if($cliente->delegacion['id'] == 14 || $cliente->delegacion['id'] == 15 || $cliente->delegacion['id'] == 13 || $cliente->delegacion['id'] == 7){
+        if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
             $iva = false;
         }
     }

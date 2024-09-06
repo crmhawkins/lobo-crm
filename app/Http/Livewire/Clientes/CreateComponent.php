@@ -109,6 +109,14 @@ class CreateComponent extends Component
             $this->codPostalenvio = $this->cod_postal;
         }
 
+        if($this->emails == null){
+            $this->alert('error', '¡Debe añadir al menos un email!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
         $this->email = $this->emails[0];
         // Validación de datos
         $validatedData = $this->validate(
@@ -181,7 +189,7 @@ class CreateComponent extends Component
             }
         }
 
-        //event(new \App\Events\LogEvent(Auth::user(), 8, $clienteSave->id));
+        event(new \App\Events\LogEvent(Auth::user(), 59, $clienteSave->id));
 
         // Alertas de guardado exitoso
         if ($clienteSave) {
