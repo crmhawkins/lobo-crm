@@ -372,7 +372,9 @@
                                                     @else
                                                         <a href="facturas-create/{{ $pedido->id }}" class="btn btn-danger botones">Crear Factura</a>
                                                     @endif
-
+                                                    @if($this->hasFactura($pedido->id) && $pedido->fecha_entrega != null)
+                                                        <button  onclick="completarPedido({{ $pedido->id }})" class="btn btn-dark botones" style="color: white;">Completar Pedido</button>
+                                                    @endif
 
                                                 @elseif($pedido->tipo_pedido_id != 0)
                                                     <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enFechaEntrega" class="btn btn-success botones" style="color: white;">Fecha entrega</button>
