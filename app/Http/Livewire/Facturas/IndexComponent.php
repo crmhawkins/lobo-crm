@@ -299,21 +299,36 @@ class IndexComponent extends Component
    
 
     public function calcularTotales($facturas)
-    {
-        $this->totalIva = 0;
-        $this->totalImportes = 0;
-        $this->totalesConIva = 0;
-        foreach ($facturas as $factura) {
-            $this->totalImportes += $factura->precio;
+{
+    $this->totalIva = 0;
+    $this->totalImportes = 0;
+    $this->totalesConIva = 0;
+
+    foreach ($facturas as $factura) {
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+
+        // Sumar importe total
+        $this->totalImportes += $factura->precio;
+
+        // Sumar IVA si la delegación no está en la lista de exención
+        if (!in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
             $this->totalIva += $factura->iva;
-            $this->totalesConIva += $factura->total;
-            
         }
 
-        $this->totalImportes = round($this->totalImportes, 2);
-        $this->totalIva = round($this->totalIva, 2);
-        $this->totalesConIva = round($this->totalesConIva, 2);
+        // Sumar totales con IVA, considerando las delegaciones
+        if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+            $this->totalesConIva += $factura->precio; // Sin IVA
+        } else {
+            $this->totalesConIva += $factura->total; // Con IVA
+        }
     }
+
+    // Redondear los totales
+    $this->totalImportes = round($this->totalImportes, 2);
+    $this->totalIva = round($this->totalIva, 2);
+    $this->totalesConIva = round($this->totalesConIva, 2);
+}
+
 
 
 

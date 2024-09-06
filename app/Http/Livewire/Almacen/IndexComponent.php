@@ -275,6 +275,8 @@ class IndexComponent extends Component
         ]);
     }
 
+
+    
     
 
     public function completarPedido($id){

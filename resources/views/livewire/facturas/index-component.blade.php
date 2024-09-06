@@ -269,7 +269,9 @@
                                 <tbody>
                                     
                                     @foreach ($facturas as $key=>$fact)
-                                        
+                                    @php
+                                    $delegacion = $this->getDelegacion($fact->cliente_id);
+                                    @endphp
                                         <tr>
                                             <td>
                                                 <input type="checkbox" onclick="anadirArray({{ $fact->id }})" value="{{ $fact->id }}">
@@ -298,21 +300,26 @@
                                                         <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
                                                     @endif
                                                 </td>
-                                                        <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
-                                                        <td>
-                                                            @if($fact->iva !== null)
-                                                                {{ number_format($fact->iva, 2, '.', '') }}€
-                                                            @else
-                                                                {{number_format(($fact->precio) * 0.21, 2 , '.', '')}}€
-                                                            @endif 
-                                                        </td>
-                                                        <td>
-                                                            @if($fact->total !== null )
-                                                                {{ number_format($fact->total , 2, '.', '') }}€
-                                                            @else
-                                                                {{number_format(($fact->precio) * 1.21, 2, '.', '')}}€
-                                                            @endif        
-                                                        </td>
+                                                <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
+                                                <td>
+
+                                                    @if($fact->iva !== null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
+                                                        {{ number_format($fact->iva, 2, '.', '') }}€
+                                                    @elseif($fact->iva == null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
+                                                        {{ number_format(($fact->precio) * 0.21, 2, '.', '') }}€
+                                                    @else
+                                                        {{ 0 }}€
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($fact->total !== null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
+                                                        {{ number_format($fact->total, 2, '.', '') }}€
+                                                    @elseif($fact->total == null  && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
+                                                        {{ number_format($fact->precio * 1.21, 2, '.', '') }}€
+                                                    @else
+                                                        {{ number_format($fact->precio, 2, '.', '') }}€
+                                                    @endif
+                                                </td>
                                                 
                                                 <td >
                                                     @switch($fact->metodo_pago)
