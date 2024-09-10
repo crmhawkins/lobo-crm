@@ -30,6 +30,11 @@ use Livewire\WithFileUploads;
 use App\Models\TipoEmails;
 use App\Models\PedidosDocuments;
 
+use App\Models\Stock;
+use App\Models\StockEntrante;
+use App\Models\StockRegistro;
+
+
 class EditComponent extends Component
 {
 
@@ -112,7 +117,7 @@ class EditComponent extends Component
     public $documentosSubidos = [];
 
     public $gastos_transporte;
-
+    public $canAccept = true;
 
     public function getTipo($id){
 
@@ -159,6 +164,47 @@ class EditComponent extends Component
     //     ]);
 
     // }
+
+
+    public function ComprobarStockPedido(){
+        $stock = true;
+        foreach ($this->productos_pedido as $productoPedido) {
+            $producto = Productos::find($productoPedido['producto_pedido_id']);
+            $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
+            if(!$stock){
+                break;
+            }
+        }
+        return $stock;
+    }
+
+    public function comprobarStock($producto, $unidades){
+        $hasStock = true;
+        $stockEntrantes = [];
+        $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
+
+        foreach ($stocks as $stock) {
+            $stockEntrante = StockEntrante::where('stock_id', $stock->id)->where('producto_id', $producto->id)->first();
+            if($stockEntrante){
+
+                $stockEntrantes[] = $stockEntrante;
+            }
+        }
+        $numStockTotal = 0;
+        foreach ($stockEntrantes as $stockEntrante) {
+            $historialStock = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
+            $stock = $stockEntrante->cantidad - $historialStock;
+            if($stock < 0){
+                $stock = 0;
+            }
+            $numStockTotal += $stock;
+        }
+
+        if($numStockTotal < $unidades){
+            $hasStock = false;
+        }
+        return $hasStock;
+    }
 
 
 
@@ -336,7 +382,20 @@ class EditComponent extends Component
             $this->setPrecioEstimado();
         }
 
-       
+        $this->canAccept = $this->ComprobarStockPedido();
+
+
+        if($this->getEstadoNombre() == 'Recibido'  && !$this->canAccept){
+            //alerta de stock insuficiente
+            $this->alert('info', '¡Stock insuficiente!', [
+                'position' => 'center',
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Cerrar',
+                'timerProgressBar' => true,
+            ]);
+        }
+
        // 
         $this->emit('refreshComponent');
 

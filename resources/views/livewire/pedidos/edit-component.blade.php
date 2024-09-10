@@ -173,6 +173,12 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <h5 class="ms-3"
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 básicos del pedido</h5>
+                                @if($this->getEstadoNombre() == 'Recibido'  && !$this->canAccept)
+                                    <div class="alert alert-warning" role="alert">
+                                        <h4 class="alert-heading">Stock Insuficiente</h4>
+                                        <p>Este pedido ha sido recibido y no puede ser Aceptado.</p>
+                                    </div>
+                                @endif
                         </div>
 
                         <div class="form-group col-md-4" wire:ignore >
@@ -787,7 +793,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     @endif
                         
                     @if ($bloqueado)
-                        @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin)
+                        @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin && $canAccept )
                             <div class="col-12">
                                 <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
                             </div>
@@ -796,7 +802,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             </div>
                         @endif
                     @else
-                        @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento || $this->getEstadoNombre() == 'Recibido' && $EsAdmin)
+                        @if ($this->getEstadoNombre() == 'Recibido' && $mostrarElemento && $canAccept || $this->getEstadoNombre() == 'Recibido' && $EsAdmin && $canAccept)
                             <div class="col-12">
                                 <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaAceptar">Aceptar pedido</button>
                             </div>
