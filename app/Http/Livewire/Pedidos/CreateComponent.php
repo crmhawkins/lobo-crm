@@ -19,6 +19,11 @@ use App\Models\Almacen;
 use App\Models\Iva;
 use App\Models\User;
 use App\Mail\PedidoMail;
+use App\Models\Stock;
+use App\Models\StockEntrante;
+use App\Models\StockRegistro;
+
+
 use Illuminate\Support\Facades\Mail;
 
 class CreateComponent extends Component
@@ -49,9 +54,9 @@ class CreateComponent extends Component
     public $producto_seleccionado;
     public $unidades_pallet_producto;
     public $unidades_caja_producto;
-   public $precio_crema;
-   public $precio_vodka07l;
-   public $precio_vodka175l;
+    public $precio_crema;
+    public $precio_vodka07l;
+    public $precio_vodka175l;
     public $precio_vodka3l;
     public $bloqueado;
     public $porcentaje_bloq;
@@ -74,6 +79,7 @@ class CreateComponent extends Component
     public $isMarketing = false;
     public $cliente;
     public $datos_transporte;
+    public $gastos_transporte;
 
     public function mount()
     {
@@ -137,6 +143,51 @@ class CreateComponent extends Component
 
 
     }
+
+
+    public function ComprobarStockPedido(){
+        $data = [];
+        foreach ($this->productos_pedido as $productoPedido) {
+            $producto = Productos::find($productoPedido['producto_pedido_id']);
+            $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
+            if(!$stock){
+                $data[] = $producto->nombre;
+            }
+        }
+        return $data;
+    }
+
+    public function comprobarStock($producto, $unidades){
+        $hasStock = true;
+        $stockEntrantes = [];
+        $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
+
+        foreach ($stocks as $stock) {
+            $stockEntrante = StockEntrante::where('stock_id', $stock->id)->where('producto_id', $producto->id)->first();
+            if($stockEntrante){
+
+                $stockEntrantes[] = $stockEntrante;
+            }
+        }
+        $numStockTotal = 0;
+        foreach ($stockEntrantes as $stockEntrante) {
+            $historialStock = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
+            $stock = $stockEntrante->cantidad - $historialStock;
+            if($stock < 0){
+                $stock = 0;
+            }
+            $numStockTotal += $stock;
+        }
+
+        if($numStockTotal < $unidades){
+            $hasStock = false;
+        }
+
+
+
+        return $hasStock;
+    }
+
 
     public function aceptarPedido($id)
     {
@@ -297,6 +348,19 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+        if($this->almacen_id == 0 || $this->almacen_id == null){
+            $this->alert('error', '¡Debe seleccionar un almacén!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'timerProgressBar' => true,
+            ]);
+            return;
+            
+        }
+        
+
         $totalUnidades = 0;
         $totalUnidadesSinCargo = 0;
         foreach ($this->productos_pedido as $productoPedido) {
@@ -451,12 +515,52 @@ class CreateComponent extends Component
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
-        Mail::send([], [], function ($message) use ($pedidosSave) {
-            $message->to('Alejandro.martin@serlobo.com')
-                    ->subject('Nuevo Pedido Creado')
-                    ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->nombre_cliente . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
-        });
+        
+        try{
+            Mail::send([], [], function ($message) use ($pedidosSave) {
+                $message->to('Alejandro.martin@serlobo.com')
+                        ->subject('Nuevo Pedido Creado')
+                        ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->nombre_cliente . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
+            });
+        }catch(\Exception $e){
+            //dd($e);
+        }
+        
 
+        $hasStock = $this->ComprobarStockPedido();
+
+        if(count($hasStock) > 0){
+            $almacen = Almacen::find($this->almacen_id);
+
+            try{
+                Mail::send([], [], function ($message) use ($hasStock, $almacen, $producto, $pedidosSave) {
+                    $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->id.'</h1>';
+                    
+                    foreach ($hasStock as $producto) {
+                        $htmlContent .= '<p>El stock de ' . $producto . ' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>';
+                    }
+                
+                    $message->to('Alejandro.martin@serlobo.com')
+                            ->subject($producto->nombre.' - Alerta de Stock Bajo')
+                            ->html($htmlContent);
+                    // $message->to('ivan.mayol@hawkins.es')
+                    // ->subject($producto.' - Alerta de Stock Bajo')
+                    // ->html($htmlContent);
+                });
+            }catch(\Exception $e){
+                //dd($e);
+            }
+            
+
+            Alertas::create([
+                'user_id' => 13,
+                'stage' => 2,
+                'titulo' => 'Stock Insuficiente, Pedido Pendiente',
+                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de stock',
+                'referencia_id' => $pedidosSave->id,
+                'leida' => null,
+            ]);
+        }
 
         if( $this->bloqueado){
             Alertas::create([

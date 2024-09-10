@@ -2,6 +2,9 @@
 $mostrarElemento = Auth::user()->role == 2;
 $EsAdmin = Auth::user()->isAdmin();
 $canEdit = $EsAdmin; //|| $estado == 1;
+
+$mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::user()->isAdmin();
+
 @endphp
 <div class="container-fluid">
     <div class="page-title-box">
@@ -105,6 +108,51 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </select>
                             </div>
                         </div>
+                        @if($mostrarElemento || $canEdit)
+                            <!-- Si la condición es verdadera, muestra esto -->
+                            <div class="form-group col-md-6" wire:ignore>
+
+                                <div x-data="" x-init="$('#select2-almacen').select2();
+                                    $('#select2-almacen').on('change', function(e) {
+                                    var data = $('#select2-almacen').select2('val');
+                                    @this.set('almacen_id', data);
+                                    });">
+                                    <label for="fechaVencimiento">Almacen</label>
+                                    @if ($canEdit || $mostrarElemento)
+                                        <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important">
+                                            <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                            @foreach ($almacenes as $presup)
+                                                <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                            @endforeach
+                                        </select>
+                                    @else
+                                        <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                            <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                            @foreach ($almacenes as $presup)
+                                                <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                            @endforeach
+                                        </select>
+                                    @endif
+                                </div>
+                            </div>
+                        @else
+                            <div class="form-group col-md-6" wire:ignore>
+                                <!-- Aquí va tu código HTML pero con el select deshabilitado -->
+                                <div x-data="" x-init="$('#select2-tipo1').select2();
+                                    $('#select2-tipo1').on('change', function(e) {
+                                    var data = $('#select2-tipo1').select2('val');
+                                    @this.set('almacen_id', data);
+                                    });" style="pointer-events: none; opacity: 0.5;">
+                                    <label for="fechaVencimiento">Almacen</label>
+                                    <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                        <option value="{{ null }}">-- Selecciona un almacén --</option>
+                                        @foreach ($almacenes as $presup)
+                                            <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                         @if($mostrarElemento)
                             <!-- Si la condición es verdadera, muestra esto -->
                             <div class="form-group col-md-6" wire:ignore>
