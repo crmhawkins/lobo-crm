@@ -73,6 +73,7 @@ class CreateComponent extends Component
     public $alertaAdmin = false;
     public $isMarketing = false;
     public $cliente;
+    public $datos_transporte;
 
     public function mount()
     {
@@ -168,6 +169,7 @@ class CreateComponent extends Component
                 'bloqueado'=> 'nullable',
                 'gastos_envio' => 'nullable',
                 'transporte' => 'nullable',
+                'gastos_transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -344,6 +346,10 @@ class CreateComponent extends Component
         //     $total_iva += $this->gastos_envio_iva;
         // }
 
+
+        // if($this->gastos_transporte !=0 && $this->gastos_transporte != null && is_numeric($this->gastos_transporte)){
+
+
          //dd($total_iva);
 
          $this->iva_total = $total_iva;
@@ -377,6 +383,7 @@ class CreateComponent extends Component
                     'npedido_cliente' => 'nullable',
                     'gastos_envio' => 'nullable',
                     'transporte' => 'nullable',
+                    'gastos_transporte' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -412,6 +419,7 @@ class CreateComponent extends Component
                     'npedido_cliente' => 'nullable',
                     'gastos_envio' => 'nullable',
                     'transporte' => 'nullable',
+                    'gastos_transporte' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -870,6 +878,11 @@ class CreateComponent extends Component
             //dd($this->gastos_envio);
             // $this->precioEstimado = $this->gastos_envio;
             $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        }
+
+        if($this->gastos_transporte !=0 && $this->gastos_transporte != null && is_numeric($this->gastos_transporte)){
+        
+            $this->precioEstimado += $this->gastos_transporte;
         }
 
         foreach ($this->productos_pedido as $producto) {

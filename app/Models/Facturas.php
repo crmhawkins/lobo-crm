@@ -46,6 +46,7 @@ class Facturas extends Model
         'factura_intermedia_id',
         'factura_rectificativa_id',
         'factura_id',
+        'gastos_transporte',
     ];
 
 

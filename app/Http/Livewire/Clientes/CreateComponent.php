@@ -189,7 +189,7 @@ class CreateComponent extends Component
             }
         }
 
-        event(new \App\Events\LogEvent(Auth::user(), 59, $clienteSave->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 59, $clienteSave->id));
 
         // Alertas de guardado exitoso
         if ($clienteSave) {
