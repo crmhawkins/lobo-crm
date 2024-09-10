@@ -111,6 +111,8 @@ class EditComponent extends Component
     public $documentoPath;
     public $documentosSubidos = [];
 
+    public $gastos_transporte;
+
 
     public function getTipo($id){
 
@@ -278,14 +280,18 @@ class EditComponent extends Component
         $this->empresa_transporte = $pedido->empresa_transporte;
         $this->npedido_cliente = $pedido->npedido_cliente;
         $this->gastos_envio = $pedido->gastos_envio;
+        $this->gastos_transporte = $pedido->gastos_transporte;
         $this->emails = Emails::where('cliente_id', $cliente->id)->get();
         $this->fecha_entrega = $pedido->fecha_entrega;
         $this->documento = $pedido->documento;
         $this->documentos = PedidosDocuments::where('pedido_id', $this->identificador)->get();
 
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
-        if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
-            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        // if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
+        //     $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+        // }
+        if($this->gastos_transporte != null && $this->gastos_transporte != 0 && is_numeric($this->gastos_transporte)){
+            $this->gastos_envio_iva = $this->gastos_transporte * 0.21;
         }
         $this->transporte = $pedido->transporte;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
@@ -318,6 +324,7 @@ class EditComponent extends Component
 
         if(isset($this->almacen_id) && $this->almacen_id == 6){
             $this->gastos_envio = $pedido->gastos_envio; 
+            $this->gastos_transporte = $pedido->gastos_transporte;
             $this->transporte = $pedido->transporte;
             $this->subtotal = $pedido->subtotal;
             $this->descuento_total = $pedido->descuento_total;
@@ -420,6 +427,7 @@ class EditComponent extends Component
                 'fecha_entrega' => 'nullable',
                 'fecha_salida' => 'nullable',
                 'empresa_transporte' => 'nullable',
+                'gastos_transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -571,6 +579,7 @@ class EditComponent extends Component
                 'fecha_entrega' => 'nullable',
                 'fecha_salida' => 'nullable',
                 'empresa_transporte' => 'nullable',
+                'gastos_transporte' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -621,6 +630,7 @@ class EditComponent extends Component
                     ['precio' => $this->precio,
                     'cliente_id' => $this->cliente_id,
                     'gastos_envio' => $this->gastos_envio,
+                    'gasos_transporte' => $this->gastos_transporte,
                     'transporte' => $this->transporte,
                     'descuento' => $this->descuento,
                     'porcentaje_descuento' => $this->porcentaje_descuento,
@@ -1398,8 +1408,15 @@ class EditComponent extends Component
         if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
             //dd($this->gastos_envio);
             // $this->precioEstimado = $this->gastos_envio;
-            $this->gastos_envio_iva = $this->gastos_envio * 0.21;
+            //$this->gastos_envio_iva = $this->gastos_envio * 0.21;
         }
+
+        if($this->gastos_transporte != 0 && $this->gastos_transporte != null && is_numeric($this->gastos_transporte)){
+            $this->precioEstimado += $this->gastos_transporte;
+            $this->gastos_envio_iva = $this->gastos_transporte * 0.21;
+        }
+
+
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
@@ -1448,6 +1465,10 @@ class EditComponent extends Component
         // if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
         //     $total_iva += $this->gastos_envio_iva;
         // }
+
+        if($this->gastos_transporte != 0 && $this->gastos_transporte != null && is_numeric($this->gastos_transporte)){
+            $total_iva += $this->gastos_envio_iva;
+        }
 
         $this->iva_total = $total_iva;
     }

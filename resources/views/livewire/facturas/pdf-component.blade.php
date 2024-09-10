@@ -253,12 +253,12 @@
         @endif
     </table>
 
-    @if(isset($pedido->gastos_envio) && $pedido->gastos_envio > 0)
+    @if(isset($pedido->gastos_transporte) && $pedido->gastos_transporte > 0)
         <table style="margin-top: 2% !important">
             <tr style="background-color:#ececec;">
                 <td></td>
                 <td>Gastos Envío ({{ $pedido->transporte }})</td>
-                <td>{{ $pedido->gastos_envio }}</td>
+                <td>{{ $pedido->gastos_transporte }}</td>
             </tr>
         </table>
     @endif

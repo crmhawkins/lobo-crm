@@ -235,6 +235,10 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                         @endif
                         <div class="form-group col-md-4">
+                            <label for="fecha">Gastos de Transporte</label>
+                            <input type="number" min=0 wire:model="gastos_transporte" wire:change='setPrecioEstimado()' class="form-control" >
+                        </div>
+                        <div class="form-group col-md-4">
                             <label for="fecha">Gastos de envío</label>
                             <input type="number" min=0 wire:model="gastos_envio" wire:change='setPrecioEstimado()' class="form-control" >
                         </div>
