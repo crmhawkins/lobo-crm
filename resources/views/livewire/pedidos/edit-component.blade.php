@@ -451,11 +451,11 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 </div>
                             @endif
                             <div class="form-group col-md-4">
-                                <label for="fecha">Gastos de transporte</label>
+                                <label for="fecha">Gastos de envío</label>
                                 <input type="number" min=0 wire:model="gastos_transporte" wire:change='setPrecioEstimado()' class="form-control" >
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="fecha">Gastos de envío</label>
+                                <label for="fecha">Gastos de transporte</label>
                                 <input type="number" min=0 wire:model="gastos_envio" wire:change='setPrecioEstimado()' class="form-control" >
                             </div>
                             <div class="form-group col-md-4">
