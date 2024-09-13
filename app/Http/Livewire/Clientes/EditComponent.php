@@ -147,7 +147,7 @@ class EditComponent extends Component
             'estado' => 'completado'
         ]);
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
-        event(new \App\Events\LogEvent(Auth::user(), 60, $this->identificador));
+        //event(new \App\Events\LogEvent(Auth::user(), 60, $this->identificador));
     }
 
 
@@ -160,7 +160,7 @@ class EditComponent extends Component
             ]);
             $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
             $this->anotacion = null;
-            event(new \App\Events\LogEvent(Auth::user(), 61, $this->identificador));
+           // event(new \App\Events\LogEvent(Auth::user(), 61, $this->identificador));
 
         }
     }
@@ -249,7 +249,7 @@ class EditComponent extends Component
             'observaciones'=> $this->observaciones,
             'credito'=> $this->credito,
         ]);
-        event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
         if($clienteSave){
 
@@ -342,7 +342,7 @@ class EditComponent extends Component
     {
         
         $cliente = Clients::find($this->identificador);
-        event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
 
         if ($cliente){
              $productos = ProductoPrecioCliente::where('cliente_id', $cliente->id)->get();
@@ -356,7 +356,7 @@ class EditComponent extends Component
         }
 
         $cliente->delete();
-        event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
+        //event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
 
         return redirect()->route('clientes.index');
 
