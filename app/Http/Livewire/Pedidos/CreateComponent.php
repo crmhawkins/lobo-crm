@@ -92,6 +92,8 @@ class CreateComponent extends Component
         if(Auth::user()->user_department_id == 2){
             $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)//y estado 2
             ->where('estado', 2)->get();
+
+            $this->almacen_id = 6;
         }
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
