@@ -883,6 +883,7 @@ class IndexComponent extends Component
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
+                'facturasRectificativas' => $facturasRectificativas,
                 
             ];
             
@@ -903,7 +904,7 @@ class IndexComponent extends Component
             return response()->streamDownload(
                 fn () => print($pdf->output()),
                 // "factura_{$factura->numero_factura}.pdf");
-                "{$factura->numero_factura}.pdf"
+                "{$facturasRectificativas[0]->numero_factura}.pdf"
             );
 
 
