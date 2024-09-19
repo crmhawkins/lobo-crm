@@ -243,16 +243,74 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                             
                         </div>
-                        
-                            
-                       
-                            
-                       
+                    
                     </form>
                 </div>
             </div>
         
         </div>
+
+        <div class="card m-b-30">
+            <div class="card-body">
+                <h5 class="card-title">Historial de Logs del Mes Actual</h5>
+    
+                @if(count($logs) > 0)
+                <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                    $('#datatable-logs').DataTable({
+                    stateSave: true,
+                        responsive: true,
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    'copy', 'excel', 'pdf', 'colvis'
+                                ]
+                            }
+                        },
+                        lengthChange: false,
+                        pageLength: 10,
+                        buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
+                        language: {
+                            lengthMenu: 'Mostrar _MENU_ registros por página',
+                            zeroRecords: 'No se encontraron registros',
+                            info: 'Mostrando página _PAGE_ de _PAGES_',
+                            infoEmpty: 'No hay registros disponibles',
+                            infoFiltered: '(filtrado de _MAX_ total registros)',
+                            search: 'Buscar:'
+                        },
+                        
+                    
+                    
+                    });
+                })" wire:key='{{ rand() }}'>
+                <table id="datatable-logs" class="table table-striped" wire:key='{{ rand() }}'>
+                    <thead>
+                            <tr>
+                                <th>Acción</th>
+                                <th>Descripción</th>
+                                <th>Fecha de Creación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($logs as $log)
+                                <tr>
+                                    <td>{{ $log->action }}</td>
+                                    <td>{{ $log->description }}</td>
+                                    <td>{{ $log->created_at->format('d-m-Y H:i:s') }}</td> <!-- Usamos created_at -->
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                    <p>No hay logs para mostrar en el mes actual.</p>
+                @endif
+            </div>
+        </div>
+
+
+
+        </div>
+</div>
         @if($canEdit)
             <div class="col-md-3">
                 <div class="card m-b-30">
@@ -296,5 +354,12 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             });
         });
     </script>
+    <script src="../assets/js/jquery.slimscroll.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
+    
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
     @endsection
 

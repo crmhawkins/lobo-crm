@@ -8,6 +8,10 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\DepartamentosProveedores;
 use Livewire\WithFileUploads;
 use App\Models\Almacen;
+use App\Models\Configuracion;
+use App\Models\Logs;
+
+use Carbon\Carbon;
 
 class EditComponent extends Component
 {
@@ -29,6 +33,8 @@ class EditComponent extends Component
     public $texto_pedido;
     public $texto_albaran;
     public $texto_email;
+    public $logs;
+
     public $newAlmacen = [
         'almacen' => '',
         'direccion' => '',
@@ -68,6 +74,11 @@ class EditComponent extends Component
 
     public function mount($configuracion)
     {
+         // Obtener los logs del mes y año actual
+         $this->logs = Logs::whereYear('date', Carbon::now()->year)
+         ->whereMonth('date', Carbon::now()->month)
+         ->orderBy('date', 'desc')
+         ->get();
         $this->configuracion = $configuracion;
         $this->cuenta = $configuracion->cuenta;
         $this->departamentos = DepartamentosProveedores::all();
