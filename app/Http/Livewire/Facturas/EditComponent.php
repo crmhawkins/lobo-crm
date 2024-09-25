@@ -169,8 +169,14 @@ class EditComponent extends Component
 
             //dd($this->productos_pedido);
             //por cada producto de la factura debemos coger su cantidad y añadirla al json de productos_pedido bajo ['descontar_ud]
-            foreach($this->productos_factura as $index => $producto_factura){
-                $this->productos_pedido[$index]['descontar_ud'] = $producto_factura->cantidad;
+            foreach($this->productos_factura as $producto_factura) {
+                foreach($this->productos_pedido as $index => $producto_pedido) {
+                    // Comparamos el producto_id y unidades para asegurarnos de que sean los mismos
+                    if ($producto_pedido['producto_pedido_id'] == $producto_factura->producto_id && $producto_pedido['unidades'] == $producto_factura->unidades) {
+                        // Añadimos la cantidad a descontar_ud
+                        $this->productos_pedido[$index]['descontar_ud'] = $producto_factura->cantidad;
+                    }
+                }
             }
             
         }
