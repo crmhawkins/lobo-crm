@@ -160,7 +160,7 @@
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     @php
-        $productosPorPagina = 10;
+        $productosPorPagina = 7;
         $numeroPaginasProductos = ceil(count($productos) / $productosPorPagina);
         $ultimoProductoEnPagina = count($productos) % $productosPorPagina;
     @endphp
