@@ -361,36 +361,54 @@ class EditComponent extends Component
 
         if($this->tipo == 2){
             //recorremos los productos de la factura y miramos si las cantidades son menores o mayores que las descontar_ud
-            foreach($this->productos_factura as $index => $producto_factura){
-                $producto_pedido = $this->productos_pedido[$index];
-                $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
-                if($producto_factura['cantidad'] > $producto_pedido['descontar_ud']){
-                    //si la cantidad de la factura es mayor que la cantidad a descontar, se añade la diferencia al stock
-                    $registroStock = new StockRegistro();
-                    $registroStock->stock_entrante_id = $stockEntrante->id;
-                    $registroStock->cantidad = ($producto_factura['cantidad'] - $producto_pedido['descontar_ud']);
-                    $registroStock->tipo = "devolucion editada";
-                    $registroStock->factura_id = $this->facturas->id;
-                    $registroStock->motivo = "Salida";
-                    $registroStock->save();
+           // Recorremos los productos de la factura
+            foreach($this->productos_factura as $producto_factura) {
+                // Buscamos el producto correspondiente en productos_pedido
+                foreach ($this->productos_pedido as $producto_pedido) {
+                    // Comparamos por producto_id y lote_id para asegurarnos de que estamos comparando los productos correctos
+                    if ($producto_factura['producto_id'] == $producto_pedido['producto_pedido_id'] && $producto_factura['stock_entrante_id'] == $producto_pedido['lote_id']) {
+                        // Verificamos si la cantidad a descontar existe
+                        if (!isset($producto_pedido['descontar_ud'])) {
+                            continue;
+                        }
 
-                    
-                    //actualizar ProductoFactura con la cantidad descontada
-                    $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
-                    $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
-                    $producto_factura->save();
-                }else if($producto_factura['cantidad'] < $producto_pedido['descontar_ud']){
-                    //si la cantidad de la factura es menor que la cantidad a descontar, se resta la diferencia al stock
-                    $registroStock = new StockRegistro();
-                    $registroStock->stock_entrante_id = $stockEntrante->id;
-                    $registroStock->cantidad = -($producto_pedido['descontar_ud'] - $producto_factura['cantidad']);
-                    $registroStock->tipo = "devolucion editada";
-                    $registroStock->motivo = "Entrada";
-                    $registroStock->factura_id = $this->facturas->id;
-                    $registroStock->save();
-                    $producto_factura = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])->where('factura_id', $this->facturas->id)->first();
-                    $producto_factura['cantidad'] = $producto_pedido['descontar_ud'];
-                    $producto_factura->save();
+                        $stockEntrante = StockEntrante::where('id', $producto_pedido['lote_id'])->first();
+
+                        if ($producto_factura['cantidad'] > $producto_pedido['descontar_ud']) {
+                            // Si la cantidad de la factura es mayor que la cantidad a descontar, se añade la diferencia al stock
+                            $registroStock = new StockRegistro();
+                            $registroStock->stock_entrante_id = $stockEntrante->id;
+                            $registroStock->cantidad = ($producto_factura['cantidad'] - $producto_pedido['descontar_ud']);
+                            $registroStock->tipo = "devolucion editada";
+                            $registroStock->factura_id = $this->facturas->id;
+                            $registroStock->motivo = "Salida";
+                            $registroStock->save();
+
+                            // Actualizar ProductoFactura con la cantidad descontada
+                            $producto_factura_model = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])
+                                ->where('factura_id', $this->facturas->id)
+                                ->first();
+                            $producto_factura_model->cantidad = $producto_pedido['descontar_ud'];
+                            $producto_factura_model->save();
+                        } elseif ($producto_factura['cantidad'] < $producto_pedido['descontar_ud']) {
+                            // Si la cantidad de la factura es menor que la cantidad a descontar, se resta la diferencia al stock
+                            $registroStock = new StockRegistro();
+                            $registroStock->stock_entrante_id = $stockEntrante->id;
+                            $registroStock->cantidad = -($producto_pedido['descontar_ud'] - $producto_factura['cantidad']);
+                            $registroStock->tipo = "devolucion editada";
+                            $registroStock->motivo = "Entrada";
+                            $registroStock->factura_id = $this->facturas->id;
+                            $registroStock->save();
+
+                            // Actualizar ProductoFactura con la cantidad descontada
+                            $producto_factura_model = ProductosFacturas::where('producto_id', $producto_pedido['producto_pedido_id'])
+                                ->where('factura_id', $this->facturas->id)
+                                ->first();
+                            $producto_factura_model->cantidad = $producto_pedido['descontar_ud'];
+                            $producto_factura_model->save();
+                        }
+                        break; // Salimos del bucle interno si encontramos el producto correspondiente
+                    }
                 }
             }
 
