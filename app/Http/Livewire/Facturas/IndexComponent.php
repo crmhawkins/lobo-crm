@@ -673,7 +673,6 @@ class IndexComponent extends Component
                 foreach($productosFactura as $productoPedido){
                     $producto = Productos::find($productoPedido->producto_id);
                     $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-
                     if ($stockEntrante) {
                         $lote = $stockEntrante->orden_numero;
                     } else {
@@ -695,6 +694,8 @@ class IndexComponent extends Component
                             'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
                             'lote_id' => $lote,
                             'peso_kg' =>  $peso,
+                            'unidades' => $productoPedido->unidades,
+                            
                         ];
                     }
 
@@ -722,10 +723,14 @@ class IndexComponent extends Component
             //dd($totalRectificado, $base_imponible_rectificado, $iva_productos_rectificado, $total, $base_imponible, $iva_productos);
 
             //dd($productos);
+
             //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
             foreach($productos as $index => $producto){
+                
                 foreach($arrProductosFactura as $productoFactura){
-                    if($producto['id'] == $productoFactura['id']){
+                    
+                    if(($producto['id'] == $productoFactura['id']) && ($producto['cantidad'] == $productoFactura['unidades'] )  ){
+                       
                         $productos[$index]['cantidad'] -= $productoFactura['cantidad'];
                         $productos[$index]['precio_total'] -= $productoFactura['precio_total'];
                         $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100) ;
@@ -736,7 +741,6 @@ class IndexComponent extends Component
 
 
             //sumar 
-            
 
             $datos = [
                 'conIva' => $iva,
@@ -870,7 +874,7 @@ class IndexComponent extends Component
 
 
             //sumar 
-                //dd($arrProductosFactura);
+                //dd($productosdeFactura);
 
             $datos = [
                 'conIva' => $iva,
