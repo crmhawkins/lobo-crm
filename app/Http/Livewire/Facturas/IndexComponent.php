@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\RegistroEmail;
 use Illuminate\Support\Facades\Log;
 use App\Models\Emails;
+use App\Models\Caja;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\ProductosFacturas;
@@ -88,6 +89,56 @@ class IndexComponent extends Component
             $this->updateFacturas();
         }
     }
+
+
+    public function getTotalSobrante($facturaId)
+{
+    // Busca la factura
+    $factura = Facturas::find($facturaId);
+    $delegacion = $this->getDelegacion($factura->cliente_id);
+
+    // Asegúrate de que la factura exista
+    if (!$factura) {
+        return "Factura no encontrada";
+    }
+
+    // Total de la factura en formato numérico (no formatees todavía)
+    $totalFactura = round($factura->total, 2);
+    if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+        $totalFactura = round($factura->precio, 2);
+    }
+
+    if($factura->factura_rectificativa_id != null){
+        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+        if(!$facturaRectificativa || $facturaRectificativa->total == null){
+            $totalFactura = round($factura->total, 2);
+            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                $totalFactura = round($factura->precio, 2);
+            }
+        }else{
+            $totalFactura = round($facturaRectificativa->total, 2);
+            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                $totalFactura = round($facturaRectificativa->precio, 2);
+            }
+
+        }
+    }
+
+   
+
+    // Suma los ingresos en la caja
+    $IngresosCaja = Caja::where('pedido_id', $factura->id)->sum('importe');
+
+    // Calcula el sobrante de manera numérica
+    $totalSobrante =  $totalFactura - $IngresosCaja ;
+
+    if($totalSobrante < 0){
+        $totalSobrante = 0;
+    }
+
+    // Si necesitas formatear para la visualización, hazlo después
+    return number_format($totalSobrante, 2, ',', '.');
+}
     
 
     public function getFacturaAsociada($id)
@@ -338,15 +389,28 @@ class IndexComponent extends Component
     }
 
     public function getCliente($id)
+{
+    $cliente = $this->clientes->find($id);
+    if (isset($cliente)) {
+        $clienteModel = Clients::find($id);
+        $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
+        $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
+
+        // Truncamos el nombre del cliente si es demasiado largo
+        $cliente['nombre'] = $this->truncarTexto($cliente['nombre'], 10); // Puedes ajustar el límite de caracteres
+
+        return $cliente;
+    }
+    return "Cliente no definido";
+}
+
+    // Función para truncar texto con puntos suspensivos
+    private function truncarTexto($texto, $limite = 10)
     {
-        $cliente = $this->clientes->find($id);
-        if (isset($cliente)) {
-            $clienteModel = Clients::find($id);
-            $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
-            $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
-            return $cliente;
+        if (strlen($texto) > $limite) {
+            return substr($texto, 0, $limite) . '...';
         }
-        return "Cliente no definido";
+        return $texto;
     }
     public function getComercial($id)
     {

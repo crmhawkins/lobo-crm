@@ -255,6 +255,7 @@ class CreateRectificativa extends Component
 
             if(count($this->productos_pedido) > 0){
                     //dd($this->productos_pedido);
+                    //dd($this->productos_pedido);
                 foreach ($this->productos_pedido as $producto) {
                     //dd($this->productos_pedido[1] , StockEntrante::where('id', $this->productos_pedido[1]['lote_id'])->first());
 

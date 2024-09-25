@@ -220,6 +220,7 @@
                                     { data: 'Importe' },
                                     { data: 'IVA' },
                                     { data: 'Total(Con IVA)' },
+                                    { data: 'Pendiente' },
                                     { data: 'M.pago' },
                                     { data: 'Estado' },
                                     { data: 'Acciones' },
@@ -252,6 +253,8 @@
                                             <th scope="col">Importe</th>
                                             <th scope="col">IVA</th>
                                             <th scope="col">Total(Con IVA)</th>
+
+                                            <th scope="col">Pendiente</th>
                                             <th scope="col">M.pago</th>
                                             <th scope="col">Estado</th>
                                         @else
@@ -260,6 +263,7 @@
                                             <th scope="col" style="display: none">Importe</th>
                                             <th scope="col" style="display: none">IVA</th>
                                             <th scope="col" style="display: none">Total(Con IVA)</th>
+                                            <th scope="col" style="display: none">Pendiente</th>
                                             <th scope="col" style="display: none">M.pago</th>
                                             <th scope="col" style="display: none">Estado</th>
                                         @endif
@@ -288,7 +292,7 @@
                                             <td>{{ $this->getComercial($fact->cliente_id)}}</td>
                                             <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
 
-                                            <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+                                            <td style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
 
                                             <td>{{ $fact->fecha_emision }}</td>
                                             @if($tipoFactura != 2)
@@ -320,6 +324,8 @@
                                                         {{ number_format($fact->precio, 2, '.', '') }}€
                                                     @endif
                                                 </td>
+
+                                                <td>{{$this->getTotalSobrante($fact['id'])}}</td>
                                                 
                                                 <td >
                                                     @switch($fact->metodo_pago)
@@ -357,12 +363,12 @@
                                                     <span class="badge badge-info">{{ $fact->estado }}</span>
                                                 @endswitch</td>
                                             @else
-                                            <td style="display: none;"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                                <td style="display: none;"></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
 
                                             @endif
                                             <td> 
