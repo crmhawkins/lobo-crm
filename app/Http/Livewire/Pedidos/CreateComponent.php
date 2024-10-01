@@ -350,16 +350,19 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        if($this->almacen_id == 0 || $this->almacen_id == null){
-            $this->alert('error', '¡Debe seleccionar un almacén!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'timerProgressBar' => true,
-            ]);
-            return;
-            
+        if (Auth::user()->role == 2) {
+
+            if($this->almacen_id == 0 || $this->almacen_id == null){
+                $this->alert('error', '¡Debe seleccionar un almacén!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'timerProgressBar' => true,
+                ]);
+                return;
+                
+            }
         }
         
 
@@ -529,39 +532,41 @@ class CreateComponent extends Component
         }
         
 
-        $hasStock = $this->ComprobarStockPedido();
+        if (Auth::user()->role == 2) {
+            $hasStock = $this->ComprobarStockPedido();
 
-        if(count($hasStock) > 0){
-            $almacen = Almacen::find($this->almacen_id);
+            if(count($hasStock) > 0){
+                $almacen = Almacen::find($this->almacen_id);
 
-            try{
-                Mail::send([], [], function ($message) use ($hasStock, $almacen, $producto, $pedidosSave) {
-                    $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->id.'</h1>';
+                try{
+                    Mail::send([], [], function ($message) use ($hasStock, $almacen, $producto, $pedidosSave) {
+                        $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->id.'</h1>';
+                        
+                        foreach ($hasStock as $producto) {
+                            $htmlContent .= '<p>El stock de ' . $producto . ' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>';
+                        }
                     
-                    foreach ($hasStock as $producto) {
-                        $htmlContent .= '<p>El stock de ' . $producto . ' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>';
-                    }
+                        $message->to('Alejandro.martin@serlobo.com')
+                                ->subject($producto->nombre.' - Alerta de Stock Bajo')
+                                ->html($htmlContent);
+                        // $message->to('ivan.mayol@hawkins.es')
+                        // ->subject($producto.' - Alerta de Stock Bajo')
+                        // ->html($htmlContent);
+                    });
+                }catch(\Exception $e){
+                    //dd($e);
+                }
                 
-                    $message->to('Alejandro.martin@serlobo.com')
-                            ->subject($producto->nombre.' - Alerta de Stock Bajo')
-                            ->html($htmlContent);
-                    // $message->to('ivan.mayol@hawkins.es')
-                    // ->subject($producto.' - Alerta de Stock Bajo')
-                    // ->html($htmlContent);
-                });
-            }catch(\Exception $e){
-                //dd($e);
-            }
-            
 
-            Alertas::create([
-                'user_id' => 13,
-                'stage' => 2,
-                'titulo' => 'Stock Insuficiente, Pedido Pendiente',
-                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de stock',
-                'referencia_id' => $pedidosSave->id,
-                'leida' => null,
-            ]);
+                Alertas::create([
+                    'user_id' => 13,
+                    'stage' => 2,
+                    'titulo' => 'Stock Insuficiente, Pedido Pendiente',
+                    'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de stock',
+                    'referencia_id' => $pedidosSave->id,
+                    'leida' => null,
+                ]);
+            }
         }
 
         if( $this->bloqueado){

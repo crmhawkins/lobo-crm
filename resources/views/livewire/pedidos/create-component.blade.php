@@ -126,17 +126,17 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             @endforeach
                                         </select>
                                     @else
-                                        <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
+                                        {{-- <select name="almacen" id="select2-almacen" wire:model="almacen_id" style="width: 100% !important" disabled>
                                             <option value="{{ null }}">-- Selecciona un almacén --</option>
                                             @foreach ($almacenes as $presup)
                                                 <option value="{{ $presup->id }}">{{ $presup->almacen }}</option>
                                             @endforeach
-                                        </select>
+                                        </select> --}}
                                     @endif
                                 </div>
                             </div>
                         @else
-                            <div class="form-group col-md-6" wire:ignore>
+                            {{-- <div class="form-group col-md-6" wire:ignore>
                                 <!-- Aquí va tu código HTML pero con el select deshabilitado -->
                                 <div x-data="" x-init="$('#select2-tipo1').select2();
                                     $('#select2-tipo1').on('change', function(e) {
@@ -151,7 +151,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
                         @endif
                         @if($mostrarElemento)
                             <!-- Si la condición es verdadera, muestra esto -->
