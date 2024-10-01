@@ -65,11 +65,17 @@ class ContabilidadController extends Controller
     $saldoAcumulado = 0;
 
     if ($currentPage > 1) {
-        // Consulta para calcular el saldo acumulado hasta antes de la primera transacción visible en la página actual
-        $saldoAcumulado = $query->clone()
-                                ->where('asientoContable', '<', $query->clone()->skip(($currentPage - 1) * $perPage)->first()->asientoContable)
-                                ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -importe END) as saldo_acumulado')
-                                ->value('saldo_acumulado') ?? 0;
+        $primerAsientoEnPagina = $query->clone()
+        ->skip(($currentPage - 1) * $perPage)
+        ->first()
+        ->asientoContable ?? null;
+        if ($primerAsientoEnPagina) {
+            // Calcular el saldo acumulado antes del asientoContable de la primera transacción visible
+            $saldoAcumulado = Caja::where('asientoContable', '<', $primerAsientoEnPagina)
+                ->whereNotNull('asientoContable')
+                ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -importe END) as saldo_acumulado')
+                ->value('saldo_acumulado') ?? 0;
+        }
     }
 
     // Obtener las transacciones paginadas (transacciones actuales de la página)
