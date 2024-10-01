@@ -14,6 +14,8 @@ use App\Models\Productos;
 use App\Models\ProductoPrecioCliente;
 use App\Models\AnotacionesClientePedido;
 use App\Models\Emails;
+use App\Models\SubCuentaHijo;
+use App\Models\SubCuentaContable;
 
 class CreateComponent extends Component
 {
@@ -81,6 +83,33 @@ class CreateComponent extends Component
             $this->arrProductos[$producto->id] = 0;
         }
 
+    }
+
+    public function updated($property){
+        if($property === 'delegacion_COD' ){
+
+            //delegacion_COD debe ser un numero de 2 cifras, si es 1, se añade un 0 delante
+            if(strlen($this->delegacion_COD) == 1){
+                $cod = '0'.$this->delegacion_COD;
+            }else{
+                $cod = $this->delegacion_COD;
+            }
+
+            //ver el ultimo cliente creado y ver su numero de cuenta contable, que empieza por 700 y añadirle el codigo de delegacion
+            $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
+            //dd($ultimoCliente);
+            
+            $numeroCuenta = $ultimoCliente->cuenta_contable;
+            //coger el numero y quitarle el 700 y los 2 siguentes numeros
+            $numeroCuenta = substr($numeroCuenta, 5);
+            //pasarlo a entero
+            $numeroCuenta = (int)$numeroCuenta;
+            //sumarle 1 al numero sobrante
+            $numeroCuenta = $numeroCuenta + 1;
+
+            $this->cuenta_contable = '700'.$cod.$numeroCuenta;
+           
+        }
     }
 
     public function crearClientes()
@@ -163,12 +192,40 @@ class CreateComponent extends Component
             ]
         );
 
+        if($this->cuenta_contable != null){
+            $cuentaContable = Clients::where('cuenta_contable', $this->cuenta_contable)->first();
+
+            if($cuentaContable){
+                $this->alert('error', '¡La cuenta contable ya existe!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+                return;
+            }
+
+        }
+            
         // Guardar datos validados
         $clienteSave = Clients::create($validatedData);
         
        
         if($clienteSave){
 
+            if($this->cuenta_contable != null){
+                $subcuentaContable = SubCuentaContable::where('numero', 7000)->first();
+
+                if($subcuentaContable != null){
+                    $subcuenta = SubCuentaHijo::create([
+                        'sub_cuenta_id' => $subcuentaContable->id,
+                        'numero' => $clienteSave->cuenta_contable,
+                        'nombre' => $clienteSave->nombre,
+                        'descripcion' => 'Cliente',
+                    ]);
+                }
+            }
+
+           
             if($this->emails != null){
                 foreach ($this->emails as $email) {
                     $email1 = new Emails();
@@ -251,6 +308,22 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
+    }
+
+    public function crearCuentaContable(){
+
+        $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
+        //dd($ultimoCliente);
+        
+        $numeroCuenta = $ultimoCliente->cuenta_contable;
+        //coger el numero y quitarle el 700 y los 2 siguentes numeros
+        $numeroCuenta = substr($numeroCuenta, 5);
+        //pasarlo a entero
+        $numeroCuenta = (int)$numeroCuenta;
+        //sumarle 1 al numero sobrante
+        $numeroCuenta = $numeroCuenta + 1;
+
+        $this->cuenta_contable = '700'.$numeroCuenta;
     }
 
     // Función para cuando se llama a la alerta

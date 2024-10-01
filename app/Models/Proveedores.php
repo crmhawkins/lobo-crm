@@ -30,6 +30,7 @@ class Proveedores extends Model
         "cuenta",
         "forma_pago_pref",
         "departamento_id",
+        'cuenta_contable_numero'
     ];
 
     /**
@@ -44,5 +45,21 @@ class Proveedores extends Model
     public function delegacion()
     {
         return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
+    }
+
+
+    //has many cajas
+
+     // Relación con Caja (Un proveedor tiene muchas cajas)
+     public function cajas()
+     {
+         return $this->hasMany(Caja::class, 'proveedor_id', 'id');
+     }
+
+
+      // Relación con SubCuentaHijo (cuenta contable)
+    public function cuentaContable()
+    {
+        return $this->belongsTo(SubCuentaHijo::class, 'cuenta_contable', 'numero');
     }
 }

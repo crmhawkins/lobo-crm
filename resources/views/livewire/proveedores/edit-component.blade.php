@@ -5,11 +5,41 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
     <div class="page-title-box">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
+        <div class="row align-items-center gap-5">
+            <div class="col-sm-12 d-flex align-items-center gap-2">
                 <h4 class="page-title">PROVEEDOR <span style="text-transform: uppercase">{{$nombre}}</span></h4>
+                <div class="col-sm-4 mt-2 mx-5 d-flex flex-column">
+                    <label for="">Cuenta contable</label>
+                    <span style="font-size: 20px; padding: 2px 5px; border-radius: 5px;" class="fw-bold text-light bg-success @if(!$cuentaContable_id ) bg-danger @endif">
+                        @if(!$cuentaContable_id )
+                            --- Sin cuenta contable asignada ---
+
+                        @else
+
+                            @foreach($cuentasContables as $grupo)
+                                @foreach($grupo['subGrupo'] as $subGrupo)
+                                    @foreach($subGrupo['cuentas'] as $cuenta)
+                                        @if($cuenta['item']['numero'] == $cuentaContable_id)
+                                            --- {{ $cuenta['item']['numero'] .'. '. $cuenta['item']['nombre'] }} ---
+                                        @endif
+                                        @foreach($cuenta['subCuentas'] as $subCuenta)
+                                            @if($subCuenta['item']['numero'] == $cuentaContable_id)
+                                                ---- {{ $subCuenta['item']['numero'] .'. '. $subCuenta['item']['nombre'] }} ----
+                                            @endif
+                                            @foreach($subCuenta['subCuentasHija'] as $subCuentaHija)
+                                                @if($subCuentaHija['numero'] == $cuentaContable_id)
+                                                    ----- {{ $subCuentaHija['numero'] .'. '. $subCuentaHija['nombre'] }} -----
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        @endif
+                    </span>
+                </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Proveedores</a></li>

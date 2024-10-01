@@ -40,7 +40,8 @@
         },
         "files": [
             "app/Http/Helpers/budget-referent.php",
-            "app/Helpers/helpers.php"
+            "app/Helpers/helpers.php",
+            "app/Helpers/GlobalFunctions.php"
         ]
     },
     "autoload-dev": {

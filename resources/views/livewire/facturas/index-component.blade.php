@@ -304,28 +304,13 @@
                                                         <span class="badge badge-info">{{ $fact->fecha_vencimiento }}</span>
                                                     @endif
                                                 </td>
-                                                <td>{{ number_format($fact->precio, 2, '.', '') }}€</td>
+                                                <td>{{ $this->getImporte($fact->id)}}€</td>
+                                                <td>{{$this->getIva($fact->id)}}€</td>
                                                 <td>
-
-                                                    @if($fact->iva !== null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
-                                                        {{ number_format($fact->iva, 2, '.', '') }}€
-                                                    @elseif($fact->iva == null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
-                                                        {{ number_format(($fact->precio) * 0.21, 2, '.', '') }}€
-                                                    @else
-                                                        {{ 0 }}€
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($fact->total !== null && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
-                                                        {{ number_format($fact->total, 2, '.', '') }}€
-                                                    @elseif($fact->total == null  && !in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA']))
-                                                        {{ number_format($fact->precio * 1.21, 2, '.', '') }}€
-                                                    @else
-                                                        {{ number_format($fact->precio, 2, '.', '') }}€
-                                                    @endif
+                                                    {{$this->getTotal($fact->id)}}€
                                                 </td>
 
-                                                <td>{{$this->getTotalSobrante($fact['id'])}}</td>
+                                                <td>{{$this->getTotalSobrante($fact->id)}}€</td>
                                                 
                                                 <td >
                                                     @switch($fact->metodo_pago)

@@ -14,6 +14,12 @@ use App\Models\FacturasCompensadas;
 use Illuminate\Support\Facades\DB;
 use App\Models\Productos;
 use App\Models\StockEntrante;
+use App\Models\GrupoContable;
+use App\Models\SubGrupoContable;
+use App\Models\CuentasContable;
+use App\Models\SubCuentaContable;
+use App\Models\SubCuentaHijo;
+
 
 
 class CreateIngresoComponent extends Component
@@ -40,8 +46,66 @@ class CreateIngresoComponent extends Component
     public $facturas_compensadas = [];
     public $importeFacturaCompensada;
     public $importeCompensado;
+    public $asientoContable;
+    public $cuentaContable_id;
+    public $cuentasContables;
 
+    public function loadCuentasContables()
+    {
+        // Similar lógica que tenías en createGasto para estructurar los datos jerárquicos
+        $dataSub = [];
+        $indice = 0;
 
+        $grupos = GrupoContable::orderBy('numero', 'asc')->get();
+        foreach ($grupos as $grupo) {
+            array_push($dataSub, [
+                'grupo' => $grupo,
+                'subGrupo' => []
+            ]);
+
+            $subGrupos = SubGrupoContable::where('grupo_id', $grupo->id)->get();
+            $i = 0;
+            foreach ($subGrupos as $subGrupo) {
+                array_push($dataSub[$indice]['subGrupo'], [
+                    'item' => $subGrupo,
+                    'cuentas' => []
+                ]);
+
+                $cuentas = CuentasContable::where('sub_grupo_id', $subGrupo->id)->get();
+                $index = 0;
+                foreach ($cuentas as $cuenta) {
+                    array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'], [
+                        'item' => $cuenta,
+                        'subCuentas' => []
+                    ]);
+
+                    $subCuentas = SubCuentaContable::where('cuenta_id', $cuenta->id)->get();
+
+                    if (count($subCuentas) > 0) {
+                        $indices = 0;
+                        foreach ($subCuentas as $subCuenta) {
+                            array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'][$index]['subCuentas'], [
+                                'item' => $subCuenta,
+                                'subCuentasHija' => []
+                            ]);
+
+                            $sub_cuenta = SubCuentaHijo::where('sub_cuenta_id', $subCuenta->id)->get();
+                            if (count($sub_cuenta) > 0) {
+                                foreach ($sub_cuenta as $subCuentaHijo) {
+                                    array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'][$index]['subCuentas'][$indices]['subCuentasHija'], $subCuentaHijo);
+                                }
+                            }
+                        }
+                    }
+                    $index++;
+                }
+                $i++;
+            }
+            $indice++;
+        }
+
+        $this->cuentasContables = $dataSub;
+    }
 
     public function mount()
     {
@@ -55,6 +119,15 @@ class CreateIngresoComponent extends Component
         ->get();
         $this->clientes = Clients::all();
         $this->bancos = Bancos::all();
+        $this->loadCuentasContables();
+        // Obtener el año actual
+        $currentYear = date('Y');
+
+        // Contar los asientos contables del año actual
+        $cajas = Caja::where('asientoContable', 'like', '%/' . $currentYear)->get();
+
+        // Crear el nuevo asiento contable comenzando desde 0001 si es un nuevo año
+        $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;
     }
     public function render()
     {
@@ -167,6 +240,8 @@ class CreateIngresoComponent extends Component
             'pedido_id' => $this->pedido_id,
             'fecha' => $this->fecha,
             'banco' => $this->banco,
+            'asientoContable' => $this->asientoContable,
+            'cuentaContable_id' => $this->cuentaContable_id
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 

@@ -13,6 +13,7 @@ use App\Models\ProductoPrecioCliente;
 use App\Models\Productos;
 use App\Models\AnotacionesClientePedido;
 use App\Models\Emails;
+use App\Helpers\GlobalFunctions;
 
 class EditComponent extends Component
 {
@@ -64,7 +65,8 @@ class EditComponent extends Component
     public $emails = [];
     public $emailsExistentes = [];
     public $credito;
-
+    public $cuentaContable_id;
+    public $cuentasContables;
 
     public function anadirEmail(){
         //dd("prueba");
@@ -113,7 +115,8 @@ class EditComponent extends Component
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
         $this->credito = $cliente->credito;
-
+        $this->cuentasContables = GlobalFunctions::loadCuentasContables();
+        $this->cuentaContable_id = $cliente->cuenta_contable;
         $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
         //dd($this->emailsExistentes);
 
@@ -148,6 +151,45 @@ class EditComponent extends Component
         ]);
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
         //event(new \App\Events\LogEvent(Auth::user(), 60, $this->identificador));
+    }
+
+    public function updated($property){
+        if($property === 'delegacion_COD' ){
+
+            //delegacion_COD debe ser un numero de 2 cifras, si es 1, se añade un 0 delante
+            if(strlen($this->delegacion_COD) == 1){
+                $cod = '0'.$this->delegacion_COD;
+            }else{
+                $cod = $this->delegacion_COD;
+            }
+
+            //comprobar si hay cuenta contable, si no hay, se crea una nueva
+            if($this->cuenta_contable == null){
+                $this->crearCuentaContable($cod);
+            }else{
+                //si hay cuenta contable, se cambia el codigo de delegacion
+                $this->cuenta_contable = substr_replace($this->cuenta_contable, $cod, 3, 2);
+                //dd($this->cuenta_contable);
+            }
+
+           
+        }
+    }
+
+    public function crearCuentaContable($cod){
+        //ver el ultimo cliente creado y ver su numero de cuenta contable, que empieza por 700 y añadirle el codigo de delegacion
+        $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
+        //dd($ultimoCliente);
+        
+        $numeroCuenta = $ultimoCliente->cuenta_contable;
+        //coger el numero y quitarle el 700 y los 2 siguentes numeros
+        $numeroCuenta = substr($numeroCuenta, 5);
+        //pasarlo a entero
+        $numeroCuenta = (int)$numeroCuenta;
+        //sumarle 1 al numero sobrante
+        $numeroCuenta = $numeroCuenta + 1;
+
+        $this->cuenta_contable = '700'.$cod.$numeroCuenta;
     }
 
 
@@ -216,6 +258,18 @@ class EditComponent extends Component
 
         // Encuentra el identificador
         $cliente = Clients::find($this->identificador);
+
+        //comprobar que la cuenta contable no se duplique, por lo que buscamos si ya existe sin contar este cliente
+        $cuentaContable = Clients::where('cuenta_contable', $this->cuenta_contable)->where('id', '!=', $this->identificador)->first();
+
+        if($cuentaContable){
+            $this->alert('error', '¡La cuenta contable ya existe!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
 
         // Guardar datos validados
         $clienteSave = $cliente->update([

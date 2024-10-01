@@ -75,4 +75,9 @@ class Clients extends Model
     {
         return $this->hasMany(Pedido::class, 'cliente_id');
     }
+    // Relación con SubCuentaHijo (cuenta contable)
+    public function cuentaContable()
+    {
+        return $this->belongsTo(SubCuentaHijo::class, 'cuenta_contable', 'numero');
+    }
 }

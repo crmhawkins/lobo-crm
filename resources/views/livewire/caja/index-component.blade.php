@@ -47,6 +47,22 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <h5>Contabilidad</h5>
+                                            <!-- Dropdown Button -->
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Opciones de Contabilidad
+                                                </button>
+                                                <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
+                                                    <li><a class="dropdown-item" href="{{ route('admin.cuentasContables.index') }}">Cuentas Contables</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('admin.subCuentasContables.index') }}">Sub-Cuentas Contables</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('admin.subCuentasHijaContables.index') }}">Sub-Cuentas Hijas</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('admin.grupoContabilidad.index') }}">Grupos Contables</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('admin.subGrupoContabilidad.index') }}">Sub-Grupos Contables</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -341,13 +357,8 @@
 
     @section('scripts')
 
-    <script>
-        
-        
-        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-    </script>
 
 
     <script src="../assets/js/jquery.slimscroll.js"></script>

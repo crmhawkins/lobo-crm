@@ -5,6 +5,8 @@ namespace App\Http\Livewire\Clientes;
 use App\Models\Clients;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SubCuentaHijo;
+use App\Models\SubCuentaContable;
 
 class IndexComponent extends Component
 {
@@ -23,6 +25,29 @@ class IndexComponent extends Component
             }
 
         }
+    }
+
+    public function crearCuentasContables(){
+        $clientes = Clients::where('cuenta_contable', '!=', null)->orderBy('cuenta_contable', 'asc')->get();
+
+        foreach ($clientes as $cliente) {
+            $subcuenta = SubCuentaContable::where('numero', 7000)->first();
+            //dd($subcuenta);
+
+            if($subcuenta != null){
+                $subcuenta = SubCuentaHijo::create([
+                    'sub_cuenta_id' => $subcuenta->id,
+                    'numero' => $cliente->cuenta_contable,
+                    'nombre' => $cliente->nombre,
+                    'descripcion' => 'Cliente',
+                ]);
+            }
+
+           
+        }
+        
+        //dd($clientes);
+
     }
 
     public function render()

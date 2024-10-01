@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
 use Livewire\WithFileUploads;
 use App\Models\FacturasCompensadas;
+use App\Models\GrupoContable;
+use App\Models\SubGrupoContable;
+use App\Models\CuentasContable;
+use App\Models\SubCuentaContable;
+use App\Models\SubCuentaHijo;
+
 
 
 
@@ -58,8 +64,66 @@ class EditComponent extends Component
     public $facturas_compensadas = [];
     public $compensacion = false;
     public $factura_id;
+    public $asientoContable;
+    public $cuentaContable_id;
+    public $cuentasContables;
 
+    public function loadCuentasContables()
+    {
+        // Similar lógica que tenías en createGasto para estructurar los datos jerárquicos
+        $dataSub = [];
+        $indice = 0;
 
+        $grupos = GrupoContable::orderBy('numero', 'asc')->get();
+        foreach ($grupos as $grupo) {
+            array_push($dataSub, [
+                'grupo' => $grupo,
+                'subGrupo' => []
+            ]);
+
+            $subGrupos = SubGrupoContable::where('grupo_id', $grupo->id)->get();
+            $i = 0;
+            foreach ($subGrupos as $subGrupo) {
+                array_push($dataSub[$indice]['subGrupo'], [
+                    'item' => $subGrupo,
+                    'cuentas' => []
+                ]);
+
+                $cuentas = CuentasContable::where('sub_grupo_id', $subGrupo->id)->get();
+                $index = 0;
+                foreach ($cuentas as $cuenta) {
+                    array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'], [
+                        'item' => $cuenta,
+                        'subCuentas' => []
+                    ]);
+
+                    $subCuentas = SubCuentaContable::where('cuenta_id', $cuenta->id)->get();
+
+                    if (count($subCuentas) > 0) {
+                        $indices = 0;
+                        foreach ($subCuentas as $subCuenta) {
+                            array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'][$index]['subCuentas'], [
+                                'item' => $subCuenta,
+                                'subCuentasHija' => []
+                            ]);
+
+                            $sub_cuenta = SubCuentaHijo::where('sub_cuenta_id', $subCuenta->id)->get();
+                            if (count($sub_cuenta) > 0) {
+                                foreach ($sub_cuenta as $subCuentaHijo) {
+                                    array_push($dataSub[$indice]['subGrupo'][$i]['cuentas'][$index]['subCuentas'][$indices]['subCuentasHija'], $subCuentaHijo);
+                                }
+                            }
+                        }
+                    }
+                    $index++;
+                }
+                $i++;
+            }
+            $indice++;
+        }
+
+        $this->cuentasContables = $dataSub;
+    }
 
     public function mount()
     {
@@ -104,6 +168,22 @@ class EditComponent extends Component
         $this->total = $caja->total;
         $this->pagado = $caja->pagado;
         $this->pendiente = $caja->pendiente;
+
+        //asiento contable debe ser 0001/2024 donde 0001 es el numero que sigue en la bbdd y el 2024 es el año actual
+        $this->asientoContable = $caja->asientoContable;
+
+        if ($this->asientoContable === null) {
+            // Obtener el año actual
+            $currentYear = date('Y');
+
+            // Contar los asientos contables del año actual
+            $cajas = Caja::where('asientoContable', 'like', '%/' . $currentYear)->get();
+
+            // Crear el nuevo asiento contable comenzando desde 0001 si es un nuevo año
+            $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;
+        }
+        $this->cuentaContable_id = $caja->cuentaContable_id;
+        $this->loadCuentasContables();
 
     }
     public function getCliente($id)
@@ -190,6 +270,9 @@ class EditComponent extends Component
 // Al hacer update en el formulario
     public function update()
     {
+
+        
+
         // Validación de datos
         $this->validate([
             'metodo_pago' => 'required',
@@ -200,6 +283,7 @@ class EditComponent extends Component
             'tipo_movimiento' => 'required',
             'descripcion' => 'required',
             'estado' => 'nullable',
+            
 
 
         ],
@@ -252,9 +336,11 @@ class EditComponent extends Component
             'nFactura' => $this->nFactura,
             'pagado' => $this->pagado,
             'pendiente' => $this->pendiente,
+            'asientoContable' => $this->asientoContable,
+            'cuentaContable_id' => $this->cuentaContable_id,
 
         ]);
-        event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));
+        event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));   
 
         if ($tipoSave) {
             if($this->compensacion){

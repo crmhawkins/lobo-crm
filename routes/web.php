@@ -25,6 +25,14 @@ use App\Http\Middleware\IsAdmin;
 use FontLib\Table\Type\name;
 use App\Http\Controllers\VerEmailsController;
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\ControlPresupuestarioController;
+
+use App\Http\Controllers\GrupoContabilidadController;
+use App\Http\Controllers\SubGrupoContabilidadController;
+use App\Http\Controllers\CuentasContableController;
+use App\Http\Controllers\SubCuentasContableController;
+use App\Http\Controllers\SubCuentasHijoController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -148,6 +156,62 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
     //ruta ver emails
     Route::get('/ver-emails', [VerEmailsController::class, 'index'])->name('ver-emails.index');
+
+
+    Route::get('/control-presupuestario', [ControlPresupuestarioController::class, 'index'])->name('control-presupuestario.index');
+    // Cuentas Contables
+    Route::get('/cuentas-contables', [App\Http\Controllers\CuentasContableController::class, 'index'])->name('admin.cuentasContables.index');
+    Route::get('/cuentas-contables/create', [App\Http\Controllers\CuentasContableController::class, 'create'])->name('admin.cuentasContables.create');
+    Route::post('/cuentas-contables/store', [App\Http\Controllers\CuentasContableController::class, 'store'])->name('admin.cuentasContables.store');
+    Route::get('/cuentas-contables/{id}/edit', [App\Http\Controllers\CuentasContableController::class, 'edit'])->name('admin.cuentasContables.edit');
+    Route::put('/cuentas-contables/{id}/updated', [App\Http\Controllers\CuentasContableController::class, 'updated'])->name('admin.cuentasContables.updated');
+    Route::delete('/cuentas-contables/destroy/{id}', [App\Http\Controllers\CuentasContableController::class, 'destroy'])->name('admin.cuentasContables.destroy');
+
+    Route::get('/cuentas-contables/get-cuentas', [App\Http\Controllers\CuentasContableController::class, 'getCuentasByDataTables'])->name('admin.cuentasContables.getClients');
+
+    // Sub-Cuentas Contables
+    Route::get('/sub-cuentas-contables', [App\Http\Controllers\SubCuentasContableController::class, 'index'])->name('admin.subCuentasContables.index'); 
+    Route::get('/sub-cuentas-contables/create', [SubCuentasContableController::class, 'create'])->name('admin.subCuentasContables.create');
+    Route::post('/sub-cuentas-contables/store', [SubCuentasContableController::class, 'store'])->name('admin.subCuentasContables.store');
+    Route::get('/sub-cuentas-contables/{id}/edit', [SubCuentasContableController::class, 'edit'])->name('admin.subCuentasContables.edit');
+    Route::put('/sub-cuentas-contables/{id}', [App\Http\Controllers\SubCuentasContableController::class, 'update'])->name('admin.subCuentasContables.update');
+    Route::delete('/sub-cuentas-contables/{id}/destroy', [SubCuentasContableController::class, 'destroy'])->name('admin.subCuentasContables.destroy');
+
+
+    // Sub-Cuentas Hijas Contables
+Route::get('/sub-cuentas-hijas-contables', [App\Http\Controllers\SubCuentasHijoController::class, 'index'])->name('admin.subCuentasHijaContables.index');
+Route::get('/sub-cuentas-hijas-contables/create', [App\Http\Controllers\SubCuentasHijoController::class, 'create'])->name('admin.subCuentasHijaContables.create');
+Route::post('/sub-cuentas-hijas-contables/store', [App\Http\Controllers\SubCuentasHijoController::class, 'store'])->name('admin.subCuentasHijaContables.store');
+Route::get('/sub-cuentas-hijas-contables/{id}/edit', [App\Http\Controllers\SubCuentasHijoController::class, 'edit'])->name('admin.subCuentasHijaContables.edit');
+Route::put('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'update'])->name('admin.subCuentasHijaContables.update');
+Route::delete('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'destroy'])->name('admin.subCuentasHijaContables.destroy');
+
+
+    // Grupos Contables
+Route::get('/grupo-contable', [App\Http\Controllers\GrupoContabilidadController::class, 'index'])->name('admin.grupoContabilidad.index');
+Route::get('/grupo-contable/create', [App\Http\Controllers\GrupoContabilidadController::class, 'create'])->name('admin.grupoContabilidad.create');
+Route::post('/grupo-contable/store', [App\Http\Controllers\GrupoContabilidadController::class, 'store'])->name('admin.grupoContabilidad.store');
+Route::get('/grupo-contable/{id}/edit', [App\Http\Controllers\GrupoContabilidadController::class, 'edit'])->name('admin.grupoContabilidad.edit');
+Route::put('/grupo-contable/{id}/update', [App\Http\Controllers\GrupoContabilidadController::class, 'update'])->name('admin.grupoContabilidad.update');
+    Route::delete('/grupo-contable/{id}/destroy', [App\Http\Controllers\GrupoContabilidadController::class, 'destroy'])->name('admin.grupoContabilidad.destroy');
+
+
+ // Sub Grupos Contables
+Route::get('/sub-grupo-contable', [App\Http\Controllers\SubGrupoContabilidadController::class, 'index'])->name('admin.subGrupoContabilidad.index');
+Route::get('/sub-grupo-contable/create', [App\Http\Controllers\SubGrupoContabilidadController::class, 'create'])->name('admin.subGrupoContabilidad.create');
+Route::post('/sub-grupo-contable/store', [App\Http\Controllers\SubGrupoContabilidadController::class, 'store'])->name('admin.subGrupoContabilidad.store');
+Route::get('/sub-grupo-contable/{id}/edit', [App\Http\Controllers\SubGrupoContabilidadController::class, 'edit'])->name('admin.subGrupoContabilidad.edit');
+Route::put('/sub-grupo-contable/{id}/update', [App\Http\Controllers\SubGrupoContabilidadController::class, 'update'])->name('admin.subGrupoContabilidad.update');
+Route::delete('/sub-grupo-contable/{id}/destroy', [App\Http\Controllers\SubGrupoContabilidadController::class, 'destroy'])->name('admin.subGrupoContabilidad.destroy');
+
+//Contabilidad
+Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
+
+
+
+//incidencias
+Route::get('/incidencias', [App\Http\Controllers\IncidenciasController::class, 'index'])->name('admin.incidencias.index');
+
 });
 
 Route::get('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'hookWhatsapp'])->name('whatsapp.hookWhatsapp');
@@ -156,3 +220,5 @@ Route::post('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'proce
 // Route::get('/cron','SiteController@obtenerAudioMedia2')->name('admin.estadisticas.obtenerAudioMedia2');
 //Route::get('/cron', [App\Http\Controllers\WhatsappController::class, 'cron'])->name('whatsapp.cron');
 Route::get('/mensajes-whatsapp', [App\Http\Controllers\WhatsappController::class, 'whatsapp'])->name('whatsapp.mensajes');
+
+

@@ -25,7 +25,10 @@
                     </p>
                     <div class="col-12 mb-5">
                         <a href="clientes-create" class="btn btn-lg w-100 btn-primary">AÑADIR CLIENTE</a>
+                        <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables" disabled>AÑADIR CUENTAS CONTABLES</button>
+
                     </div>
+                   
                     @if ($clientes != null)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">

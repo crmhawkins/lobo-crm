@@ -9,6 +9,7 @@ use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DepartamentosProveedores;
+use App\Helpers\GlobalFunctions;
 
 class EditComponent extends Component
 {
@@ -33,7 +34,8 @@ class EditComponent extends Component
     public $departamentos;
     public $departamentoSeleccionado;
     public $departamentoSeleccionadoId;
-
+    public $cuentaContable_id;
+    public $cuentasContables;
     public function mount()
     {
         $proveedor = Proveedores::find($this->identificador);
@@ -59,11 +61,10 @@ class EditComponent extends Component
                 $this->departamentoSeleccionado = DepartamentosProveedores::find($proveedor->departamento_id)->first();
                 $this->departamentoSeleccionadoId = $this->departamentoSeleccionado->id;
             }
-
-            
-            
-            
         }
+
+        $this->cuentasContables = GlobalFunctions::loadCuentasContables();
+        $this->cuentaContable_id = $proveedor->cuenta_contable;
 
     }
 

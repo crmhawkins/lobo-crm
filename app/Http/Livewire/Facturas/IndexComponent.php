@@ -139,7 +139,103 @@ class IndexComponent extends Component
     // Si necesitas formatear para la visualización, hazlo después
     return number_format($totalSobrante, 2, ',', '.');
 }
+
+
+public function getImporte($facturaId){
+
+    $factura = Facturas::find($facturaId);
+
+    if(!$factura){
+        return 'No definido';
+    }
+
+    //si la factura tiene rectificativa
+
+    if($factura->factura_rectificativa_id != null){
+        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+        if(!$facturaRectificativa || $facturaRectificativa->total == null){
+            //numbert_format($factura->total, 2, ',', '.');
+
+            return number_format($factura->precio, 2, '.', '');
+        }else{
+            
+            return number_format($facturaRectificativa->precio, 2, '.', '');
+        }
+    }else{
+        return number_format($factura->precio, 2, '.', '');
+    }
+
+}
+
+public function getIva($facturaId){
+    $factura = Facturas::find($facturaId);
+
+    if(!$factura){
+        return 'No definido';
+    }
+    $delegacion = $this->getDelegacion($factura->cliente_id);
+
+    //si la factura tiene rectificativa
+    if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+        return number_format(0,2, '.', '');
+    }
+    if($factura->factura_rectificativa_id != null){
+        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+        if(!$facturaRectificativa || $facturaRectificativa->total == null){
+            //numbert_format($factura->total, 2, ',', '.');
+            //hay que tener en cuenta si la delegacion es de las exentas de iva
+
+            
+            
+            return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
+        }else{
+            
+            
+            return number_format($facturaRectificativa->iva ?? $facturaRectificativa->precio * 0.21, 2, '.', '');
+        }
+    }else{
+        
+        return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
+    }
+
+}
     
+
+    public function getTotal($facturaId){
+
+        $factura = Facturas::find($facturaId);
+
+        if(!$factura){
+            return 'No definido';
+        }
+
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+
+        //si la factura tiene rectificativa
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            return number_format($factura->precio, 2, '.', '');
+        }
+        if($factura->factura_rectificativa_id != null){
+            $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+            if(!$facturaRectificativa || $facturaRectificativa->total == null){
+                //numbert_format($factura->total, 2, ',', '.');
+                if($factura->total != null){
+                    return number_format($factura->precio * 1.21, 2, '.', '');
+                }
+                return number_format($factura->total, 2, '.', '');
+            }else{
+                if($facturaRectificativa->total != null){
+                    return number_format($facturaRectificativa->precio * 1.21, 2, '.', '');
+                }
+                return number_format($facturaRectificativa->total, 2, '.', '');
+            }
+        }else{
+            if($factura->total != null){
+                return number_format($factura->precio * 1.21, 2, '.', '');
+            }
+            return number_format($factura->total, 2, '.', '');
+        }
+    }
 
     public function getFacturaAsociada($id)
     {

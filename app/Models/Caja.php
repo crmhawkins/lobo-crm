@@ -41,9 +41,33 @@ class Caja extends Model
         'total',
         'pagado',
         'pendiente',
+        'asientoContable',
+        'cuentaContable_id',
     ];
 
-    
+     // Relación con Proveedores (Una caja pertenece a un proveedor)
+     public function proveedor()
+    {
+        return $this->belongsTo(Proveedores::class, 'poveedor_id', 'id'); // Cambiado a 'poveedor_id'
+    }
+
+      // Relación con Facturas (Una caja puede tener muchas facturas asociadas)
+    public function facturas()
+    {
+        return $this->hasMany(Facturas::class, 'id', 'pedido_id');
+    }
+
+    // Scope para filtrar solo las cajas que son ingresos
+    public function scopeIngresos($query)
+    {
+        return $query->where('tipo_movimiento', 'ingreso');
+    }
+
+    // Scope para filtrar solo las cajas que son gastos
+    public function scopeGastos($query)
+    {
+        return $query->where('tipo_movimiento', 'gasto');
+    }
 
     /**
      * Mutaciones de fecha.

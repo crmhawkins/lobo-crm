@@ -9,6 +9,12 @@ use App\Models\Delegacion;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 use App\Models\DepartamentosProveedores;
+use App\Models\GrupoContable;
+use App\Models\SubGrupoContable;
+use App\Models\CuentasContable;
+use App\Models\SubCuentaContable;
+use App\Models\SubCuentaHijo;
+use App\Helpers\GlobalFunctions;
 
 class CreateComponent extends Component
 {
@@ -36,13 +42,16 @@ class CreateComponent extends Component
     public $departamentos;
     public $departamentoSeleccionado;
     public $departamento_id;
-
+    public $cuentaContable_id;
+    public $cuentasContables;
 
     public function mount()
     {
         $this->proveedores = Proveedores::all();
         $this->delegaciones = Delegacion::all();
         $this->departamentos = DepartamentosProveedores::all();
+        $this->cuentasContables = GlobalFunctions::loadCuentasContables();
+
     }
 
     public function crearProveedores()
@@ -51,17 +60,60 @@ class CreateComponent extends Component
     }
 
 
+    public function updated($property){
+        if($property == 'cuentaContable_id' || $property == 'delegacion_COD'){
+            //dd(GlobalFunctions::findCuentaByNumero($this->cuentaContable_id));
+            if($this->cuentaContable_id != null && $this->delegacion_COD != null){
+                //dd($this->cuentaContable_id);
+                if(strlen($this->delegacion_COD) == 1){
+                    $cod = '0'.$this->delegacion_COD;
+                }else{
+                    $cod = $this->delegacion_COD;
+                }
+                $this->crearCuentaContable($cod);
+            }
+        }
+    }
+
+    public function crearCuentaContable($cod)
+    {
+        // Buscar el último proveedor cuya cuenta contable comience con cuentaContable_id seguido del código de delegación
+        $ultimoCliente = Proveedores::where('cuenta_contable', 'LIKE', $this->cuentaContable_id . '%')
+                                    ->whereNotNull('cuenta_contable')
+                                    ->latest()->first();
+        
+        if ($ultimoCliente) {
+            // Obtener la cuenta contable sin los primeros 5 caracteres (cuentaContable_id + cod)
+            $numeroCliente = substr($ultimoCliente->cuenta_contable, 5);
+
+            // Convertir a número entero
+            $numeroCliente = (int)$numeroCliente;
+
+            // Incrementar el número de cliente
+            $numeroCliente = $numeroCliente + 1;
+        } else {
+            // Si no hay ningún cliente con cuenta contable similar, comenzamos con el número de cliente 1
+            $numeroCliente = 1;
+        }
+
+        // Formatear el número de cliente para que tenga 3 dígitos
+        $numeroCliente = str_pad($numeroCliente, 3, '0', STR_PAD_LEFT);
+
+        // Crear la nueva cuenta contable concatenando cuentaContable_id, delegación y el número de cliente
+        $this->cuenta_contable = $this->cuentaContable_id . $cod . $numeroCliente;
+    }
+
 
     public function render()
     {
         return view('livewire.proveedores.create-component');
     }
 
+   
+
     // Al hacer submit en el formulario
     public function submit()
     {
-
-
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -79,6 +131,7 @@ class CreateComponent extends Component
                 'cuenta'=> 'nullable',
                 'forma_pago_pref' => 'nullable',
                 'departamento_id' => 'nullable',
+                'cuenta_contable_numero' => 'nullable'
 
             ],
             // Mensajes de error

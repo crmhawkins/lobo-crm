@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use App\Models\Alertas;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         setlocale(LC_TIME, 'es_ES');
         Carbon::setlocale('es');
         Carbon::setUTF8(true);
+        Paginator::useBootstrap();
 
         View::composer('layouts.header', function ($view) {
         if (Auth::check()) { // Asegúrate de que el usuario está autenticado

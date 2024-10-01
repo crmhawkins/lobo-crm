@@ -25,6 +25,28 @@
                     </p>
                     <div class="col-12 mb-5">
                         <a href="proveedores-create" class="btn btn-lg w-100 btn-primary">AÑADIR PROVEEDOR</a>
+                        <div style="display:none;">
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{4100}})" disabled>AÑADIR CUENTAS CONTABLES 4100</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6250}})" disabled>AÑADIR CUENTAS CONTABLES 6250</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6210}})" disabled>AÑADIR CUENTAS CONTABLES 6210</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6212}})" disabled>AÑADIR CUENTAS CONTABLES 6212</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6293}})" disabled>AÑADIR CUENTAS CONTABLES 6293</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6294}})" disabled>AÑADIR CUENTAS CONTABLES 6294</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6295}})" disabled>AÑADIR CUENTAS CONTABLES 6295</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{4012}})" disabled>AÑADIR CUENTAS CONTABLES 4012</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6240}})" disabled>AÑADIR CUENTAS CONTABLES 6240</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{2170}})" disabled>AÑADIR CUENTAS CONTABLES 2170</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6292}})" disabled>AÑADIR CUENTAS CONTABLES 6292</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6391}})" disabled>AÑADIR CUENTAS CONTABLES 6391</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6460}})" disabled>AÑADIR CUENTAS CONTABLES 6460</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6090}})" disabled>AÑADIR CUENTAS CONTABLES 6090</button>
+                            <button class="btn btn-lg w-100 btn-warning mt-2" wire:click="crearCuentasContables({{6270}})" disabled>AÑADIR CUENTAS CONTABLES 6270</button>
+                        </div>
+                        
+
+
+
+
                     </div>
                     @if ($proveedores != null)
                         <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"

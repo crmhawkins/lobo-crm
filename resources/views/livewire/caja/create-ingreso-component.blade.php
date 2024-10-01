@@ -25,6 +25,44 @@
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
+                            <div class="mb-3 row d-flex align-items-center ">
+                                <div class="col-sm-4">
+                                    <label for="Proveedor" class="col-sm-12 col-form-label">Asiento Contable</label>
+                                        <input class="form-control" type="text" value="" wire:model="asientoContable" > 
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="importe" class="col-sm-12 col-form-label">Cuenta Contable</label>
+                                    <div class="col-md-12" x-data="" x-init="
+                                            $('#select2-cuenta-contable').select2();
+                                            $('#select2-cuenta-contable').on('change', function(e) {
+                                                var data = $('#select2-cuenta-contable').select2('val');
+                                                @this.set('cuentaContable_id', data);
+                                            });
+                                            Livewire.hook('message.processed', (message, component) => {
+                                                $('#select2-cuenta-contable').select2(); // Reinicializa Select2 cuando Livewire renderiza
+                                            });
+                                        " wire:key='rand()'>
+                                        <select class="form-control select2" id="select2-cuenta-contable" wire:model.lazy="cuentaContable_id">                                                <option value="">-- Seleccione Cuenta Contable --</option>
+                                            @foreach($cuentasContables as $grupo)
+                                                <option disabled value="">- {{ $grupo['grupo']['numero'] .'. '. $grupo['grupo']['nombre'] }} -</option>
+                                                @foreach($grupo['subGrupo'] as $subGrupo)
+                                                    <option disabled value="">-- {{ $subGrupo['item']['numero'] .'. '. $subGrupo['item']['nombre'] }} --</option>
+                                                    @foreach($subGrupo['cuentas'] as $cuenta)
+                                                        <option value="{{ $cuenta['item']['numero'] }}">--- {{ $cuenta['item']['numero'] .'. '. $cuenta['item']['nombre'] }} ---</option>
+                                                        @foreach($cuenta['subCuentas'] as $subCuenta)
+                                                            <option value="{{ $subCuenta['item']['numero'] }}">---- {{ $subCuenta['item']['numero'] .'. '. $subCuenta['item']['nombre'] }} ----</option>
+                                                            @foreach($subCuenta['subCuentasHija'] as $subCuentaHija)
+                                                                <option value="{{ $subCuentaHija['numero'] }}">----- {{ $subCuentaHija['numero'] .'. '. $subCuentaHija['nombre'] }} -----</option>
+                                                            @endforeach
+                                                        @endforeach
+                                                    @endforeach
+                                                @endforeach
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                    
+                            </div>
 
                         <div class="mb-3 row d-flex align-items-center">
                             <label for="nombre" class="col-sm-12 col-form-label">Facturas</label>
