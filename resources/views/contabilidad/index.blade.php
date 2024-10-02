@@ -82,6 +82,22 @@
             <div class="col-md-3 mt-4 d-flex justify-content-start">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
             </div>
+            <div class="col-md-4">
+                <h5>Contabilidad</h5>
+                <!-- Dropdown Button -->
+                <div class="dropdown">
+                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
+                        Opciones de Contabilidad
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
+                        <li><a class="dropdown-item" href="{{ route('admin.cuentasContables.index') }}">Cuentas Contables</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.subCuentasContables.index') }}">Sub-Cuentas Contables</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.subCuentasHijaContables.index') }}">Sub-Cuentas Hijas</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.grupoContabilidad.index') }}">Grupos Contables</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.subGrupoContabilidad.index') }}">Sub-Grupos Contables</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </form>
 
@@ -151,5 +167,6 @@
         {{ $cajas->appends(request()->query())->links() }}
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 @endsection
