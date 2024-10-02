@@ -190,6 +190,28 @@ class EditComponent extends Component
     {
          return $this->clientes->firstWhere('id', $id)->nombre;
     }
+    public function getDelegacion($id)
+    {
+        $delegaciones = Delegacion::all();
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre;
+        }
+        return "no definido";
+    }
+
+    public function facturaHasIva($id)
+    {
+        $factura = $this->facturas->firstWhere('id', $id);
+
+        //dependiendo de que delegacion sea el cliente se le aplica iva o no
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            return false;
+        }else{
+            return true;
+        }
+    }
 
 
     public function descargarDocumento()
@@ -249,7 +271,12 @@ class EditComponent extends Component
                 $this->descuento = 0;
             }
 
-            $this->importeIva = $this->importe * $this->iva / 100;
+            if($this->facturaHasIva($this->$factura->id)){
+                $this->importeIva = $this->importe * $this->iva / 100;
+            }else{
+                $this->importeIva = 0;
+            }
+
             
             $retencionTotal = $this->importe * $this->retencion / 100;
             $this->total = $this->importe + $this->importeIva + $retencionTotal;

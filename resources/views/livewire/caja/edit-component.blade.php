@@ -55,7 +55,7 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                             <option value="0">-- ELIGE UNA FACTURA --</option>
                                             @foreach ($facturas as $factura)
                                                 <option value="{{ $factura->id }}">
-                                                    ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
+                                                    ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}  @if(!$this->facturaHasIva($factura->id)) * @endif
                                                 </option>
                                             @endforeach
                                         </select>

@@ -19,6 +19,8 @@ use App\Models\SubGrupoContable;
 use App\Models\CuentasContable;
 use App\Models\SubCuentaContable;
 use App\Models\SubCuentaHijo;
+use App\Models\Delegacion;
+
 
 
 
@@ -127,8 +129,46 @@ class CreateIngresoComponent extends Component
         $cajas = Caja::where('asientoContable', 'like', '%/' . $currentYear)->get();
 
         // Crear el nuevo asiento contable comenzando desde 0001 si es un nuevo año
-        $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;
+        $this->asientoContable = str_pad($cajas->count() + 1, 6, '0', STR_PAD_LEFT) . '/' . $currentYear;
     }
+
+
+    public function getDelegacion($id)
+    {
+        $delegaciones = Delegacion::all();
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre;
+        }
+        return "no definido";
+    }
+
+    public function facturaHasIva($id)
+    {
+        $factura = Facturas::find($id);
+        //dd($factura);
+        //dependiendo de que delegacion sea el cliente se le aplica iva o no
+        if(!$factura){
+
+            //return alert error
+            $this->alert('error', '¡No se ha podido cargar la factura!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+
+            return false;
+
+
+        }
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public function render()
     {
         if($this->banco){
@@ -145,7 +185,12 @@ class CreateIngresoComponent extends Component
     {
         if(isset($id) && $id != null){
             $this->facturaSeleccionada = Facturas::find($id);
-            $this->importeFactura = $this->facturaSeleccionada->total;
+
+            if($this->facturaHasIva($id)){
+                $this->importeFactura = $this->facturaSeleccionada->total;
+            }else{
+                $this->importeFactura = $this->facturaSeleccionada->precio;
+            }
             $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
             $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $id)->get();
             //dd( $this->facturas_compensadas);
@@ -178,7 +223,11 @@ class CreateIngresoComponent extends Component
             $facturaRectificativa = Facturas::where('id' , $this->facturaSeleccionada->factura_rectificativa_id)->first();
             if($facturaRectificativa){
                 //dd($facturaRectificativa);
-                $this->importeFactura = $facturaRectificativa->total;
+                if($this->facturaHasIva($facturaRectificativa->id)){
+                    $this->importeFactura = $facturaRectificativa->total;
+                }else{
+                    $this->importeFactura = $facturaRectificativa->precio;
+                }
                 //dd($facturaRectificativa);
                 $this->ingresos_factura = Caja::where('pedido_id', $facturaRectificativa->id)->get();
                 $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $facturaRectificativa->id)->get();

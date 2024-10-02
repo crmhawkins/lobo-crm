@@ -211,21 +211,20 @@ public function getIva($facturaId){
 
         $delegacion = $this->getDelegacion($factura->cliente_id);
 
-        //si la factura tiene rectificativa
-        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
-            return number_format($factura->precio, 2, '.', '');
-        }
+        
         if($factura->factura_rectificativa_id != null){
             $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
             if(!$facturaRectificativa || $facturaRectificativa->total == null){
                 //numbert_format($factura->total, 2, ',', '.');
-                if($factura->total != null){
-                    return number_format($factura->precio * 1.21, 2, '.', '');
+                //si la factura tiene rectificativa
+                if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                    return number_format($factura->precio, 2, '.', '');
                 }
                 return number_format($factura->total, 2, '.', '');
             }else{
-                if($facturaRectificativa->total != null){
-                    return number_format($facturaRectificativa->precio * 1.21, 2, '.', '');
+                //si la factura tiene rectificativa
+                if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                    return number_format($facturaRectificativa->precio, 2, '.', '');
                 }
                 return number_format($facturaRectificativa->total, 2, '.', '');
             }
@@ -493,7 +492,7 @@ public function getIva($facturaId){
         $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
 
         // Truncamos el nombre del cliente si es demasiado largo
-        $cliente['nombre'] = $this->truncarTexto($cliente['nombre'], 10); // Puedes ajustar el límite de caracteres
+        $cliente['nombre'] = $cliente['nombre']; // Puedes ajustar el límite de caracteres
 
         return $cliente;
     }
