@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Clients;
+use App\Models\Facturas;
 
 class Pedido extends Model
 {
@@ -57,5 +59,11 @@ class Pedido extends Model
     public function cliente()
     {
         return $this->belongsTo(Clients::class, 'cliente_id');
+    }
+
+    //hasFactura
+    public function factura()
+    {
+        return $this->hasOne(Facturas::class);
     }
 }

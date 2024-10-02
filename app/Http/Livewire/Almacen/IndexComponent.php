@@ -198,7 +198,6 @@ class IndexComponent extends Component
         }
 
         
-        
     }
 
     
