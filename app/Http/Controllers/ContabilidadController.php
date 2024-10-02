@@ -73,7 +73,7 @@ class ContabilidadController extends Controller
             // Calcular el saldo acumulado antes del asientoContable de la primera transacción visible
             $saldoAcumulado = Caja::where('asientoContable', '<', $primerAsientoEnPagina)
                 ->whereNotNull('asientoContable')
-                ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -importe END) as saldo_acumulado')
+                ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -total END) as saldo_acumulado')
                 ->value('saldo_acumulado') ?? 0;
         }
     }

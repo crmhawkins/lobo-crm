@@ -141,7 +141,7 @@
                     <td>{{ $caja->fecha }}</td>
                     <td>{{ $caja->descripcion }}</td>
                     <td>{{ $caja->tipo_movimiento == 'Ingreso' ? number_format($caja->importe, 2) : '' }}</td>
-                    <td>{{ $caja->tipo_movimiento == 'Gasto' ? number_format($caja->importe, 2) : '' }}</td>
+                    <td>{{ $caja->tipo_movimiento == 'Gasto' ? number_format($caja->total, 2) : '' }}</td>
                     <td>{{ number_format($saldo, 2) }}</td>
                     <td>
                         @if($caja->proveedor)
