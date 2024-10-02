@@ -4,7 +4,7 @@
      <!-- Pestañas de navegación -->
      <ul class="nav nav-tabs" id="myTab" role="tablist" >
         <li class="nav-item" role="presentation">
-            <button class="nav-link @if($activeTab === 'normales') active @endif" id="normales-tab" data-toggle="tab" wire:click="setActiveTab('normales')" type="button" role="tab" aria-controls="normales" aria-selected="{{ $activeTab === 'normales' ? 'true' : 'false' }}">Incidencias Normales</button>
+            <button class="nav-link @if($activeTab === 'normales') active @endif" id="normales-tab" data-toggle="tab" wire:click="setActiveTab('normales')" type="button" role="tab" aria-controls="normales" aria-selected="{{ $activeTab === 'normales' ? 'true' : 'false' }}">Incidencias</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link @if($activeTab === 'pedidos') active @endif" id="pedidos-tab" data-toggle="tab" wire:click="setActiveTab('pedidos')" type="button" role="tab" aria-controls="pedidos" aria-selected="{{ $activeTab === 'pedidos' ? 'true' : 'false' }}">Incidencias de Pedidos</button>
@@ -15,7 +15,7 @@
         <div class="tab-pane fade @if($activeTab === 'normales') show active @endif" id="normales" role="tabpanel" aria-labelledby="normales-tab">
 
             <!-- Sección de Incidencias Normales -->
-            <h2>Incidencias Normales</h2>
+            <h2>Incidencias</h2>
             <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createIncidenciaModal">
                 Crear Incidencia
             </button>
