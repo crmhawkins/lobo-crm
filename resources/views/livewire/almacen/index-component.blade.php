@@ -175,9 +175,17 @@
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
-                                        <td> <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary botones" style="color: white;">Comprobar pedido</a>
-                                            <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary botones">Generar albarán</a>
+                                        <td> 
+
+                                            <a onclick="comprobarStockPedido({{ $pedido->id }})" class="btn btn-primary botones" style="color: white;">Comprobar pedido</a>
+                                            @if(!$this->pedidoHasAlbaran($pedido->id))
+                                                <a href="almacen-create/{{ $pedido->id }}" class="btn btn-secondary botones">Generar albarán</a>
+                                            @else
+                                                <a onclick="mostrarAlbaran({{ $pedido->id }}, false)" class="btn btn-dark botones"  style="color: white;">Descargar albarán</a>
+                                                <button onclick="pasarEnviado('{{ $pedido->id }}')" class="btn btn-secondary botones" style="color: white;">Pasar a enviado</button>
+                                            @endif
                                             <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
+                                            <button onclick="volverPendientes({{ $pedido->id }})" class="btn btn-danger botones" style="color: white;">Volver a pendientes</button>
 
                                         </td>
                                     </tr>
@@ -386,6 +394,7 @@
                                             <button  onclick="asignarPedidoEnRutaId('{{ $pedido->id }}')" data-toggle="modal" data-target="#enviarEmailModal" class="btn btn-secondary botones" style="color: white;">Enviar Email Transporte</button>
 
                                             <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning botones">Ver/Editar</a>
+                                            <button  onclick="alertaVolverPreparacion('{{ $pedido->id }}')" data-toggle="modal" data-target="#volverPreparacionModal" class="btn btn-danger botones" style="color: white;">Volver a Preparación</button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -425,6 +434,31 @@
             location.reload()
         }, 1000);
     }
+
+    function alertaVolverPreparacion(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('alertaVolverPreparacion', id);
+        //window.livewire.emit('enRuta', id);
+        
+    }
+
+    function pasarEnviado(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('AlertapasarEnviado', id);
+        //window.livewire.emit('enRuta', id);
+       
+    }
+
+    function volverPendientes(id) {
+        // Suponiendo que tu descarga se realiza aquí
+
+        window.livewire.emit('AlertaVolverPendientes', id);
+        //window.livewire.emit('enRuta', id);
+        
+    }
+
     function fechaEntrega(id) {
         // Suponiendo que tu descarga se realiza aquí
 

@@ -171,10 +171,46 @@ class IndexComponent extends Component
         
     }
 
+
+    public function alertaVolverPreparacion($pedidoId){
+        $this->pedido = Pedido::find($pedidoId);
+        //dd($this->pedido);
+        $this->alert('warning', '¿Está seguro de volver el pedido a preparación?', [
+            'position' => 'center',
+            'timer' => 6000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'allowOutsideClick'=> false,
+            'onConfirmed' => 'volverPedidoPreparacion',
+            'confirmButtonText' => 'Sí',
+            'showCancelButton' => true,
+            'cancelButtonText' => 'No',
+        ]);
+    }
+
+
+    public function volverPedidoPreparacion(){
+
+        if($this->pedido->estado == 4 || $this->pedido->estado == 8 || $this->pedido->estado == 5){
+            $this->pedido->update(['estado' => 3]);
+            $this->cargarPedidos();
+
+        }
+
+        
+        
+    }
+
     
 
     public function mount()
     {
+        
+        $this->cargarPedidos();
+    }
+
+
+    public function cargarPedidos(){
         $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
         // Filtrar pedidos basados en almacen_id
         if ($userAlmacenId == 0) {
@@ -203,8 +239,9 @@ class IndexComponent extends Component
             // ->where('tipo_pedido_id', 0)
             // ->get();
         }
-        
     }
+
+
 
     public function render()
     {
@@ -240,7 +277,13 @@ class IndexComponent extends Component
             'enviarEmailTransporte',
             'fechaEntrega',
             'asignarPedidoEnRutaId',
-            'completarPedido'
+            'completarPedido',
+            'volverPedidoPreparacion',
+            'alertaVolverPreparacion',
+            'AlertapasarEnviado',
+            'pasarEnviado',
+            'volverPendientes',
+            'AlertaVolverPendientes',
         ];
     }
 
@@ -568,6 +611,17 @@ class IndexComponent extends Component
             "albaran_{$albaran->num_albaran}.pdf"
         );
     }
+
+
+    public function pedidoHasAlbaran($pedidoId)
+    {
+        $albaran = Albaran::where('pedido_id', $pedidoId)->first();
+        if ($albaran) {
+            return true;
+        }
+        return false;
+    }
+
     public function comprobarStockPedido($pedidoId)
     {
         $pedido = Pedido::find($pedidoId);
@@ -642,6 +696,53 @@ class IndexComponent extends Component
     public function recarga()
     {
         return redirect()->route('almacen.index');
+    }
+
+    public function AlertapasarEnviado($idPedido){
+        $this->pedido = Pedido::find($idPedido);
+
+        $this->alert('warning', '¿Estás seguro de pasar el pedido a enviado? ', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'pasarEnviado',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timer' => null,
+            //que el alert no se cierre
+
+        ]);
+
+    }
+
+    public function pasarEnviado(){
+        if($this->pedido->estado == 3 ){
+            $this->pedido->update(['estado' => 4]);
+            $this->cargarPedidos();
+        }
+    }
+
+    public function volverPendientes(){
+        $this->pedido->update(['estado' => 2]);
+        $this->cargarPedidos();
+    }
+
+    public function AlertaVolverPendientes($idPedido){
+        $this->pedido = Pedido::find($idPedido);
+
+        $this->alert('warning', '¿Estás seguro de volver el pedido a pendientes? ', [
+            'position' => 'center',
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'volverPendientes',
+            'confirmButtonText' => 'Sí',
+            'showDenyButton' => true,
+            'denyButtonText' => 'No',
+            'timer' => 6000,
+
+        ]);
+
     }
 
 }

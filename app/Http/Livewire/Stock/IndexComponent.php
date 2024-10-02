@@ -495,4 +495,5 @@ class IndexComponent extends Component
     {
         return redirect()->route('stock.index');
     }
+   
 }
