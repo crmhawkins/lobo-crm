@@ -59,7 +59,10 @@ class CreateGastoComponent extends Component
     public $asientoContable;
     public $cuentaContable_id;
     public $cuentasContables;
-
+    public $facturasSeleccionadas = [];
+    public $pagos = [];
+    
+    
     public function mount()
     {
         $this->poveedores = Proveedores::all();
@@ -87,6 +90,26 @@ class CreateGastoComponent extends Component
 
     }
 
+    public function guardarFacturasCompensadas()
+    {
+        // Validar que se hayan seleccionado facturas
+        $this->validate([
+            'facturasSeleccionadas' => 'required|array|min:1',
+            'pagos.*' => 'required|numeric|min:0',
+        ]);
+    
+        // Calcular el total de los pagos
+        $totalPagadoCompensadas = array_sum($this->pagos);
+    
+        // Actualizar el valor del campo 'pagado' con la suma
+        $this->pagado = $totalPagadoCompensadas;
+        $this->pendiente = $this->total - $this->pagado;
+
+        
+    
+        // Alerta de éxito al guardar las facturas compensadas
+        $this->alert('success', '¡Facturas seleccionadas para compensar y total pagado actualizado!');
+    }
 
     public function loadCuentasContables()
     {
@@ -208,6 +231,10 @@ class CreateGastoComponent extends Component
 
     public function submit()
     {
+
+        //dd con todos los campos del validate
+        //dd($this->tipo_movimiento, $this->metodo_pago, $this->importe, $this->descripcion, $this->poveedor_id, $this->fecha, $this->estado, $this->banco, $this->delegacion_id, $this->departamento, $this->iva, $this->retencion, $this->importe_neto, $this->fecha_vencimiento, $this->fecha_pago, $this->cuenta, $this->importeIva, $this->total, $this->documento, $this->documentoPath, $this->nInterno, $this->nFactura, $this->pagado, $this->pendiente, $this->facturas, $this->pagos);
+
         // Validación de datos
         $validatedData = $this->validate(
             [
@@ -282,17 +309,33 @@ class CreateGastoComponent extends Component
         // Alertas de guardado exitoso
         if ($usuariosSave) {
 
-            if($this->compensacion){
-                $factura = Facturas::find($this->factura_id);
-                $facturaCompensada = FacturasCompensadas::create([
-                    'caja_id' => $usuariosSave->id,
-                    'factura_id' => $factura->id,
-                    'importe' => $factura->total,
-                    'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
-                    'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
-                    'fecha' => $this->fecha,
-                ]);
+            // if($this->compensacion){
+            //     $factura = Facturas::find($this->factura_id);
+            //     $facturaCompensada = FacturasCompensadas::create([
+            //         'caja_id' => $usuariosSave->id,
+            //         'factura_id' => $factura->id,
+            //         'importe' => $factura->total,
+            //         'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
+            //         'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
+            //         'fecha' => $this->fecha,
+            //     ]);
                 
+            // }
+
+            // Guardar facturas compensadas si existen facturas seleccionadas
+            if ($this->compensacion && !empty($this->facturasSeleccionadas)) {
+                foreach ($this->facturasSeleccionadas as $index => $factura_id) {
+                    $factura = Facturas::find($factura_id);
+
+                    FacturasCompensadas::create([
+                        'caja_id' => $usuariosSave->id,
+                        'factura_id' => $factura->id,
+                        'importe' => $factura->total,
+                        'pagado' => $this->pagos[$index] ?? $factura->total,
+                        'pendiente' => $factura->total - ($this->pagos[$index] ?? $factura->total),
+                        'fecha' => $this->fecha,
+                    ]);
+                }
             }
 
 

@@ -38,11 +38,19 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                     <label for="Proveedor" class="col-sm-12 col-form-label">Asiento Contable</label>
                                         <input class="form-control" type="text" value="" wire:model="asientoContable" > 
                                 </div>
-                                    
+                                @if($this->tipo_movimiento == "Ingreso")
+                                    <div class="col-sm-2">
+                                        <label for="Proveedor" class="col-sm-12 col-form-label">Ingreso Proveedor</label>
+                                        <select name="" id="" class="form-select" wire:model="isIngresoProveedor" disabled>
+                                            <option value="0">No</option>
+                                            <option value="1">Sí</option>
+                                        </select>
+                                    </div>
+                                @endif
                                     
                             </div>
                         @if ($this->tipo_movimiento == "Ingreso")
-                            <div class="mb-3 row d-flex align-items-center">
+                            <div class="mb-3 row d-flex align-items-center" @if($isIngresoProveedor) style="display: none !important;" @endif>
                                 <label for="nombre" class="col-sm-12 col-form-label">Factura</label>
                                 <div class="col-sm-10">
                                     <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
@@ -64,47 +72,129 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                     @enderror
                                 </div>
                             </div>
-                            <div class="mb-3 row d-flex align-items-center">
-                                <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
-                                <div class="col-sm-10">
-                                    <input type="number" class="form-control" wire:model="importe" nombre="importe"
-                                        id="importe" placeholder="Importe..." @if(!$canEdit) disabled @endif>
-                                    @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+                            <div class="mb-3 row d-flex align-items-center col-sm-6" @if(!$isIngresoProveedor) style="display: none !important;" @endif>
+                                <label for="nombre" class="col-sm-12 col-form-label">Gasto asociado</label>
+                                <div class="col-sm-10" wire:ignore x-data x-init="
+                                    $nextTick(() => {
+                                        let selectedGasto = {{ $gasto_id ?? 'null' }};
+                                        
+                                        $('#select2-gastos').select2({
+                                            ajax: {
+                                                url: '{{ route('buscarGastos') }}', // Ruta para obtener los datos
+                                                dataType: 'json',
+                                                delay: 250,
+                                                data: function(params) {
+                                                    return {
+                                                        search: params.term,
+                                                        page: params.page || 1
+                                                    };
+                                                },
+                                                processResults: function(data, params) {
+                                                    params.page = params.page || 1;
+                                                    return {
+                                                        results: $.map(data.data, function(item) {
+                                                            return { id: item.id, text: item.nFactura };
+                                                        }),
+                                                        pagination: {
+                                                            more: data.more
+                                                        }
+                                                    };
+                                                },
+                                                cache: true
+                                            },
+                                            placeholder: '-- ELIGE UN GASTO --',
+                                            minimumInputLength: 1,
+                                            allowClear: true
+                                        });
+
+                                        // Cargar el gasto ya seleccionado
+                                        if (selectedGasto !== 'null') {
+                                            // Crear una opción temporal con el gasto seleccionado
+                                            let option = new Option('Cargando...', selectedGasto, true, true);
+                                            $('#select2-gastos').append(option).trigger('change');
+
+                                            // Realizar una petición AJAX para obtener los detalles del gasto seleccionado
+                                            $.ajax({
+                                                url: '{{ route('buscarGastos') }}', // Debe permitir buscar por id
+                                                data: { id: selectedGasto }, // Pasamos el id del gasto seleccionado
+                                                success: function(data) {
+                                                    // Reemplazamos la opción temporal por los datos reales
+                                                    let option = new Option(data.nFactura, data.id, true, true);
+                                                    $('#select2-gastos').append(option).trigger('change');
+                                                },
+                                                error: function() {
+                                                    // Si no se encuentra el gasto, podemos dejar la opción temporal o manejar el error
+                                                    let option = new Option('Gasto no encontrado', selectedGasto, true, true);
+                                                    $('#select2-gastos').append(option).trigger('change');
+                                                }
+                                            });
+                                        }
+
+                                        // Evento para manejar los cambios en Select2
+                                        $('#select2-gastos').on('change', function() {
+                                            var data = $(this).val();
+                                            @this.set('gasto_id', data); // Actualizar el gasto en Livewire
+                                        });
+                                    });
+                                ">
+                                    <select class="form-control" style="width:100%;" name="gasto_id" id="select2-gastos">
+                                        {{-- <option value="0">-- ELIGE UN GASTO --</option>
+                                        @if($gastos)
+                                            @foreach ($gastos as $gasto)
+                                                <option value="{{ $gasto->id }}">
+                                                    {{$gasto->nFactura}}
+                                                </option>
+                                            @endforeach
+                                        @endif --}}
+                                    </select>
+                                </div>
+                            
+                            </div>
+                            <div class="col-sm-12 row">
+                                <div class="mb-3 row d-flex align-items-center col-sm-3">
+                                    <label for="nombre" class="col-sm-12 col-form-label">Importe</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" wire:model="importe" nombre="importe"
+                                            id="importe" placeholder="Importe..." @if(!$canEdit) disabled @endif>
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="mb-3 row d-flex align-items-center col-sm-3">
+                                    <label for="nombre" class="col-sm-12 col-form-label">Fecha</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" wire:model="fecha" nombre="fecha"
+                                            id="fecha" placeholder="dd/mm/aaaa" @if(!$canEdit) disabled @endif>
+                                        @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="mb-3 row d-flex align-items-center col-sm-3">
+                                    <label for="pago" class="col-sm-12 col-form-label">Método de pago</label>
+                                    <div class="col-sm-10" wire:ignore.self>
+                                        @if ($this->tipo_movimiento == "Ingreso")
+                                        <select id="metodo_pago" class="form-control" wire:model="metodo_pago" @if(!$canEdit) disabled @endif>
+                                                <option value="" disabled selected>Selecciona una opción</option>
+                                                <option value="giro_bancario">Giro Bancario</option>
+                                                <option value="pagare">Pagare</option>
+                                                <option value="confirming">Confirming</option>
+                                                <option value="transferencia">Transferencia</option>
+                                                <option value="otros">Otros</option>
+                                            </select>
+                                        @error('denominacion')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                        @elseif($this->tipo_movimiento == "Gasto")
+                                        <input type="text" class="form-control" wire:model="metodo_pago" nombre="metodo_pago"
+                                        id="metodo_pago" placeholder="Nombre de la categoría..." @if(!$canEdit) disabled @endif>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3 row d-flex align-items-center">
-                                <label for="nombre" class="col-sm-12 col-form-label">Fecha</label>
-                                <div class="col-sm-10">
-                                    <input type="date" class="form-control" wire:model="fecha" nombre="fecha"
-                                        id="fecha" placeholder="dd/mm/aaaa" @if(!$canEdit) disabled @endif>
-                                    @error('nombre')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="mb-3 row d-flex align-items-center">
-                                <label for="pago" class="col-sm-12 col-form-label">Método de pago</label>
-                                <div class="col-sm-10" wire:ignore.self>
-                                    @if ($this->tipo_movimiento == "Ingreso")
-                                    <select id="metodo_pago" class="form-control" wire:model="metodo_pago" @if(!$canEdit) disabled @endif>
-                                            <option value="" disabled selected>Selecciona una opción</option>
-                                            <option value="giro_bancario">Giro Bancario</option>
-                                            <option value="pagare">Pagare</option>
-                                            <option value="confirming">Confirming</option>
-                                            <option value="transferencia">Transferencia</option>
-                                            <option value="otros">Otros</option>
-                                        </select>
-                                    @error('denominacion')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                    @elseif($this->tipo_movimiento == "Gasto")
-                                    <input type="text" class="form-control" wire:model="metodo_pago" nombre="metodo_pago"
-                                    id="metodo_pago" placeholder="Nombre de la categoría..." @if(!$canEdit) disabled @endif>
-                                    @endif
-                                </div>
-                            </div>
+                            
+                            
                         @elseif($this->tipo_movimiento == "Gasto")
                             <div class="mb-3 row d-flex align-items-center ">
                                 <div class="col-sm-4">
@@ -272,16 +362,61 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                         ¿Compensar factura?</label>
                                 </div>
                                 @if($compensacion)
-                                    <div class="col-sm-3">
-                                        <label for="pago" class="col-sm-12 col-form-label">Factura</label>
-                                        <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id" >
-                                            <option value="0">-- ELIGE UNA FACTURA --</option>
-                                            @foreach ($facturas as $factura)
-                                                <option value="{{ $factura->id }}">
-                                                    ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                    <div class="mb-3 row d-flex align-items-center">
+                                        <!-- Botón para abrir el modal -->
+                                        <div class="col-sm-3">
+                                            <button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#facturasModal">
+                                                Editar Facturas Compensadas
+                                            </button>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="facturasModal" tabindex="-1" role="dialog" aria-labelledby="facturasModalLabel" aria-hidden="true" wire:ignore.self>
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="facturasModalLabel">Seleccionar Facturas Compensadas</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Seleccionar facturas -->
+                                                    <div class="form-group">
+                                                        <label for="facturasCompensadas">Facturas</label>
+                                                        <select class="form-control" id="facturasCompensadas" wire:model="facturasSeleccionadas" style="width: 100%" multiple>
+                                                            @foreach($facturas as $factura)
+                                                            <option value="{{ $factura->id }}">
+                                                                <span style="font-weight: bold;">{{ $factura->numero_factura }}</span> 
+                                                                &nbsp;|&nbsp; 
+                                                                <span style="color: gray;">{{ $factura->cliente->nombre }}</span> 
+                                                                &nbsp;|&nbsp; 
+                                                                <span style="color: blue;">{{ $factura->total }}€</span>
+                                                            </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                
+                                                    <!-- Inputs de pago por factura seleccionada -->
+                                                    @foreach($facturasSeleccionadas as $index => $factura_id)
+                                                        @php
+                                                            $factura = $facturas->find($factura_id);
+                                                        @endphp
+                                                        <div class="form-group">
+                                                            <label for="pagadoFactura">
+                                                                Factura: {{ $factura->numero_factura }} - Total: {{ $factura->total }} €
+                                                            </label>
+                                                            <input type="number" class="form-control" wire:model="pagos.{{ $index }}" placeholder="Importe pagado para esta factura" value="{{ $factura->total }}">
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                    <button type="button" class="btn btn-primary" wire:click="guardarFacturasCompensadas">Guardar cambios</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
                                 
@@ -387,6 +522,35 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
 </div>
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  document.addEventListener('livewire:load', function () {
+    function initSelect2() {
+        // Inicializar Select2
+        $('#facturasCompensadas').select2({
+            placeholder: 'Selecciona Facturas', // Texto de búsqueda inicial
+            allowClear: true // Opción para permitir limpiar la selección
+        });
+
+        // Capturar el evento de cambio en Select2 y sincronizar con Livewire
+        $('#facturasCompensadas').on('change', function (e) {
+            console.log('cambio'); // Comprobar que el evento se dispara
+            var data = $(this).val();
+            console.log(data); // Mostrar los valores seleccionados en la consola
+            @this.set('facturasSeleccionadas', data); // Sincronizar con Livewire
+        });
+    }
+
+    // Inicializar Select2 cuando se cargue la página
+    initSelect2();
+
+    // Reinicializar Select2 cada vez que Livewire actualice el componente
+    Livewire.hook('message.processed', (message, component) => {
+        initSelect2();
+    });
+});
+</script>
 <script>
     $("#alertaGuardar").on("click", () => {
         Swal.fire({

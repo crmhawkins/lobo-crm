@@ -1,4 +1,6 @@
 <div class="container-fluid">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         textarea{
             width: 100%;
@@ -78,7 +80,7 @@
                                     <label for="Proveedor" class="col-sm-12 col-form-label">Asiento Contable</label>
                                         <input class="form-control" type="text" value="" wire:model="asientoContable" > 
                                 </div>
-                                <div class="col-sm-4">
+                                {{-- <div class="col-sm-4">
                                     <label for="importe" class="col-sm-12 col-form-label">Cuenta Contable</label>
                                     <div class="col-md-12" x-data="" x-init="
                                             $('#select2-cuenta-contable').select2();
@@ -108,7 +110,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
                                     
                             </div>
                         {{-- <div class="mb-3 row d-flex align-items-center">
@@ -204,7 +206,7 @@
                                     ¿Compensar factura?</label>
                             </div>
                             @if($compensacion)
-                                <div class="col-sm-3">
+                                {{-- <div class="col-sm-3">
                                     <label for="pago" class="col-sm-12 col-form-label">Factura</label>
                                     <select class="form-control" name="factura_id" id="factura_id" wire:model="factura_id">
                                         <option value="0">-- ELIGE UNA FACTURA --</option>
@@ -214,6 +216,12 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                </div> --}}
+                                <!-- Botón para abrir el modal -->
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#facturasModal">
+                                        Añadir Facturas Compensadas
+                                    </button>
                                 </div>
                             @endif
                             
@@ -287,9 +295,76 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="facturasModal" tabindex="-1" role="dialog" aria-labelledby="facturasModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="facturasModalLabel">Seleccionar Facturas Compensadas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Seleccionar facturas -->
+                    <div class="form-group">
+                        <label for="facturasCompensadas">Facturas</label>
+                        <select class="form-control" id="facturasCompensadas" wire:model="facturasSeleccionadas" style="width: 100%" multiple>
+                            @foreach($facturas as $factura)
+                            <option value="{{ $factura->id }}">
+                                <span style="font-weight: bold;">{{ $factura->numero_factura }}</span> 
+                                &nbsp;|&nbsp; 
+                                <span style="color: gray;">{{ $factura->cliente->nombre }}</span> 
+                                &nbsp;|&nbsp; 
+                                <span style="color: blue;">{{ $factura->total }}€</span>
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Inputs de pago por factura seleccionada -->
+                    @foreach($facturasSeleccionadas as $index => $factura_id)
+                        @php
+                            $factura = $facturas->find($factura_id);
+                        @endphp
+                        <div class="form-group">
+                            <label for="pagadoFactura">
+                                Factura: {{ $factura->numero_factura }} - Total: {{ $factura->total }} €
+                            </label>
+                            <input type="number" class="form-control" wire:model="pagos.{{ $index }}" placeholder="Importe pagado para esta factura" value="{{ $factura->total }}">
+                        </div>
+                    @endforeach
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" wire:click="guardarFacturasCompensadas">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    document.addEventListener('livewire:load', function () {
+        $('#facturasCompensadas').select2({
+            placeholder: 'Selecciona Facturas', // Texto de búsqueda inicial
+            allowClear: true // Opción para permitir limpiar la selección
+        });
+
+        // Capturar el evento de cambio y actualizar el componente Livewire
+        $('#facturasCompensadas').on('change', function (e) {
+            var data = $(this).val();
+            @this.set('facturasSeleccionadas', data);
+        });
+
+        // Reinicializar Select2 cuando se renderice con Livewire
+        Livewire.hook('message.processed', (message, component) => {
+            $('#facturasCompensadas').select2();
+        });
+    });
+</script>
     <script>
         $("#alertaGuardar").on("click", () => {
             Swal.fire({

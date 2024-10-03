@@ -265,7 +265,9 @@
                                                 <td>{{ $this->getFactura($tipo->pedido_id) }}</td>
                                             @elseif($tipo->poveedor_id)
                                                 <td>{{ $this->proveedorNombre($tipo->poveedor_id )}}</td>
-                                            @else
+                                            @elseif($tipo->gasto_id)
+                                                <td><a href=" {{ route('caja.edit', ['id' => $tipo->gasto->id]) }}" class="btn btn-primary btn-sm fw-bold"> {{$tipo->gasto->nFactura}}</a></td>
+                                            @else   
                                                 <td></td>
                                             @endif
                                             <td>{{$tipo->tipo_movimiento}}</td> 

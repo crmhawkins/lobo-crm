@@ -26,11 +26,8 @@
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                             <div class="mb-3 row d-flex align-items-center ">
-                                <div class="col-sm-4">
-                                    <label for="Proveedor" class="col-sm-12 col-form-label">Asiento Contable</label>
-                                        <input class="form-control" type="text" value="" wire:model="asientoContable" > 
-                                </div>
-                                <div class="col-sm-4">
+                                
+                                {{-- <div class="col-sm-4">
                                     <label for="importe" class="col-sm-12 col-form-label">Cuenta Contable</label>
                                     <div class="col-md-12" x-data="" x-init="
                                             $('#select2-cuenta-contable').select2();
@@ -60,33 +57,103 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                </div> --}}
+                                <div class="col-sm-4">
+                                    <label for="Proveedor" class="col-sm-12 col-form-label">Asiento Contable</label>
+                                        <input class="form-control" type="text" value="" wire:model="asientoContable" > 
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <label for="Proveedor" class="col-sm-12 col-form-label">Ingreso Proveedor</label>
+                                    <select name="" id="" class="form-select" wire:model="isIngresoProveedor">
+                                        <option value="0">No</option>
+                                        <option value="1">Sí</option>
+                                    </select>
                                 </div>
                                     
                             </div>
 
                         <div class="mb-3 row d-flex align-items-center">
-                            <label for="nombre" class="col-sm-12 col-form-label">Facturas</label>
-                            <div class="col-sm-10">
-                                <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
-                                $('#select2-monitor').on('change', function(e) {
-                                    var data = $('#select2-monitor').select2('val');
-                                    @this.set('pedido_id', data);
-                                });" wire:key='rand()'>
-                                    <select class="form-control" name="pedido_id" id="select2-monitor"
-                                    wire:model.lazy="pedido_id"  >
-                                        <option value="0">-- ELIGE UNA FACTURA
-                                            --
-                                        </option>
-                                        @foreach ($facturas as $factura)
-                                            <option value="{{ $factura->id }}">
-                                                ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }} @if(!$this->facturaHasIva($factura->id)) * @endif
-                                            </option>
-                                        @endforeach
+                                <div style="@if($isIngresoProveedor) display: none !important; @endif width:100%;" class="mb-3 row d-flex align-items-center">
+                                    <label for="nombre" class="col-sm-12 col-form-label">Facturas</label>
+                                    <div class="col-sm-10">
+                                        <div class="col-md-12" x-data="" x-init="$('#select2-monitor').select2();
+                                        $('#select2-monitor').on('change', function(e) {
+                                            var data = $('#select2-monitor').select2('val');
+                                            @this.set('pedido_id', data);
+                                        });" wire:key='rand()'>
+                                            <select class="form-control" name="pedido_id" id="select2-monitor"
+                                            wire:model.lazy="pedido_id"  wire:change="onFacturaChange({{$pedido_id}})"  >
+                                                <option value="0">-- ELIGE UNA FACTURA
+                                                    --
+                                                </option>
+                                                @foreach ($facturas as $factura)
+                                                    <option value="{{ $factura->id }}">
+                                                        ({{ $factura->numero_factura }}) - {{ $this->getCliente($factura->cliente_id) }} @if(!$this->facturaHasIva($factura->id)) * @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div> @error('nombre')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                
+                            <div style="@if(!$isIngresoProveedor) display: none !important; @endif width:100%;" class="mb-3 row d-flex align-items-center">
+
+                                <label for="nombre" class="col-sm-12 col-form-label">Gasto asociado</label>
+                                <div class="col-sm-10" wire:ignore x-data x-init="
+                                    $nextTick(() => {
+                                        $('#select2-gastos').select2({
+                                            ajax: {
+                                                url: '{{ route('buscarGastos') }}', // Ruta de Livewire que hará la búsqueda
+                                                dataType: 'json',
+                                                delay: 250, // Retardo de búsqueda para evitar demasiadas peticiones
+                                                data: function(params) {
+                                                    return {
+                                                        search: params.term, // Término de búsqueda
+                                                        page: params.page || 1 // Página actual
+                                                    };
+                                                },
+                                                processResults: function(data, params) {
+                                                    params.page = params.page || 1;
+
+                                                    return {
+                                                        results: $.map(data.data, function(item) {
+                                                            return { id: item.id, text: item.nFactura };
+                                                        }),
+                                                        pagination: {
+                                                            more: data.more
+                                                        }
+                                                    };
+                                                },
+                                                cache: true
+                                            },
+                                            placeholder: '-- ELIGE UN GASTO --',
+                                            minimumInputLength: 1,
+                                            allowClear: true,
+                                        });
+
+                                        $('#select2-gastos').on('change', function() {
+                                            var data = $(this).val();
+                                            @this.set('gasto_id', data);
+                                        });
+                                    });
+                                ">
+                                    <select class="form-control" style="width:100%;" name="gasto_id" id="select2-gastos">
+                                        {{-- <option value="0">-- ELIGE UN GASTO --</option>
+                                        @if($gastos)
+                                            @foreach ($gastos as $gasto)
+                                                <option value="{{ $gasto->id }}">
+                                                    {{$gasto->nFactura}}
+                                                </option>
+                                            @endforeach
+                                        @endif --}}
                                     </select>
-                                </div> @error('nombre')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                </div>
                             </div>
+
+                                
                         </div>
                         @if(!$compensacion_factura)
                             <div class="mb-3 row d-flex align-items-center">
@@ -228,7 +295,6 @@
             });
         });
 
-        //on document ready with jquery
         $(document).ready(function() {
             //select2 monitor on change emit to livewire pedido_id with value and onchange event
             $('#select2-monitor').on('change', function(e) {
@@ -239,8 +305,20 @@
                 //emit function onFacturaChange
                 window.livewire.emit('onFacturaChange', data);
             });
-
+            $('#select2-gastos').on('change', function(e) {
+                console.log('change');
+                var data = $('#select2-gastos').select2('val');
+                console.log(data);
+                @this.set('gasto_id', data);
+                //emit function onFacturaChange
+            });
         });
+
+    // Cuando Livewire redibuje, reinicializa Select2
+    document.addEventListener('livewire:updated', function () {
+        $('#select2-monitor').select2();
+        $('#select2-gastos').select2();
+    });
        
    
     </script>

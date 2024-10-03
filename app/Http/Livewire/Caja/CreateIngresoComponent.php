@@ -51,13 +51,17 @@ class CreateIngresoComponent extends Component
     public $asientoContable;
     public $cuentaContable_id;
     public $cuentasContables;
+    public $isIngresoProveedor = false;
+    public $gasto_id;
+    public $gastos;
+     
 
     public function loadCuentasContables()
     {
         // Similar lógica que tenías en createGasto para estructurar los datos jerárquicos
         $dataSub = [];
         $indice = 0;
-
+        
         $grupos = GrupoContable::orderBy('numero', 'asc')->get();
         foreach ($grupos as $grupo) {
             array_push($dataSub, [
@@ -111,7 +115,7 @@ class CreateIngresoComponent extends Component
 
     public function mount()
     {
-
+        $this->gastos = Caja::where('tipo_movimiento', 'Gasto')->get();
         $this->facturas = Facturas::where(function($query) {
             $query->where('estado', 'Pendiente')
                   ->orWhere('estado', 'Parcial');
@@ -183,6 +187,7 @@ class CreateIngresoComponent extends Component
 
     public function onFacturaChange($id)
     {
+        //dd("hola");
         if(isset($id) && $id != null){
             $this->facturaSeleccionada = Facturas::find($id);
 
@@ -245,9 +250,6 @@ class CreateIngresoComponent extends Component
                     $this->importe = $this->importeFactura;
                 }
 
-
-
-                
             }
 
         }
@@ -255,6 +257,34 @@ class CreateIngresoComponent extends Component
 
     public function submit()
     { 
+        //dd($this->isIngresoProveedor);
+
+        //dd($this->tipo_movimiento , $this->metodo_pago , $this->importe , $this->descripcion , $this->pedido_id , $this->fecha , $this->banco , $this->asientoContable , $this->cuentaContable_id , $this->isIngresoProveedor , $this->gasto_id);
+        if($this->isIngresoProveedor){
+            // Validación de datos
+            $validatedData = $this->validate(
+                [
+                    'tipo_movimiento' => 'required',
+                    'metodo_pago' => 'required',
+                    'importe' => 'required',
+                    'descripcion' => 'required',
+                    'fecha' => 'required',
+                    'banco' => 'nullable',
+                    'gasto_id' => 'required',
+                    
+
+
+                ],
+                // Mensajes de error
+                [
+                    'tipo_movimiento.required' => 'El tipo de movimiento es obligatorio.',
+                    'metodo_pago.required' => 'El método de pago es obligatorio.',
+                    'importe.required' => 'El importe es obligatorio.',
+                    'descripcion.required' => 'La descripción es obligatoria.',
+                    'fecha.required' => 'La fecha es obligatoria.',
+                ]
+            );
+        }else{
             // Validación de datos
             $validatedData = $this->validate(
                 [
@@ -264,9 +294,7 @@ class CreateIngresoComponent extends Component
                     'descripcion' => 'required',
                     'pedido_id' => 'nullable',
                     'fecha' => 'required',
-                    'banco' => 'nullable'
-
-
+                    'banco' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -278,42 +306,63 @@ class CreateIngresoComponent extends Component
                     'fecha.required' => 'La fecha es obligatoria.',
                 ]
             );
+        }
+
+        if($this->isIngresoProveedor){
+            $usuariosSave = Caja::create([
+                'tipo_movimiento' => $this->tipo_movimiento,
+                'metodo_pago' => $this->metodo_pago,
+                'importe' =>  $this->compensacion_factura ? $this->importeFacturaCompensada :  $this->importe,
+                'descripcion' => $this->descripcion,
+                'gasto_id' => $this->gasto_id,
+                'fecha' => $this->fecha,
+                'banco' => $this->banco,
+                'asientoContable' => $this->asientoContable,
+                'cuentaContable_id' => $this->cuentaContable_id,
+                'isIngresoProveedor' => $this->isIngresoProveedor
+            ]);
+        }else{
+            $usuariosSave = Caja::create([
+                'tipo_movimiento' => $this->tipo_movimiento,
+                'metodo_pago' => $this->metodo_pago,
+                'importe' =>  $this->compensacion_factura ? $this->importeFacturaCompensada :  $this->importe,
+                'descripcion' => $this->descripcion,
+                'pedido_id' => $this->pedido_id,
+                'fecha' => $this->fecha,
+                'banco' => $this->banco,
+                'asientoContable' => $this->asientoContable,
+                'cuentaContable_id' => $this->cuentaContable_id,
+                'isIngresoProveedor' => $this->isIngresoProveedor
+            ]);
+        }
         
-        // Guardar datos validados
-        
-        $usuariosSave = Caja::create([
-            'tipo_movimiento' => $this->tipo_movimiento,
-            'metodo_pago' => $this->metodo_pago,
-            'importe' =>  $this->compensacion_factura ? $this->importeFacturaCompensada :  $this->importe,
-            'descripcion' => $this->descripcion,
-            'pedido_id' => $this->pedido_id,
-            'fecha' => $this->fecha,
-            'banco' => $this->banco,
-            'asientoContable' => $this->asientoContable,
-            'cuentaContable_id' => $this->cuentaContable_id
-        ]);
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
+        if(!$this->isIngresoProveedor){
 
-        //$this->importeFactura = $this->facturaSeleccionada->total;
-        $this->ingresos_factura = Caja::where('pedido_id', $this->facturaSeleccionada->id)->get();
-        $importe = $this->importeFactura;
-        if(count($this->ingresos_factura) > 0){
-            $importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+            //$this->importeFactura = $this->facturaSeleccionada->total;
+            $this->ingresos_factura = Caja::where('pedido_id', $this->facturaSeleccionada->id)->get();
+            $importe = $this->importeFactura;
+            if(count($this->ingresos_factura) > 0){
+                $importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+
+            }
+
+            if($importe - $this->importeCompensado <= 0 ){
+                
+                $this->facturaSeleccionada->estado = 'Pagado';
+
+
+
+                $this->facturaSeleccionada->save();
+            }else{
+                $this->facturaSeleccionada->estado = 'Parcial';
+                $this->facturaSeleccionada->save();
+            }
 
         }
 
-        if($importe - $this->importeCompensado <= 0 ){
-            
-            $this->facturaSeleccionada->estado = 'Pagado';
-
-
-
-            $this->facturaSeleccionada->save();
-        }else{
-            $this->facturaSeleccionada->estado = 'Parcial';
-            $this->facturaSeleccionada->save();
-        }
+        
 
 
         // Alertas de guardado exitoso

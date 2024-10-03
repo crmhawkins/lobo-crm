@@ -67,7 +67,12 @@ class EditComponent extends Component
     public $asientoContable;
     public $cuentaContable_id;
     public $cuentasContables;
-
+    public $facturasSeleccionadas = [];
+    public $pagos = [];
+    public $isIngresoProveedor = false;
+    public $gasto_id;
+    public $gastos;
+    public $selectedGasto;
     public function loadCuentasContables()
     {
         // Similar lógica que tenías en createGasto para estructurar los datos jerárquicos
@@ -141,13 +146,23 @@ class EditComponent extends Component
         $this->tipo_movimiento = $caja->tipo_movimiento;
         if($this->tipo_movimiento === 'Gasto'){
             $this->facturas_compensadas = FacturasCompensadas::where('caja_id', $this->identificador)->get();
-            
+            $this->facturasSeleccionadas = FacturasCompensadas::where('caja_id', $this->identificador)
+            ->pluck('factura_id')->toArray();
+            // Cargar los importes pagados en el array de pagos
+            foreach($this->facturas_compensadas as $facturaCompensada) {
+                $this->pagos[] = $facturaCompensada->pagado;
+            }
             if($this->facturas_compensadas->count() > 0){
                 $this->compensacion = true;
                 $this->factura_id =  $this->facturas_compensadas->first()->factura_id;
             }
         }else{
             $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $this->pedido_id)->get();
+            $this->isIngresoProveedor = $caja->isIngresoProveedor;
+            $this->gasto_id = $caja->gasto_id;
+            $this->selectedGasto = $caja->gasto_id;
+            //dd($this->gasto_id);
+            $this->gastos = Caja::where('id', $this->gasto_id)->first()->gastos;
         }
         $this->banco = $caja->banco;
         $this->delegacion_id = $caja->delegacion_id;
@@ -237,6 +252,75 @@ class EditComponent extends Component
             return "Factura no encontrada";
         }
     }
+    public function guardarFacturasCompensadas()
+{
+    // Validar que los pagos sean válidos solo si hay facturas seleccionadas
+    $this->validate([
+        'pagos.*' => 'nullable|numeric|min:0',
+    ]);
+
+    // Obtener las facturas compensadas actuales
+    $facturasCompensadasActuales = FacturasCompensadas::where('caja_id', $this->identificador)
+                                ->pluck('factura_id')
+                                ->toArray();
+
+    // Facturas que fueron eliminadas por el usuario
+    $facturasEliminadas = array_diff($facturasCompensadasActuales, $this->facturasSeleccionadas);
+
+    // Eliminar las facturas compensadas que ya no estén seleccionadas
+    FacturasCompensadas::whereIn('factura_id', $facturasEliminadas)
+                        ->where('caja_id', $this->identificador)
+                        ->delete();
+
+    // Si el usuario ha quitado todas las facturas, asegurarse de que no queden registros
+    if (empty($this->facturasSeleccionadas)) {
+        // Establecer los valores de pagado y pendiente a 0
+        $this->pagado = 0;
+        $this->pendiente = $this->total;
+    } else {
+        // Actualizar o agregar pagos para cada factura seleccionada
+        foreach ($this->facturasSeleccionadas as $index => $factura_id) {
+            $factura = Facturas::find($factura_id);
+
+            // Si el pago no existe en el array, lo inicializamos con el total de la factura
+            if (!isset($this->pagos[$index])) {
+                $this->pagos[$index] = $factura->total;
+            }
+
+            // Verificar si la factura compensada ya existe
+            $facturaCompensada = FacturasCompensadas::where('caja_id', $this->identificador)
+                                    ->where('factura_id', $factura_id)
+                                    ->first();
+
+            if ($facturaCompensada) {
+                // Actualizar si ya existe
+                $facturaCompensada->update([
+                    'importe' => $factura->total,
+                    'pagado' => $this->pagos[$index],
+                    'pendiente' => $factura->total - $this->pagos[$index],
+                    'fecha' => now(),
+                ]);
+            } else {
+                // Crear una nueva entrada de factura compensada
+                FacturasCompensadas::create([
+                    'caja_id' => $this->identificador,
+                    'factura_id' => $factura_id,
+                    'importe' => $factura->total,
+                    'pagado' => $this->pagos[$index],
+                    'pendiente' => $factura->total - $this->pagos[$index],
+                    'fecha' => now(),
+                ]);
+            }
+        }
+
+        // Actualizar el pagado total de la caja
+        $this->pagado = array_sum($this->pagos);
+        $this->pendiente = $this->total - $this->pagado;
+    }
+
+    // Mostrar alerta de éxito
+    $this->alert('success', '¡Facturas compensadas guardadas correctamente!');
+}
 
 
 
@@ -365,36 +449,13 @@ class EditComponent extends Component
             'pendiente' => $this->pendiente,
             'asientoContable' => $this->asientoContable,
             'cuentaContable_id' => $this->cuentaContable_id,
+            'gasto_id' => $this->gasto_id
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));   
 
         if ($tipoSave) {
-            if($this->compensacion){
-                $factura = Facturas::find($this->factura_id);
-                //comprobar si ya existe una compensación
-                $facturaCompensada = FacturasCompensadas::where('caja_id', $this->identificador)->first();
-                if($facturaCompensada !== null){
-                    $facturaCompensada->update([
-                        'caja_id' => $caja->id,
-                        'factura_id' => $factura->id,
-                        'importe' => $factura->total,
-                        'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
-                        'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
-                        'fecha' => $this->fecha,
-                    ]);
-                }else{
-                    $facturaCompensada = FacturasCompensadas::create([
-                        'caja_id' => $caja->id,
-                        'factura_id' => $factura->id,
-                        'importe' => $factura->total,
-                        'pagado' => $this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total,
-                        'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
-                        'fecha' => $this->fecha,
-                    ]);
-                }
-                
-            }
+            
             $this->alert('success', '¡Movimiento de caja actualizado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,

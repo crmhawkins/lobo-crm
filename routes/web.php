@@ -32,6 +32,7 @@ use App\Http\Controllers\SubGrupoContabilidadController;
 use App\Http\Controllers\CuentasContableController;
 use App\Http\Controllers\SubCuentasContableController;
 use App\Http\Controllers\SubCuentasHijoController;
+use App\Http\Controllers\GastosController;
 
 
 /*
@@ -221,4 +222,5 @@ Route::post('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'proce
 //Route::get('/cron', [App\Http\Controllers\WhatsappController::class, 'cron'])->name('whatsapp.cron');
 Route::get('/mensajes-whatsapp', [App\Http\Controllers\WhatsappController::class, 'whatsapp'])->name('whatsapp.mensajes');
 
+Route::get('/buscar-gastos', [GastosController::class, 'buscarGastos'])->name('buscarGastos');
 

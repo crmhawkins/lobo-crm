@@ -43,6 +43,8 @@ class Caja extends Model
         'pendiente',
         'asientoContable',
         'cuentaContable_id',
+        'isIngresoProveedor',
+        'gasto_id',
     ];
 
      // Relación con Proveedores (Una caja pertenece a un proveedor)
@@ -67,6 +69,11 @@ class Caja extends Model
     public function scopeGastos($query)
     {
         return $query->where('tipo_movimiento', 'gasto');
+    }
+
+    public function gasto()
+    {
+        return $this->belongsTo(Caja::class, 'gasto_id');
     }
 
     /**
