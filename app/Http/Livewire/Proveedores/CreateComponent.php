@@ -131,7 +131,6 @@ class CreateComponent extends Component
                 'cuenta'=> 'nullable',
                 'forma_pago_pref' => 'nullable',
                 'departamento_id' => 'nullable',
-                'cuenta_contable_numero' => 'nullable'
 
             ],
             // Mensajes de error
@@ -155,6 +154,7 @@ class CreateComponent extends Component
 
         // Alertas de guardado exitoso
         if ($proveedoresSave) {
+            $this->crearCuentasContables();
             $this->alert('success', '¡Proveedor registrado correctamente!', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -172,6 +172,24 @@ class CreateComponent extends Component
             ]);
         }
     }
+
+    public function crearCuentasContables(){
+      
+        if($this->cuentaContable_id != null && $this->cuenta_contable != null){
+            $subcuenta = SubCuentaContable::where('numero', $this->cuentaContable_id)->first();
+            //dd($subcuenta);
+
+            if($subcuenta != null){
+                $subcuenta = SubCuentaHijo::create([
+                    'sub_cuenta_id' => $subcuenta->id,
+                    'numero' => $this->cuenta_contable,
+                    'nombre' => $this->nombre,
+                    'descripcion' => 'Proveedor',
+                ]);
+            }
+        }
+
+}
 
     // Función para cuando se llama a la alerta
     public function getListeners()
