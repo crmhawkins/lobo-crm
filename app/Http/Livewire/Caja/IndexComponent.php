@@ -304,7 +304,8 @@ class IndexComponent extends Component
             $this->caja = $this->caja->where('fecha', $this->fecha);
         }
 
-        if ($this->proveedorId != null) {
+        if ($this->proveedorId != null && $this->proveedorId != 'Todos') {
+            
             $this->caja = $this->caja->where('poveedor_id', $this->proveedorId);
         }
 
