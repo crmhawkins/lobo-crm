@@ -30,25 +30,29 @@ class ContabilidadController extends Controller
 
     // Crear una consulta base
     $query = Caja::with(['proveedor', 'facturas.cliente'])
-                 ->whereNotNull('asientoContable') // Filtrar solo cajas con asiento contable
-                 ->orderBy('asientoContable', 'asc'); // Ordenar por asiento contable
+    ->whereNotNull('asientoContable') // Filtrar solo cajas con asiento contable
+    ->orderBy('asientoContable', 'asc'); // Ordenar por asiento contable
 
-    // Aplicar filtro de cuenta contable
-    if ($request->filled('cuentaContable_id')) {
-        $cuentaContableId = $request->cuentaContable_id;
+// Aplicar filtro de cuenta contable
+if ($request->filled('cuentaContable_id')) {
+    $cuentaContableId = $request->cuentaContable_id;
 
-        // Buscar todas las cuentas, subcuentas, y subcuentas hijas que comiencen con el número seleccionado
-        $subCuentasNumeros = $this->getAllSubCuentasNumeros($cuentaContableId);
+    // Buscar todas las cuentas, subcuentas, y subcuentas hijas que comiencen con el número seleccionado
+    $subCuentasNumeros = $this->getAllSubCuentasNumeros($cuentaContableId);
 
-        // Aplicar filtro en base a las cuentas encontradas
-        $query->where(function ($query) use ($subCuentasNumeros) {
-            $query->whereHas('proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
-                $query->whereIn('numero', $subCuentasNumeros);
-            })->orWhereHas('facturas.cliente.cuentaContable', function ($query) use ($subCuentasNumeros) {
-                $query->whereIn('numero', $subCuentasNumeros);
-            });
+    // Aplicar filtro en base a las cuentas encontradas
+    $query->where(function ($query) use ($subCuentasNumeros) {
+        $query->whereHas('proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
+            $query->whereIn('numero', $subCuentasNumeros);
+        })->orWhereHas('facturas.cliente.cuentaContable', function ($query) use ($subCuentasNumeros) {
+            $query->whereIn('numero', $subCuentasNumeros);
+        })
+        // Nueva condición para filtrar cuando gasto_id no sea null y buscar en gasto.proveedor.cuentaContable
+        ->orWhereHas('gasto.proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
+            $query->whereIn('numero', $subCuentasNumeros);
         });
-    }
+    });
+}
 
     // Aplicar filtro de fechas
     if ($request->filled('fecha_desde')) {
@@ -81,8 +85,22 @@ class ContabilidadController extends Controller
     // Obtener las transacciones paginadas (transacciones actuales de la página)
     $cajas = $query->paginate($perPage);
 
+
+    //sumar todos los ingresos y sumar todos los gatos y ver el beneficio
+    // $ingresos = 0;
+    // $gastos = 0;
+    // $cajitas = Caja::all();
+    // foreach ($cajitas as $caja) {
+    //     if($caja->tipo_movimiento == 'Ingreso'){
+    //         $ingresos += $caja->importe;
+    //     }else{
+    //         $gastos += $caja->pagado ? $caja->pagado : $caja->total;
+    //     }
+    // }
+
+    // $beneficio = $ingresos - $gastos;
     // Retornar la vista con los datos filtrados y el saldo acumulado
-    return view('contabilidad.index', compact('cajas', 'cuentasContables', 'saldoAcumulado'));
+    return view('contabilidad.index', compact('cajas', 'cuentasContables', 'saldoAcumulado' ));
 }
     
 

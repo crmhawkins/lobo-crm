@@ -6,6 +6,7 @@
 
 <div class="container-fluid">
     <h1>Libro Mayor</h1>
+    {{-- {{$beneficio}} --}}
 
     <!-- Barra de filtros -->
     <form action="{{ route('contabilidad.index') }}" method="GET" class="mb-4">
@@ -146,6 +147,8 @@
                     <td>
                         @if($caja->proveedor)
                             {{ $caja->proveedor->nombre }}
+                        @elseif( $caja->gasto_id)
+                            {{ $caja->gasto->proveedor->nombre }}
                         @else
                             {{ $caja->facturas->first()->cliente->nombre ?? '' }}
                         @endif
@@ -153,6 +156,8 @@
                     <td>
                         @if($caja->proveedor && $caja->proveedor->cuentaContable)
                             {{ $caja->proveedor->cuentaContable->numero }}
+                        @elseif($caja->gasto_id && $caja->gasto->proveedor && $caja->gasto->proveedor->cuentaContable)
+                            {{ $caja->gasto->proveedor->cuentaContable->numero }}
                         @elseif($caja->facturas->first() && $caja->facturas->first()->cliente->cuentaContable)
                             {{ $caja->facturas->first()->cliente->cuentaContable->numero }}
                         @endif
