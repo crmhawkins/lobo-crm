@@ -71,7 +71,7 @@ class EditComponent extends Component
     public $pagos = [];
     public $isIngresoProveedor = false;
     public $gasto_id;
-    public $gastos;
+    public $gastos = [];
     public $selectedGasto;
     public function loadCuentasContables()
     {
@@ -159,10 +159,12 @@ class EditComponent extends Component
         }else{
             $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $this->pedido_id)->get();
             $this->isIngresoProveedor = $caja->isIngresoProveedor;
-            $this->gasto_id = $caja->gasto_id;
-            $this->selectedGasto = $caja->gasto_id;
-            //dd($this->gasto_id);
-            $this->gastos = Caja::where('id', $this->gasto_id)->first()->gastos;
+            if($this->isIngresoProveedor){
+                $this->gasto_id = $caja->gasto_id;
+                $this->selectedGasto = $caja->gasto_id;
+                //dd($this->gasto_id);
+                $this->gastos = Caja::where('id', $this->gasto_id)->first()->gastos;
+            }
         }
         $this->banco = $caja->banco;
         $this->delegacion_id = $caja->delegacion_id;
