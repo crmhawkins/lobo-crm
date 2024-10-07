@@ -50,7 +50,8 @@ class EditComponent extends Component
     public function getListeners()
     {
         return [
-           'saveAcuerdoComercial'
+           'saveAcuerdoComercial',
+           'deleteAcuerdo'
         ];
     }
 
@@ -162,6 +163,20 @@ class EditComponent extends Component
     $fecha = Carbon::createFromFormat('d/m/Y', $dia.'/'.$mes_numero.'/'.$anio);
 
     return $fecha;
+}
+
+public function deleteAcuerdo()
+{
+    // Eliminar el acuerdo comercial
+    $this->acuerdo->delete();
+
+    // Emitir un evento para redirigir después de la eliminación
+    $this->dispatchBrowserEvent('acuerdoEliminado', ['clienteId' => $this->acuerdo->cliente_id]);
+}
+
+public function confirmDelete()
+{
+    $this->dispatchBrowserEvent('confirmarEliminacion');
 }
 
     public function saveAcuerdoComercial()

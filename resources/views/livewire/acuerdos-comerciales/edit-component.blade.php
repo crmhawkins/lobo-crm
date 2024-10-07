@@ -125,6 +125,15 @@
             border-radius: 2px;
         }
 
+        .buttonDelete {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
         .remove-row {
             background-color: #f44336;
             color: white;
@@ -456,6 +465,8 @@
         </table>
         {{-- <button class="btn btn-primary buttonSave" type="button" wire:click="saveAcuerdoComercial()">Guardar Acuerdo Comercial</button> --}}
         <button class="btn btn-primary buttonSave" type="button" onclick="guardarFirmas(); @this.saveAcuerdoComercial()">Guardar Acuerdo Comercial</button>
+        <button class="btn btn-danger buttonDelete" type="button" wire:click="confirmDelete">Eliminar Acuerdo Comercial</button>
+
 
         <footer class="footer" style="font-size: 18px;">
             <p>DEPARTAMENTO COMERCIAL</p>
@@ -466,6 +477,39 @@
 
 @livewireScripts
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Escuchar el evento para mostrar el SweetAlert de confirmación
+        window.addEventListener('confirmarEliminacion', function () {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminarlo'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Llamar a Livewire para eliminar el acuerdo
+                    Livewire.emit('deleteAcuerdo');
+                }
+            });
+        });
+
+        // Escuchar el evento de acuerdo eliminado para redirigir
+        window.addEventListener('acuerdoEliminado', function (event) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Eliminado!',
+                text: 'El acuerdo comercial ha sido eliminado correctamente.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = `/admin/clientes-edit/${event.detail.clienteId}`;
+            });
+        });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('acuerdoGuardado', function () {
