@@ -88,7 +88,7 @@
         }
 
         #productosLoboTable > tbody > tr > td:nth-child(1), #productosOtrosTable > tbody > tr > td:nth-child(1){
-            width: 100%;
+            width:  200px;
         }
 
 
