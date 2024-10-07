@@ -33,6 +33,7 @@ use App\Http\Controllers\CuentasContableController;
 use App\Http\Controllers\SubCuentasContableController;
 use App\Http\Controllers\SubCuentasHijoController;
 use App\Http\Controllers\GastosController;
+use App\Http\Controllers\acuerdosComerciales;
 
 
 /*
@@ -212,6 +213,12 @@ Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('con
 
 //incidencias
 Route::get('/incidencias', [App\Http\Controllers\IncidenciasController::class, 'index'])->name('admin.incidencias.index');
+
+//acuerdos comerciales
+Route::get('/create/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'create'])->name('acuerdos-comerciales.create');
+Route::get('/edit/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'edit'])->name('acuerdos-comerciales.edit');
+
+Route::post('/acuerdos-comerciales', [acuerdosComercialesController::class, 'store'])->name('acuerdos-comerciales.store');
 
 });
 

@@ -764,6 +764,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     Cliente</button>
                             </div>
                         </div>
+
                         <div class="row">
                             @if(count($anotacionesProximoPedido) > 0 )
                                 <div class="col-12">
@@ -776,6 +777,28 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     Anotación próximo pedido </button>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="dropdown col-12" style="width: 100%;">
+                                <button class="btn btn-secondary dropdown-toggle col-12" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Acuerdos Comerciales
+                                </button>
+                                <div class="dropdown-menu col-12" aria-labelledby="dropdownMenuButton">
+                                    <!-- Primer botón: Crear nuevo acuerdo comercial -->
+                                    <a class="dropdown-item bg-info " style="border: 1px solid black"  href="{{ route('acuerdos-comerciales.create', ['id' => $cliente->id]) }}">
+                                        Crear acuerdo comercial
+                                    </a>
+                            
+                                    <!-- Desplegar los acuerdos comerciales que tiene el cliente -->
+                                    @foreach ($acuerdos as $acuerdo)
+                                        <a class="dropdown-item bg-warning " style="border: 1px solid black" href="{{ route('acuerdos-comerciales.edit', ['id' => $acuerdo->id]) }}">
+                                            Acuerdo #{{ $acuerdo->nAcuerdo }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        
                         
                     </div>
                 </div>

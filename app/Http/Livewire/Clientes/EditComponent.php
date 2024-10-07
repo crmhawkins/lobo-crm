@@ -14,14 +14,16 @@ use App\Models\Productos;
 use App\Models\AnotacionesClientePedido;
 use App\Models\Emails;
 use App\Helpers\GlobalFunctions;
+use App\Models\acuerdosComerciales;
 
 class EditComponent extends Component
 {
     use LivewireAlert;
 
     public $identificador;
-
+    public $acuerdos;
     public $clientes;
+    public $cliente;
     public $tipo_cliente; //0 es Particular, 1 es Empresa.
     public $nombre;
     public $dni_cif;
@@ -81,6 +83,7 @@ class EditComponent extends Component
     public function mount()
     {
         $cliente = Clients::find($this->identificador);
+        $this->cliente = $cliente;
         $this->comerciales = User::whereIn('role', [2, 3])->get();
         $this->delegaciones = Delegacion::all();
         $this->comercial_id = $cliente->comercial_id;
@@ -118,6 +121,8 @@ class EditComponent extends Component
         $this->cuentasContables = GlobalFunctions::loadCuentasContables();
         $this->cuentaContable_id = $cliente->cuenta_contable;
         $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
+        $this->acuerdos = acuerdosComerciales::where('cliente_id', $this->identificador)->get();
+        
         //dd($this->emailsExistentes);
 
 
