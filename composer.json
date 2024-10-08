@@ -41,7 +41,9 @@
         "files": [
             "app/Http/Helpers/budget-referent.php",
             "app/Helpers/helpers.php",
-            "app/Helpers/GlobalFunctions.php"
+            "app/Helpers/GlobalFunctions.php",
+            "app/Helpers/FacturaHelper.php"
+
         ]
     },
     "autoload-dev": {

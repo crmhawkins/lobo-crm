@@ -94,20 +94,43 @@
                                 <td>{{ $factura->cliente->nombre }}</td>
                                 <td>{{ $factura->cliente->delegacion->nombre ?? 'No definido' }}</td>
                                 <td>{{ $factura->created_at->format('d-m-Y') }}</td>
-                                <td>{{ number_format($factura->total, 2) }}€</td>
+                                @if($factura->factura_id)
+                                  @php
+                                    if($factura->hasIva){
+                                        $totalFactura = $factura->total - $factura->facturaNormal->total ;
+                                    }else{
+                                        $totalFactura = $factura->precio - $factura->facturaNormal->precio;
+                                    }
+                                  @endphp
+                                    <td>{{ number_format($totalFactura, 2) }}€ </td>
+                                @else
+                                    @if($factura->hasIva)
+                                        <td>{{ number_format($factura->total, 2) }}€</td>
+                                    @else
+                                        <td>{{ number_format($factura->precio, 2) }}€</td>
+                                    @endif
+
+                                @endif
                                 <td>{{ $factura->descripcion  }}</td>
 
                                 <!-- Mostrar las cantidades para cada producto -->
                                 @foreach($productos as $producto)
                                     @php
                                         $cantidadProducto = 0;
-                                        if ($factura->pedido && $factura->pedido->productosPedido) {
-                                            // Encontrar el producto en el pedido
+                                         // Si es una factura rectificativa, restamos las unidades descontadas
+                                         if ($factura->factura_id && $factura->productosFacturas) {
+                                            $productoFactura = $factura->productosFacturas->firstWhere('producto_id', $producto->id);
+                                            if ($productoFactura) {
+                                                $cantidadProducto = -$productoFactura->cantidad;
+                                            }
+                                        }else if ($factura->pedido && $factura->pedido->productosPedido) {
                                             $productoPedido = $factura->pedido->productosPedido->firstWhere('producto_pedido_id', $producto->id);
                                             if ($productoPedido) {
                                                 $cantidadProducto = $productoPedido->unidades;
                                             }
                                         }
+                                        
+                                       
                                     @endphp
                                     <td>{{ $cantidadProducto }}</td>
                                 @endforeach
@@ -149,16 +172,16 @@
                             @foreach($productos as $producto)
                                 <td>{{ $producto->total_unidades_vendidas }}</td>
                             @endforeach
-                            <td></td> <!-- Celda vacía para el total general -->
+                            <td><strong>{{ number_format($totalEurosFacturas, 2) }}€</strong></td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <!-- Mostrar el total en euros para cada producto -->
                             @foreach($productos as $producto)
                                 <td>{{ number_format($producto->total_euros_vendidos, 2)  }}€</td>
                             @endforeach
                             <!-- Mostrar el total de todas las facturas al final -->
-                            <td><strong>{{ number_format($totalEurosFacturas, 2) }}€</strong></td>
-                        </tr>
+                            
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>

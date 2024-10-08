@@ -69,6 +69,17 @@ class Facturas extends Model
     {
         return $this->belongsTo(Facturas::class, 'factura_intermedia_id');
     }
+    
+    public function productosFacturas()
+    {
+        return $this->hasMany(ProductosFacturas::class, 'factura_id' );
+    }
+
+    public function facturaNormal()
+    {
+        return $this->belongsTo(Facturas::class, 'factura_id');
+    }
+
 
 
 
