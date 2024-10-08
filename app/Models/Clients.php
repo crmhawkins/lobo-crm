@@ -64,9 +64,9 @@ class Clients extends Model
     ];
 
     public function delegacion()
-    {
-        return $this->belongsTo(Delegacion::class, 'delegacion_COD');
-    }
+{
+    return $this->belongsTo(Delegacion::class, 'delegacion_COD', 'COD');
+}
     public function comercial()
     {
         return $this->belongsTo(User::class, 'comercial_id');
