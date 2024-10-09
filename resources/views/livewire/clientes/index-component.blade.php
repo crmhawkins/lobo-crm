@@ -193,6 +193,10 @@
     $(document).ready(function () {
     var table = $('#clientesTable').DataTable({
         responsive: true,
+        dom: 'Bfrtip', // Añadir los botones
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
         language: {
             lengthMenu: 'Mostrar _MENU_ registros por página',
             zeroRecords: 'No se encontraron registros',
