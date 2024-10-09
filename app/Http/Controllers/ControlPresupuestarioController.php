@@ -615,7 +615,7 @@ public function patrocinios(Request $request)
 
     // Obtener todas las delegaciones
     $delegaciones = Delegacion::all();
-
+    $productos2 = Productos::all();
     // Obtener los registros de caja del departamento "patrocinios"
     $cajasPatrocinios = Caja::where('departamento', 'patrocinios')
         ->whereYear('fecha', $year)
@@ -648,7 +648,17 @@ public function patrocinios(Request $request)
         $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] += $caja->total;
     }
 
-    return view('control-presupuestario.patrocinios', compact('cajaPorTrimestre', 'delegaciones', 'year'));
+    // Obtener los costes por año
+    $costes = Costes::where('year', $year)
+        ->with('producto', 'delegacion')
+        ->get();
+
+
+// Agrupar los costes por delegación
+ $costesPorDelegacion = $costes->groupBy(function ($coste) {
+    return $coste->delegacion ? $coste->delegacion->nombre : 'General';
+});
+    return view('control-presupuestario.patrocinios', compact('cajaPorTrimestre', 'delegaciones', 'year' , 'costesPorDelegacion' , 'productos2'));
 }
 
 
