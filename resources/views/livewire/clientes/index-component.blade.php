@@ -191,28 +191,29 @@
 {{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 <script>
     $(document).ready(function () {
-        var table = $('#clientesTable').DataTable({
-            responsive: true,
-            language: {
-                lengthMenu: 'Mostrar _MENU_ registros por página',
-                zeroRecords: 'No se encontraron registros',
-                info: 'Mostrando página _PAGE_ de _PAGES_',
-                infoEmpty: 'No hay registros disponibles',
-                infoFiltered: '(filtrado de _MAX_ total registros)',
-                search: 'Buscar:'
-            },
-        });
-
-        // Filtro personalizado para delegaciones
-        $('#delegacionFilter').on('change', function () {
-            var delegacion = $(this).val();
-            // Aplicar filtro al DataTable
-            if (delegacion) {
-                table.column(4).search(delegacion).draw();
-            } else {
-                table.column(4).search('').draw(); // Limpiar el filtro si está vacío
-            }
-        });
+    var table = $('#clientesTable').DataTable({
+        responsive: true,
+        language: {
+            lengthMenu: 'Mostrar _MENU_ registros por página',
+            zeroRecords: 'No se encontraron registros',
+            info: 'Mostrando página _PAGE_ de _PAGES_',
+            infoEmpty: 'No hay registros disponibles',
+            infoFiltered: '(filtrado de _MAX_ total registros)',
+            search: 'Buscar:'
+        },
     });
+
+    // Filtro personalizado para delegaciones
+    $('#delegacionFilter').on('change', function () {
+        var delegacion = $(this).val();
+        // Aplicar filtro al DataTable en la columna de Delegación (índice 5)
+        if (delegacion) {
+            table.column(5).search(delegacion).draw();
+        } else {
+            table.column(5).search('').draw(); // Limpiar el filtro si está vacío
+        }
+    });
+});
+
 </script>
 @endsection

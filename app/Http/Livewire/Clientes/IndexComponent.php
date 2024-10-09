@@ -52,9 +52,9 @@ class IndexComponent extends Component
     }
 
 
-    public function updateDelegacionFilter(){
-        $this->loadClientes();
-    }
+    // public function updateDelegacionFilter(){
+    //     $this->loadClientes();
+    // }
 
     public function loadClientes()
     {
