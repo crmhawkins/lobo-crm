@@ -167,6 +167,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::post('/guardar-costes', [ControlPresupuestarioController::class, 'guardarCostes'])->name('control-presupuestario.guardarCostes');
     Route::post('/costes/{id}', [ControlPresupuestarioController::class, 'eliminarCoste'])->name('costes.eliminar');
     Route::get('/control-presupuestario/logistica', [ControlPresupuestarioController::class, 'logistica'])->name('control-presupuestario.logistica');
+    Route::get('/control-presupuestario/comerciales', [ControlPresupuestarioController::class, 'comerciales'])->name('control-presupuestario.comerciales');
 
     // Cuentas Contables
     Route::get('/cuentas-contables', [App\Http\Controllers\CuentasContableController::class, 'index'])->name('admin.cuentasContables.index');

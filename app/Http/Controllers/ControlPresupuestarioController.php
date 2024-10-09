@@ -357,8 +357,110 @@ public function compras(Request $request)
 }
     
     
+public function comerciales(Request $request)
+{
+    // Establecer la localización en español
+    Carbon::setLocale('es');
 
-       
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+
+    // Obtener todos los productos cuyo precio_ud es 0
+    $productosGratis = Productos::all();
+    $delegaciones = Delegacion::all();
+
+    // Obtener todos los pedidos sin paginación y dentro del año seleccionado
+    $pedidos = Pedido::whereYear('created_at', $year)
+        ->with(['productosPedido.producto', 'cliente.delegacion']) // Asegúrate de cargar la relación de cliente y delegación
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    // Obtener los costes por año
+    $costes = Costes::query()
+        ->with('producto', 'delegacion')
+        ->where('year', $year)
+        ->get();
+
+    // Mapa de costes por producto y delegación
+    $costesMap = [];
+    foreach ($costes as $coste) {
+        $productId = $coste->product_id;
+        $delegacionCOD = $coste->COD ?? 'General';
+        $costesMap[$productId][$delegacionCOD] = $coste->cost;
+    }
+
+    // Calcular las ventas por trimestre, mes, producto y delegación solo para productos cuyo precio_ud sea 0
+    $ventasPorTrimestre = [];
+    foreach ($pedidos as $pedido) {
+        $mes = Carbon::parse($pedido->created_at)->month; // Obtener el mes del pedido
+        $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
+
+        $delegacionNombre = $pedido->cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+        
+        // Inicializar el trimestre y mes en el array si no existen
+        if (!isset($ventasPorTrimestre[$trimestre])) {
+            $ventasPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($ventasPorTrimestre[$trimestre][$mes])) {
+            $ventasPorTrimestre[$trimestre][$mes] = [];
+        }
+
+        // Procesar los productos del pedido para registrar las ventas por producto
+        foreach ($pedido->productosPedido as $productoPedido) {
+            
+            try {
+                $productoNombre = $productoPedido->producto->nombre;
+                $productId = $productoPedido->producto->id;
+                
+                // Solo tomar productos cuyo precio unitario es 0
+                if ($productoPedido->precio_ud == 0) {
+                    if($pedido->id == 359){
+                        //dd($pedido->cliente->delegacion);
+            
+                    }
+                    $unidadesVendidas = $productoPedido->unidades;
+
+                    // Inicializar el producto en el mes si no existe
+                    if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                        $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                            'nombre' => $productoNombre,
+                            'ventasDelegaciones' => [],
+                        ];
+                    }
+
+                    // Asegurarse de inicializar las ventas por delegación
+                    if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                        $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                            'unidadesVendidas' => 0,
+                            'costeTotal' => 0,
+                        ];
+                    }
+
+                    $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
+
+                    // Obtener el coste para la delegación o el coste general si no existe
+                    $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+                    //dd($costesMap);
+
+                    // Sumar las unidades vendidas y calcular el coste total
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+    }
+   // dd($ventasPorTrimestre);
+
+    // Agrupar los costes por delegación
+    $costesPorDelegacion = $costes->groupBy(function ($coste) {
+        return $coste->delegacion ? $coste->delegacion->nombre : 'General';
+    });
+
+    return view('control-presupuestario.comerciales', compact(
+        'ventasPorTrimestre', 'productosGratis', 'delegaciones', 'costesPorDelegacion', 'year'
+    ));
+}
 
 
 }
