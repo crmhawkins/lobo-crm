@@ -118,34 +118,45 @@ public function compras(Request $request)
 
         // Procesar los productos del pedido para registrar las ventas por producto
         if ($factura->pedido) {
+
+            //try catch para evitar errores en la relación
+            
+
             foreach ($factura->pedido->productosPedido as $productoPedido) {
-                $productoNombre = $productoPedido->producto->nombre;
-                $productId = $productoPedido->producto->id;
-                $unidadesVendidas = $productoPedido->unidades;
 
-                // Inicializar el producto en el mes si no existe
-                if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
-                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
-                        'nombre' => $productoNombre,
-                        'ventasDelegaciones' => [],
-                    ];
+                try {
+                    $productoNombre = $productoPedido->producto->nombre;
+                    $productId = $productoPedido->producto->id;
+                    $unidadesVendidas = $productoPedido->unidades;
+
+                    // Inicializar el producto en el mes si no existe
+                    if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                        $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                            'nombre' => $productoNombre,
+                            'ventasDelegaciones' => [],
+                        ];
+                    }
+                    $delegacionCOD = $factura->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
+
+                    // Obtener el coste para la delegación o el coste general si no existe
+                    $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+
+                    // Inicializar la delegación si no existe para este producto
+                    if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                        $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                            'unidadesVendidas' => 0,
+                            'costeTotal' => 0,
+                        ];
+                    }
+
+                    // Sumar las unidades vendidas y calcular el coste total
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+                } catch (\Exception $e) {
+                    continue;
                 }
-                $delegacionCOD = $factura->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
 
-                // Obtener el coste para la delegación o el coste general si no existe
-                $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
-
-                // Inicializar la delegación si no existe para este producto
-                if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
-                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
-                        'unidadesVendidas' => 0,
-                        'costeTotal' => 0,
-                    ];
-                }
-
-                // Sumar las unidades vendidas y calcular el coste total
-                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
-                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+                
             }
         }
     }
