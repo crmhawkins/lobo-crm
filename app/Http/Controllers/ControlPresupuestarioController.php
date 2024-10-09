@@ -487,26 +487,30 @@ public function marketing(Request $request)
     $cajaPorTrimestre = [];
 
     foreach ($cajas as $caja) {
-        $mes = Carbon::parse($caja->fecha)->month; // Obtener el mes de la caja
-        $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
+        try {
+            $mes = Carbon::parse($caja->fecha)->month; // Obtener el mes de la caja
+            $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
 
-        $delegacionNombre = $caja->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+            $delegacionNombre = $caja->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
 
-        // Inicializar el trimestre y mes en el array si no existen
-        if (!isset($cajaPorTrimestre[$trimestre])) {
-            $cajaPorTrimestre[$trimestre] = [];
+            // Inicializar el trimestre y mes en el array si no existen
+            if (!isset($cajaPorTrimestre[$trimestre])) {
+                $cajaPorTrimestre[$trimestre] = [];
+            }
+            if (!isset($cajaPorTrimestre[$trimestre][$mes])) {
+                $cajaPorTrimestre[$trimestre][$mes] = [];
+            }
+
+            // Inicializar la delegación en el array si no existe
+            if (!isset($cajaPorTrimestre[$trimestre][$mes][$delegacionNombre])) {
+                $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] = 0;
+            }
+
+            // Sumar el total de caja por delegación y mes
+            $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] += $caja->total;
+        } catch (\Exception $e) {
+            continue;
         }
-        if (!isset($cajaPorTrimestre[$trimestre][$mes])) {
-            $cajaPorTrimestre[$trimestre][$mes] = [];
-        }
-
-        // Inicializar la delegación en el array si no existe
-        if (!isset($cajaPorTrimestre[$trimestre][$mes][$delegacionNombre])) {
-            $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] = 0;
-        }
-
-        // Sumar el total de caja por delegación y mes
-        $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] += $caja->total;
     }
 
     // Obtener los pedidos de los clientes cuyo comercial está en el departamento de marketing
@@ -552,39 +556,43 @@ public function marketing(Request $request)
 
         // Procesar los productos del pedido para registrar las ventas por producto
         foreach ($pedido->productosPedido as $productoPedido) {
-            if ($productoPedido->precio_ud != 0) {
+            try{
+                if ($productoPedido->precio_ud != 0) {
 
+                    continue;
+
+                }
+                $productoNombre = $productoPedido->producto->nombre;
+                $productId = $productoPedido->producto->id;
+                $unidadesVendidas = $productoPedido->unidades;
+
+                // Inicializar el producto en el mes si no existe
+                if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                        'nombre' => $productoNombre,
+                        'ventasDelegaciones' => [],
+                    ];
+                }
+
+                $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
+
+                // Obtener el coste para la delegación o el coste general si no existe
+                $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+
+                // Inicializar la delegación si no existe para este producto
+                if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                    $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                        'unidadesVendidas' => 0,
+                        'costeTotal' => 0,
+                    ];
+                }
+
+                // Sumar las unidades vendidas y calcular el coste total
+                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+            } catch (\Exception $e) {
                 continue;
-
             }
-            $productoNombre = $productoPedido->producto->nombre;
-            $productId = $productoPedido->producto->id;
-            $unidadesVendidas = $productoPedido->unidades;
-
-            // Inicializar el producto en el mes si no existe
-            if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
-                $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
-                    'nombre' => $productoNombre,
-                    'ventasDelegaciones' => [],
-                ];
-            }
-
-            $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
-
-            // Obtener el coste para la delegación o el coste general si no existe
-            $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
-
-            // Inicializar la delegación si no existe para este producto
-            if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
-                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
-                    'unidadesVendidas' => 0,
-                    'costeTotal' => 0,
-                ];
-            }
-
-            // Sumar las unidades vendidas y calcular el coste total
-            $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
-            $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
         }
     }
  // Agrupar los costes por delegación
