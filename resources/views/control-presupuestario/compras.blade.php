@@ -48,7 +48,7 @@
 @section('content-principal')
 
 <div class="container-fluid">
-    <h2>Costes para el año {{ $year }}</h2>
+    <h2>Control PTO. COMPRAS {{ $year }}</h2>
 
     <!-- Filtro por año -->
     <form action="{{ route('control-presupuestario.compras') }}" method="GET" class="mb-4">
