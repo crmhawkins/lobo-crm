@@ -71,7 +71,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     @if($cliente->delegacion)
                         @if($cliente->delegacion)
                             @if($cliente->delegacion )
-                                @if(!$cliente->delegacion->nombre !== '07 CANARIAS' || $cliente->delegacion->nombre !== '13 GIBRALTAR' || $cliente->delegacion->nombre !== '14 CEUTA' || $cliente->delegacion->nombre !== '15 MELILLA')
+                                @if($cliente->delegacion->nombre !== '07 CANARIAS' && $cliente->delegacion->nombre !== '13 GIBRALTAR' && $cliente->delegacion->nombre !== '14 CEUTA' && $cliente->delegacion->nombre !== '15 MELILLA')
                                     <button class="btn btn-success" id="EmailFacturarIva">Enviar con Iva</button>
                                 @endif
                             @endif
