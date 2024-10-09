@@ -12,6 +12,8 @@ use App\Helpers\FacturaHelper;
 use App\Models\Clients;
 use App\Models\Costes;
 use App\Models\Pedido;
+use App\Models\User;
+use App\Models\Caja;
 
 class ControlPresupuestarioController extends Controller
 {
@@ -461,6 +463,138 @@ public function comerciales(Request $request)
         'ventasPorTrimestre', 'productosGratis', 'delegaciones', 'costesPorDelegacion', 'year'
     ));
 }
+
+
+public function marketing(Request $request)
+{
+    // Establecer la localización en español
+    Carbon::setLocale('es');
+
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+
+    // Obtener todas las delegaciones
+    $delegaciones = Delegacion::all();
+    $productos2 = Productos::all();
+
+    // Obtener las cajas del departamento de marketing (id 2), cuyas cuentas contables comiencen por '6270'
+    $cajas = Caja::where('departamento', 'marketing')
+        ->whereYear('fecha', $year)
+        ->where('cuenta', 'like', '6270%')
+        ->with(['facturas', 'delegacion']) // Relación con delegación y facturas
+        ->get();
+
+    // Organizar las cajas por trimestre, mes y delegación
+    $cajaPorTrimestre = [];
+
+    foreach ($cajas as $caja) {
+        $mes = Carbon::parse($caja->fecha)->month; // Obtener el mes de la caja
+        $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
+
+        $delegacionNombre = $caja->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+
+        // Inicializar el trimestre y mes en el array si no existen
+        if (!isset($cajaPorTrimestre[$trimestre])) {
+            $cajaPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($cajaPorTrimestre[$trimestre][$mes])) {
+            $cajaPorTrimestre[$trimestre][$mes] = [];
+        }
+
+        // Inicializar la delegación en el array si no existe
+        if (!isset($cajaPorTrimestre[$trimestre][$mes][$delegacionNombre])) {
+            $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] = 0;
+        }
+
+        // Sumar el total de caja por delegación y mes
+        $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] += $caja->total;
+    }
+
+    // Obtener los pedidos de los clientes cuyo comercial está en el departamento de marketing
+    $comercialesMarketing = User::where('user_department_id', 2)->pluck('id');
+
+    // Obtener los pedidos del año correspondiente y que pertenecen a clientes cuyo comercial está en marketing
+    $pedidos = Pedido::whereYear('created_at', $year)
+        ->whereHas('cliente', function($query) use ($comercialesMarketing) {
+            $query->whereIn('comercial_id', $comercialesMarketing);
+        })
+        ->with(['productosPedido.producto', 'cliente.delegacion'])
+        ->get();
+
+    // Obtener los costes por año
+    $costes = Costes::where('year', $year)
+        ->with('producto', 'delegacion')
+        ->get();
+
+    // Mapa de costes por producto y delegación
+    $costesMap = [];
+    foreach ($costes as $coste) {
+        $productId = $coste->product_id;
+        $delegacionCOD = $coste->COD ?? 'General';
+        $costesMap[$productId][$delegacionCOD] = $coste->cost;
+    }
+
+    // Calcular las ventas por trimestre, mes, producto y delegación
+    $ventasPorTrimestre = [];
+
+    foreach ($pedidos as $pedido) {
+        $mes = Carbon::parse($pedido->created_at)->month; // Obtener el mes del pedido
+        $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
+
+        $delegacionNombre = $pedido->cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+
+        // Inicializar el trimestre y mes en el array si no existen
+        if (!isset($ventasPorTrimestre[$trimestre])) {
+            $ventasPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($ventasPorTrimestre[$trimestre][$mes])) {
+            $ventasPorTrimestre[$trimestre][$mes] = [];
+        }
+
+        // Procesar los productos del pedido para registrar las ventas por producto
+        foreach ($pedido->productosPedido as $productoPedido) {
+            if ($productoPedido->precio_ud != 0) {
+
+                continue;
+
+            }
+            $productoNombre = $productoPedido->producto->nombre;
+            $productId = $productoPedido->producto->id;
+            $unidadesVendidas = $productoPedido->unidades;
+
+            // Inicializar el producto en el mes si no existe
+            if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                $ventasPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                    'nombre' => $productoNombre,
+                    'ventasDelegaciones' => [],
+                ];
+            }
+
+            $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
+
+            // Obtener el coste para la delegación o el coste general si no existe
+            $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+
+            // Inicializar la delegación si no existe para este producto
+            if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                    'unidadesVendidas' => 0,
+                    'costeTotal' => 0,
+                ];
+            }
+
+            // Sumar las unidades vendidas y calcular el coste total
+            $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+            $ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+        }
+    }
+ // Agrupar los costes por delegación
+ $costesPorDelegacion = $costes->groupBy(function ($coste) {
+    return $coste->delegacion ? $coste->delegacion->nombre : 'General';
+});
+
+    return view('control-presupuestario.marketing', compact('cajaPorTrimestre', 'ventasPorTrimestre', 'delegaciones', 'year' , 'costesPorDelegacion' , 'productos2'));
+}
+
 
 
 }
