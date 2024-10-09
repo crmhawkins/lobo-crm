@@ -190,7 +190,7 @@
                             <select class="form-control" name="delegaciones[]">
                                 <option value="" {{ is_null($coste->COD) ? 'selected' : '' }}>General</option>
                                 @foreach($delegaciones as $deleg)
-                                    <option value="{{ $deleg->COD }}" {{ $coste->COD == $deleg->COD ? 'selected' : '' }}>
+                                    <option value="{{ $deleg->COD }}" {{ (!is_null($coste->COD) && ($coste->COD == $deleg->COD)) ? 'selected' : '' }}>
                                         {{ $deleg->nombre }}
                                     </option>
                                 @endforeach

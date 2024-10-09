@@ -41,6 +41,9 @@ class ControlPresupuestarioController extends Controller
 
     // Guardar o actualizar cada coste
     foreach ($request->productos as $index => $productoId) {
+
+        //comprobar si ya existe un 
+
         $coste = Costes::updateOrCreate(
             [
                 'product_id' => $productoId,
