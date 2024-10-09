@@ -605,4 +605,51 @@ public function marketing(Request $request)
 
 
 
+
+public function patrocinios(Request $request)
+{
+    // Establecer la localización en español
+    Carbon::setLocale('es');
+
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+
+    // Obtener todas las delegaciones
+    $delegaciones = Delegacion::all();
+
+    // Obtener los registros de caja del departamento "patrocinios"
+    $cajasPatrocinios = Caja::where('departamento', 'patrocinios')
+        ->whereYear('fecha', $year)
+        ->with('delegacion') // Relación con delegación
+        ->get();
+
+    // Inicializar el array para organizar las cajas por trimestre, mes y delegación
+    $cajaPorTrimestre = [];
+
+    foreach ($cajasPatrocinios as $caja) {
+        $mes = Carbon::parse($caja->fecha)->month; // Obtener el mes de la caja
+        $trimestre = ceil($mes / 3); // Calcular el trimestre (1 = Q1, 2 = Q2, etc.)
+
+        $delegacionNombre = $caja->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+
+        // Inicializar el trimestre y mes en el array si no existen
+        if (!isset($cajaPorTrimestre[$trimestre])) {
+            $cajaPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($cajaPorTrimestre[$trimestre][$mes])) {
+            $cajaPorTrimestre[$trimestre][$mes] = [];
+        }
+
+        // Inicializar la delegación en el array si no existe
+        if (!isset($cajaPorTrimestre[$trimestre][$mes][$delegacionNombre])) {
+            $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] = 0;
+        }
+
+        // Sumar el total de caja por delegación y mes
+        $cajaPorTrimestre[$trimestre][$mes][$delegacionNombre] += $caja->total;
+    }
+
+    return view('control-presupuestario.patrocinios', compact('cajaPorTrimestre', 'delegaciones', 'year'));
+}
+
+
 }

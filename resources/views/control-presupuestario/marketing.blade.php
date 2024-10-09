@@ -72,6 +72,8 @@
                 </thead>
                 <tbody>
                     @php
+                        ksort($cajaPorMes);
+
                         // Inicializar los totales del trimestre por delegación
                         $totalesTrimestrePorDelegacion = [];
                         foreach ($delegaciones as $delegacion) {
@@ -82,6 +84,7 @@
 
                     @foreach ($cajaPorMes as $mes => $totalesPorDelegacion)
                         @php
+
                             // Inicializar el total del mes
                             $totalMesGeneral = 0;
                         @endphp
