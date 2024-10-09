@@ -11,6 +11,7 @@ use App\Models\Delegacion;
 use App\Helpers\FacturaHelper;
 use App\Models\Clients;
 use App\Models\Costes;
+use App\Models\Pedido;
 
 class ControlPresupuestarioController extends Controller
 {
@@ -292,4 +293,72 @@ public function compras(Request $request)
 
         return view('control-presupuestario.ventas', compact('facturas', 'productos', 'totalesProductos', 'search', 'fechaMin', 'fechaMax', 'perPage' , 'totalEurosFacturas'));
     }
+
+
+
+    public function logistica(Request $request)
+{
+    Carbon::setLocale('es');
+
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+
+    // Obtener los pedidos con gastos de transporte
+    $gastosTransporte = Pedido::whereYear('created_at', $year)
+        ->where('gastos_transporte', '!=', 0)
+        ->with(['cliente.delegacion'])
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    // Inicializar las variables para el mapa de gastos por trimestre y delegación
+    $gastosTransportePorTrimestre = [];
+    $totalesPorDelegacion = [];
+    $totalPorTrimestre = [];
+
+    foreach ($gastosTransporte as $gastoTransporte) {
+        $mes = Carbon::parse($gastoTransporte->created_at)->month;
+        $trimestre = ceil($mes / 3); // Calcular el trimestre
+        $delegacionNombre = $gastoTransporte->cliente->delegacion->nombre ?? 'General';
+
+        // Inicializar trimestre y delegación en el array si no existe
+        if (!isset($gastosTransportePorTrimestre[$trimestre])) {
+            $gastosTransportePorTrimestre[$trimestre] = [];
+        }
+        if (!isset($gastosTransportePorTrimestre[$trimestre][$mes])) {
+            $gastosTransportePorTrimestre[$trimestre][$mes] = [];
+        }
+        if (!isset($gastosTransportePorTrimestre[$trimestre][$mes][$delegacionNombre])) {
+            $gastosTransportePorTrimestre[$trimestre][$mes][$delegacionNombre] = 0;
+        }
+
+        // Sumar los gastos de transporte por delegación en ese mes
+        $gastosTransportePorTrimestre[$trimestre][$mes][$delegacionNombre] += $gastoTransporte->gastos_transporte;
+
+        // Sumar los totales por delegación
+        if (!isset($totalesPorDelegacion[$delegacionNombre])) {
+            $totalesPorDelegacion[$delegacionNombre] = 0;
+        }
+        $totalesPorDelegacion[$delegacionNombre] += $gastoTransporte->gastos_transporte;
+
+        // Sumar los totales del trimestre
+        if (!isset($totalPorTrimestre[$trimestre])) {
+            $totalPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($totalPorTrimestre[$trimestre][$delegacionNombre])) {
+            $totalPorTrimestre[$trimestre][$delegacionNombre] = 0;
+        }
+        $totalPorTrimestre[$trimestre][$delegacionNombre] += $gastoTransporte->gastos_transporte;
+    }
+
+    $delegaciones = Delegacion::all();
+
+    return view('control-presupuestario.logistica', compact(
+        'gastosTransportePorTrimestre', 'totalesPorDelegacion', 'totalPorTrimestre', 'delegaciones', 'year'
+    ));
+}
+    
+    
+
+       
+
+
 }
