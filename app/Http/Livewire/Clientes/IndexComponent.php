@@ -7,24 +7,68 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SubCuentaHijo;
 use App\Models\SubCuentaContable;
+use App\Models\Delegacion;
 
 class IndexComponent extends Component
 {
     // public $search;
     public $clientes;
+    public $delegacionFilter = null; // Nuevo campo para el filtro de delegaciones
+    public $delegaciones = [];
 
     public function mount()
     {
-        if(Auth::user()->role != 3){
-            $this->clientes = Clients::all();
-        }else{
-            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
+        // if(Auth::user()->role != 3){
+        //     $this->clientes = Clients::all();
+        // }else{
+        //     $this->clientes = Clients::where('comercial_id', Auth::user()->id)->get();
 
-            if(Auth::user()->user_department_id == 2){
-                $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)->where('estado', 2) ->get();
-            }
+        //     if(Auth::user()->user_department_id == 2){
+        //         $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)->where('estado', 2) ->get();
+        //     }
 
+        // }
+
+        $this->delegaciones = Delegacion::all(); // Obtener todas las delegaciones
+
+
+        $this->loadClientes();
+    }
+
+
+    public function updateDelegacionFilter(){
+        $this->loadClientes();
+    }
+
+    public function loadClientes()
+    {
+        // Consulta condicional para obtener clientes según el filtro de delegación
+        if (Auth::user()->role != 3) {
+            $this->clientes = Clients::when($this->delegacionFilter, function ($query) {
+                return $query->where('delegacion_COD', $this->delegacionFilter);
+            })->get();
+        } else {
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)
+                ->when($this->delegacionFilter, function ($query) {
+                    return $query->where('delegacion_COD', $this->delegacionFilter);
+                })
+                ->get();
         }
+    }
+
+
+    public function getDelegacion($clienteId){  
+        $cliente = Clients::find($clienteId);
+        if($cliente){
+            $delegacion = $cliente->delegacion_COD;
+            if($delegacion){
+                $delegacion = Delegacion::where('COD', $delegacion)->first();
+                if($delegacion){
+                    return $delegacion->nombre;
+                }
+            }
+        }
+        return "No definido";
     }
 
     public function crearCuentasContables(){
