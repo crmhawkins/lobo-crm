@@ -48,7 +48,9 @@
                                 <th scope="col">NIF/DNI</th>
                                 <th scope="col">Teléfono</th>
                                 <th scope="col">Email</th>
+                                <th scope="col">Dirección</th>
                                 <th scope="col">Delegación</th>
+                                <th scrope="col">Comercial</th>
                                 <th scope="col">Nota</th>
                                 <th scope="col">Estado</th>
                                 <th scope="col">Acciones</th>
@@ -61,7 +63,9 @@
                                     <td>{{ $cliente->dni_cif }}</td>
                                     <td>{{ $cliente->telefono }}</td>
                                     <td>{{ $cliente->email }}</td>
+                                    <td>{{ $cliente->direccion }}</td>
                                     <td>{{ $this->getDelegacion($cliente->id) }}</td>
+                                    <td>{{ $this->getComercial($cliente->id) }}</td>
                                     <td style="max-width: 200px; overflow:hidden;">{{ substr($cliente->nota, 0, 50) }}</td>
                                     <td>
                                         @if($cliente->estado == "1")

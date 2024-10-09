@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\SubCuentaHijo;
 use App\Models\SubCuentaContable;
 use App\Models\Delegacion;
+use App\Models\User;
 
 class IndexComponent extends Component
 {
@@ -33,6 +34,21 @@ class IndexComponent extends Component
 
 
         $this->loadClientes();
+    }
+
+
+    public function getComercial($clienteId){
+        $cliente = Clients::find($clienteId);
+        if($cliente){
+            $comercialId = $cliente->comercial_id;
+            $comercial = User::find($comercialId);
+            if($comercial){
+                return $comercial->name . ' ' . $comercial->surname;
+            }else{
+                return "No definido";
+            }
+           
+        }
     }
 
 
