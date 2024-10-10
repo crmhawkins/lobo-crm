@@ -19,6 +19,9 @@
         "bootstrap-icons": "^1.9.1",
         "puppeteer": "^21.3.8",
         "sortablejs": "^1.15.3",
-        "swiper": "^10.3.1"
+        "swiper": "^10.3.1",
+        "tui-calendar": "^1.15.3",
+        "tui-date-picker": "^4.3.3",
+        "tui-time-picker": "^2.1.6"
     }
 }

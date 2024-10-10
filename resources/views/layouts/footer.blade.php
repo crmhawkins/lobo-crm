@@ -202,13 +202,19 @@
                         <span>ADMIN. USUARIOS </span>
                     </a>
                 </div>
-                
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('calendario.index') }}">
+                        <i class="fa-regular fa-calendar" style="font-size: 44px"></i>
+                        <span>EVENTOS</span>
+                    </a>
+                </div>
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('configuracion.edit') }}">
                         <i class="fa-solid fa-gears" style="font-size: 44px"></i>
                         <span>OPCIONES </span>
                     </a>
                 </div>
+                
             </div>
 
             <div class="col-2 col-md-2 col-lg-1 exit-button-col">
@@ -820,6 +826,12 @@
                             <path d="M8 12v4.2l4 1.8"></path>
                         </svg>
                         <span>ALMACÉN</span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('calendario.index') }}">
+                        <i class="fa-regular fa-calendar" style="font-size: 44px"></i>
+                        <span>EVENTOS</span>
                     </a>
                 </div>
             @endif

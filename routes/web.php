@@ -34,6 +34,7 @@ use App\Http\Controllers\SubCuentasContableController;
 use App\Http\Controllers\SubCuentasHijoController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\acuerdosComerciales;
+use App\Http\Controllers\CalendarioController;
 
 
 /*
@@ -219,7 +220,11 @@ Route::delete('/sub-grupo-contable/{id}/destroy', [App\Http\Controllers\SubGrupo
 //Contabilidad
 Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
 
-
+//Calendario 
+Route::get('/calendario-marketing' ,[CalendarioController::class, 'index'] )->name('calendario.index');
+Route::post('/calendario/event', [CalendarioController::class, 'store'])->name('event.store');
+Route::put('/calendario/event/{id}', [CalendarioController::class, 'update'])->name('event.update');
+Route::delete('/calendario/event/{id}', [CalendarioController::class, 'destroy'])->name('event.destroy');
 
 //incidencias
 Route::get('/incidencias', [App\Http\Controllers\IncidenciasController::class, 'index'])->name('admin.incidencias.index');
