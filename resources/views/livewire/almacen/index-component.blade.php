@@ -338,6 +338,7 @@
                                     <th scope="col">Almacen</th>
                                     <th scope="col">Fecha</th>
                                     <th scope="col">Precio</th>
+                                    <th scope="col">Fecha de salida</th>
                                     <th scope="col">Tipo de pedido</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
@@ -355,6 +356,8 @@
                                         <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
                                         <td>{{ $pedido->fecha }}</td>
                                         <td>{{ $pedido->precio }}€</td>
+                                        <td>{{$pedido->fecha_salida}}</td>
+
                                         <td>
                                             @switch($pedido->tipo_pedido_id)
                                             @case(0)
@@ -367,6 +370,7 @@
                                                 Tipo de pedido no reconocido
                                         @endswitch
                                         </td>
+
                                         <td>
                                                 <a onclick="mostrarAlbaran({{ $pedido->id }}, true)" class="btn btn-primary botones"  style="color: white;">Descargar albarán</a>
                                             @if ($pedido->estado ==8 )
