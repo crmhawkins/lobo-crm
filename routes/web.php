@@ -173,6 +173,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/control-presupuestario/patrocinios', [ControlPresupuestarioController::class, 'patrocinios'])->name('control-presupuestario.patrocinios');
     Route::get('/control-presupuestario/presupuestos-delegacion', [ControlPresupuestarioController::class, 'presupuestosDelegacion'])->name('control-presupuestario.presupuestos-delegacion');
     Route::get('/control-presupuestario/ventas-delegaciones', [ControlPresupuestarioController::class, 'ventasDelegaciones'])->name('control-presupuestario.ventas-delegaciones');
+    Route::get('/control-presupuestario/ventas-por-productos', [ControlPresupuestarioController::class, 'ventasPorProductos'])->name('control-presupuestario.ventas-por-productos');
 
 
     // Cuentas Contables

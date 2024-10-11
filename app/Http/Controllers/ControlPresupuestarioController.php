@@ -228,12 +228,80 @@ public function ventasDelegaciones(Request $request)
 }
 
 
-
 public function ventasPorProductos(Request $request)
 {
+    $year = $request->input('year', Carbon::now()->year);
 
-    
+    // Obtener las delegaciones ordenadas por ID
+    $delegaciones = Delegacion::orderBy('id')->get()->toArray();
+
+    // Añadir "No-definido" como último objeto
+    $delegaciones[] = [
+        'id' => 0,
+        'nombre' => 'No-definido'
+    ];
+
+    // Inicializar arrays para ventas por trimestre y precios
+    $totalVentas = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+
+    // Array para almacenar ventas por delegación y trimestre
+    $ventasPorTrimestre = [];
+
+    $facturas = Facturas::whereYear('created_at', $year)
+        ->with(['pedido.productosPedido.producto', 'cliente.delegacion'])
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $trimestre = ceil($mes / 3);
+
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'No-definido';
+
+        // Inicializar el array para la delegación y trimestre si no existe
+        if (!isset($ventasPorTrimestre[$delegacionNombre][$trimestre])) {
+            $ventasPorTrimestre[$delegacionNombre][$trimestre] = [];
+        }
+
+        // Procesar los productos del pedido
+        if ($factura->pedido) {
+            foreach ($factura->pedido->productosPedido as $productoPedido) {
+                $productoNombre = $productoPedido->producto->nombre;
+                $esSinCargo = ($productoPedido->precio_ud == 0);
+
+                // Inicializar el array para el producto
+                if (!isset($ventasPorTrimestre[$delegacionNombre][$trimestre][$productoNombre])) {
+                    $ventasPorTrimestre[$delegacionNombre][$trimestre][$productoNombre] = [
+                        'conCargo' => 0,
+                        'sinCargo' => 0
+                    ];
+                }
+
+                // Sumar las unidades al tipo de cargo correspondiente
+                if ($esSinCargo) {
+                    $ventasPorTrimestre[$delegacionNombre][$trimestre][$productoNombre]['sinCargo'] += $productoPedido->unidades;
+                } else {
+                    $ventasPorTrimestre[$delegacionNombre][$trimestre][$productoNombre]['conCargo'] += $productoPedido->unidades;
+                }
+
+                // Sumar ventas generales por trimestre
+                $totalVentas["{$trimestre}T"] += $productoPedido->unidades;
+            }
+        }
+    }
+
+    // Calcular el total anual
+    $totalVentas['anual'] = $totalVentas['1T'] + $totalVentas['2T'] + $totalVentas['3T'] + $totalVentas['4T'];
+
+    // Devolver la vista
+    return view('control-presupuestario.ventas-por-productos', compact('delegaciones', 'year', 'ventasPorTrimestre', 'totalVentas'));
 }
+
+
+
+
+
+
 
 
 
