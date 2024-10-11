@@ -256,6 +256,7 @@ public function ventasPorProductos(Request $request)
         $mes = Carbon::parse($factura->created_at)->month;
         $trimestre = ceil($mes / 3);
 
+        // Validación para manejar delegaciones nulas
         $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'No-definido';
 
         // Inicializar el array para la delegación y trimestre si no existe
@@ -293,9 +294,9 @@ public function ventasPorProductos(Request $request)
     // Calcular el total anual
     $totalVentas['anual'] = $totalVentas['1T'] + $totalVentas['2T'] + $totalVentas['3T'] + $totalVentas['4T'];
 
-    // Devolver la vista
     return view('control-presupuestario.ventas-por-productos', compact('delegaciones', 'year', 'ventasPorTrimestre', 'totalVentas'));
 }
+
 
 
 
