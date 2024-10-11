@@ -182,22 +182,61 @@ public function compras(Request $request)
 
 public function ventasDelegaciones(Request $request)
 {
-    // Establecer la localización en español
     Carbon::setLocale('es');
 
-    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
-    $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
-    $delegacion = Delegacion::find($delegacionId);
-    // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
-    $presupuestosPorTrimestre = [];
+    $year = $request->input('year', Carbon::now()->year);
+    $delegacionId = $request->input('delegacion');
+    
+    // Obtener las delegaciones y agregar "No-definido" si no existe en la base de datos
+    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'No-definido']])); // Agregar manualmente 'No-definido'
 
-    if(!$delegacion){
-        return view('control-presupuestario.ventas-delegaciones', compact('delegaciones', 'year' , 'presupuestosPorTrimestre' , 'delegacion'));
+    // Inicializar arrays para ventas por trimestre y precios
+    $totalVentas = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+    
+    // Array para almacenar las ventas por delegación
+    $delegacionVentas = [];
+
+    $facturas = Facturas::whereYear('created_at', $year)
+        ->with(['pedido.productosPedido.producto', 'cliente.delegacion'])
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $trimestre = ceil($mes / 3); // Calcular el trimestre
+
+        // Asignar nombre de la delegación, o 'No-definido' si no existe
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'No-definido';
+
+        // Inicializar ventas para esta delegación si no existe aún
+        if (!isset($delegacionVentas[$delegacionNombre])) {
+            $delegacionVentas[$delegacionNombre] = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0];
+        }
+
+        // Sumar las ventas de la delegación en el trimestre correspondiente
+        $delegacionVentas[$delegacionNombre]["{$trimestre}T"] += $factura->total;
+
+        // Sumar las ventas generales por trimestre
+        $totalVentas["{$trimestre}T"] += $factura->total;
     }
 
+    // Calcular el total anual
+    $totalVentas['anual'] = $totalVentas['1T'] + $totalVentas['2T'] + $totalVentas['3T'] + $totalVentas['4T'];
 
+    return view('control-presupuestario.ventas-delegaciones', compact('delegaciones', 'year', 'delegacionVentas', 'totalVentas'));
 }
+
+
+
+public function ventasPorProductos(Request $request)
+{
+
+    
+}
+
+
+
 
 
 

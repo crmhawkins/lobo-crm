@@ -99,6 +99,26 @@
                     </ul>
                 </div>
             </div>
+            <div class="col-md-4">
+                <h5>Control Presupuestario</h5>
+                <!-- Dropdown Button -->
+                <div class="dropdown">
+                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
+                        Opciones de Presupuestos
+                    </button>
+                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.index') }}">General</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas') }}">Ventas</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.compras') }}">Compras</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.logistica') }}">Logistica</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.comerciales') }}">Comerciales</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.marketing') }}">Marketing</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.patrocinios') }}">Patrocinios</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.presupuestos-delegacion') }}">Presupuestos por Delegaciones</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-delegaciones') }}">Ventas por Delegaciones</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </form>
 
