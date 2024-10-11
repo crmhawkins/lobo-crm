@@ -1654,11 +1654,16 @@ class EditComponent extends Component
         }
     }
     $iva= true;
-    if($cliente->delegacion){
+    // if($cliente->delegacion){
 
-        if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
-            $iva = false;
-        }
+    //     if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
+    //         $iva = false;
+    //     }
+    // }
+
+    $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+    if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+        $iva = false;
     }
 
     $configuracion = Configuracion::first();

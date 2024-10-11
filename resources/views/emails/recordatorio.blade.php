@@ -52,7 +52,7 @@
                 <br>
                 Espero que este mensaje le encuentre bien. 
                 Nos dirigimos a usted para informarle que la factura con número {{ $factura->numero_factura }} 
-                por un monto de {{ $factura->total }}€ ha vencido.
+                por un monto de @if($datos['conIva']){{ $factura->total }} @else {{ $factura->precio }} @endif€ ha vencido.
                 <br><br>
                 Agradecemos mucho su confianza en nuestros servicios y entendemos que a veces pueden surgir situaciones que afecten el 
                 cumplimiento de los plazos establecidos. Por ello, le solicitamos amablemente que proceda con el pago del 

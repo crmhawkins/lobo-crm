@@ -1105,11 +1105,16 @@ public function getIva($facturaId){
                 $pedido = Pedido::find($factura->pedido_id);
                 $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
                 $cliente = Clients::find($factura->cliente_id);
-                if($cliente->delegacion){
-                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
-                        $iva = false;
-                    }
+                // if($cliente->delegacion){
+                //     if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
+                //         $iva = false;
+                //     }
+                // }
+                $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                    $iva = false;
                 }
+
                     
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
@@ -1263,11 +1268,15 @@ public function getIva($facturaId){
                 $pedido = Pedido::find($factura->pedido_id);
                 $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
                 $cliente = Clients::find($factura->cliente_id);
-                if($cliente->delegacion){
+                // if($cliente->delegacion){
 
-                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
-                        $iva = false;
-                    }
+                //     if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
+                //         $iva = false;
+                //     }
+                // }
+                $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                    $iva = false;
                 }
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
@@ -1349,11 +1358,16 @@ public function getIva($facturaId){
                     $total = $base_imponible + $iva_productos;
     
                 }
-                if($cliente->delegacion){
+                // if($cliente->delegacion){
 
-                    if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
-                        $iva = false;
-                    }
+                //     if ($cliente->delegacion && in_array($cliente->delegacion['id'], [15, 14, 13, 7])) {
+                //         $iva = false;
+                //     }
+                // }
+
+                $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                    $iva = false;
                 }
 
                 $datos = [
@@ -1415,7 +1429,7 @@ public function getIva($facturaId){
                 if(count($this->emailsSeleccionados) > 0){
                     
                     Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                     //Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    //  Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach($this->emailsSeleccionados as $email){
                         $registroEmail = new RegistroEmail();
@@ -1435,7 +1449,7 @@ public function getIva($facturaId){
                 }else{
 
                     Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                     //Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
+                    //  Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
