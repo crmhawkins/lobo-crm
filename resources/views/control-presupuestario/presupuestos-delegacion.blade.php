@@ -595,11 +595,12 @@
                 $totalBeneficioLibreAnual = $margenAnual - $totalInversionAnual;
 
                 //---------//
-                $descuentoComercialT1 = $totalPrecio1T != 0 ? $inversionComercialT1 / $totalPrecio1T : 0;
-                $descuentoComercialT2 = $totalPrecio2T != 0 ? $inversionComercialT2 / $totalPrecio2T : 0;
-                $descuentoComercialT3 = $totalPrecio3T != 0 ? $inversionComercialT3 / $totalPrecio3T : 0;
-                $descuentoComercialT4 = $totalPrecio4T != 0 ? $inversionComercialT4 / $totalPrecio4T : 0;
-                $descuentoComercialAnual = $totalPrecioAnual != 0 ? $inversionComercialAnual / $totalPrecioAnual : 0;
+                $descuentoComercialT1 = $totalPrecio1T != 0 ? ($inversionComercialT1 / $totalPrecio1T) * 100 : 0;
+                $descuentoComercialT2 = $totalPrecio2T != 0 ? ($inversionComercialT2 / $totalPrecio2T) * 100 : 0;
+                $descuentoComercialT3 = $totalPrecio3T != 0 ? ($inversionComercialT3 / $totalPrecio3T) * 100 : 0;
+                $descuentoComercialT4 = $totalPrecio4T != 0 ? ($inversionComercialT4 / $totalPrecio4T) * 100 : 0;
+                $descuentoComercialAnual = $totalPrecioAnual != 0 ? ($inversionComercialAnual / $totalPrecioAnual) * 100 : 0;
+
 
 
             @endphp
