@@ -55,19 +55,20 @@
                                 @endforeach
                             </ul>
                         </div>
-        
-                        <!-- Selector de año -->
-                        <form method="GET" action="{{ route('control-presupuestario.presupuestos-delegacion', ['delegacion' => $delegacion->id]) }}">
-                            <input type="hidden" name="delegacion" value="{{ $delegacion->id }}">
-                            <div class="input-group justify-content-center">
-                                <label for="year" class="input-group-text bg-primary text-white">Año:</label>
-                                <select name="year" id="year" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
-                                    @for($i = 2020; $i <= \Carbon\Carbon::now()->year; $i++)
-                                        <option value="{{ $i }}" {{ $i == $year ? 'selected' : '' }}>{{ $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </form>
+                        @if($delegacion)
+                            <!-- Selector de año -->
+                            <form method="GET" action="{{ route('control-presupuestario.presupuestos-delegacion', ['delegacion' => $delegacion->id]) }}">
+                                <input type="hidden" name="delegacion" value="{{ $delegacion->id }}">
+                                <div class="input-group justify-content-center">
+                                    <label for="year" class="input-group-text bg-primary text-white">Año:</label>
+                                    <select name="year" id="year" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
+                                        @for($i = 2020; $i <= \Carbon\Carbon::now()->year; $i++)
+                                            <option value="{{ $i }}" {{ $i == $year ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </form>
+                        @endif
                     </div>
                     <div class="d-flex justify-content-center gap-2">
                         @if($delegacion)
