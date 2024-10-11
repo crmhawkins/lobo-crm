@@ -180,6 +180,265 @@ public function compras(Request $request)
 }
 
 
+public function ventasDelegaciones(Request $request)
+{
+    // Establecer la localización en español
+    Carbon::setLocale('es');
+
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+    $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
+    $delegacion = Delegacion::find($delegacionId);
+    // Obtener todas las delegaciones
+    $delegaciones = Delegacion::all();
+    $presupuestosPorTrimestre = [];
+
+    if(!$delegacion){
+        return view('control-presupuestario.ventas-delegaciones', compact('delegaciones', 'year' , 'presupuestosPorTrimestre' , 'delegacion'));
+    }
+
+
+}
+
+
+
+public function presupuestosDelegacion(Request $request)
+{
+    // Establecer la localización en español
+    Carbon::setLocale('es');
+
+    $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
+    $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
+    $delegacion = Delegacion::find($delegacionId);
+    // Obtener todas las delegaciones
+    $delegaciones = Delegacion::all();
+    $presupuestosPorTrimestre = [];
+
+    if(!$delegacion){
+        return view('control-presupuestario.presupuestos-delegacion', compact('delegaciones', 'year' , 'presupuestosPorTrimestre' , 'delegacion'));
+    }
+    // Costes
+    $costes = Costes::where('year', $year)
+        ->with('producto', 'delegacion')
+        ->get();
+
+    // Mapa de costes por producto y delegación
+    $costesMap = [];
+    foreach ($costes as $coste) {
+        $productId = $coste->product_id;
+        $delegacionCOD = $coste->COD ?? 'General';
+        $costesMap[$productId][$delegacionCOD] = $coste->cost;
+    }
+
+    // Obtener las facturas de la delegación seleccionada en el año
+    $facturas = Facturas::whereYear('created_at', $year)
+        ->whereHas('cliente.delegacion', function ($query) use ($delegacionId) {
+            $query->where('id', $delegacionId);
+        })
+        ->with(['pedido.productosPedido.producto', 'cliente.delegacion'])
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    // Inicializar array para agrupar datos por trimestre
+    $presupuestosPorTrimestre = [];
+    $totalVentas = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+    $totalCompras = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $trimestre = ceil($mes / 3); // Calcular el trimestre
+
+        // Obtener la delegación de la factura
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
+
+        // Inicializar el trimestre y mes en el array si no existen
+        if (!isset($presupuestosPorTrimestre[$trimestre])) {
+            $presupuestosPorTrimestre[$trimestre] = [];
+        }
+        if (!isset($presupuestosPorTrimestre[$trimestre][$mes])) {
+            $presupuestosPorTrimestre[$trimestre][$mes] = [];
+        }
+
+        // Procesar los productos del pedido
+        if ($factura->pedido) {
+            foreach ($factura->pedido->productosPedido as $productoPedido) {
+                $productoNombre = $productoPedido->producto->nombre;
+                $productId = $productoPedido->producto->id;
+                $unidadesVendidas = $productoPedido->unidades;
+                $precioTotal = $productoPedido->precio_total; // Precio total del producto
+
+                // Inicializar el producto si no existe en el array
+                if (!isset($presupuestosPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                    $presupuestosPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                        'nombre' => $productoNombre,
+                        'ventasDelegaciones' => [],
+                    ];
+                }
+
+                // Obtener el coste para la delegación o el coste general
+                $delegacionCOD = $factura->cliente->delegacion->COD ?? 'General';
+                $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+
+                // Inicializar la delegación si no existe
+                if (!isset($presupuestosPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                    $presupuestosPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                        'unidadesVendidas' => 0,
+                        'costeTotal' => 0,
+                        'precioTotal' => 0,
+                    ];
+                }
+
+                // Sumar unidades, precio con IVA, y calcular el coste total
+                $precioConIVA = $precioTotal + ($precioTotal * 0.21); // Precio total con IVA (21%)
+
+                $presupuestosPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+                $presupuestosPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['precioTotal'] += $precioConIVA; // Precio con IVA
+                $presupuestosPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+
+                // Sumar ventas y compras totales por trimestre y anual
+                $totalVentas["{$trimestre}T"] += $precioConIVA;
+                $totalCompras["{$trimestre}T"] += $unidadesVendidas * $costeProducto;
+            }
+        }
+    }
+
+    // Calcular las ventas y compras anuales
+    $totalVentas['anual'] = $totalVentas['1T'] + $totalVentas['2T'] + $totalVentas['3T'] + $totalVentas['4T'];
+    $totalCompras['anual'] = $totalCompras['1T'] + $totalCompras['2T'] + $totalCompras['3T'] + $totalCompras['4T'];
+
+    // Calcular el margen de beneficio real
+    $margenBeneficioReal = [
+        '1T' => $totalVentas['1T'] - $totalCompras['1T'],
+        '2T' => $totalVentas['2T'] - $totalCompras['2T'],
+        '3T' => $totalVentas['3T'] - $totalCompras['3T'],
+        '4T' => $totalVentas['4T'] - $totalCompras['4T'],
+        'anual' => $totalVentas['anual'] - $totalCompras['anual']
+    ];
+
+    // Calcular el porcentaje de margen de beneficio real
+    $margenPorcentajeReal = [
+        '1T' => ($totalVentas['1T'] > 0) ? ($margenBeneficioReal['1T'] / $totalVentas['1T']) * 100 : 0,
+        '2T' => ($totalVentas['2T'] > 0) ? ($margenBeneficioReal['2T'] / $totalVentas['2T']) * 100 : 0,
+        '3T' => ($totalVentas['3T'] > 0) ? ($margenBeneficioReal['3T'] / $totalVentas['3T']) * 100 : 0,
+        '4T' => ($totalVentas['4T'] > 0) ? ($margenBeneficioReal['4T'] / $totalVentas['4T']) * 100 : 0,
+        'anual' => ($totalVentas['anual'] > 0) ? ($margenBeneficioReal['anual'] / $totalVentas['anual']) * 100 : 0,
+    ];
+
+    $gastosEstructurales = Caja::where('tipo_movimiento', 'Gasto')
+    ->where(function ($query) {
+        $query->where('cuenta', 'like', '1700%')
+            ->orWhere('cuenta', 'like', '6290%')
+            ->orWhere('cuenta', 'like', '6250%')
+            ->orWhere('cuenta', 'like', '6210%')
+            ->orWhere('cuenta', 'like', '6212%')
+            ->orWhere('cuenta', 'like', '6293%')
+            ->orWhere('cuenta', 'like', '6294%')
+            ->orWhere('cuenta', 'like', '6295%')
+            ->orWhere('cuenta', 'like', '4012%')
+            ->orWhere('cuenta', 'like', '6400%');
+        })
+        ->whereYear('fecha', $year) // Añadir filtro por año
+        ->where('delegacion_id', $delegacionId) // Filtrar por la delegación seleccionada
+        ->get();
+        $totalGastosEstructurales = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+        $gastosEstructuralesPorTrimestre = [];
+
+        foreach ($gastosEstructurales as $gasto) {
+            $mesGasto = Carbon::parse($gasto->fecha)->month;
+            $trimestreGasto = ceil($mesGasto / 3); // Calcular el trimestre
+
+            //inicializar el trimestre
+            if (!isset($totalGastosEstructurales[$trimestreGasto])) {
+                $totalGastosEstructurales[$trimestreGasto] = [];
+            }
+
+            if (!isset($gastosEstructuralesPorTrimestre[$trimestreGasto][$gasto->cuenta])) {
+                $gastosEstructuralesPorTrimestre[$trimestreGasto][$gasto->cuenta] = [
+                    'total' => 0,
+                    'nombre' => $gasto->proveedor->nombre
+                ];
+            }
+
+
+                $totalGastosEstructurales["{$trimestreGasto}T"] += $gasto->total;
+
+            // Sumar el gasto en el trimestre correspondiente
+            $gastosEstructuralesPorTrimestre[$trimestreGasto][$gasto->cuenta]['total'] += $gasto->total;
+        }
+        $gastosEstructuralesAnuales = [];
+        foreach ($gastosEstructuralesPorTrimestre as $trimestre => $cuentas) {
+            foreach ($cuentas as $cuenta => $data) {
+                if (!isset($gastosEstructuralesAnuales[$cuenta])) {
+                    $gastosEstructuralesAnuales[$cuenta] = 0;
+                }
+                $gastosEstructuralesAnuales[$cuenta] += $data['total'];
+            }
+        }
+
+
+        $totalGastosEstructurales['anual'] = $totalGastosEstructurales['1T'] + $totalGastosEstructurales['2T'] + $totalGastosEstructurales['3T'] + $totalGastosEstructurales['4T'];
+
+        $gastosVariables = Caja::where('tipo_movimiento', 'Gasto')
+        ->where(function ($query) {
+            $query->where('cuenta', 'like', '6240%')
+                ->orWhere('cuenta', 'like', '6291%')
+                ->orWhere('cuenta', 'like', '6391%')
+                ->orWhere('cuenta', 'like', '6460%')
+                ->orWhere('cuenta', 'like', '6210%');
+        })
+        ->whereYear('fecha', $year) // Añadir filtro por año
+        ->where('delegacion_id', $delegacionId) // Filtrar por la delegación seleccionada
+        ->get();
+        $totalGastosVariables = ['1T' => 0, '2T' => 0, '3T' => 0, '4T' => 0, 'anual' => 0];
+        $gastosVariablesPorTrimestre = [];
+
+        foreach ($gastosVariables as $gasto) {
+            $mesGasto = Carbon::parse($gasto->fecha)->month;
+            $trimestreGasto = ceil($mesGasto / 3); // Calcular el trimestre
+    
+             //inicializar el trimestre
+             if (!isset($totalGastosVariables[$trimestreGasto])) {
+                $totalGastosVariables[$trimestreGasto] = [];
+            }
+
+            if (!isset($gastosVariablesPorTrimestre[$trimestreGasto][$gasto->cuenta])) {
+                $gastosVariablesPorTrimestre[$trimestreGasto][$gasto->cuenta] = [
+                    'total' => 0,
+                    'nombre' => $gasto->proveedor->nombre
+                ];
+            }
+
+
+                $totalGastosVariables["{$trimestreGasto}T"] += $gasto->total;
+
+            // Sumar el gasto en el trimestre correspondiente
+            $gastosVariablesPorTrimestre[$trimestreGasto][$gasto->cuenta]['total'] += $gasto->total;
+
+
+            // Sumar el gasto en el trimestre correspondiente
+        }
+        $totalGastosVariables['anual'] = $totalGastosVariables['1T'] + $totalGastosVariables['2T'] + $totalGastosVariables['3T'] + $totalGastosVariables['4T'];
+        $gastosVariablesAnuales = [];
+        foreach ($gastosVariablesPorTrimestre as $trimestre => $cuentas) {
+            foreach ($cuentas as $cuenta => $data) {
+                if (!isset($gastosVariablesAnuales[$cuenta])) {
+                    $gastosVariablesAnuales[$cuenta] = 0;
+                }
+                $gastosVariablesAnuales[$cuenta] += $data['total'];
+            }
+        }
+        
+
+
+
+    return view('control-presupuestario.presupuestos-delegacion', compact(
+        'presupuestosPorTrimestre', 'delegaciones', 'year', 'totalVentas', 'totalCompras', 'margenBeneficioReal', 'margenPorcentajeReal' , 'totalGastosEstructurales', 'gastosEstructurales',
+        'totalGastosVariables', 'gastosVariables' , 'totalGastosEstructurales', 'gastosEstructurales', 'gastosEstructuralesPorTrimestre', 'gastosEstructuralesAnuales', 'gastosVariablesPorTrimestre' , 'gastosVariablesAnuales',
+        'delegacion'
+
+    ));
+}
+
+
     public function ventas(Request $request)
     {
         $search = $request->input('search');
@@ -660,6 +919,9 @@ public function patrocinios(Request $request)
 });
     return view('control-presupuestario.patrocinios', compact('cajaPorTrimestre', 'delegaciones', 'year' , 'costesPorDelegacion' , 'productos2'));
 }
+
+
+
 
 
 }
