@@ -1250,6 +1250,138 @@ public function marketing(Request $request)
 }
 
 
+public function analisisVentas(Request $request)
+{
+    $year = $request->input('year', Carbon::now()->year); // Obtener el año actual si no se proporciona
+    $trimestre = $request->input('trimestre', 1); // Obtener el trimestre, por defecto es el 1º trimestre
+
+    // Definir los meses para cada trimestre
+    $mesesPorTrimestre = [
+        1 => [1, 2, 3],   // 1er trimestre
+        2 => [4, 5, 6],   // 2º trimestre
+        3 => [7, 8, 9],   // 3er trimestre
+        4 => [10, 11, 12] // 4º trimestre
+    ];
+
+    // Obtener los meses correspondientes al trimestre seleccionado
+    $meses = $mesesPorTrimestre[$trimestre] ?? [1, 2, 3]; // Si no se selecciona trimestre, usar el 1º trimestre por defecto
+
+    $totalGeneralVentas = 0; // Para almacenar el total de ventas general
+
+    // Obtener todas las delegaciones, asegurándonos de incluir "General" si no existe
+    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
+
+    // Inicializar arrays para almacenar ventas por delegación y mes
+    $ventasPorDelegacion = [];
+    $porcentajeVentasPorDelegacion = [];
+    
+    // Inicializamos las ventas y totales por delegación
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $ventasPorDelegacion[$mes][$delegacion->nombre] = 0;
+        }
+    }
+    foreach ($delegaciones as $delegacion) {
+        $porcentajeVentasPorDelegacion[$delegacion->nombre] = 0;
+    }
+
+    // Obtener todas las facturas filtradas por año y trimestre
+    $facturas = Facturas::whereYear('created_at', $year)
+        ->whereMonth('created_at', '>=', $meses[0])
+        ->whereMonth('created_at', '<=', $meses[2])
+        ->with(['cliente.delegacion', 'pedido.productosPedido.producto'])
+        ->get();
+
+    // Sumar las ventas por delegación y mes
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
+        
+        // Añadir el total de la factura a la delegación correspondiente
+        $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+        $totalGeneralVentas += $factura->total;
+    }
+
+    // Calcular las ventas totales por delegación (suma de todos los meses)
+    $totalesPorDelegacion = [];
+    foreach ($delegaciones as $delegacion) {
+        $totalesPorDelegacion[$delegacion->nombre] = array_sum(array_column($ventasPorDelegacion, $delegacion->nombre));
+    }
+
+    // Calcular el porcentaje de ventas por delegación
+    foreach ($delegaciones as $delegacion) {
+        if ($totalGeneralVentas > 0) {
+            $porcentajeVentasPorDelegacion[$delegacion->nombre] = ($totalesPorDelegacion[$delegacion->nombre] / $totalGeneralVentas) * 100;
+        } else {
+            $porcentajeVentasPorDelegacion[$delegacion->nombre] = 0;
+        }
+    }
+
+    // -------------------
+    // Lógica adicional para el análisis de ventas por producto
+    // -------------------
+
+    // Obtener todos los productos
+    $productos = Productos::all();
+
+    // Inicializar arrays para almacenar las ventas por producto, delegación y mes
+    $ventasPorProducto = [];
+
+    // Inicializar las ventas para cada producto, delegación y mes
+    foreach ($productos as $producto) {
+        foreach ($meses as $mes) {
+            foreach ($delegaciones as $delegacion) {
+                $ventasPorProducto[$producto->id][$mes][$delegacion->nombre] = 0;
+            }
+        }
+    }
+
+    // Sumar las ventas por producto, delegación y mes
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
+
+        if ($factura->pedido) {
+            foreach ($factura->pedido->productosPedido as $productoPedido) {
+                $productoId = $productoPedido->producto->id;
+                $unidadesVendidas = $productoPedido->unidades;
+
+                // Añadir el número de unidades vendidas al producto correspondiente, delegación y mes
+                $ventasPorProducto[$productoId][$mes][$delegacionNombre] += $unidadesVendidas;
+            }
+        }
+    }
+
+    // Calcular los totales por producto, delegación y mes
+    $totalesPorProducto = [];
+    foreach ($productos as $producto) {
+        foreach ($delegaciones as $delegacion) {
+            $totalesPorProducto[$producto->id][$delegacion->nombre] = array_sum(array_column($ventasPorProducto[$producto->id], $delegacion->nombre));
+        }
+    }
+
+    // -------------------
+    // Renderizar la vista
+    // -------------------
+    return view('control-presupuestario.analisis-ventas', compact(
+        'year',
+        'trimestre',
+        'ventasPorDelegacion', 
+        'totalesPorDelegacion', 
+        'porcentajeVentasPorDelegacion', 
+        'meses', 
+        'delegaciones', 
+        'totalGeneralVentas',
+        'productos', // Añadir los productos al compact
+        'ventasPorProducto', // Añadir las ventas por producto al compact
+        'totalesPorProducto' // Añadir los totales por producto al compact
+    ));
+}
+
+
+
+
 
 
 public function patrocinios(Request $request)
