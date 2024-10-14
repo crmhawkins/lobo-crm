@@ -75,6 +75,295 @@ public function eliminarCoste($id)
     return redirect()->back()->with('error', 'No se pudo eliminar el coste.');
 }
 
+
+public function analisisGlobal(Request $request)
+{
+    Carbon::setLocale('es');
+    
+    // Asignar trimestre por defecto si no está en la solicitud
+    $trimestre = $request->input('trimestre', 1);  // Por defecto será el primer trimestre
+    $year = $request->input('year', Carbon::now()->year);
+
+    // Definir los meses del trimestre
+    $mesesPorTrimestre = [
+        1 => [1, 2, 3],  // Primer trimestre
+        2 => [4, 5, 6],  // Segundo trimestre
+        3 => [7, 8, 9],  // Tercer trimestre
+        4 => [10, 11, 12] // Cuarto trimestre
+    ];
+
+    // Obtener los meses correspondientes al trimestre solicitado
+    $meses = $mesesPorTrimestre[$trimestre] ?? [];
+
+    // Si no hay meses definidos, detener el proceso
+    if (empty($meses)) {
+        return redirect()->back()->with('error', 'Trimestre inválido.');
+    }
+
+    // Obtener todas las delegaciones y agregar "General" si no existe
+    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
+
+    // Inicializar un array para almacenar las ventas, compras, márgenes y gastos por delegación y mes
+    $ventasPorDelegacion = [];
+    $comprasPorDelegacion = [];
+    $resultadosPorDelegacion = [];  // Inicializar resultados para evitar error
+    $margenBeneficioPorDelegacion = [];
+    $gastosEstructuralesPorDelegacion = [];
+    $gastosVariablesPorDelegacion = [];
+    $gastosLogisticaPorDelegacion = [];
+    $gastosTotalesPorDelegacion = [];  // Nuevo array para almacenar la suma de gastos estructurales y variables
+    $margenFinalPorDelegacion = [];  // Nuevo array para el margen final después de restar todos los gastos
+    $margenRealPorDelegacion = [];  // Nuevo array para almacenar el margen real
+    $inversionComercialPorDelegacion = [];  // Nuevo array para almacenar la inversión comercial
+    $inversionMarketingPorDelegacion = [];  // Nuevo array para almacenar la inversión marketing
+    $inversionPatrocinioPorDelegacion = [];  // Nuevo array para almacenar la inversión patrocinio
+    $resultadoPorDelegacionGI = [];  // Nuevo array para almacenar el resultado (G-I)
+
+    // Inicializar los arrays de ventas, compras y márgenes por delegación y mes
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $ventasPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $comprasPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $resultadosPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar resultados en 0
+            $margenBeneficioPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $gastosEstructuralesPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $gastosVariablesPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $gastosLogisticaPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $gastosTotalesPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar la suma de gastos en 0
+            $margenFinalPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $margenRealPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar el margen real en 0
+            $inversionComercialPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar la inversión comercial en 0
+            $inversionMarketingPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar la inversión marketing en 0
+            $inversionPatrocinioPorDelegacion[$mes][$delegacion->nombre] = 0;
+            $resultadoPorDelegacionGI[$mes][$delegacion->nombre] = 0;  // Inicializar resultado G-I
+
+        }
+    }
+
+    // Obtener las facturas del año y trimestre seleccionado
+    $facturas = Facturas::whereYear('created_at', $year)
+        ->whereMonth('created_at', '>=', $meses[0])  // El primer mes del trimestre
+        ->whereMonth('created_at', '<=', $meses[2])  // El último mes del trimestre
+        ->with(['pedido.productosPedido.producto', 'cliente.delegacion'])
+        ->get();
+
+    // Obtener los costes por año
+    $costes = Costes::query()
+        ->with('producto', 'delegacion')
+        ->where('year', $year)
+        ->get();
+
+    // Crear un mapa de costes por producto y delegación
+    $costesMap = [];
+    foreach ($costes as $coste) {
+        $productId = $coste->product_id;
+        $delegacionCOD = $coste->COD ?? 'General';
+        $costesMap[$productId][$delegacionCOD] = $coste->cost;
+    }
+
+    // Recorrer las facturas y sumar las ventas y compras por delegación y mes
+    foreach ($facturas as $factura) {
+        $mes = Carbon::parse($factura->created_at)->month;
+        $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
+
+        // Sumar el total de la factura a la delegación correspondiente (ventas)
+        $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+
+        // Procesar los productos del pedido para calcular las compras
+        if ($factura->pedido) {
+            foreach ($factura->pedido->productosPedido as $productoPedido) {
+                try {
+                    $productId = $productoPedido->producto->id;
+                    $unidadesVendidas = $productoPedido->unidades;
+
+                    // Obtener el coste del producto para la delegación o para "General"
+                    $costeProducto = $costesMap[$productId][$factura->cliente->delegacion->COD ?? 'General'] ?? $costesMap[$productId]['General'] ?? 0;
+
+                    // Sumar el coste total de las unidades vendidas (compras)
+                    $comprasPorDelegacion[$mes][$delegacionNombre] += $unidadesVendidas * $costeProducto;
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+        }
+
+        // Calcular el resultado (A-B) para cada delegación en cada mes
+        $resultadosPorDelegacion[$mes][$delegacionNombre] = $ventasPorDelegacion[$mes][$delegacionNombre] - $comprasPorDelegacion[$mes][$delegacionNombre];
+    }
+
+    // Calcular el margen de beneficio (Ventas - Compras) para cada delegación en cada mes
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $delegacionNombre = $delegacion->nombre;
+            $margenBeneficioPorDelegacion[$mes][$delegacionNombre] = $ventasPorDelegacion[$mes][$delegacionNombre] - $comprasPorDelegacion[$mes][$delegacionNombre];
+        }
+    }
+
+    // Cálculo de gastos estructurales
+    $gastosEstructurales = Caja::where('tipo_movimiento', 'Gasto')
+        ->where(function ($query) {
+            $query->where('cuenta', 'like', '1700%')
+                ->orWhere('cuenta', 'like', '6290%')
+                ->orWhere('cuenta', 'like', '6250%')
+                ->orWhere('cuenta', 'like', '6210%')
+                ->orWhere('cuenta', 'like', '6212%')
+                ->orWhere('cuenta', 'like', '6293%')
+                ->orWhere('cuenta', 'like', '6294%')
+                ->orWhere('cuenta', 'like', '6295%')
+                ->orWhere('cuenta', 'like', '4012%')
+                ->orWhere('cuenta', 'like', '6400%');
+        })
+        ->whereYear('fecha', $year)
+        ->get();
+
+    // Sumar los gastos estructurales por delegación y mes
+    foreach ($gastosEstructurales as $gasto) {
+        $mes = Carbon::parse($gasto->fecha)->month;
+        $delegacionNombre = $gasto->delegacion->nombre ?? 'General';
+        if (in_array($mes, $meses)) {
+            $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+        }
+    }
+
+    // Cálculo de gastos variables
+    $gastosVariables = Caja::where('tipo_movimiento', 'Gasto')
+        ->where(function ($query) {
+            $query->where('cuenta', 'like', '6240%')
+                ->orWhere('cuenta', 'like', '6291%')
+                ->orWhere('cuenta', 'like', '6391%')
+                ->orWhere('cuenta', 'like', '6460%')
+                ->orWhere('cuenta', 'like', '6210%');
+        })
+        ->whereYear('fecha', $year)
+        ->get();
+
+    // Sumar los gastos variables por delegación y mes
+    foreach ($gastosVariables as $gasto) {
+        $mes = Carbon::parse($gasto->fecha)->month;
+        $delegacionNombre = $gasto->delegacion->nombre ?? 'General';
+        if (in_array($mes, $meses)) {
+            $gastosVariablesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+        }
+    }
+
+    // Sumar los gastos estructurales y variables por delegación y mes
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $delegacionNombre = $delegacion->nombre;
+            $gastosTotalesPorDelegacion[$mes][$delegacionNombre] = 
+                $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] + 
+                $gastosVariablesPorDelegacion[$mes][$delegacionNombre];
+        }
+    }
+
+    // Cálculo de gastos de logística
+    $gastosTransporte = Pedido::whereYear('created_at', $year)
+        ->where('gastos_transporte', '!=', 0)
+        ->with(['cliente.delegacion'])
+        ->get();
+
+    // Sumar los gastos de logística por delegación y mes
+    foreach ($gastosTransporte as $gastoTransporte) {
+        $mes = Carbon::parse($gastoTransporte->created_at)->month;
+        $delegacionNombre = $gastoTransporte->cliente->delegacion->nombre ?? 'General';
+        if (in_array($mes, $meses)) {
+            $gastosLogisticaPorDelegacion[$mes][$delegacionNombre] += $gastoTransporte->gastos_transporte;
+        }
+    }
+
+    // Calcular el margen final después de restar todos los gastos (C - D - E - F)
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $delegacionNombre = $delegacion->nombre;
+            $resultadoC = $margenBeneficioPorDelegacion[$mes][$delegacionNombre] ?? 0;
+            $gastoTotalDE = $gastosTotalesPorDelegacion[$mes][$delegacionNombre] ?? 0;  // Gastos estructurales y variables sumados
+            $gastoLogisticoF = $gastosLogisticaPorDelegacion[$mes][$delegacionNombre] ?? 0;
+
+            $margenFinalPorDelegacion[$mes][$delegacionNombre] = $resultadoC - $gastoTotalDE - $gastoLogisticoF;
+
+            // Calcular el margen real (Margen de beneficio - Total de gastos)
+            $margenRealPorDelegacion[$mes][$delegacionNombre] = $margenBeneficioPorDelegacion[$mes][$delegacionNombre] - $gastosTotalesPorDelegacion[$mes][$delegacionNombre];
+
+            // Calcular la inversión comercial (margen real * 0.65)
+            $inversionComercialPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.65;
+
+            //calcular inversión Marketing (magen * 0.18)
+            $inversionMarketingPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.18;
+
+            //calcular inversión Patrocinio (magen * 0.05)
+            $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.05;
+        }
+    }
+
+    // Calcular el total por trimestre para todos los parámetros
+    $totalVentasPorTrimestre = array_sum(array_map('array_sum', $ventasPorDelegacion));
+    $totalComprasPorTrimestre = array_sum(array_map('array_sum', $comprasPorDelegacion));
+    $totalResultadosPorTrimestre = array_sum(array_map('array_sum', $resultadosPorDelegacion));
+    $totalGastosEstructuralesPorTrimestre = array_sum(array_map('array_sum', $gastosEstructuralesPorDelegacion));
+    $totalGastosVariablesPorTrimestre = array_sum(array_map('array_sum', $gastosVariablesPorDelegacion));
+    $totalGastosLogisticaPorTrimestre = array_sum(array_map('array_sum', $gastosLogisticaPorDelegacion));
+    $totalGastosTotalesPorTrimestre = array_sum(array_map('array_sum', $gastosTotalesPorDelegacion));
+    $totalMargenFinalPorTrimestre = array_sum(array_map('array_sum', $margenFinalPorDelegacion));
+    $totalMargenRealPorTrimestre = array_sum(array_map('array_sum', $margenRealPorDelegacion));
+    $totalInversionComercialPorTrimestre = array_sum(array_map('array_sum', $inversionComercialPorDelegacion));
+    $totalInversionMarketingPorTrimestre = array_sum(array_map('array_sum', $inversionMarketingPorDelegacion));
+    $totalInversionPatrocinioPorTrimestre = array_sum(array_map('array_sum', $inversionPatrocinioPorDelegacion));
+    //dd($inversionComercialPorDelegacion);
+
+    foreach ($meses as $mes) {
+        foreach ($delegaciones as $delegacion) {
+            $delegacionNombre = $delegacion->nombre;
+
+            // Sumar las inversiones
+            $inversionTotalPorDelegacion[$mes][$delegacionNombre] = 
+                $inversionComercialPorDelegacion[$mes][$delegacionNombre] + 
+                $inversionMarketingPorDelegacion[$mes][$delegacionNombre] + 
+                $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre];
+
+            // Calcular el resultado (G - I) => Margen Final - Total Inversiones
+            $resultadoPorDelegacionGI[$mes][$delegacionNombre] = 
+                $margenFinalPorDelegacion[$mes][$delegacionNombre] - $inversionTotalPorDelegacion[$mes][$delegacionNombre];
+        }
+    }
+
+
+    return view('control-presupuestario.analisis-global', compact(
+        'ventasPorDelegacion',
+        'comprasPorDelegacion',
+        'resultadosPorDelegacion',
+        'totalVentasPorTrimestre',
+        'totalComprasPorTrimestre',
+        'totalResultadosPorTrimestre',
+        'totalGastosEstructuralesPorTrimestre',
+        'totalGastosVariablesPorTrimestre',
+        'totalGastosLogisticaPorTrimestre',
+        'totalGastosTotalesPorTrimestre',
+        'totalMargenFinalPorTrimestre',
+        'totalMargenRealPorTrimestre',
+        'totalInversionComercialPorTrimestre', 
+        'totalInversionMarketingPorTrimestre',
+        'totalInversionPatrocinioPorTrimestre',
+        'year',
+        'trimestre',
+        'delegaciones',
+        'gastosEstructuralesPorDelegacion',
+        'gastosVariablesPorDelegacion',
+        'gastosLogisticaPorDelegacion',
+        'gastosTotalesPorDelegacion',
+        'margenBeneficioPorDelegacion',
+        'margenFinalPorDelegacion',
+        'margenRealPorDelegacion',
+        'inversionComercialPorDelegacion',
+        'inversionMarketingPorDelegacion',
+        'inversionPatrocinioPorDelegacion',
+        'resultadoPorDelegacionGI',
+        'inversionTotalPorDelegacion',
+    ));
+}
+
+
+
 public function compras(Request $request)
 {
     // Establecer la localización en español
@@ -296,16 +585,6 @@ public function ventasPorProductos(Request $request)
 
     return view('control-presupuestario.ventas-por-productos', compact('delegaciones', 'year', 'ventasPorTrimestre', 'totalVentas'));
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -535,7 +814,7 @@ public function presupuestosDelegacion(Request $request)
             }
         }
         
-
+    
 
 
     return view('control-presupuestario.presupuestos-delegacion', compact(
