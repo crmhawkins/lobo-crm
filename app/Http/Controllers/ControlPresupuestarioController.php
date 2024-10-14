@@ -1344,11 +1344,14 @@ public function analisisVentas(Request $request)
 
         if ($factura->pedido) {
             foreach ($factura->pedido->productosPedido as $productoPedido) {
-                $productoId = $productoPedido->producto->id;
-                $unidadesVendidas = $productoPedido->unidades;
+                // Verificar que el producto esté presente antes de acceder a sus propiedades
+                if ($productoPedido->producto) {
+                    $productoId = $productoPedido->producto->id;
+                    $unidadesVendidas = $productoPedido->unidades;
 
-                // Añadir el número de unidades vendidas al producto correspondiente, delegación y mes
-                $ventasPorProducto[$productoId][$mes][$delegacionNombre] += $unidadesVendidas;
+                    // Añadir el número de unidades vendidas al producto correspondiente, delegación y mes
+                    $ventasPorProducto[$productoId][$mes][$delegacionNombre] += $unidadesVendidas;
+                }
             }
         }
     }
@@ -1378,6 +1381,7 @@ public function analisisVentas(Request $request)
         'totalesPorProducto' // Añadir los totales por producto al compact
     ));
 }
+
 
 
 
