@@ -118,6 +118,8 @@
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-delegaciones') }}">Ventas por Delegaciones</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-por-productos') }}">Ventas por Productos</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-global') }}">Analisis Global Por trimestre</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-ventas') }}">Analisis Ventas</a></li>
+
 
                     </ul>
                 </div>
