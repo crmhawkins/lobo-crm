@@ -14,6 +14,7 @@ use App\Models\StockEntrante;
 use App\Models\User;
 use App\Models\Delegacion;
 use App\Models\Configuracion;
+use App\Helpers\FacturaHelper;
 
 use Illuminate\Support\Facades\DB;
 //pdf
@@ -87,6 +88,136 @@ class IndexComponent extends Component
 
         $this->emit('refreshComponent');
     }
+
+    public function factura($id)
+{
+    $factura = Facturas::find($id);
+    $configuracion = Configuracion::first();
+
+    if ($factura != null) {
+        // Verificar si la factura tiene IVA
+        $iva = FacturaHelper::facturaHasIva($factura->id);
+
+        // Obtener pedido, albarán, cliente, productos y servicios
+        $pedido = Pedido::find($factura->pedido_id);
+        $albaran = Albaran::where('pedido_id', $factura->pedido_id)->first();
+        $cliente = Clients::find($factura->cliente_id);
+        $productofact = Productos::find($factura->producto_id);
+        $productos = [];
+
+        // Obtener los productos si la factura es de tipo 3
+        if ($factura->tipo == 3) {
+            $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+        }
+
+        // Procesar productos del pedido
+        if (isset($pedido)) {
+            $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
+            foreach ($productosPedido as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_pedido_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+                $lote = $stockEntrante ? $stockEntrante->orden_numero : "";
+
+                if ($producto) {
+                    $peso = isset($producto->peso_neto_unidad) && $producto->peso_neto_unidad > 0 
+                            ? ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000
+                            : "Peso no definido";
+
+                    $productos[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->unidades,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' => $productoPedido->precio_total,
+                        'iva' => $producto->iva,
+                        'lote_id' => $lote,
+                        'peso_kg' => $peso,
+                    ];
+                }
+            }
+        }
+
+        // Obtener los productos de la factura
+        $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+        $productosdeFactura = [];
+
+        foreach ($productosFactura as $productoPedido) {
+            $producto = Productos::find($productoPedido->producto_id);
+            $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
+            $lote = $stockEntrante ? $stockEntrante->orden_numero : "";
+
+            if ($producto) {
+                $peso = isset($producto->peso_neto_unidad) && $producto->peso_neto_unidad > 0
+                        ? ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000
+                        : "Peso no definido";
+
+                $productosdeFactura[] = [
+                    'nombre' => $producto->nombre,
+                    'cantidad' => $productoPedido->cantidad,
+                    'precio_ud' => $productoPedido->precio_ud,
+                    'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                    'iva' => $producto->iva != 0 
+                             ? (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100)
+                             : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
+                    'lote_id' => $lote,
+                    'peso_kg' => $peso,
+                ];
+            }
+        }
+
+        // Calcular los totales
+        $base_imponible = 0;
+        $iva_productos = 0;
+        $total = 0;
+
+        if ($factura->tipo == 2) {
+            foreach ($productosdeFactura as $producto) {
+                $base_imponible += $producto['precio_total'];
+                $iva_productos += $producto['iva'];
+            }
+            $total = $base_imponible + $iva_productos;
+        }
+
+        // Preparar los datos para el PDF
+        $datos = [
+            'conIva' => $iva,
+            'albaran' => $albaran,
+            'factura' => $factura,
+            'pedido' => $pedido,
+            'cliente' => $cliente,
+            'productos' => $productos,
+            'producto' => $productofact,
+            'configuracion' => $configuracion,
+            'servicios' => $servicios ?? null,
+            'productosFactura' => $productosdeFactura,
+            'total' => $total,
+            'base_imponible' => $base_imponible,
+            'iva_productos' => $iva_productos,
+        ];
+
+        // Generar el PDF
+        $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
+        $pdf->render();
+        $totalPages = $pdf->getCanvas()->get_page_count();
+
+        // Añadir la paginación en el PDF
+        $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+            $text = "Página $pageNumber de $totalPages";
+            $font = $fontMetrics->getFont('Helvetica', 'normal');
+            $size = 10;
+            $width = $canvas->get_width();
+            $canvas->text($width - 100, 15, $text, $font, $size);
+        });
+
+        // Descargar el PDF
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            "{$factura->numero_factura}.pdf"
+        );
+    } else {
+        return redirect('admin/facturas');
+    }
+}
+
 
     public function limpiarFiltros()
     {

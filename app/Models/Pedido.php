@@ -67,9 +67,16 @@ class Pedido extends Model
         return $this->hasOne(Facturas::class);
     }
 
+    public function hasFactura()
+{
+    return $this->factura()->exists();
+}
+
     public function productosPedido()
     {
         return $this->hasMany(ProductosPedido::class, 'pedido_id');
     }
+
+   
 
 }

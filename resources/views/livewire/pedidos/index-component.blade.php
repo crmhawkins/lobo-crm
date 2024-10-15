@@ -161,6 +161,7 @@
                                 <th scope="col">Comercial</th>
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Cliente: @mobile &nbsp; @endmobile</th>
+                                <th scope="col">Factura</th>
                                 <th scope="col">Precio: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Estado: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Acciones: @mobile &nbsp; @endmobile</th>
@@ -181,7 +182,12 @@
                                 <td>{{ $this->getDelegacion($presup->cliente_id) }}</td>
                                 <td>{{ $this->getComercial($presup->cliente_id) }}</td>
                                 <td>{{ $presup->fecha }}</td>
-                                <td>{{ $this->getClienteNombre($presup->cliente_id) }}</td>
+                                <td><a target="blank_" href="{{ route('clientes.edit', ['id' => $presup->cliente_id]) }}" class="btn btn-primary btn-sm fw-bold"> {{ $this->getClienteNombre($presup->cliente_id) }}</a></td>
+                                @if($presup->factura)
+                                    <td><a target="blank_" href="{{ route('facturas.edit', ['id' => $presup->factura->id]) }}" class="btn btn-primary btn-sm fw-bold"> {{ $presup->factura->numero_factura }}</a></td>
+                                @else
+                                    <td></td>
+                                @endif
                                 <td>{{ $presup->precio }} €</td>
                                 <td>
                                     @if($this->getEstadoNombre($presup->estado) == "Recibido")
@@ -208,12 +214,18 @@
                                     @if($this->albaranExiste($presup->id))
                                         <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
                                     @endif
+                                    @if($presup->factura)  {{-- Directamente chequeas si el pedido tiene una factura --}}
+                                        <button class="btn btn-warning" wire:click="factura({{ $presup->factura->id }})">Descargar factura</button>
+                                    @endif
                                 </td>
                                 @else
                                 <td>
                                     <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver</a>
                                     @if($this->albaranExiste($presup->id))
                                         <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                    @endif
+                                    @if($presup->factura)  {{-- Directamente chequeas si el pedido tiene una factura --}}
+                                        <button class="btn btn-warning" wire:click="factura({{  $presup->factura->id }})">Descargar factura</button>
                                     @endif
                                 </td>
                                 @endif
