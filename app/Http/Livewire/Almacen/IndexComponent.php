@@ -48,6 +48,51 @@ class IndexComponent extends Component
         return false;
     }
 
+    public function getDelegacion($clienteId){
+        $cliente = Clients::find($clienteId);
+        if($cliente){
+            $delegacion = $cliente->delegacion;
+            if($delegacion){
+                return $delegacion->nombre;
+            }
+        }
+
+       return "No definido";
+    }
+
+    public function obtenerProductosPedido($pedidoId)
+{
+    $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedidoId)->get();
+    $productos = [];
+
+    foreach ($productosPedido as $productoPedido) {
+        $producto = Productos::find($productoPedido->producto_pedido_id);
+        $stockEntrante = StockEntrante::where('id', $productoPedido->lote_id)->first();
+
+        if (!isset($stockEntrante)) {
+            $stockEntrante = StockEntrante::where('lote_id', $productoPedido->lote_id)->first();
+        }
+
+        if ($producto) {
+            $productos[] = [
+                'nombre' => $producto->nombre,
+                'cantidad' => $productoPedido->unidades,
+                'precio_ud' => $productoPedido->precio_ud,
+                'precio_total' => $productoPedido->precio_total,
+                'iva' => $producto->iva,
+                'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
+                'productos_pallet' => isset($producto->cajas_por_pallet) ? $producto->cajas_por_pallet : null,
+                'num_cajas' => isset($producto->unidades_por_caja) ? floor($productoPedido->unidades / $producto->unidades_por_caja) : null,
+                'num_pallet' => isset($producto->cajas_por_pallet) ? floor(($productoPedido->unidades / $producto->unidades_por_caja) / $producto->cajas_por_pallet) : null,
+                'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------',
+                'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
+            ];
+        }
+    }
+
+    return $productos;
+}
+
     public function enviarEmailTransporte(){
 
         if($this->email_transporte == null){
@@ -84,31 +129,18 @@ class IndexComponent extends Component
 
         // Preparar los datos de los productos del pedido
         $productos = [];
-        foreach ($productosPedido as $productoPedido) {
-            $producto = Productos::find($productoPedido->producto_pedido_id);
-            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-            if (!isset( $stockEntrante)){
-                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
-            }
-            if ($producto) {
-                //dd($producto);
-                $productos[] = [
-                    'nombre' => $producto->nombre,
-                    'cantidad' => $productoPedido->unidades,
-                    'precio_ud' => $productoPedido->precio_ud,
-                    'precio_total' => $productoPedido->precio_total,
-                    'iva' => $producto->iva,
-                    'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
-                    'productos_pallet' => isset($producto->cajas_por_pallet) ? $producto->cajas_por_pallet : null,
-                    'num_cajas' => isset($producto->unidades_por_caja) ? floor($productoPedido->unidades / $producto->unidades_por_caja) : null,
-                    'num_pallet' => isset($producto->cajas_por_pallet) ? floor(($productoPedido->unidades / $producto->unidades_por_caja) / $producto->cajas_por_pallet) : null,
-                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
-                    'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
-                ];
-            }
-        }
+            $productos = $this->obtenerProductosPedido($pedido->id); // Usar la nueva función
+
 
         $configuracion = Configuracion::where('id', 1)->first();
+
+        $delegacion = $this->getDelegacion($pedido->cliente_id);
+
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            $Iva = false;
+        }else{
+           $Iva = true;
+        }
 
         $datos = [
         'conIva' => $Iva,
@@ -143,6 +175,7 @@ class IndexComponent extends Component
         ];
         try{
             Mail::to($this->email_transporte)->bcc( $emailsDireccion)->send(new TransporteMail($pdf->output(), $datos, $this->observaciones_transporte));
+                // Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new TransporteMail($pdf->output(), $datos, $this->observaciones_transporte));
 
             $registroEmail = new RegistroEmail();
             $registroEmail->factura_id = null;
@@ -562,25 +595,8 @@ class IndexComponent extends Component
 
         // Preparar los datos de los productos del pedido
         $productos = [];
-        foreach ($productosPedido as $productoPedido) {
-            $producto = Productos::find($productoPedido->producto_pedido_id);
-            $stockEntrante = StockEntrante::where('id',$productoPedido->lote_id)->first();
-            if (!isset( $stockEntrante)){
-                $stockEntrante = StockEntrante::where('lote_id',$productoPedido->lote_id)->first();
-            }
-            if ($producto) {
-                $productos[] = [
-                    'nombre' => $producto->nombre,
-                    'cantidad' => $productoPedido->unidades,
-                    'precio_ud' => $productoPedido->precio_ud,
-                    'precio_total' => $productoPedido->precio_total,
-                    'iva' => $producto->iva,
-                    'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
-                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
-                    'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
-                ];
-            }
-        }
+        $productos = $this->obtenerProductosPedido($pedido->id); // Usar la nueva función
+
         $configuracion = Configuracion::where('id', 1)->first();
         $datos = [
         'conIva' => $Iva,

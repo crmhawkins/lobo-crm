@@ -105,65 +105,41 @@
         <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
             <th style="text-align: left !important">CONCEPTO</th>
             <th>LOTE</th>
+            <th>PALLETS</th> <!-- Añadir columnas para pallets -->
             <th>CAJAS</th>
             <th>UNIDADES</th>
             <th>PESO TOTAL</th>
-            <!-- <th>PRECIO</th>
-            <th>SUBTOTAL</th> -->
         </tr>
         <tr style="background-color:#fff; color: #fff;">
             <th style="padding: 0px !important; height: 10px !important;"></th>
         </tr>
-		@php
-			$pesoTotal = 0;
-		@endphp
+        @php
+            $pesoTotal = 0;
+        @endphp
         @foreach($productos as $producto)
         <tr class="left-aligned" style="background-color:#ececec;">
-            <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span><br></td>
+            <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span></td>
             <td>{{ $producto['lote_id'] }}</td>
-            <td>
-            @if(isset($producto['productos_caja']))
-            {{ ceil($producto['cantidad']/$producto['productos_caja']) }}
-            @else
-            /
-            @endif
-            </td>
+            <td>{{ $producto['num_pallet'] ?? 0 }}</td> <!-- Mostrar número de pallets -->
+            <td>{{ $producto['num_cajas'] ?? 0 }}</td> <!-- Mostrar número de cajas -->
             <td>{{ $producto['cantidad'] }}</td>
-			@php
-			$pesoTotal += $producto['peso_kg'];
-			@endphp
+            @php
+            $pesoTotal += $producto['peso_kg'];
+            @endphp
             <td>{{ number_format($producto['peso_kg'], 2) }} Kg</td>
-            <!-- <td>{{ number_format($producto['precio_ud'], 2) }}€</td>
-            <td>{{ number_format($producto['precio_total'], 2) }}€</td> -->
         </tr>
         @endforeach
-        @if ($pedido->descuento )
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-           <!-- <td>Descuento Aplicado:</td>
-            <td>{{$pedido->porcentaje_descuento}}%<</td>-->
-        </tr>
-        @endif
     </table>
     <table style="margin-top: 1% !important">
         <tr style="background-color:#ececec;">
             <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
             <td>PESO TOTAL</td>
-            <td>{{ number_format($pesoTotal, 2)}} Kg.</td>
+            <td>{{ number_format($pesoTotal, 2) }} Kg</td>
         </tr>
-        <!--<tr style="background-color:#ececec;">
-            <td></td>
-            <td>IVA 21%</td>
-            <td>{{number_format($pedido->precio * 0.21, 2)}}€</td>
-        </tr>
-        <tr style="background-color:#ececec;">
-            <td></td>
-            <td>TOTAL</td>
-            <td>{{number_format($pedido->precio * 1.21, 2)}}€</td>
-        </tr>-->
     </table>
 
     @if(isset($nota) && $nota != '')

@@ -61,9 +61,9 @@
                             @php($unidades = $producto['cantidad'] - ($producto['num_cajas'] * $producto['productos_caja']) )
                         <tr>
                             <td>{{ $producto['nombre'] }}</td>
-                            <td>{{ $producto['num_pallet'] }}</td>
-                            <td>{{ $numeroCajas }}</td>
-                            <td>{{ $unidades }}</td>
+                            <td>{{ $producto['num_pallet'] ?? '/' }}</td>
+                            <td>{{ $producto['num_cajas'] ?? '/' }}</td>
+                            <td>{{ $producto['cantidad'] }}</td>
                             <td>{{ $producto['peso_kg'] }}kg</td>
                         </tr>
                     @endforeach
