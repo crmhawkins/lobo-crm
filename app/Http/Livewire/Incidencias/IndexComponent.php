@@ -10,6 +10,10 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Alertas;
+use App\Mail\IncidenciaAsignadaMail;
+use App\Mail\CambioEstadoIncidenciaMail;
+
+use Illuminate\Support\Facades\Mail;
 
 class IndexComponent extends Component
 {
@@ -119,6 +123,33 @@ class IndexComponent extends Component
         $incidencia = Incidencias::find($id);
         if ($incidencia) {
             $incidencia->update(['estado' => $newEstado]);
+
+            try{
+
+                $empleado = User::find($incidencia->user_id);
+                Mail::to($empleado->email)
+                ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'normal'));
+
+                // Mail::to('ivan.mayol@hawkins.es')
+                // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                // ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'normal'));
+
+                Alertas::create([
+                    'user_id' => 13,
+                    'stage' => 9,
+                    'titulo' => 'Cambio de estado de incidencia',
+                    'descripcion' => 'Se ha cambiado el estado de la incidencia',
+                    'referencia_id' => $incidencia->id ,
+                    'leida' => null,
+                ]);
+
+
+            }catch (\Exception $e) {
+            }
+           
+
+
             $this->loadIncidencias();
         }
     }
@@ -129,6 +160,31 @@ class IndexComponent extends Component
         $pedidoIncidencia = PedidosIncidencias::find($id);
         if ($pedidoIncidencia) {
             $pedidoIncidencia->update(['estado' => $newEstado]);
+
+            try{
+
+                $empleado = User::find($pedidoIncidencia->user_id);
+                Mail::to($empleado->email)
+                ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'pedido'));
+    
+                // Mail::to('ivan.mayol@hawkins.es')
+                // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                // ->send(new CambioEstadoIncidenciaMail($empleado, $pedidoIncidencia, 'pedido'));
+    
+                Alertas::create([
+                    'user_id' => 13,
+                    'stage' => 9,
+                    'titulo' => 'Cambio de estado de incidencia',
+                    'descripcion' => 'Se ha cambiado el estado de la incidencia',
+                    'referencia_id' => $pedidoIncidencia->id ,
+                    'leida' => null,
+                ]);
+    
+    
+            }catch (\Exception $e) {
+            }
+
             $this->loadIncidencias();
         }
     }
@@ -161,6 +217,18 @@ class IndexComponent extends Component
             'observaciones' => $this->observaciones,
             'estado' => $this->estado,
         ]);
+
+         // Obtener el empleado asignado
+            $empleado = User::find($this->user_id);
+            Mail::to($empleado->email)
+            ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+            ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'normal'));
+
+            // Mail::to('ivan.mayol@hawkins.es')
+            // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+            // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'normal'));
+
+
         try{
             Alertas::create([
                 'user_id' => 13,
@@ -221,6 +289,15 @@ class IndexComponent extends Component
             'observaciones' => $this->observaciones,
             'estado' => $this->estado,
         ]);
+
+        $empleado = User::find($this->user_id);
+            Mail::to($empleado->email)
+            ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+            ->send(new IncidenciaAsignadaMail($empleado, $incidencia , 'pedido'));
+
+            // Mail::to('ivan.mayol@hawkins.es')
+            // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+            // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'pedido'));
 
         try{
             Alertas::create([

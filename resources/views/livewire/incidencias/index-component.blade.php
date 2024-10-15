@@ -169,7 +169,7 @@
                                     <select name="" id="" class="form-select" wire:model="pedido_id">
                                         <option value="">Selecciona un pedido</option>
                                         @foreach($pedidos as $pedido)
-                                            <option value="{{ $pedido->id }}">{{ $pedido->id }}</option>
+                                            <option value="{{ $pedido->id }}">{{ $pedido->id }} - {{$pedido->cliente->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>
