@@ -292,7 +292,7 @@
                                             <td>{{ $this->getComercial($fact->cliente_id)}}</td>
                                             <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
 
-                                            <td style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+                                            <td style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a target="blank_" href="{{ route('clientes.edit', ['id' => $fact->cliente_id]) }}" class="btn btn-primary btn-sm fw-bold"> {{ $fact->cliente->nombre }}</a></td>
 
                                             <td>{{ $fact->fecha_emision }}</td>
                                             @if($tipoFactura != 2)
@@ -532,7 +532,7 @@
                                         <td>{{ $this->getComercial($fact->cliente_id)}}</td>
                                         <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
 
-                                        <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+                                        <td><a target="blank_" href="{{ route('clientes.edit', ['id' => $fact->cliente_id]) }}" class="btn btn-primary btn-sm fw-bold"> {{ $fact->cliente->nombre }}</a></td>
 
                                         <td>{{ $fact->fecha_emision }}</td>
                                         
@@ -703,7 +703,7 @@
                                         <td>{{ $this->getComercial($fact->cliente_id)}}</td>
                                         <td>{{ $this->getDelegacion($fact->cliente_id)}}</td>
 
-                                        <td>{{ $this->getCliente($fact->cliente_id)->nombre}}</td>
+                                        <td><a target="blank_" href="{{ route('clientes.edit', ['id' => $fact->cliente_id]) }}" class="btn btn-primary btn-sm fw-bold"> {{ $fact->cliente->nombre }}</a></td>
 
                                         <td>{{ $fact->fecha_emision }}</td>
                                         <td>
