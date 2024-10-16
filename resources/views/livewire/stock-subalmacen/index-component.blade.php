@@ -14,7 +14,10 @@
         </div>
     </div>
 <!-- Botón para ver el registro de stock -->
-<div class="row mb-4">
+<div class="row mb-4 d-flex gap-2">
+    <div class="col-md-12 text-right">
+        <a href="{{ route('productosmarketing.index') }}" class="btn btn-primary">Productos</a>
+    </div>
     <div class="col-md-12 text-right">
         <a href="{{ route('stock-subalmacen.registro') }}" class="btn btn-primary">Ver Registro de Stock</a>
     </div>
