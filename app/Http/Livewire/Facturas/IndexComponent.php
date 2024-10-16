@@ -306,7 +306,8 @@ public function getIva($facturaId){
                 case 'vencidas':
                     $query->where(function ($query) {
                         $query->where('estado', 'Pendiente')
-                            ->orWhere('estado', 'Cancelado');
+                            ->orWhere('estado', 'Cancelado')
+                            ->orWhere('estado', 'Parcial');
                     })->whereDate('fecha_vencimiento', '<=', now());
                     break;
                 case 'pagadas':
