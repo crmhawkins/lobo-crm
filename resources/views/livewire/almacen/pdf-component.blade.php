@@ -117,18 +117,51 @@
             $pesoTotal = 0;
         @endphp
         @foreach($productos as $producto)
-        <tr class="left-aligned" style="background-color:#ececec;">
-            <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span></td>
-            <td>{{ $producto['lote_id'] }}</td>
-            <td>{{ $producto['num_pallet'] ?? 0 }}</td> <!-- Mostrar número de pallets -->
-            <td>{{ $producto['num_cajas'] ?? 0 }}</td> <!-- Mostrar número de cajas -->
-            <td>{{ $producto['cantidad'] }}</td>
-            @php
-            $pesoTotal += $producto['peso_kg'];
-            @endphp
-            <td>{{ number_format($producto['peso_kg'], 2) }} Kg</td>
-        </tr>
+            <tr class="left-aligned" style="background-color:#ececec;">
+                <td style="text-align: left !important"><span style="font-weight: bold !important;">{{ $producto['nombre'] }}</span></td>
+                <td>{{ $producto['lote_id'] }}</td>
+                <td>{{ $producto['num_pallet'] ?? 0 }}</td> <!-- Mostrar número de pallets -->
+                <td>{{ $producto['num_cajas'] ?? 0 }}</td> <!-- Mostrar número de cajas -->
+                <td>{{ $producto['cantidad'] }}</td>
+                @php
+                $pesoTotal += $producto['peso_kg'];
+                @endphp
+                <td>{{ number_format($producto['peso_kg'], 2) }} Kg</td>
+            </tr>
         @endforeach
+        @if($productosMarketing)
+            @if(count($productosMarketing) > 0)
+                @foreach($productosMarketing as $productoMarketingPedido)
+                    @php
+                        $producto = $productoMarketingPedido->producto; // Obtenemos el producto de marketing
+                
+                        // Cálculos
+                        $unidades = $productoMarketingPedido->unidades;
+                        $cajas = floor($unidades / $producto->unidades_por_caja); // Calculamos las cajas
+                        $unidadesRestantes = $unidades % $producto->unidades_por_caja; // Unidades sobrantes
+                        $pallets = floor($cajas / $producto->cajas_por_pallet); // Calculamos los pallets
+                        $cajasSobrantes = $cajas % $producto->cajas_por_pallet; // Cajas sobrantes que no llenan un pallet
+                        $pesoTotalProducto = $unidades * $producto->peso_neto_unidad / 1000; // Peso total en kg
+                
+                        // Sumamos el peso total al peso total de todo el pedido
+                    @endphp
+                
+                    <tr class="left-aligned" style="background-color:#ececec;">
+                        <td style="text-align: left !important">
+                            <span style="font-weight: bold !important;">{{ $producto->nombre }}</span>
+                        </td>
+                        <td>{{ $productoMarketingPedido->lote_id ?? '' }}</td> <!-- Lote -->
+                        <td>{{ $pallets }}</td> <!-- Número de pallets -->
+                        <td>{{ $cajasSobrantes }}</td> <!-- Cajas sobrantes -->
+                        <td>{{ $unidadesRestantes }}</td> <!-- Unidades restantes -->
+                        @php
+                        $pesoTotal += $pesoTotalProducto;
+                        @endphp
+                        <td>{{ number_format($pesoTotalProducto, 2) }} Kg</td> <!-- Peso total del producto -->
+                    </tr>
+                @endforeach
+            @endif
+        @endif
     </table>
     <table style="margin-top: 1% !important">
         <tr style="background-color:#ececec;">

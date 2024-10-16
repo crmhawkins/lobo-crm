@@ -254,6 +254,40 @@
                     </div>
                     </form>
                 </div>
+                @if (count($productosMarketingPedidos) > 0)
+                    <div class="form-row justify-content-center">
+                        <div class="form-group col-md-12">
+                            <h5 class="ms-3"
+                                style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
+                                Productos de Marketing
+                            </h5>
+                            <div class="form-group col-md-12">
+                                <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Stock disponible</th>
+                                            <th>Precio unidad</th>
+                                            <th>Precio total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($productosMarketingPedidos as $producto)
+                                            <tr>
+                                                <td>{{ $producto->producto->nombre }}</td>
+                                                <td>{{ $producto->unidades }}</td>
+                                                <td @if($producto->unidades <= $producto->producto->stockEnAlmacen($pedido->almacen_id) ) class="text-success" @else class="text-danger" @endif>{{ $producto->producto->stockEnAlmacen($pedido->almacen_id) }}</td>
+                                                <td>{{ $producto->precio_ud }} €</td>
+                                                <td>{{ $producto->precio_total }} €</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
         <div class="col-md-3">

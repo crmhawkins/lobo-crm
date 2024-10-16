@@ -24,6 +24,11 @@ use App\Models\StockRegistro;
 use App\Models\Configuracion;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use App\Models\StockSubalmacen;
+use App\Models\ProductosMarketing;
+use App\Models\ProductosMarketingPedido;
+use App\Models\Subalmacenes;
+
 
 class CreateComponent extends Component
 {
@@ -52,6 +57,10 @@ class CreateComponent extends Component
     public $gastos_envio;
     public $gastos_envio_iva;
     public $transporte;
+
+    public $productosSinStock = []; // Propiedad para almacenar los productos sin stock
+    public $productosMarketingPedidos = [];
+
     public function mount()
     {
         
@@ -70,6 +79,8 @@ class CreateComponent extends Component
         $this->num_albaran = Albaran::count() + 1;
         $this->fecha = Carbon::now()->format('Y-m-d');
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
+        $this->productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get();
+
         foreach ($productos as $producto) {
             $this->productos_pedido[] = [
                 'id' => $producto->id,
@@ -94,6 +105,27 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+        $this->productosSinStock = []; // Reseteamos la lista de productos sin stock
+        $productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->pedido_id)->get();
+        foreach ($productosMarketingPedidos as $productoMarketingPedido) {
+            $hasStock = $this->HasStockMarketing($productoMarketingPedido);
+    
+            // Si no hay suficiente stock, detener el proceso
+            if (!$hasStock) {
+                //alerta stock insuficiente
+                $this->alert('error', '¡No hay suficiente stock de Marketing en almacén para este pedido!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Aceptar',
+                ]);
+                return; // Detenemos la ejecución del submit si no hay stock suficiente
+            }
+
+            $this->registrarSalidaDeStockMarketing($subAlmacenMarketing, $productoMarketingPedido->unidades, $this->pedido, $productoMarketing);
+
+        }
         $this->total_factura = $this->pedido->precio;
         // Validación de datos
         $validatedData = $this->validate(
@@ -175,6 +207,33 @@ class CreateComponent extends Component
 
     }
 
+    public function registrarSalidaDeStockMarketing($subAlmacenMarketing, $cantidad, $pedido, $productoMarketing)
+    {
+        // dd($subAlmacenMarketing, $cantidad, $pedido, $productoMarketing);
+            // Registrar la salida de stock para productos de marketing
+            // $stockRegistro = new StockSubalmacen();
+            // $stockRegistro->subalmacen_id = $subAlmacenMarketing->id;
+            // $stockRegistro->producto_id = $productoMarketing->id;
+            // $stockRegistro->cantidad = $cantidad; // Reducimos el stock restando la cantidad
+            // $stockRegistro->fecha = Carbon::now();
+            // $stockRegistro->tipo_salida = "Venta";
+            // $stockRegistro->save();
+            // dd($subAlmacenMarketing->id);
+            StockSubalmacen::create([
+                'subalmacen_id' => $subAlmacenMarketing->id,
+                'producto_id' => $productoMarketing->id,
+                'cantidad' => $cantidad,
+                'fecha' => Carbon::now(),
+                'tipo_salida' => 'Venta',
+                'observaciones' => 'Venta de producto de marketing'
+            ]);
+
+
+
+            return true; // Salida registrada exitosamente
+
+    }
+
     public function alertaGuardar()
     {
         $this->alert('warning', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
@@ -220,6 +279,41 @@ class CreateComponent extends Component
 
         return $unidades;
     }
+
+    public function HasStockMarketing($productoMarketingPedido)
+    {
+        // Obtener el producto de marketing asociado al pedido
+        $productoMarketing = ProductosMarketing::find($productoMarketingPedido->producto_marketing_id);
+    
+        if (!$productoMarketing) {
+            $this->alert('error', 'Producto de marketing no encontrado.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return false;
+        }
+    
+        // Buscar el stock en subalmacenes de marketing
+        $stockDisponible = $productoMarketing->stockEnAlmacen($this->pedido_almacen_id);
+    
+        // Verificar si hay suficiente stock
+        if ($stockDisponible < $productoMarketingPedido->unidades) {
+            // Añadir el producto a la lista de productos sin stock
+            $this->productosSinStock[] = [
+                'producto' => $productoMarketing->nombre,
+                'stockDisponible' => $stockDisponible,
+                'cantidadRequerida' => $productoMarketingPedido->unidades
+            ];
+    
+            return false; // No hay stock suficiente, retorna false
+        }
+    
+        return true; // Si hay suficiente stock, devuelve true
+    }
+    
 
 
     public function registrarStock(){
@@ -361,6 +455,29 @@ class CreateComponent extends Component
                 ]);
             }
         }
+        $productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get();
+        foreach ($productosMarketingPedidos as $productoMarketingPedido) {
+            $productoMarketing = ProductosMarketing::find($productoMarketingPedido->producto_marketing_id);
+            $subAlmacenMarketing = Subalmacenes::where('almacen_id', $this->pedido_almacen_id)
+                                        ->first();
+    
+            // Verificar el stock disponible en el subalmacén de marketing
+            $hasStock = $this->HasStockMarketing($productoMarketingPedido, $productoMarketing, $productoMarketingPedido->unidades);
+    
+            if (!$hasStock) {
+                $this->alert('error', '¡No hay suficiente stock de Marketing en almacén para este pedido!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Aceptar',
+                ]);
+                return; // Detener el proceso si no hay stock suficiente
+            }
+    
+            // Registrar la salida de stock de productos de marketing
+            $this->registrarSalidaDeStockMarketing($subAlmacenMarketing, $productoMarketingPedido->unidades, $pedido, $productoMarketing);
+        }
 
         $cliente = Clients::find($pedido->cliente_id);
         $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
@@ -374,10 +491,28 @@ class CreateComponent extends Component
                 $producto = Productos::find($productoPedido['producto_pedido_id']);
                 $stockSeguridad = $producto->stock_seguridad;
                 $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
+
+
         
                 if (!isset($stockEntrante)) {
                     $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
                 }
+
+                // Calcula el número de cajas y pallets
+                $cajas = floor($productoPedido['unidades_old'] / $producto->unidades_por_caja);
+                $pallets = floor($cajas / $producto->cajas_por_pallet);
+                $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
+                $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
+
+                // Añadir el producto al array de productos
+                $productos[] = [
+                    'nombre' => $producto->nombre,
+                    'lote_id' => $productoPedido['lote_id'],
+                    'num_pallet' => $pallets,
+                    'num_cajas' => $cajasSobrantes,
+                    'cantidad' => $productoPedido['unidades_old'],
+                    'peso_kg' => $pesoTotalProducto,
+                ];
         
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
                 $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
@@ -403,13 +538,33 @@ class CreateComponent extends Component
                 } 
                
             }
+        }else{
+            foreach ($this->productos_pedido as $productoPedido) {
+                $producto = Productos::find($productoPedido['producto_pedido_id']);
+                // Calcula el número de cajas y pallets
+                $cajas = floor($productoPedido['unidades_old'] / $producto->unidades_por_caja);
+                $pallets = floor($cajas / $producto->cajas_por_pallet);
+                $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
+                $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
+
+                // Añadir el producto al array de productos
+                $productos[] = [
+                    'nombre' => $producto->nombre,
+                    'lote_id' => $productoPedido['lote_id'],
+                    'num_pallet' => $pallets,
+                    'num_cajas' => $cajasSobrantes,
+                    'cantidad' => $productoPedido['unidades_old'],
+                    'peso_kg' => $pesoTotalProducto,
+                ];
+
+            }
         }
         
 
         $num_albaran = Albaran::count() + 1;
         $fecha_albaran = Carbon::now()->format('Y-m-d');
         $configuracion = Configuracion::where('id', 1)->first();
-
+        //dd($productos);
         $datos = [
             'pedido' => $pedido,
             'cliente' => $cliente,
@@ -418,6 +573,7 @@ class CreateComponent extends Component
             'num_albaran' => $num_albaran,
             'fecha_albaran' => $fecha_albaran,
             'configuracion' => $configuracion,
+            'productosMarketing' => $productosMarketingPedidos
         ];
 
         // Crear una instancia del modelo Albaran
@@ -499,9 +655,9 @@ class CreateComponent extends Component
             ]);
             return;
         }
-
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
+        
 
             $totalPages = $pdf->getCanvas()->get_page_count();
 

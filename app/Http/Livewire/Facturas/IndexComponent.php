@@ -26,6 +26,7 @@ use App\Models\RegistroEmail;
 use Illuminate\Support\Facades\Log;
 use App\Models\Emails;
 use App\Models\Caja;
+use App\Models\ProductosMarketingPedido;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\ProductosFacturas;
@@ -606,6 +607,10 @@ public function getIva($facturaId){
             }
         }
 
+        $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+        // dd($productosMarketing);
+
+
         $configuracion = Configuracion::where('id', 1)->first();
         $datos = [
             'conIva' => false,
@@ -616,6 +621,7 @@ public function getIva($facturaId){
             'fecha_albaran' => $fecha_albaran = $albaran->fecha,
             'nota' => $nota ?? null,
             'configuracion' => $configuracion,
+            'productosMarketing' => $productosMarketing
         ];
 
         // Generar y mostrar el PDF
@@ -644,6 +650,9 @@ public function getIva($facturaId){
         $configuracion = Configuracion::first();
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
+
+            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
@@ -741,6 +750,7 @@ public function getIva($facturaId){
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
+                'productosMarketing' => $productosMarketing,
                 
             ];
             $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
@@ -1221,11 +1231,7 @@ public function getIva($facturaId){
                         }
                     }
                 }
-    
-    
-                //sumar 
-                
-    
+                $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
                 $datos = [
                     'conIva' => $iva,
                     'albaran' => $albaran,
@@ -1242,6 +1248,7 @@ public function getIva($facturaId){
                     'iva_productos' => $iva_productos,
                     'tipo' => $tipo,
                     'rectificada' => true,
+                    'productosMarketing' => $productosMarketing,
 
                 ];
                 
@@ -1370,6 +1377,9 @@ public function getIva($facturaId){
                     $iva = false;
                 }
 
+                $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+
+
                 $datos = [
                     'conIva' => $iva,
                     'albaran' => $albaran,
@@ -1385,6 +1395,7 @@ public function getIva($facturaId){
                     'base_imponible' => $base_imponible,
                     'iva_productos' => $iva_productos,
                     'tipo' => $tipo,
+                    'productosMarketing' => $productosMarketing,
                     
                 ];
     
@@ -1409,8 +1420,8 @@ public function getIva($facturaId){
             try{
                 //dd($datos);
                 $emailsDireccion = [
-                    'Alejandro.martin@serlobo.com',
-                    'Sandra.lopez@serlobo.com'
+                    // 'Alejandro.martin@serlobo.com',
+                    // 'Sandra.lopez@serlobo.com'
                 ];
     
                 $cliente = Clients::find($factura->cliente_id);
@@ -1427,9 +1438,8 @@ public function getIva($facturaId){
                 //dd($this->emailsSeleccionados);
                 
                 if(count($this->emailsSeleccionados) > 0){
-                    
-                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    //  Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    // Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                     Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach($this->emailsSeleccionados as $email){
                         $registroEmail = new RegistroEmail();
@@ -1447,9 +1457,9 @@ public function getIva($facturaId){
                     }
     
                 }else{
-
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    //  Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
+                    //dd($datos);
+                    // Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                     Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
@@ -1476,7 +1486,7 @@ public function getIva($facturaId){
                 ]);
     
             }catch(\Exception $e){
-                //dd($e);
+                dd($e);
                 $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                     'position' => 'center',
                     'timer' => 3000,

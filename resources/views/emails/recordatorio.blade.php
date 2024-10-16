@@ -111,11 +111,43 @@
                     </tr>
                 @endforeach
             @elseif( $datos['producto'] != null)
+            <tr>
                 <td>{{ $datos['producto']->nombre }}</td>
                 <td>{{ $datos['producto']->cantidad }}</td>
                 <td>{{ $datos['producto']->precio}}€</td>
                 <td>{{ number_format($datos['factura']->precio, 2) }}€</td>
+            </tr>
             @endif
+            @if($datos['productosMarketing'])
+                    @if(count($datos['productosMarketing']) > 0)
+                        @foreach($datos['productosMarketing'] as $productoMarketingPedido)
+                            @php
+                                $producto = $productoMarketingPedido->producto; // Obtenemos el producto de marketing
+                        
+                                // Cálculos
+                                $unidades = $productoMarketingPedido->unidades;
+                                $cajas = floor($unidades / $producto->unidades_por_caja); // Calculamos las cajas
+                                $unidadesRestantes = $unidades % $producto->unidades_por_caja; // Unidades sobrantes
+                                $pallets = floor($cajas / $producto->cajas_por_pallet); // Calculamos los pallets
+                                $cajasSobrantes = $cajas % $producto->cajas_por_pallet; // Cajas sobrantes que no llenan un pallet
+                                $pesoTotalProducto = $unidades * $producto->peso_neto_unidad / 1000; // Peso total en kg
+                                $precio = $productoMarketingPedido->precio_ud * $productoMarketingPedido->unidades;
+                                // Sumamos el peso total al peso total de todo el pedido
+                            @endphp
+                        
+                            <tr class="left-aligned" style="background-color:#ececec;">
+                                <td style="text-align: left !important">
+                                    <span style="font-weight: bold !important;">{{ $producto->nombre }}</span>
+                                </td>
+                                <td>{{ $unidades }}</td> <!-- Número de pallets -->
+                                <td>{{ number_format($productoMarketingPedido->precio_ud, 2) }}€</td> <!-- Peso total del producto -->
+
+                                <td>{{ number_format($precio, 2) }}€</td> <!-- Peso total del producto -->
+                            </tr>
+                        @endforeach
+                    @endif
+                @endif
+
 
             @if($datos['servicios'] != null && count($datos['servicios']) > 0)
 

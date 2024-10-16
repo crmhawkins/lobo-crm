@@ -160,9 +160,11 @@
 
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     @php
-        $productosPorPagina = 7;
-        $numeroPaginasProductos = ceil(count($productos) / $productosPorPagina);
-        $ultimoProductoEnPagina = count($productos) % $productosPorPagina;
+        $productosPorPagina = 10;
+        $totalProductos = count($productos) + count($productosMarketing);
+        $numeroPaginasProductos = ceil($totalProductos / $productosPorPagina);
+        $ultimoProductoEnPagina = $totalProductos % $productosPorPagina;
+        
     @endphp
 
     @for ($i = 0; $i < $numeroPaginasProductos; $i++)
@@ -196,6 +198,37 @@
                     <td>{{ number_format($producto['precio_total'], 2) }} €</td>
                 </tr>
             @endforeach
+            @if($productosMarketing)
+                @if(count($productosMarketing) > 0)
+                    @foreach($productosMarketing as $productoMarketingPedido)
+                        @php
+                            $producto = $productoMarketingPedido->producto; // Obtenemos el producto de marketing
+                    
+                            // Cálculos
+                            $unidades = $productoMarketingPedido->unidades;
+                            $cajas = floor($unidades / $producto->unidades_por_caja); // Calculamos las cajas
+                            $unidadesRestantes = $unidades % $producto->unidades_por_caja; // Unidades sobrantes
+                            $pallets = floor($cajas / $producto->cajas_por_pallet); // Calculamos los pallets
+                            $cajasSobrantes = $cajas % $producto->cajas_por_pallet; // Cajas sobrantes que no llenan un pallet
+                            $pesoTotalProducto = $unidades * $producto->peso_neto_unidad / 1000; // Peso total en kg
+                            $precio = $productoMarketingPedido->precio_ud * $productoMarketingPedido->unidades;
+                            // Sumamos el peso total al peso total de todo el pedido
+                        @endphp
+                    
+                        <tr class="left-aligned" style="background-color:#ececec;">
+                            <td style="text-align: left !important">
+                                <span style="font-weight: bold !important;">{{ $producto->nombre }}</span>
+                            </td>
+                            <td>{{ $productoMarketingPedido->lote_id ?? '' }}</td> <!-- Lote -->
+                            <td>{{ $unidades }}</td> <!-- Número de pallets -->
+                            <td>{{ number_format($pesoTotalProducto, 2) }} Kg</td> <!-- Cajas sobrantes -->
+                            <td>{{ number_format($productoMarketingPedido->precio_ud, 2) }}€</td> <!-- Peso total del producto -->
+
+                            <td>{{ number_format($precio, 2) }}€</td> <!-- Peso total del producto -->
+                        </tr>
+                    @endforeach
+                @endif
+            @endif
         </table>
 
         @if($i < $numeroPaginasProductos - 1)

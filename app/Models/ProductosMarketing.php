@@ -30,11 +30,20 @@ class ProductosMarketing extends Model
 
 public function stockEnAlmacen($almacenId)
     {
-        $stock = StockSubalmacen::where('subalmacen_id', $almacenId)
+        $tockEntrante = StockSubalmacen::where('subalmacen_id', $almacenId)
             ->where('producto_id', $this->id)
-            ->first();
+            ->where('tipo_entrada', '!=', null)
+            ->where('tipo_salida', '=', null)
+            ->sum('cantidad');
 
-        return $stock ? $stock->cantidad : 0;
+        $stockSalida = StockSubalmacen::where('subalmacen_id', $almacenId)
+            ->where('producto_id', $this->id)
+            ->where('tipo_entrada', '=', null)
+            ->where('tipo_salida', '!=', null)
+            ->sum('cantidad');
+
+        return $tockEntrante - $stockSalida;
+
     }
 
     public function stockSubalmacen()

@@ -433,7 +433,119 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     </div>
                 </div>
             </div>
+            <div>
+
+
+                <div class="card m-b-30 mb-5">
+                    <div class="card-body">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-md-12">
+                                <h5 class="ms-3 d-flex justify-content-between" style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
+                                    Lista de productos de Marketing 
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#addProductMarketingModal" wire:click="isClienteSeleccionado()">
+                                        Añadir Producto de Marketing
+                                    </button>
+                                </h5>
+                
+                                <div class="form-group col-md-12 tabla-productos">
+                                    @if (count($productos_marketing_pedido) > 0)
+                                        <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio unidad</th>
+                                                    <th>Precio total</th>
+                                                    <th>Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productos_marketing_pedido as $productoIndex => $producto)
+                                                    <tr>
+                                                        <td>{{ $producto['producto_marketing_id'] }}</td>
+                                                        <td>{{ $producto['unidades'] }}</td>
+                                                        <td><input type="number" wire:model.lazy="productos_marketing_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotalMarketing({{ $productoIndex }})" class="form-control" style="width:70%; display:inline-block">€</td>
+                                                        <td>{{ $producto['precio_total'] }} €</td>
+                                                        <td><button type="button" class="btn btn-danger" wire:click="deleteArticuloMarketing({{ $productoIndex }})">X</button></td>
+                                                    </tr>
+                                                @endforeach
+                                                <tr>
+                                                    <th colspan="3">Precio estimado</th>
+                                                    <th>{{ $precioMarketing }} €</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal para añadir productos de marketing -->
+                <div wire:ignore.self class="modal fade" id="addProductMarketingModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Añadir Producto de Marketing</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-12">
+                                        <label for="producto_marketing_seleccionado">Producto seleccionado</label>
+                                    </div>
+                                    <div class="col-md-12" wire:ignore>
+                                        <div x-data="" x-init="$('#select2-marketing-producto').select2();
+                                        $('#select2-marketing-producto').on('change', function(e) {
+                                            var data = $('#select2-marketing-producto').select2('val');
+                                            @this.set('producto_marketing_seleccionado', data);
+                                        });">
+                                            <select name="producto_marketing" id="select2-marketing-producto" wire:model="producto_marketing_seleccionado" style="width: 100% !important">
+                                                <option value="{{ null }}">-- Selecciona un producto de marketing --</option>
+                                                @foreach ($productosMarketing as $producto)
+                                                    <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row justify-content-center mt-3">
+                                    <div class="col-md-4">
+                                        <label for="unidades_marketing">Unidades</label>
+                                        <input type="number" class="form-control" wire:model="unidades_producto" placeholder="Unidades">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="precio_marketing">Precio Unidad</label>
+                                        <input type="number" class="form-control" wire:model="precio_producto_marketing" placeholder="Precio por unidad" step="0.01">
+                                    </div>
+                                </div>
+                                
+                                <div class="row justify-content-center mt-3">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-primary w-100" wire:click.prevent="addProductosMarketing('{{ $producto_marketing_seleccionado }}')" data-dismiss="modal" aria-label="Close">
+                                            Añadir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+
+            </div>
+
+
         </div>
+        
         <div class="col-md-3">
             <div class="card m-b-30" >
                 <div class="card-body">

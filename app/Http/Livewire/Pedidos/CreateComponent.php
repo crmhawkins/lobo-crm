@@ -22,6 +22,9 @@ use App\Mail\PedidoMail;
 use App\Models\Stock;
 use App\Models\StockEntrante;
 use App\Models\StockRegistro;
+use App\Models\ProductosMarketing;
+
+use App\Models\ProductosMarketingPedido;
 
 
 use Illuminate\Support\Facades\Mail;
@@ -80,10 +83,17 @@ class CreateComponent extends Component
     public $cliente;
     public $datos_transporte;
     public $gastos_transporte;
+    public $productosMarketing = []; // Nueva propiedad para los productos de marketing
+    public $productos_marketing_pedido = [];
+    public $producto_marketing_seleccionado;
+
+    public $precio_producto_marketing = 0.01;
 
     public function mount()
     {
         $this->productos = Productos::all();
+        $this->productosMarketing = ProductosMarketing::all(); // Cargar productos de marketing
+
         $this->clientes = Clients::where('estado', 2)->get();
         //si el usuario autenticado es comercial, solo ve sus clientes asociados.
         if (Auth::user()->role == 3 ){
@@ -384,7 +394,7 @@ class CreateComponent extends Component
         }else{$this->bloqueado=false;}
 
         $total_iva  = 0;
-         foreach ($this->productos_pedido as $productoPedido) {
+        foreach ($this->productos_pedido as $productoPedido) {
              $producto = Productos::find($productoPedido['producto_pedido_id']);
              $precioBaseProducto = $this->obtenerPrecioPorTipo($producto);
              //ver que iva tiene el producto
@@ -409,6 +419,8 @@ class CreateComponent extends Component
                 //break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
          }
+
+         
 
         //  if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
         //     $this->gastos_envio_iva = $this->gastos_envio * 0.21;
@@ -519,6 +531,16 @@ class CreateComponent extends Component
 
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
+
+        foreach ($this->productos_marketing_pedido as $productoMarketing) {
+            ProductosMarketingPedido::create([
+                'pedido_id' => $pedidosSave->id,
+                'producto_marketing_id' => $productoMarketing['producto_marketing_id'],
+                'unidades' => $productoMarketing['unidades'],
+                'precio_ud' => $productoMarketing['precio_ud'],
+                'precio_total' => $productoMarketing['precio_total']
+            ]);
+        }
 
         
         try{
@@ -670,33 +692,33 @@ class CreateComponent extends Component
                 }
 
 
-        foreach ($this->productos_pedido as $productos) {
-            DB::table('productos_pedido')->insert([
-                'producto_pedido_id' => $productos['producto_pedido_id'],
-                'pedido_id' => $pedidosSave->id,
-                'unidades' => $productos['unidades'],
-                'precio_ud' => $productos['precio_ud'],
-                'precio_total' => $productos['precio_total']
-            ]);
+            foreach ($this->productos_pedido as $productos) {
+                DB::table('productos_pedido')->insert([
+                    'producto_pedido_id' => $productos['producto_pedido_id'],
+                    'pedido_id' => $pedidosSave->id,
+                    'unidades' => $productos['unidades'],
+                    'precio_ud' => $productos['precio_ud'],
+                    'precio_total' => $productos['precio_total']
+                ]);
 
-        }
-        event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
+            }
+            event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
 
-        // Alertas de guardado exitoso
-        if ($pedidosSave) {
-            //si el rol es 2 , directamente se acepta el pedido
-            if (Auth::user()->role == 2 || Auth::user()->role == 1) {
-                $this->aceptarPedido($pedidosSave->id);
-            } 
-            $this->alert('success', '¡Pedido registrado correctamente!', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'onConfirmed' => 'confirmed',
-                'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
-            ]);
+            // Alertas de guardado exitoso
+            if ($pedidosSave) {
+                //si el rol es 2 , directamente se acepta el pedido
+                if (Auth::user()->role == 2 || Auth::user()->role == 1) {
+                    $this->aceptarPedido($pedidosSave->id);
+                } 
+                $this->alert('success', '¡Pedido registrado correctamente!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'onConfirmed' => 'confirmed',
+                    'confirmButtonText' => 'ok',
+                    'timerProgressBar' => true,
+                ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [
                 'position' => 'center',
@@ -705,6 +727,21 @@ class CreateComponent extends Component
             ]);
         }
     }
+
+    public function deleteArticuloMarketing($index)
+{
+    // Elimina el producto de marketing del array utilizando el índice proporcionado
+    unset($this->productos_marketing_pedido[$index]);
+
+    // Reindexa el array para evitar problemas con índices no consecutivos
+    $this->productos_marketing_pedido = array_values($this->productos_marketing_pedido);
+
+    // Actualiza el precio estimado
+    $this->setPrecioEstimadoMarketing();
+
+    // Refresca el componente para reflejar los cambios
+    $this->emit('refreshComponent');
+}
 
     // Función para cuando se llama a la alerta
     public function getListeners()
@@ -869,6 +906,85 @@ class CreateComponent extends Component
     public function closeModal(){
         return '';
     }
+
+    public function setPrecioEstimadoMarketing()
+{
+    $this->precioEstimadoMarketing = 0;
+
+    foreach ($this->productos_marketing_pedido as $producto) {
+        $this->precioEstimadoMarketing += $producto['precio_total'];
+    }
+
+    // Asignar el precio final para productos de marketing
+    $this->precioMarketing = number_format($this->precioEstimadoMarketing, 2, '.', '');
+}
+
+
+
+    public function actualizarPrecioTotalMarketing($index)
+{
+    $producto = $this->productos_pedido[$index];
+    if (isset($producto['precio_ud']) && isset($producto['unidades']) && $producto['is_marketing'] == true) {
+        $this->productos_pedido[$index]['precio_total'] = $producto['precio_ud'] * $producto['unidades'];
+    }
+    $this->setPrecioEstimadoMarketing();
+}
+
+
+public function addProductosMarketing($id)
+{
+    $producto = ProductosMarketing::find($id);
+
+    if (!$producto) {
+        $this->alert('error', 'Producto de marketing no encontrado.', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => false,
+            'timerProgressBar' => true,
+        ]);
+        return;
+    }
+
+    // Si el usuario no ha especificado un precio, el precio por defecto es 0.01
+    $precioUnitario = $this->precio_producto_marketing ?? 0.01;
+    $precioTotal = $precioUnitario * $this->unidades_producto;
+
+    // Añadir el producto de marketing al array de productos del pedido
+    $producto_existe = false;
+
+    foreach ($this->productos_marketing_pedido as $productoPedido) {
+        if ($productoPedido['producto_marketing_id'] == $id) {
+            $producto_existe = true;
+            break;
+        }
+    }
+
+    if ($producto_existe) {
+        foreach ($this->productos_marketing_pedido as $index => $productoPedido) {
+            if ($productoPedido['producto_marketing_id'] == $id) {
+                $this->productos_marketing_pedido[$index]['unidades'] += $this->unidades_producto;
+                $this->productos_marketing_pedido[$index]['precio_ud'] = $precioUnitario;
+                $this->productos_marketing_pedido[$index]['precio_total'] += $precioTotal;
+            }
+        }
+    } else {
+        $this->productos_marketing_pedido[] = [
+            'producto_marketing_id' => $id,
+            'unidades' => $this->unidades_producto,
+            'precio_ud' => $precioUnitario,
+            'precio_total' => $precioTotal,
+        ];
+    }
+
+    // Resetear campos
+    $this->producto_marketing_seleccionado = 0;
+    $this->unidades_producto = 0;
+    $this->precio_producto_marketing = 0.01; // Volver al valor por defecto
+    $this->setPrecioEstimadoMarketing();
+    $this->emit('refreshComponent');
+}
+
 
     public function addProductos($id)
     {
