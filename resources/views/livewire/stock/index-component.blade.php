@@ -46,6 +46,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         {{-- <button type="button" wire:click.prevent="imprimirEntrante" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL ENTRANTE</button> --}}
                         {{-- <button type="button" wire:click.prevent="imprimirSaliente" class="btn btn-lg btn-secondary w-100 mt-2">DESCARGAR HISTORIAL SALIENTE</button> --}}
                         <a href="{{ route('stock.historial') }}" class="btn btn-lg btn-secondary w-100 mt-2">VER HISTORIAL</a>
+                        <a href="{{ route('stock-subalmacen.index') }}" class="btn btn-lg btn-warning w-100 mt-2">Stock SubAlmacenes</a>
 
                     </div>
                     @if (auth()->user()->role == 1 || auth()->user()->role == 7)

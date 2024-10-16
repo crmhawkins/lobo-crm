@@ -35,6 +35,8 @@ use App\Http\Controllers\SubCuentasHijoController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\acuerdosComerciales;
 use App\Http\Controllers\CalendarioController;
+use App\Http\Controllers\ProductosMarketingController;
+use App\Http\Controllers\StockSubalmacenController;
 
 
 /*
@@ -84,6 +86,11 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/productos-create', [ProductosController::class, 'create'])->name('productos.create');
     Route::get('/productos-edit/{id}', [ProductosController::class, 'edit'])->name('productos.edit');
 
+    Route::get('/productos-marketing', [ProductosMarketingController::class, 'index'])->name('productosmarketing.index');
+    Route::get('/productosmarketing-create', [ProductosMarketingController::class, 'create'])->name('productosmarketing.create');
+    Route::get('/productos-marketing-edit/{id}', [ProductosMarketingController::class, 'edit'])->name('productosmarketing.edit');
+
+
     Route::get('/materiales-producto', [MaterialesProductoController::class, 'index'])->name('materiales-producto.index');
     Route::get('/materiales-producto-create/{id}', [MaterialesProductoController::class, 'create'])->name('materiales-producto.create');
     Route::get('/materiales-producto-edit/{id}', [MaterialesProductoController::class, 'edit'])->name('materiales-producto.edit');
@@ -121,6 +128,10 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/stock-traspaso/{id}', [StockController::class, 'traspaso'])->name('traspaso.edit');
     Route::get('/stock/crear-qr', [StockController::class, 'crearQR'])->name('stock.crear-qr');
     Route::get('/stock/historial', [StockController::class, 'historial'])->name('stock.historial');
+
+    Route::get('/stock-subalmacen', [StockSubalmacenController::class, 'index'])->name('stock-subalmacen.index');
+    Route::get('/stock-subalmacen/registro', [StockSubalmacenController::class, 'registro'])->name('stock-subalmacen.registro');
+
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::get('/usuarios-create', [UsuarioController::class, 'create'])->name('usuarios.create');

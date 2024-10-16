@@ -22,4 +22,10 @@ class Subalmacenes extends Model
         'direccion',
         'horario',
     ];
+
+    public function productos()
+{
+    return $this->belongsToMany(ProductosMarketing::class, 'stock_subalmacen', 'subalmacen_id', 'producto_id')
+                ->withPivot('cantidad'); // Para acceder a la cantidad del producto en este almacén
+}
 }
