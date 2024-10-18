@@ -29,6 +29,9 @@ use App\Models\Emails;
 use App\Models\Almacen;
 use App\Mail\TransporteRecogida;
 use App\Models\TipoEmails;
+use App\Models\ProductosMarketingPedido;
+
+
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -972,6 +975,7 @@ class EditComponent extends Component
                 $total = $base_imponible + $iva_productos;
 
             }
+            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
 
             $datos = [
                 'conIva' => $iva,
@@ -988,6 +992,7 @@ class EditComponent extends Component
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
                 'anotacionesEmail' => $this->anotacionesEmail,
+                'productosMarketing' => $productosMarketing,	
                 
             ];
 

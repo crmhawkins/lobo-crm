@@ -22,6 +22,7 @@ use App\Models\User;
 use App\Models\RegistroEmail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TransporteMail;
+use App\Models\ProductosMarketingPedido;
 
 
 
@@ -141,6 +142,7 @@ class IndexComponent extends Component
         }else{
            $Iva = true;
         }
+        $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
 
         $datos = [
         'conIva' => $Iva,
@@ -152,6 +154,7 @@ class IndexComponent extends Component
         'almacen' => $this->getAlmacenObject($pedido->almacen_id),
         'hasproductosFactura' => false,
         'configuracion' => $configuracion,
+        'productosMarketing' => $productosMarketing,
         ];
 
         // Generar y mostrar el PDF
