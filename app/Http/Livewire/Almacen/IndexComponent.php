@@ -601,6 +601,8 @@ class IndexComponent extends Component
         $productos = $this->obtenerProductosPedido($pedido->id); // Usar la nueva función
 
         $configuracion = Configuracion::where('id', 1)->first();
+        $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+
         $datos = [
         'conIva' => $Iva,
         'pedido' => $pedido ,
@@ -609,6 +611,7 @@ class IndexComponent extends Component
         'num_albaran' => $num_albaran = $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         'configuracion' => $configuracion,
+        'productosMarketing' => $productosMarketing,
         ];
 
         // Generar y mostrar el PDF
