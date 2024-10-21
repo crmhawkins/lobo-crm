@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Delegacion;
 use App\Models\Configuracion;
 use App\Helpers\FacturaHelper;
+use App\Models\ProductosMarketingPedido;
 
 use Illuminate\Support\Facades\DB;
 //pdf
@@ -94,12 +95,15 @@ class IndexComponent extends Component
     $factura = Facturas::find($id);
     $configuracion = Configuracion::first();
 
+
+
     if ($factura != null) {
         // Verificar si la factura tiene IVA
         $iva = FacturaHelper::facturaHasIva($factura->id);
 
         // Obtener pedido, albarán, cliente, productos y servicios
         $pedido = Pedido::find($factura->pedido_id);
+        $productosMarketing = ProductosMarketingPedido::where('pedido_id', $factura->pedido_id)->get();
         $albaran = Albaran::where('pedido_id', $factura->pedido_id)->first();
         $cliente = Clients::find($factura->cliente_id);
         $productofact = Productos::find($factura->producto_id);
@@ -192,6 +196,7 @@ class IndexComponent extends Component
             'total' => $total,
             'base_imponible' => $base_imponible,
             'iva_productos' => $iva_productos,
+            'productosMarketing' => $productosMarketing,
         ];
 
         // Generar el PDF
@@ -376,6 +381,8 @@ class IndexComponent extends Component
         // Buscar el albarán asociado con el ID del pedido
 		//$factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();
+        $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedidoId)->get();
+
         $configuracion = Configuracion::where('id', 1)->first();
         if (!$albaran) {
             $this->alert('error', 'Albarán no encontrado para el pedido especificado.', [
@@ -412,6 +419,7 @@ class IndexComponent extends Component
                     'productos_caja' => isset($producto->unidades_por_caja) ? $producto->unidades_por_caja : null,
                     'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
                     'peso_kg' => ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000,
+                    
                 ];
             }
         }
@@ -424,6 +432,7 @@ class IndexComponent extends Component
         'num_albaran' => $num_albaran = $albaran->num_albaran,
         'fecha_albaran' => $fecha_albaran = $albaran->fecha,
         'configuracion' => $configuracion,
+        'productosMarketing' => $productosMarketing,
         ];
 
         // Generar y mostrar el PDF
