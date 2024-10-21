@@ -648,12 +648,16 @@ public function getIva($facturaId){
     {
 
         $factura = Facturas::find($id);
+
         $configuracion = Configuracion::first();
+
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
-
-            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
-
+            if($pedido){
+                $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+            }else{
+                $productosMarketing = [];
+            }
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
