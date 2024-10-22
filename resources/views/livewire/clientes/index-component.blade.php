@@ -62,7 +62,11 @@
                                     <td>{{ $cliente->nombre }}</td>
                                     <td>{{ $cliente->dni_cif }}</td>
                                     <td>{{ $cliente->telefono }}</td>
-                                    <td>{{ $cliente->email }}</td>
+                                    @if($cliente->emails->first() != null)
+                                        <td>{{$cliente->emails->first()->email}}</td>
+                                    @else
+                                        <td>{{ $cliente->email }}</td>
+                                    @endif
                                     <td>{{ $cliente->direccion }}</td>
                                     <td>{{ $this->getDelegacion($cliente->id) }}</td>
                                     <td>{{ $this->getComercial($cliente->id) }}</td>

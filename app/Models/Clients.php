@@ -80,4 +80,10 @@ class Clients extends Model
     {
         return $this->belongsTo(SubCuentaHijo::class, 'cuenta_contable', 'numero');
     }
+
+    //emails de la tabla emails
+    public function emails()
+    {
+        return $this->hasMany(Emails::class, 'cliente_id');
+    }
 }
