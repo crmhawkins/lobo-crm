@@ -304,7 +304,12 @@ class EditComponent extends Component
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
-        $this->productos = Productos::all();
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();
         $this->clientes = Clients::where('estado', 2)->get();
         $this->cliente_id = ltrim($pedido->cliente_id,0);
         $cliente = Clients::find($this->cliente_id);
