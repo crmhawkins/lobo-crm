@@ -33,7 +33,9 @@ class Productos extends Model
         'domicilio_fabricante',
         'stock_seguridad',
         'precio',
-        'iva_id'
+        'iva_id',
+        'grupo',
+        'orden',
 
     ];
 

@@ -381,6 +381,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                     <option value="{{ $presup->id }}">{{ $presup->nombre }}
                                                     </option>
                                                 @endforeach
+
                                             </select>
                                         </div>
                                     </div>
@@ -481,7 +482,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Modal para añadir productos de marketing -->
                 <div wire:ignore.self class="modal fade" id="addProductMarketingModal" tabindex="-1" role="dialog">
                     <div class="modal-dialog" style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
@@ -545,7 +546,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
 
         </div>
-        
+
         <div class="col-md-3">
             <div class="card m-b-30" >
                 <div class="card-body">
