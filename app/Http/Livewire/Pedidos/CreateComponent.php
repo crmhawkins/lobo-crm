@@ -91,7 +91,26 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        $this->productos = Productos::all();
+        
+
+       // Inicializar la colección de productos
+        // Obtener todos los productos, ordenados por grupo y orden dentro del grupo
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();
+
+
+
+        //dd($this->productos);
+
+
+      
+
+
+        //dd($this->productos);
         $this->productosMarketing = ProductosMarketing::all(); // Cargar productos de marketing
 
         $this->clientes = Clients::where('estado', 2)->get();
