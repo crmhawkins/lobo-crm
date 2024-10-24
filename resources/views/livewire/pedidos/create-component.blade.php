@@ -359,33 +359,39 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                         </div>
                                     </div>
                                 @endif
-                                <div class="col-md-10" wire:ignore>
-                                    <div x-data="" x-init="$('#select2-producto').select2();
-                                    $('#select2-producto').on('change', function(e) {
-                                        var data = $('#select2-producto').select2('val');
-                                        @this.set('producto_seleccionado', data);
-                                        @this.set('unidades_pallet_producto', 0);
-                                        @this.set('unidades_caja_producto', 0);
-                                        @this.set('unidades_producto', 0);
-                                    });">
-                                        <select name="producto" id="select2-producto" wire:model="producto_seleccionado" style="width: 100% !important">
-                                            <option value="{{ null }}">-- Selecciona un producto --</option>
-                                            
-                                            @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
-                                                @if ($grupo)
-                                                    <optgroup label="{{ $grupo }}">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-10" style="text-align: center !important;">
+                                        <label for="fechaVencimiento">Producto seleccionado</label>
+                                    </div>
+                                    <div class="col-md-10" wire:ignore>
+                                        <div x-data="" x-init="$('#select2-producto').select2();
+                                        $('#select2-producto').on('change', function(e) {
+                                            var data = $('#select2-producto').select2('val');
+                                            @this.set('producto_seleccionado', data);
+                                            @this.set('unidades_pallet_producto', 0);
+                                            @this.set('unidades_caja_producto', 0);
+                                            @this.set('unidades_producto', 0);
+                                        });">
+                                            <select name="producto" id="select2-producto" wire:model="producto_seleccionado" style="width: 100% !important">
+                                                <option value="{{ null }}">-- Selecciona un producto --</option>
+                                                
+                                                @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
+                                                    @if ($grupo)
+                                                        <optgroup label="{{ $grupo }}">
+                                                            @foreach ($productosGrupo as $producto)
+                                                                <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @else
                                                         @foreach ($productosGrupo as $producto)
                                                             <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
                                                         @endforeach
-                                                    </optgroup>
-                                                @else
-                                                    @foreach ($productosGrupo as $producto)
-                                                        <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
-                                                    @endforeach
-                                                @endif
-                                            @endforeach
-                                        </select>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
+                                    
                                 </div>
                                 @if ($producto_seleccionado != null)
                                     <div class="row justify-content-center mt-1 tipos-productos">
