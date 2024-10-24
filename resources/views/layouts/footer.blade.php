@@ -1,7 +1,65 @@
+    <style>
+    footer {
+    display: grid;
+    justify-content: center;
+    align-content: start;
+    grid-gap: 10px;
+    padding: 2%;
+    position: relative;
+    height: fit-content;
+    min-height: 100vh;
+}
+
+.menu_footer_new {
+    display: grid; /* Oculta el menú inicialmente */
+
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-items: center;
+    gap: 10px;
+}
+
+.exit-button-col {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid transparent; /* Preparar para el gradiente */
+    background-image: linear-gradient(to right, #009ffd, #2a2a72); /* Cambia a los colores que prefieras */
+    background-repeat: no-repeat;
+    background-size: 100% 1px; /* Tamaño del "borde" creado con el gradiente */
+    background-position: bottom;
+}
+.exit-button-col:last-child {
+    background-image: none; /* Eliminar el gradiente del último elemento */
+}
+.footer-button {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Icono y texto */
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.footer-button > svg, .footer-button > i {
+    justify-self: center; /* Centra el icono */
+    width: 30px; /* Tamaño consistente para los iconos */
+    font-size: 30px !important; /* Tamaño consistente para los iconos tipo i */
+}
+        /* Estilo para el botón de alternar */
+.toggle-button {
+    display: block;
+    margin: 10px auto; /* Centra el botón horizontalmente */
+    padding: 10px 20px;
+    cursor: pointer;
+}
+    </style>
 @switch($user_rol)
     @case(1)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer class="" style="">
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -11,7 +69,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             <div class="menu_footer_new">
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('productos.index') }}">
@@ -214,25 +272,27 @@
                         <span>OPCIONES </span>
                     </a>
                 </div>
+
+                <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                    <button class="footer-button" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg><span>SALIR</span>
+                    </button>
+                    <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                    </form>
+                </div>
                 
             </div>
 
-            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-                <button class="footer-button" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg><span>SALIR</span>
-                </button>
-                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                    style="display: none;">
-                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-                </form>
-            </div>
+            
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -421,8 +481,8 @@
     @break
 
     @case(2)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer >
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -432,7 +492,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             <div class="menu_footer_new">
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('productos.index') }}">
@@ -516,24 +576,25 @@
                         <span>INCIDENCIAS </span>
                     </a>
                 </div>
+                <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                    <button class="footer-button" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg><span>SALIR</span>
+                    </button>
+                    <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                    </form>
+                </div>
             </div>
 
-            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-                <button class="footer-button" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg><span>SALIR</span>
-                </button>
-                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                    style="display: none;">
-                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-                </form>
-            </div>
+            
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -722,8 +783,8 @@
     @break
 
     @case(3)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer >
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -733,7 +794,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             <div class="menu_footer_new">
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('pedidos.create') }}">
@@ -835,8 +896,6 @@
                     </a>
                 </div>
             @endif
-            </div>
-            
             <div class="col-2 col-md-2 col-lg-1 exit-button-col">
                 <button class="footer-button" href="{{ route('logout') }}"
                     onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
@@ -853,6 +912,9 @@
                     <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
                 </form>
             </div>
+            </div>
+            
+            
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -1041,8 +1103,8 @@
     @break
 
     @case(4)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer >
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -1052,7 +1114,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             <div class="menu_footer_new">
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('almacen.index') }}">
@@ -1103,24 +1165,25 @@
                         <span>PEDIDOS</span>
                     </a>
                 </div>--}}
+                <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                    <button class="footer-button" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg><span>SALIR</span>
+                    </button>
+                    <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                    </form>
+                </div>
             </div>
 
-            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-                <button class="footer-button" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg><span>SALIR</span>
-                </button>
-                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                    style="display: none;">
-                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-                </form>
-            </div>
+           
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -1309,8 +1372,8 @@
     @break
 
     @case(5)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer >
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -1320,7 +1383,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             <div class="menu_footer_new">
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('almacen.index') }}">
@@ -1400,24 +1463,25 @@
                         <span>INCIDENCIAS </span>
                     </a>
                 </div>
+                <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                    <button class="footer-button" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg><span>SALIR</span>
+                    </button>
+                    <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                    </form>
+                </div>
             </div>
 
-            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-                <button class="footer-button" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg><span>SALIR</span>
-                </button>
-                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                    style="display: none;">
-                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-                </form>
-            </div>
+            
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -1606,8 +1670,8 @@
     @break
 
     @case(6)
-        <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-            <div class="exit-button-col" style="text-align:right;">
+        <footer >
+            {{-- <div class="exit-button-col" style="text-align:right;">
                 <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                         xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                         height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -1617,7 +1681,7 @@
                     </svg>
                     <span>VOLVER</span>
                 </button>
-            </div>
+            </div> --}}
             
             <div class="menu_footer_new">
                 <div class="exit-button-col">
@@ -1732,24 +1796,25 @@
                          <span>CONTABILIDAD</span>
                     </a>
                 </div>
+                <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                    <button class="footer-button" href="{{ route('logout') }}"
+                        onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                            height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg><span>SALIR</span>
+                    </button>
+                    <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                    </form>
+                </div>
             </div>
 
-            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-                <button class="footer-button" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg><span>SALIR</span>
-                </button>
-                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                    style="display: none;">
-                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-                </form>
-            </div>
+            
             <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
                 integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
             <link rel="stylesheet"
@@ -1938,8 +2003,8 @@
     @break
 
     @case(7)
-    <footer class="row" style="align-items: center; padding: 0 1rem; justify-content: space-between;z-index: 15000;">
-        <div class="exit-button-col" style="text-align:right;">
+    <footer >
+        {{-- <div class="exit-button-col" style="text-align:right;">
             <button class="footer-button" onclick="location.href='{{ URL::previous() }}'"><svg
                     xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="44"
                     height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
@@ -1949,7 +2014,7 @@
                 </svg>
                 <span>VOLVER</span>
             </button>
-        </div>
+        </div> --}}
         <div class="menu_footer_new">
             <div class="exit-button-col">
                 <a class="footer-button" href="{{ route('productos.index') }}">
@@ -2079,23 +2144,24 @@
                     <span>PRODUCCIÓN</span>
                 </a>
             </div>
+            <div class="col-2 col-md-2 col-lg-1 exit-button-col">
+                <button class="footer-button" href="{{ route('logout') }}"
+                    onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
+                        height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                    </svg><span>SALIR</span>
+                </button>
+                <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
+                    style="display: none;">
+                    <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
+                </form>
+            </div>
         </div>
-        <div class="col-2 col-md-2 col-lg-1 exit-button-col">
-            <button class="footer-button" href="{{ route('logout') }}"
-                onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-logout" width="44"
-                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                </svg><span>SALIR</span>
-            </button>
-            <form id="cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK" action="{{ route('logout') }}" method="POST"
-                style="display: none;">
-                <input type="hidden" name="_token" value="{{ ['_token' => csrf_token()]['_token'] }}">
-            </form>
-        </div>
+        
         <script src="https://code.jquery.com/jquery-3.7.0.slim.js"
             integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
         <link rel="stylesheet"
@@ -2284,4 +2350,5 @@
     @break
 
     @default
+
 @endswitch

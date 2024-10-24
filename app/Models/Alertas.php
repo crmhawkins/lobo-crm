@@ -21,6 +21,8 @@ class Alertas extends Model
         'observaciones',
         'titulo',
         'leida',
+        'imagen',
+        'popup'
 
     ];
 

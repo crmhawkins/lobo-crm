@@ -3,7 +3,8 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.css" />
     <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.css" />
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
-    <link rel="stylesheet" href="https://uicdn.toast.com/select-box/latest/toastui-select-box.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" />
+
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -16,10 +17,62 @@
                     <li class="breadcrumb-item active">Calendario de eventos</li>
                 </ol>
             </div>
-        </div> <!-- end row -->
+        </div>
     </div>
+
+    <!-- Botón para abrir el modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enviarAlertaModal">
+        Enviar Alerta
+    </button>
+
+    <!-- Modal para enviar alerta -->
+    <div class="modal fade" id="enviarAlertaModal" tabindex="-1" aria-labelledby="enviarAlertaModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enviarAlertaModalLabel">Enviar Alerta</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form wire:submit.prevent="enviarAlerta">
+                        <div class="mb-3">
+                            <label for="tituloAlerta" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="tituloAlerta" wire:model="titulo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descripcionAlerta" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcionAlerta" rows="3" wire:model="descripcion" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imagenAlerta" class="form-label">Imagen (opcional)</label>
+                            <input type="file" class="form-control" id="imagenAlerta" wire:model="imagen">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="usuariosAlerta" class="form-label">Enviar a</label>
+                            <select id="usuariosAlerta" class="form-control select2" multiple="multiple" wire:model="usuariosSeleccionados" wire:ignore.self>
+                                @foreach($usuarios as $usuario)
+                                    <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Enviar Alerta</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor del calendario -->
-    <div id="calendar" class="mb-5 bg-light" style="height: 800px;" wire:ignore.self></div>
+    <div class="container-fluid" x-data>
+        <div id="calendar" class="mb-5 bg-light" style="height: 800px;" wire:ignore></div>
+    </div>
 
     <!-- Scripts necesarios -->
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.5/dayjs.min.js"></script>
@@ -27,17 +80,42 @@
     <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
     <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.js"></script>
     <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 
-    <!-- Script de inicialización del calendario -->
     <script>
         document.addEventListener('livewire:load', function () {
-            console.log('load');
-            var Calendar = tui.Calendar;
+            // Inicializar Select2
+            $('#usuariosAlerta').select2({
+                placeholder: "Seleccionar usuarios",
+                allowClear: true
+            });
 
-            // Obtener los calendarios desde Livewire
-            var calendars = @json($calendars);
+            // Escuchar cambios en el selector y sincronizarlos con Livewire
+            $('#usuariosAlerta').on('change', function () {
+                var data = $(this).val();
+                @this.set('usuariosSeleccionados', data);
+            });
+
+            // Actualizar select2 cuando Livewire cambie el estado
+            Livewire.hook('message.processed', () => {
+                $('#usuariosAlerta').select2({
+                    placeholder: "Seleccionar usuarios",
+                    allowClear: true
+                });
+            });
 
             // Inicializar el calendario
+            var Calendar = tui.Calendar;
+            var calendars = @json($calendars);
+            var events = @json($events);
+
+            events = events.map(function (item) {
+                item.start = new Date(item.start);
+                item.end = new Date(item.end);
+                item.calendarId = item.calendarId || item.calendar_id || '1';
+                return item;
+            });
+
             var cal = new Calendar('#calendar', {
                 defaultView: 'month',
                 usageStatistics: false,
@@ -48,102 +126,31 @@
                 },
                 calendars: calendars,
                 month: {
-                    startDayOfWeek: 1, // Comienza la semana en lunes
-                    daynames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    startDayOfWeek: 1,
+                    daynames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
                 },
-                useFormPopup: true, // Activamos el popup de creación
-                useDetailPopup: true, // Popup de detalles
-                useStatePopup: true, // No mostrar popup de estado
+                useFormPopup: true,
+                useDetailPopup: true,
                 template: {
-                    popupIsAllday: function() {
-                        return '¿Todo el día?';
-                    },
-                    popupStateFree: function() {
-                        return 'Libre';
-                    },
-                    popupStateBusy: function() {
-                        return 'Ocupado';
-                    },
-                    titlePlaceholder: function() {
-                        return 'Título';
-                    },
-                    locationPlaceholder: function() {
-                        return 'Descripción';
-                    },
-                    startDatePlaceholder: function() {
-                        return 'Fecha de inicio';
-                    },
-                    endDatePlaceholder: function() {
-                        return 'Fecha de fin';
-                    },
-                    
-                    popupSave: function() {
-                        return 'Agregar Evento';
-                    },
-                    popupUpdate: function() {
-                        return 'Actualizar Evento';
-                    },
-                    popupEdit: function() {
-                        return 'Modificar';
-                    },
-                    popupDelete: function() {
-                        return 'Eliminar';
-                    },
-                    popupDetailTitle: function(data) {
-                        return 'Detalle de ' + data.title;
-                    },
-                },
+                    popupIsAllday: () => '¿Todo el día?',
+                    popupStateFree: () => 'Libre',
+                    popupStateBusy: () => 'Ocupado',
+                    titlePlaceholder: () => 'Título',
+                    locationPlaceholder: () => 'Descripción',
+                    startDatePlaceholder: () => 'Fecha de inicio',
+                    endDatePlaceholder: () => 'Fecha de fin',
+                    popupSave: () => 'Agregar Evento',
+                    popupUpdate: () => 'Actualizar Evento',
+                    popupEdit: () => 'Modificar',
+                    popupDelete: () => 'Eliminar',
+                    popupDetailTitle: (data) => 'Detalle de ' + data.title
+                }
             });
-            cal.setOptions({
-                month: {
-                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-                },
-            })
-            // Cargar los eventos existentes desde Livewire
-            var events = @json($events);
 
-            // Convertir fechas de los eventos a objetos Date
-            events = events.map(function(item) {
-                item.start = new Date(item.start);
-                item.end = new Date(item.end);
-                item.calendarId = item.calendarId || item.calendar_id || '1';  // Asigna calendarId o calendar_id desde la base de datos
-                console.log('item', item);  // Para depurar y verificar si el calendarId está presente
-                return item;
-            });
-            console.log('events', events);
             cal.createEvents(events);
-            // cal.once('beforeCreateEvent', (data) => {
-            //     console.log(data);
-            //     const event = {
-            //         calendarId: data.calendarId,
-            //         title: data.title,
-            //         location: data.location,
-            //         state: data.state,
-            //         isAllDay: data.isAllDay,
-            //         start: data.start,
-            //         end: data.end
-            //     }
-            //     console.log("event" , event)
-            //     Livewire.emit('addItem', event);
 
-
-            // });
-
-            function sendFetchRequest(url, method, data) {
-                return fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .catch(error => console.error('Error:', error));
-            }
             // Manejar la creación de nuevos eventos
-            cal.on('beforeCreateEvent', function(event) {
-                console.log('beforeCreateEvent', event);
+            cal.on('beforeCreateEvent', function (event) {
                 var eventData = {
                     title: event.title,
                     calendarId: event.calendarId || '1',
@@ -153,50 +160,34 @@
                     state: event.state || 'ocupado',
                     category: event.isAllDay ? 'allday' : 'time',
                     start: event.start,
-                    end: event.end,
+                    end: event.end
                 };
 
-                //cal.createEvents([eventData]);
-                sendFetchRequest('{{ route("event.store") }}', 'POST', eventData)
+                fetch('{{ route("event.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(eventData)
+                })
+                .then(response => response.json())
                 .then(response => {
-                    console.log('Evento creado:', response);
-                    eventData.id = response.newID;  // Asignar nuevo ID desde el servidor
-                    cal.createEvents([eventData]);  // Añadir el evento al calendario
+                    eventData.id = response.newID;
+                    cal.createEvents([eventData]);
                 })
                 .catch(error => console.error('Error al crear evento:', error));
-                //console.log('createSchedule', eventData);
-                // Emitir evento a Livewire para agregarlo
-                //Livewire.emit('addItem', eventData);
             });
 
             // Manejar la actualización de eventos
-            // cal.on('beforeUpdateEvent', ({ event, change }) => {
-            //     console.log('beforeUpdateEvent', event);
-            //     console.log('change', change);
-            //     cal.updateEvent(event.id, event.calendarId, change);
-            // });
-            cal.on('beforeUpdateEvent', function(event) {
-                console.log('beforeUpdateEvent', event);
-
-                // Extraemos el evento actual y los cambios
+            cal.on('beforeUpdateEvent', function (event) {
                 const updatedEvent = event.event;
                 const changes = event.changes;
 
-                console.log('changes', changes);
+                Object.assign(updatedEvent, changes);
 
-                // Aplicamos los cambios a los valores del evento original si existen
-                if (changes.title) updatedEvent.title = changes.title;
-                if (changes.start) updatedEvent.start = changes.start;
-                if (changes.end) updatedEvent.end = changes.end;
-                if (changes.location) updatedEvent.location = changes.location;
-                if (changes.state) updatedEvent.state = changes.state;
-                if (changes.isAllday !== undefined) updatedEvent.isAllday = changes.isAllday;
-                if (changes.isPrivate !== undefined) updatedEvent.isPrivate = changes.isPrivate;
-
-                // Ahora, actualizamos el evento en el calendario
                 cal.updateEvent(updatedEvent.id, updatedEvent.calendarId, updatedEvent);
 
-                // Preparar los datos para el envío al servidor
                 var eventData = {
                     id: updatedEvent.id,
                     calendarId: updatedEvent.calendarId,
@@ -207,48 +198,35 @@
                     state: updatedEvent.state || 'ocupado',
                     category: updatedEvent.isAllday ? 'allday' : 'time',
                     start: updatedEvent.start,
-                    end: updatedEvent.end,
+                    end: updatedEvent.end
                 };
 
-                console.log('updateSchedule', eventData);
-
-                // Usar fetch para enviar los datos al servidor
-                sendFetchRequest(`/admin/calendario/event/${eventData.id}`, 'PUT', eventData)
-                    .then(response => {
-                        console.log('Evento actualizado en el servidor:', response);
-                    })
-                    .catch(error => console.error('Error al actualizar el evento:', error));
+                fetch(`/admin/calendario/event/${eventData.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(eventData)
+                })
+                .then(response => response.json())
+                .catch(error => console.error('Error al actualizar el evento:', error));
             });
-
 
             // Manejar la eliminación de eventos
-            cal.on('beforeDeleteEvent', function(eventObj) {
-
-                sendFetchRequest(`/admin/calendario/event/${eventObj.id}`, 'DELETE', {})
-                    .then(response => {
-                        console.log('Evento eliminado:', response);
-                        cal.deleteEvent(eventObj.id, eventObj.calendarId);  // Eliminar del calendario
-                    })
-                    .catch(error => console.error('Error al eliminar evento:', error));
-            });
-            
-
-            // Escuchar eventos desde Livewire para actualizar el calendario
-            Livewire.on('eventoAgregado', function(eventData) {
-                eventData.start = new Date(eventData.start);
-                eventData.end = new Date(eventData.end);
-                console.log('eventData', eventData);
-                cal.createEvents([eventData]);
-            });
-
-            Livewire.on('eventoActualizado', function(eventData) {
-                eventData.start = new Date(eventData.start);
-                eventData.end = new Date(eventData.end);
-                cal.updateEvent(eventData.id, eventData.calendarId, eventData);
-            });
-
-            Livewire.on('eventoEliminado', function(eventId) {
-                cal.deleteEvent(eventId, cal.getEvent(eventId).calendarId);
+            cal.on('beforeDeleteEvent', function (eventObj) {
+                fetch(`/admin/calendario/event/${eventObj.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(() => {
+                    cal.deleteEvent(eventObj.id, eventObj.calendarId);
+                })
+                .catch(error => console.error('Error al eliminar evento:', error));
             });
         });
     </script>

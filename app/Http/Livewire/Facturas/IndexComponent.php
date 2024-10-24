@@ -78,17 +78,19 @@ class IndexComponent extends Component
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
     
-        if ($user_rol == 3) {
-            // Comercial
-            $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
+        // if ($user_rol == 3) {
+        //     // Comercial
+        //     $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
+
+        //     dd($clientes_comercial);    
     
-            foreach ($clientes_comercial as $cliente) {
-                $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
-            }
+        //     foreach ($clientes_comercial as $cliente) {
+        //         $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
+        //     }
     
-        } else {
+        // } else {
             $this->updateFacturas();
-        }
+        // }
     }
 
 

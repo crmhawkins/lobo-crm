@@ -83,11 +83,59 @@
             </div>
         </div>
         <style>
-            /* .sidebar {
-                width: 15%;
-            } */
+           #footerSidebar {
+                position: fixed;
+                left: -250px; /* Inicia oculto */
+                top: 0;
+                bottom: 0;
+                width: 250px;
+                background-color: #f8f9fa;
+                overflow-y: auto; /* Permite el scroll en el sidebar */
+                transition: left 0.3s;
+            }
+
+            #toggleFooterSidebar {
+                position: absolute;
+                top: 10px;
+                left: 0px;
+                z-index: 1501;
+                cursor: pointer;
+                background: none;
+                border: none;
+                color: #007bff;
+                padding: 10px;
+                font-size: 30px;
+            }
+
+            .page-wrapper {
+                transition: margin-left 0.3s; /* Suaviza la transición */
+            }
+
+            /* Asegurarse de que el page-wrapper se mueva con el sidebar */
+            .page-wrapper.active {
+                margin-left: 250px;
+            }
+
+          
+        
+            /* Media Query para dispositivos móviles */
+            @media (max-width: 768px) {
+                #footerSidebar {
+                    width: 100%; /* Ocupa toda la anchura en móviles */
+                }
+            }
         </style>
+        
+        <button id="toggleFooterSidebar" style=" z-index: 1501; cursor: pointer; background: none; border: none; color: white;">
+            <i class="fas fa-bars" id="openIcon"></i> <!-- Icono visible cuando el sidebar está cerrado -->
+            <i class="fas fa-arrow-left" id="closeIcon" style="display: none;"></i> <!-- Icono visible cuando el sidebar está abierto -->
+        </button>
+        <div id="footerSidebar" class="footer-sidebar" style="position: fixed; left: -250px; top: 0; bottom: 0; width: 250px; background-color: #f8f9fa; transition: left 0.3s;">
+            @include('layouts.footer') <!-- Tu footer actual -->
+        </div>
+
         <div class="page-wrapper chiller-theme toggled" id="wrapper">
+            
             {{-- @include('layouts.sidebar') --}}
             @include('layouts.header')
             <div class="content-page">
@@ -102,9 +150,9 @@
 
             </div>
             @mobile
-            @include('layouts.footerMobile')
+            {{-- @include('layouts.footerMobile') --}}
             @elsemobile
-            @include('layouts.footer')
+            {{-- @include('layouts.footer') --}}
             @endmobile
             {{-- <div class="row w-100 m-0">
                 <div class="col-md-2 p-0 contenedor-sidebar">
@@ -122,7 +170,40 @@
 
     </div>
     {{-- <script src="/assets/js/jquery.min.js"></script> --}}
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebar = document.getElementById('footerSidebar');
+            var wrapper = document.querySelector('.page-wrapper');
+            var openIcon = document.getElementById('openIcon');
+            var closeIcon = document.getElementById('closeIcon');
+            var button = document.getElementById('toggleFooterSidebar'); // Referencia al botón
+        
+            if (button) {
+                button.addEventListener('click', function() {
+                    if (sidebar.style.left === '0px') {
+                        sidebar.style.left = '-250px'; // Oculta el sidebar
+                        wrapper.classList.remove('active'); // Retira el desplazamiento del contenido
+                        openIcon.style.display = 'block'; // Muestra el icono de barras
+                        closeIcon.style.display = 'none'; // Oculta el icono de flecha
+                        button.style.color = 'white'; // Cambia el color del botón a blanco
+                        button.style.left = '10px'; // Posición del botón
+                        button.style.top = '10px';
+                        button.style.fontSize = '30px'; // Tamaño del botón
+                        button.style.position = 'absolute'; // Posición del botón
+                    } else {
+                        sidebar.style.left = '0px'; // Muestra el sidebar
+                        wrapper.classList.add('active'); // Añade desplazamiento al contenido
+                        openIcon.style.display = 'none'; // Oculta el icono de barras
+                        closeIcon.style.display = 'block'; // Muestra el icono de flecha
+                        button.style.color = 'red'; // Cambia el color del botón a rojo
+                        button.style.left = 'calc(0%)'; // Posición del botón
+                        button.style.fontSize = '20px'; // Tamaño del botón
+                        button.style.position = 'fixed'; // Posición del botón
+                    }
+                });
+            }
+        });
+        </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
         integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
@@ -159,10 +240,64 @@
                     }
                 });
 
+
+                
+
     </script>
 
     @livewireScripts
     @yield('scripts')
+    @if (session('alerta'))
+    <script>
+        Swal.fire({
+            title: '{{ session('alerta')->titulo }}',
+            html: '<p>{{ session('alerta')->descripcion }}</p>' +
+                @if(session('alerta')->imagen)
+                '<img src="{{ asset("storage/" . session('alerta')->imagen) }}" alt="Imagen Alerta" style="width: 100%; height: auto;">' +
+                @endif
+                '',
+            showCancelButton: true, // Para mostrar los dos botones
+            confirmButtonText: 'Marcar esta alerta como leída',
+            cancelButtonText: 'Marcar todas como leídas', // Texto del botón adicional
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Realiza una llamada AJAX para marcar la alerta específica como leída
+                $.ajax({
+                    url: "{{ route('alertas.marcarLeida', session('alerta')->id) }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function() {
+                        console.log('Alerta marcada como leída');
+                        // Aquí podrías eliminar el 'alerta_mostrada' de la sesión
+                        sessionStorage.removeItem('alerta_mostrada');
+                    },
+                    error: function() {
+                        console.error('Error al marcar la alerta como leída');
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Realiza una llamada AJAX para marcar todas las alertas como leídas
+                $.ajax({
+                    url: "{{ route('alertas.marcarTodasLeidas') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function() {
+                        console.log('Todas las alertas marcadas como leídas');
+                        // Aquí podrías eliminar el 'alerta_mostrada' de la sesión
+                        sessionStorage.removeItem('alerta_mostrada');
+                    },
+                    error: function() {
+                        console.error('Error al marcar todas las alertas como leídas');
+                    }
+                });
+            }
+        });
+    </script>
+@endif
 
 
 </body>

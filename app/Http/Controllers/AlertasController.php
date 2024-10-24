@@ -73,6 +73,37 @@ class AlertasController extends Controller
         //
     }
 
+    public function marcarLeida($id)
+    {
+        // Buscar la alerta por ID
+        $alerta = Alertas::where('id', $id)
+                        ->first();
+
+        //dd($alerta);
+
+        // Si existe la alerta y pertenece al usuario autenticado
+        if ($alerta) {
+            $alerta->leida = true; // Marcar la alerta como leída
+            $alerta->save(); // Guardar los cambios
+        }
+
+        // Redirigir a la página anterior o a una página específica
+        return redirect()->back()->with('message', 'Alerta marcada como leída.');
+    }
+
+    public function marcarTodasLeidas()
+{
+    Alertas::where('user_id', auth()->id())
+        ->where(function ($query) {
+            $query->where('leida', false)
+                  ->orWhereNull('leida');
+        })
+        ->update(['leida' => true]);
+
+    return back()->with('success', 'Todas las alertas se han marcado como leídas.');
+}
+
+
     /**
      * Remove the specified resource from storage.
      *

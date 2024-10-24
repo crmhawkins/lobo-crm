@@ -37,6 +37,7 @@ use App\Http\Controllers\acuerdosComerciales;
 use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProductosMarketingController;
 use App\Http\Controllers\StockSubalmacenController;
+use App\Http\Controllers\AlertasController;
 
 
 /*
@@ -63,6 +64,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
+    Route::post('/alertas/marcar-leida/{id}', [AlertasController::class, 'marcarLeida'])->name('alertas.marcarLeida');
+    Route::post('/alertas/marcar-todas-leidas', [AlertasController::class, 'marcarTodasLeidas'])->name('alertas.marcarTodasLeidas');
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
