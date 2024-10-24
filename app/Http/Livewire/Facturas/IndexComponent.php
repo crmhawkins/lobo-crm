@@ -1425,8 +1425,8 @@ public function getIva($facturaId){
             try{
                 //dd($datos);
                 $emailsDireccion = [
-                    // 'Alejandro.martin@serlobo.com',
-                    // 'Sandra.lopez@serlobo.com'
+                    'Alejandro.martin@serlobo.com',
+                    'Sandra.lopez@serlobo.com'
                 ];
     
                 $cliente = Clients::find($factura->cliente_id);
