@@ -31,7 +31,14 @@ class clientes extends Component
 
     public function loadClientes()
     {
-        $this->clientes = ClientesComercial::all();
+
+        if(Auth::user()->role == 3){
+            $this->clientes = ClientesComercial::where('comercial_id', Auth::user()->id)->get();
+        }else{
+            $this->clientes = ClientesComercial::all();
+
+        }
+
     }
 
 
