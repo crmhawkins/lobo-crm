@@ -5,7 +5,7 @@ namespace App\Http\Livewire\AcuerdosComerciales;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
-use App\Models\Clients;
+use App\Models\ClientesComercial;
 use App\Models\acuerdosComerciales;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,7 +52,8 @@ class CreateComponent extends Component
     public function mount()
 {
     $this->user = Auth::user();
-    $this->cliente = Clients::findOrFail($this->identificador)->toArray();
+    $this->cliente = ClientesComercial::findOrFail($this->identificador)->toArray();
+    // $this->dni = $this->cliente['cif'];
 
     // Inicializar los arrays de productos
     $this->productos_lobo = [
@@ -165,7 +166,7 @@ public function deleteProductOtros($index)
             'cliente_id' => $this->cliente['id'],
             'nAcuerdo' => $this->nAcuerdo,
             'nombre_empresa'=> $this->cliente['nombre'],
-            'cif_empresa' => $this->cliente['dni_cif'],
+            'cif_empresa' => $this->cliente['cif'],
             'nombre' => $this->nombre,
             'dni' => $this->dni,
             'email' => $this->cliente['email'],

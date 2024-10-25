@@ -257,7 +257,7 @@
                         </tr>
                         <tr>
                             <td><input type="text" style="width: 98%" name="nombre_empresa" wire:model="cliente.nombre"></td>
-                            <td><input type="text" style="width: 98%" name="cif_empresa" wire:model="cliente.dni_cif"></td>
+                            <td><input type="text" style="width: 98%" name="cif_empresa" wire:model="cliente.cif"></td>
                         </tr>
                         <tr>
                             <th>Nombre representante:</th>
@@ -481,7 +481,7 @@
                     if (result.isConfirmed) {
                         // Aquí usamos el id del cliente desde PHP con Blade
                         const clienteId = {{ $cliente['id'] }};
-                        window.location.href = `/admin/clientes-edit/${clienteId}`; // Redirige a la ruta de edición del cliente con el ID
+                        window.location.href = `/admin/comercial/edit/${clienteId}`; // Redirige a la ruta de edición del cliente con el ID
                     }
                 });
             });

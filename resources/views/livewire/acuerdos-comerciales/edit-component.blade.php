@@ -505,7 +505,7 @@
                 text: 'El acuerdo comercial ha sido eliminado correctamente.',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = `/admin/clientes-edit/${event.detail.clienteId}`;
+                window.location.href = `/admin/comercial/edit/${event.detail.clienteId}`;
             });
         });
     });

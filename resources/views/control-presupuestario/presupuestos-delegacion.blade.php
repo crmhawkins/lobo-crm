@@ -547,37 +547,42 @@
         <div class="mt-4 collapse" id="tablaInversion">
             <h2 class="text-center mb-4">Inversion {{ $year }}</h2>
             @php
-                $inversionComercialT1 = $margenT1 * 0.65;
-                $inversionComercialT2 = $margenT2 * 0.65;
-                $inversionComercialT3 = $margenT3 * 0.65;
-                $inversionComercialT4 = $margenT4 * 0.65;
-                $inversionComercialAnual = $margenAnual * 0.65;
+                $inversionComercialT1 = $margenT1 * 0.30;
+                $inversionComercialT2 = $margenT2 * 0.30;
+                $inversionComercialT3 = $margenT3 * 0.30;
+                $inversionComercialT4 = $margenT4 * 0.30;
+                $inversionComercialAnual = $margenAnual * 0.30;
                 //-----------//
-                $inversionMarketingT1 = $margenT1 * 0.05;
-                $inversionMarketingT2 = $margenT2 * 0.05;
-                $inversionMarketingT3 = $margenT3 * 0.05;
-                $inversionMarketingT4 = $margenT4 * 0.05;  
-                $inversionMarketingAnual = $margenAnual * 0.05;
+                $inversionMarketingT1 = $margenT1 * 0.10;
+                $inversionMarketingT2 = $margenT2 * 0.10;
+                $inversionMarketingT3 = $margenT3 * 0.10;
+                $inversionMarketingT4 = $margenT4 * 0.10;  
+                $inversionMarketingAnual = $margenAnual * 0.10;
 
                 //-----------//
 
-                $inversionMarketingGeneralT1 = $margenT1 * 0.13;
-                $inversionMarketingGeneralT2 = $margenT2 * 0.13;
-                $inversionMarketingGeneralT3 = $margenT3 * 0.13;
-                $inversionMarketingGeneralT4 = $margenT4 * 0.13;
-                $inversionMarketingGeneralAnual = $margenAnual * 0.13;
+                $inversionMarketingGeneralT1 = $margenT1 * 0.20;
+                $inversionMarketingGeneralT2 = $margenT2 * 0.20;
+                $inversionMarketingGeneralT3 = $margenT3 * 0.20;
+                $inversionMarketingGeneralT4 = $margenT4 * 0.20;
+                $inversionMarketingGeneralAnual = $margenAnual * 0.20;
                 //-----------//
-                $inversionPatrocinioT1 = $margenT1 * 0.05;
-                $inversionPatrocinioT2 = $margenT2 * 0.05;
-                $inversionPatrocinioT3 = $margenT3 * 0.05;
-                $inversionPatrocinioT4 = $margenT4 * 0.05;
-                $inversionPatrocinioAnual = $margenAnual * 0.05;
+                $inversionPatrocinioT1 = $margenT1 * 0.10;
+                $inversionPatrocinioT2 = $margenT2 * 0.10;
+                $inversionPatrocinioT3 = $margenT3 * 0.10;
+                $inversionPatrocinioT4 = $margenT4 * 0.10;
+                $inversionPatrocinioAnual = $margenAnual * 0.10;
                 //-----------//
-                $inversionReservasT1 = $margenT1 * 0.02;
-                $inversionReservasT2 = $margenT2 * 0.02;
-                $inversionReservasT3 = $margenT3 * 0.02;
-                $inversionReservasT4 = $margenT4 * 0.02;
-                $inversionReservasAnual = $margenAnual * 0.02;
+                // $inversionReservasT1 = $margenT1 * 0.02;
+                // $inversionReservasT2 = $margenT2 * 0.02;
+                // $inversionReservasT3 = $margenT3 * 0.02;
+                // $inversionReservasT4 = $margenT4 * 0.02;
+                // $inversionReservasAnual = $margenAnual * 0.02;
+                $inversionReservasT1 = 0;
+                $inversionReservasT2 = 0;
+                $inversionReservasT3 = 0;
+                $inversionReservasT4 = 0;
+                $inversionReservasAnual = 0;
 
                 //-----------//
                 $totalInversionT1 = $inversionComercialT1 + $inversionMarketingT1 + $inversionPatrocinioT1 + $inversionReservasT1 + $inversionMarketingGeneralT1;
@@ -620,53 +625,53 @@
                 <tbody>
                     <tr>
                         <td>1.Comercial</td>
-                        <td>65.00%</td>
+                        <td>30.00%</td>
                         <td>{{number_format($inversionComercialT1, 2, ',', '.') }}€</td>
-                        <td>65.00%</td>
+                        <td>30.00%</td>
                         <td>{{number_format($inversionComercialT2, 2, ',', '.') }}€</td>
-                        <td>65.00%</td>
+                        <td>30.00%</td>
                         <td>{{number_format($inversionComercialT3, 2, ',', '.') }}€</td>
-                        <td>65.00%</td>
+                        <td>30.00%</td>
                         <td>{{number_format($inversionComercialT4, 2, ',', '.') }}€</td>
                         <td>{{number_format($inversionComercialAnual, 2, ',', '.') }}€</td>
                     </tr>
                     <tr>
                         <td>2.Marketing Delegación</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionMarketingT1, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionMarketingT2, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionMarketingT3, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionMarketingT4, 2, ',', '.') }}€</td>
                         <td>{{number_format($inversionMarketingAnual, 2, ',', '.') }}€</td>
                     </tr>
                     <tr>
                         <td>3.Marketing General</td>
-                        <td>13.00%</td>
+                        <td>20.00%</td>
                         <td>{{number_format($inversionMarketingGeneralT1, 2, ',', '.') }}€</td>
-                        <td>13.00%</td>
+                        <td>20.00%</td>
                         <td>{{number_format($inversionMarketingGeneralT2, 2, ',', '.') }}€</td>
-                        <td>13.00%</td>
+                        <td>20.00%</td>
                         <td>{{number_format($inversionMarketingGeneralT3, 2, ',', '.') }}€</td>
-                        <td>13.00%</td>
+                        <td>20.00%</td>
                         <td>{{number_format($inversionMarketingGeneralT4, 2, ',', '.') }}€</td>
                         <td>{{number_format($inversionMarketingGeneralAnual, 2, ',', '.') }}€</td>
                     </tr>
                     <tr>
                         <td>4.Patrocinio</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionPatrocinioT1, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionPatrocinioT2, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionPatrocinioT3, 2, ',', '.') }}€</td>
-                        <td>5.00%</td>
+                        <td>10.00%</td>
                         <td>{{number_format($inversionPatrocinioT4, 2, ',', '.') }}€</td>
                         <td>{{number_format($inversionPatrocinioAnual, 2, ',', '.') }}€</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <td>5.Reservas</td>
                         <td>2.00%</td>
                         <td>{{number_format($inversionReservasT1, 2, ',', '.') }}€</td>
@@ -677,17 +682,17 @@
                         <td>2.00%</td>
                         <td>{{number_format($inversionReservasT4, 2, ',', '.') }}€</td>
                         <td>{{number_format($inversionReservasAnual, 2, ',', '.') }}€</td>
-                    </tr>
-                    <tr class="bg-dark  text-light">
-                        <td colspan="2">TOTAL PRESUPUESTO DE INVERSIÓN</td>
-                        <td>{{number_format($totalInversionT1, 2, ',', '.') }}€</td>
+                    </tr> --}}
+                    <tr class="bg-dark  text-white">
+                        <td class="text-white" colspan="2">TOTAL PRESUPUESTO DE INVERSIÓN</td>
+                        <td class="text-white">{{number_format($totalInversionT1, 2, ',', '.') }}€</td>
                         <td></td>
-                        <td>{{number_format($totalInversionT2, 2, ',', '.') }}€</td>
+                        <td class="text-white">{{number_format($totalInversionT2, 2, ',', '.') }}€</td>
                         <td></td>
-                        <td>{{number_format($totalInversionT3, 2, ',', '.') }}€</td>
+                        <td class="text-white">{{number_format($totalInversionT3, 2, ',', '.') }}€</td>
                         <td></td>
-                        <td>{{number_format($totalInversionT4, 2, ',', '.') }}€</td>   
-                        <td>{{number_format($totalInversionAnual, 2, ',', '.') }}€</td>
+                        <td class="text-white">{{number_format($totalInversionT4, 2, ',', '.') }}€</td>   
+                        <td class="text-white">{{number_format($totalInversionAnual, 2, ',', '.') }}€</td>
                     </tr>
                     <tr class="bg-dark text-white">
                         <td colspan="2" class="text-light">TOTAL BENEFICIO LIBRE</td>

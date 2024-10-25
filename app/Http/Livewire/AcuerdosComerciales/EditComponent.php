@@ -4,7 +4,7 @@ namespace App\Http\Livewire\AcuerdosComerciales;
 
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use App\Models\Clients;
+use App\Models\ClientesComercial;
 use App\Models\acuerdosComerciales;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -62,9 +62,9 @@ class EditComponent extends Component
         $this->nAcuerdo = $this->acuerdo->nAcuerdo;
 
         // Cargar cliente y demás datos del acuerdo
-        $this->cliente = Clients::findOrFail($this->acuerdo->cliente_id);
-        $this->nombre_empresa = $this->cliente->nombre;
-        $this->cif_empresa = $this->cliente->dni_cif;
+        $this->cliente = ClientesComercial::findOrFail($this->acuerdo->cliente_id);
+        $this->nombre_empresa = $this->acuerdo->nombre_empresa;
+        $this->cif_empresa = $this->acuerdo->cif_empresa;
         $this->nombre = $this->acuerdo->nombre;
         $this->dni = $this->acuerdo->dni;
         $this->email = $this->acuerdo->email;

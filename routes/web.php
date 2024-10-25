@@ -38,6 +38,7 @@ use App\Http\Controllers\CalendarioController;
 use App\Http\Controllers\ProductosMarketingController;
 use App\Http\Controllers\StockSubalmacenController;
 use App\Http\Controllers\AlertasController;
+use App\Http\Controllers\ComercialViewController;
 
 
 /*
@@ -254,6 +255,15 @@ Route::get('/create/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'cr
 Route::get('/edit/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'edit'])->name('acuerdos-comerciales.edit');
 
 Route::post('/acuerdos-comerciales', [acuerdosComercialesController::class, 'store'])->name('acuerdos-comerciales.store');
+
+
+//Comercial
+//Route::get('/comercial', [ComercialViewController::class, 'index'])->name('comercial.index');
+Route::get('/clientes-comercial-create', [ComercialViewController::class, 'clientecomercial'])->name('comercial.addcliente');
+Route::get('/comercial', [ComercialViewController::class, 'clientecomercialview'])->name('comercial.clientes');
+Route::get('/comercial/edit/{id}', [ComercialViewController::class, 'editcliente'])->name('comercial.editcliente');
+
+
 
 });
 
