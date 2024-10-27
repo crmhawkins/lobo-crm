@@ -263,6 +263,11 @@ Route::get('/clientes-comercial-create', [ComercialViewController::class, 'clien
 Route::get('/comercial', [ComercialViewController::class, 'clientecomercialview'])->name('comercial.clientes');
 Route::get('/comercial/edit/{id}', [ComercialViewController::class, 'editcliente'])->name('comercial.editcliente');
 
+Route::get('/comercial/create-pedido', [ComercialViewController::class, 'createpedido'])->name('comercial.createpedido');
+Route::get('/comercial/edit-pedido/{id}', [ComercialViewController::class, 'editpedido'])->name('comercial.editpedido');
+Route::get('/comercial/pedidos', [ComercialViewController::class, 'pedidos'])->name('comercial.pedidos');
+
+
 
 
 });

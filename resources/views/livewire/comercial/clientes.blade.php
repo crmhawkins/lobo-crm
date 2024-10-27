@@ -22,8 +22,11 @@
                     <h4 class="mt-0 header-title">Listado de todos los clientes</h4>
                     <p class="sub-title../plugins">Listado completo de todos nuestros clientes, para editar o ver la informacion completa pulse el boton de Editar en la columna acciones.
                     </p>
-                    <div class="col-12 mb-5">
+                    <div class="col-12 mb-2">
                         <a href="clientes-comercial-create" class="btn btn-lg w-100 btn-primary">AÑADIR CLIENTE</a>
+                    </div>
+                    <div class="col-12 mb-5">
+                        <a href="comercial/pedidos" class="btn btn-lg w-100 btn-secondary">VER PEDIDOS</a>
                     </div>
                     
                     @if ($clientes != null)

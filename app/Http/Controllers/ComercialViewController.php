@@ -28,4 +28,19 @@ class ComercialViewController extends Controller
     {
         return view('comercial.editcliente', ['id' => $id]);
     }
+
+    public function createPedido()
+    {
+        return view('comercial.createpedido');
+    }
+
+    public function editPedido($id)
+    {
+        return view('comercial.editpedido', ['id' => $id]);
+    }
+
+    public function pedidos()
+    {
+        return view('comercial.pedidos');
+    }
 }

@@ -19,7 +19,6 @@
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
-                   
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <input type="hidden" name="id" value="{{ csrf_token() }}">
                         
