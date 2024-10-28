@@ -64,9 +64,8 @@
             <td class="company-details">
                 <strong>LOBO DEL SUR S.L.</strong><br>
                 B16914285<br>
-                PLAZA DEL VILLAR 8, PLANTA 1-A<br>
-                LOS BARRIOS (11370), Cádiz, España<br>
-                administracion@serlobo.com | 654183607
+                AVD. CAETARIA 4.5 P.I LA MENACHA<br>
+                ALGECIRAS (CÁDIZ) 11205, España
             </td>
             <td class="order-details">
                 <strong>Pedido #{{ $pedido->id }}</strong><br>
