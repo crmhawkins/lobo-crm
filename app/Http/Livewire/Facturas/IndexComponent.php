@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Emails;
 use App\Models\Caja;
 use App\Models\ProductosMarketingPedido;
+use App\Models\FacturasCompensadas;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\ProductosFacturas;
@@ -127,13 +128,17 @@ class IndexComponent extends Component
         }
     }
 
-   
+   $facturasCompensadas = FacturasCompensadas::where('factura_id', $facturaId)->get();
+    $totalCompensado = 0;
+   foreach($facturasCompensadas as $facturaCompensada){
+    $totalCompensado += $facturaCompensada->importe;
+   }
 
     // Suma los ingresos en la caja
     $IngresosCaja = Caja::where('pedido_id', $factura->id)->sum('importe');
 
     // Calcula el sobrante de manera numérica
-    $totalSobrante =  $totalFactura - $IngresosCaja ;
+    $totalSobrante =  $totalFactura - $IngresosCaja - $totalCompensado;
 
     if($totalSobrante < 0){
         $totalSobrante = 0;
