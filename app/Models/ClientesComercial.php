@@ -32,12 +32,18 @@ class ClientesComercial extends Model
         'cod_postal',
         'telefono',
         'email',
+        'distribuidor_id',
     ];
 
 
     public function comercial()
     {
         return $this->belongsTo(User::class, 'comercial_id');
+    }
+
+    public function distribuidor()
+    {
+        return $this->belongsTo(Clients::class, 'distribuidor_id');
     }
 
 

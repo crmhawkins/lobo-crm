@@ -45,6 +45,18 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
                                     Datos del cliente</h5>
                             </div>
+                            <div class="col-md-5 mb-3" wire:ignore>
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Distribuidor</label>
+                                <select wire:model="distribuidor_id" class="form-control select2" id="select2-distribuidor">
+                                    <option value="">Selecciona un distribuidor</option>
+                                    @foreach ($distribuidores as $distribuidor)
+                                        <option value="{{ $distribuidor->id }}">{{ $distribuidor->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 invisible">
+                                &nbsp;
+                            </div>
                             <div class="col-md-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
@@ -257,6 +269,14 @@ $canEdit = $EsAdmin; //|| $estado == 1;
     @section('scripts')
     <script src="../assets/js/jquery.slimscroll.js"></script>
     <script>
+         $(document).ready(function() {
+            $('.select2').select2();
+            
+            // Sincronizar Select2 con Livewire
+            $('#select2-distribuidor').on('change', function (e) {
+                @this.set('distribuidor_id', e.target.value);
+            });
+        });
         $("#alertaGuardar").on("click", () => {
             Swal.fire({
                 title: '¿Estás seguro?',

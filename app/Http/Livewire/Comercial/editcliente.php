@@ -7,6 +7,7 @@ use App\Models\acuerdosComerciales;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Clients;
 
 class editcliente extends Component
 {
@@ -24,6 +25,8 @@ class editcliente extends Component
     public $telefono;
     public $email;
     public $comercial_id;
+    public $distribuidores = [];
+    public $distribuidor_id;
 
     public function mount()
     {
@@ -38,7 +41,8 @@ class editcliente extends Component
         $this->cod_postal = $cliente->cod_postal;
         $this->telefono = $cliente->telefono;
         $this->email = $cliente->email;
-
+        $this->distribuidor_id = $cliente->distribuidor_id;
+        $this->distribuidores = Clients::all();
         $this->acuerdos = acuerdosComerciales::where('cliente_id', $this->identificador)->get();
         
         //dd($this->emailsExistentes);
@@ -78,6 +82,7 @@ class editcliente extends Component
             'telefono' => $this->telefono,
             'email' => $this->email,
             'comercial_id' => $this->comercial_id,
+            'distribuidor_id' => $this->distribuidor_id,
         ]);
         //event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 

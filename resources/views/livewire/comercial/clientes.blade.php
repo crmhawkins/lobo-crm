@@ -39,6 +39,7 @@
                                 <th scope="col">Teléfono</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Dirección</th>
+                                <th scope="col">Distribuidor</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -50,6 +51,7 @@
                                     <td>{{ $cliente->telefono }}</td>
                                     <td>{{$cliente->email}}</td>
                                     <td>{{ $cliente->direccion }}</td>
+                                    <td>{{ $cliente->distribuidor->nombre ?? 'Sin distribuidor' }}</td>
                                    
                                     @if(Auth::user()->role != 3 && Auth::user()->role != 2)
                                         <td><a href="comercial/edit/{{ $cliente->id }}" class="btn btn-primary">Ver/Editar</a></td>

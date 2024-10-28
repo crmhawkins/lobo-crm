@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ClientesComercial;
 use App\Models\Productos;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\Clients;
 
 
 class addcliente extends Component
@@ -21,6 +22,9 @@ class addcliente extends Component
     public $cod_postal;
     public $telefono;
     public $email;
+    public $distribuidores;
+    public $distribuidor_id;
+
 
 
     public function render()
@@ -33,7 +37,7 @@ class addcliente extends Component
     public function mount()
     {
         //array asociativo donde cada producto es una clave y el precio es el valor
-       
+        $this->distribuidores = Clients::all();
 
     }
 
@@ -67,6 +71,7 @@ class addcliente extends Component
             'cod_postal' => $this->cod_postal,
             'telefono' => $this->telefono,  
             'email' => $this->email,
+            'distribuidor_id' => $this->distribuidor_id,
         ]);
         
         if($clienteSave){
