@@ -36,7 +36,7 @@ class TraspasoComponent extends Component
     public $almacenOnline = 6; // para pruebas es el 2 Córdoba
     public $qr_IdsOnline = [
         '88' => '24-p-00001589',
-        '87' => '24-p-00001573',
+        '87' => '24-p-00001590',
         '80' => '24-p-00001071',
         '78' => '24-p-00001066',
         '77' => '24-p-00001077',
