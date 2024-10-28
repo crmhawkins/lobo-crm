@@ -3,15 +3,162 @@
 
      <!-- Pestañas de navegación -->
      <ul class="nav nav-tabs" id="myTab" role="tablist" >
-        <li class="nav-item" role="presentation">
-            <button class="nav-link @if($activeTab === 'normales') active @endif" id="normales-tab" data-toggle="tab" wire:click="setActiveTab('normales')" type="button" role="tab" aria-controls="normales" aria-selected="{{ $activeTab === 'normales' ? 'true' : 'false' }}">Incidencias</button>
-        </li>
+
         <li class="nav-item" role="presentation">
             <button class="nav-link @if($activeTab === 'pedidos') active @endif" id="pedidos-tab" data-toggle="tab" wire:click="setActiveTab('pedidos')" type="button" role="tab" aria-controls="pedidos" aria-selected="{{ $activeTab === 'pedidos' ? 'true' : 'false' }}">Incidencias de Pedidos</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @if($activeTab === 'normales') active @endif" id="normales-tab" data-toggle="tab" wire:click="setActiveTab('normales')" type="button" role="tab" aria-controls="normales" aria-selected="{{ $activeTab === 'normales' ? 'true' : 'false' }}">Incidencias</button>
+        </li>
+        
     </ul>
 
     <div class="tab-content" id="myTabContent">
+        
+        <div class="tab-pane fade @if($activeTab === 'pedidos') show active @endif" id="pedidos" role="tabpanel" aria-labelledby="pedidos-tab">
+
+            <!-- Sección de Incidencias de Pedidos -->
+            <h2>Incidencias de Pedidos</h2>
+            <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createIncidencia2Modal">
+                Crear Incidencia
+            </button>
+            <!-- Modal para crear una nueva incidencia de pedido -->
+            <div wire:ignore.self class="modal fade" id="createIncidencia2Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Crear Nueva Incidencia Pedido</h5>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form wire:submit.prevent="createIncidenciaPedido">
+                                <div class="mb-3">
+                                    <select name="" id="" class="form-select" wire:model="user_id">
+                                        <option value="">Selecciona un responsable</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }} {{$user->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select name="" id="" class="form-select" wire:model="pedido_id">
+                                        <option value="">Selecciona un pedido</option>
+                                        @foreach($pedidos as $pedido)
+                                            <option value="{{ $pedido->id }}">{{ $pedido->id }} - {{$pedido->cliente->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="observaciones" class="form-label">Observaciones</label>
+                                    <textarea class="form-control" id="observaciones" wire:model="observaciones" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <input type="text" class="form-control" id="estado" wire:model="estado" disabled>
+                                </div>
+                                <button type="submit" class="btn btn-success">Crear</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal para editar una incidencia de pedido -->
+            <div wire:ignore.self class="modal fade" id="editPedidoIncidenciaModal" tabindex="-1" aria-labelledby="editPedidoIncidenciaModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editPedidoIncidenciaModalLabel">Editar Incidencia de Pedido</h5>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form wire:submit.prevent="">
+                                <div class="mb-3">
+                                    <select name="" id="" class="form-select" wire:model="user_id">
+                                        <option value="">Selecciona un responsable</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }} {{$user->surname}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select name="" id="" class="form-select" wire:model="pedido_id">
+                                        <option value="">Selecciona un pedido</option>
+                                        @foreach($pedidos as $pedido)
+                                            <option value="{{ $pedido->id }}">{{ $pedido->id }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="observaciones" class="form-label">Observaciones</label>
+                                    <textarea class="form-control" id="observaciones" wire:model="observaciones" required></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select class="form-control" id="estado" wire:model="estado" required>
+                                        <option value="recibida">Recibida</option>
+                                        <option value="tramite">En Trámite</option>
+                                        <option value="solucionada">Solucionada</option>
+                                        <option value="rechazada">Rechazada</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success" data-dismiss="modal" wire:click="updatePedidoIncidencia">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @if(count($pedidosIncidencias) == 0)
+                <div class="alert alert-warning" role="alert">
+                    No hay incidencias de pedidos registradas.
+                </div>
+            @else
+                <!-- Listado de Incidencias de Pedidos por Estado -->
+                <div class="row">
+                    <!-- Recibida -->
+                    <div class="col-md-3">
+                        <h3>Recibida</h3>
+                        <div id="recibida" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
+                            @foreach($pedidosIncidencias->where('estado', 'recibida')->sortByDesc('created_at') as $pedidoIncidencia)
+                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- En Trámite -->
+                    <div class="col-md-3">
+                        <h3>En Trámite</h3>
+                        <div id="tramite" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
+                            @foreach($pedidosIncidencias->where('estado', 'tramite')->sortByDesc('created_at') as $pedidoIncidencia)
+                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Solucionada -->
+                    <div class="col-md-3">
+                        <h3>Solucionada</h3>
+                        <div id="solucionada" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
+                            @foreach($pedidosIncidencias->where('estado', 'solucionada')->sortByDesc('created_at') as $pedidoIncidencia)
+                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Rechazada -->
+                    <div class="col-md-3">
+                        <h3>Rechazada</h3>
+                        <div id="rechazada" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
+                            @foreach($pedidosIncidencias->where('estado', 'rechazada')->sortByDesc('created_at') as $pedidoIncidencia)
+                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
         <div class="tab-pane fade @if($activeTab === 'normales') show active @endif" id="normales" role="tabpanel" aria-labelledby="normales-tab">
 
             <!-- Sección de Incidencias Normales -->
@@ -134,150 +281,6 @@
                         <div id="rechazada" class="incidencias-list" wire:sortable-group.item-group="incidencias">
                             @foreach($incidencias->where('estado', 'rechazada')->sortByDesc('created_at') as $incidencia)
                                 @include('livewire.incidencias.incidencia-card', ['incidencia' => $incidencia])
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </div>
-        <div class="tab-pane fade @if($activeTab === 'pedidos') show active @endif" id="pedidos" role="tabpanel" aria-labelledby="pedidos-tab">
-
-            <!-- Sección de Incidencias de Pedidos -->
-            <h2>Incidencias de Pedidos</h2>
-            <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createIncidencia2Modal">
-                Crear Incidencia
-            </button>
-            <!-- Modal para crear una nueva incidencia de pedido -->
-            <div wire:ignore.self class="modal fade" id="createIncidencia2Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Crear Nueva Incidencia Pedido</h5>
-                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form wire:submit.prevent="createIncidenciaPedido">
-                                <div class="mb-3">
-                                    <select name="" id="" class="form-select" wire:model="user_id">
-                                        <option value="">Selecciona un responsable</option>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} {{$user->surname}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <select name="" id="" class="form-select" wire:model="pedido_id">
-                                        <option value="">Selecciona un pedido</option>
-                                        @foreach($pedidos as $pedido)
-                                            <option value="{{ $pedido->id }}">{{ $pedido->id }} - {{$pedido->cliente->nombre}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="observaciones" class="form-label">Observaciones</label>
-                                    <textarea class="form-control" id="observaciones" wire:model="observaciones" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="estado" class="form-label">Estado</label>
-                                    <input type="text" class="form-control" id="estado" wire:model="estado" disabled>
-                                </div>
-                                <button type="submit" class="btn btn-success">Crear</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Modal para editar una incidencia de pedido -->
-<div wire:ignore.self class="modal fade" id="editPedidoIncidenciaModal" tabindex="-1" aria-labelledby="editPedidoIncidenciaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editPedidoIncidenciaModalLabel">Editar Incidencia de Pedido</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form wire:submit.prevent="">
-                    <div class="mb-3">
-                        <select name="" id="" class="form-select" wire:model="user_id">
-                            <option value="">Selecciona un responsable</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }} {{$user->surname}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <select name="" id="" class="form-select" wire:model="pedido_id">
-                            <option value="">Selecciona un pedido</option>
-                            @foreach($pedidos as $pedido)
-                                <option value="{{ $pedido->id }}">{{ $pedido->id }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="observaciones" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observaciones" wire:model="observaciones" required></textarea>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">Estado</label>
-                        <select class="form-control" id="estado" wire:model="estado" required>
-                            <option value="recibida">Recibida</option>
-                            <option value="tramite">En Trámite</option>
-                            <option value="solucionada">Solucionada</option>
-                            <option value="rechazada">Rechazada</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success" data-dismiss="modal" wire:click="updatePedidoIncidencia">Guardar Cambios</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-            @if(count($pedidosIncidencias) == 0)
-                <div class="alert alert-warning" role="alert">
-                    No hay incidencias de pedidos registradas.
-                </div>
-            @else
-                <!-- Listado de Incidencias de Pedidos por Estado -->
-                <div class="row">
-                    <!-- Recibida -->
-                    <div class="col-md-3">
-                        <h3>Recibida</h3>
-                        <div id="recibida" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
-                            @foreach($pedidosIncidencias->where('estado', 'recibida')->sortByDesc('created_at') as $pedidoIncidencia)
-                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- En Trámite -->
-                    <div class="col-md-3">
-                        <h3>En Trámite</h3>
-                        <div id="tramite" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
-                            @foreach($pedidosIncidencias->where('estado', 'tramite')->sortByDesc('created_at') as $pedidoIncidencia)
-                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Solucionada -->
-                    <div class="col-md-3">
-                        <h3>Solucionada</h3>
-                        <div id="solucionada" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
-                            @foreach($pedidosIncidencias->where('estado', 'solucionada')->sortByDesc('created_at') as $pedidoIncidencia)
-                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- Rechazada -->
-                    <div class="col-md-3">
-                        <h3>Rechazada</h3>
-                        <div id="rechazada" class="pedidos-incidencias-list" wire:sortable-group.item-group="pedidosIncidencias">
-                            @foreach($pedidosIncidencias->where('estado', 'rechazada')->sortByDesc('created_at') as $pedidoIncidencia)
-                                @include('livewire.incidencias.pedido-incidencia-card', ['incidencia' => $pedidoIncidencia])
                             @endforeach
                         </div>
                     </div>

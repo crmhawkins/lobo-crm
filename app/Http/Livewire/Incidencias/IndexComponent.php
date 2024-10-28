@@ -193,7 +193,7 @@ class IndexComponent extends Component
     public function createIncidencia()
     {
 
-        if(!Auth::user()->isAdmin()){
+        if(!Auth::user()->isAdmin() && !Auth::user()->role == '7'){
             //alert para usuarios que no son admin
             $this->alert('warning', 'No tienes permisos para crear incidencias', [
                 'position' =>  'center',
@@ -262,8 +262,7 @@ class IndexComponent extends Component
     {
 
 
-        if(!Auth::user()->isAdmin()){
-            //alert para usuarios que no son admin
+        if(!Auth::user()->isAdmin() && !Auth::user()->role == '7'){            //alert para usuarios que no son admin
             $this->alert('warning', 'No tienes permisos para crear incidencias', [
                 'position' =>  'center',
                 'timer' => 3000,
