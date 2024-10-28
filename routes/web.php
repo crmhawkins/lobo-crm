@@ -68,6 +68,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::post('/alertas/marcar-leida/{id}', [AlertasController::class, 'marcarLeida'])->name('alertas.marcarLeida');
     Route::post('/alertas/marcar-todas-leidas', [AlertasController::class, 'marcarTodasLeidas'])->name('alertas.marcarTodasLeidas');
 
+    Route::get('/alertas/popup', [AlertasController::class, 'popup'])->name('alertas.popup');
+
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('agenda', [AgendaController::class, 'index'])->name('agenda.index');

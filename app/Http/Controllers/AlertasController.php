@@ -104,6 +104,11 @@ class AlertasController extends Controller
 }
 
 
+public function popup()
+{
+    return view('alertas.popup');
+}
+
     /**
      * Remove the specified resource from storage.
      *
