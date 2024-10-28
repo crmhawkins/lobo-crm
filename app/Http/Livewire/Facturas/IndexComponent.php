@@ -237,6 +237,11 @@ public function getIva($facturaId){
                 return number_format($facturaRectificativa->total, 2, '.', '');
             }
         }else{
+
+            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                return number_format($factura->precio, 2, '.', '');
+            }
+
             if($factura->total != null){
                 return number_format($factura->precio * 1.21, 2, '.', '');
             }
