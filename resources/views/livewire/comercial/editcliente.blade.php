@@ -1,7 +1,4 @@
-@php
-$EsAdmin = Auth::user()->isAdmin();
-$canEdit = $EsAdmin; //|| $estado == 1;
-@endphp
+
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
     <style>
@@ -15,8 +12,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
         <div class="row align-items-center">
             <div class="col-sm-6 d-flex align-items-center gap-2">
                 <h4 class=" col-sm-6 page-title">CLIENTE <span style="text-transform: uppercase">{{$nombre}}</span> </h4>
-                
-                
+
+
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
@@ -29,7 +26,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
     </div>
     <!-- end page-title -->
 
-    
+
     @php
     $mostrarElemento = Auth::user()->isAdmin();
     @endphp
@@ -38,7 +35,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             <div class="card m-b-30">
                 <div class="card-body">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                        
+
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-12">
                                 <h5 class="ms-3"
@@ -61,14 +58,14 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="nombre" class="form-control" name="nombre"
-                                        id="nombre" placeholder="Nombre" @if(!$canEdit) disabled @endif>
+                                        id="nombre" placeholder="Nombre" >
                                     @error('nombre')
                                         <span class="text-danger">{{ $message }}</span>
                                         <style>
                                             .nombre {
                                                 color: red;
                                             }
-                                            
+
                                         </style>
                                     @enderror
                                 </div>
@@ -80,7 +77,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">DNI/CIF</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cif" class="form-control" name="cif"
-                                        id="cif" placeholder="DNI o CIF" @if(!$canEdit) disabled @endif>
+                                        id="cif" placeholder="DNI o CIF" >
                                     @error('dni_cif')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -100,7 +97,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Dirección</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="direccion" class="form-control" name="direccion"
-                                        id="direccion" placeholder="Avenida/Plaza/Calle..." @if(!$canEdit) disabled @endif>
+                                        id="direccion" placeholder="Avenida/Plaza/Calle..." >
                                     @error('direccion')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -119,7 +116,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Provincia</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="provincia" class="form-control" name="provincia"
-                                        id="provincia" placeholder="Provincia" @if(!$canEdit) disabled @endif>
+                                        id="provincia" placeholder="Provincia" >
                                     @error('provincia')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -140,7 +137,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Localidad</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="localidad" class="form-control"
-                                        name="localidad" id="localidad" placeholder="Localidad" @if(!$canEdit) disabled @endif>
+                                        name="localidad" id="localidad" placeholder="Localidad" >
                                     @error('localidad')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -159,7 +156,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal</label>
                                 <div class="col-sm-12">
                                     <input type="text" wire:model="cod_postal" class="form-control"
-                                        name="cod_postal" id="cod_postal" placeholder="Código postal" @if(!$canEdit) disabled @endif>
+                                        name="cod_postal" id="cod_postal" placeholder="Código postal" >
                                     @error('cod_postal')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -172,15 +169,15 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
 
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
                                 <div class="col-sm-12">
                                     <input type="number" wire:model="telefono" class="form-control" name="telefono"
-                                        id="telefono" placeholder="Teléfono" @if(!$canEdit) disabled @endif>
+                                        id="telefono" placeholder="Teléfono" >
                                     @error('telefono')
                                         <span class="text-danger">{{ $message }}</span>
 
@@ -202,7 +199,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 
                                     <input type="email" wire:model="email" class="form-control" name="email"
                                         id="email" placeholder="email" >
-                                   
+
 
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
@@ -216,11 +213,10 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
                             </div>
                         </div>
-                        
+
                 </div>
             </div>
         </div>
-        @if($canEdit)
             <div class="col-md-3">
                 <div class="card m-b-30">
                     <div class="card-body">
@@ -247,7 +243,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     <a class="dropdown-item bg-info " style="border: 1px solid black"  href="{{ route('acuerdos-comerciales.create', ['id' => $cliente->id]) }}">
                                         Crear acuerdo comercial
                                     </a>
-                            
+
                                     <!-- Desplegar los acuerdos comerciales que tiene el cliente -->
                                     @foreach ($acuerdos as $acuerdo)
                                         <a class="dropdown-item bg-warning " style="border: 1px solid black" href="{{ route('acuerdos-comerciales.edit', ['id' => $acuerdo->id]) }}">
@@ -256,13 +252,12 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     @endforeach
                                 </div>
                             </div>
-                        </div> 
-                        
-                        
+                        </div>
+
+
                     </div>
                 </div>
             </div>
-        @endif
     </div>
 </div>
 
@@ -271,7 +266,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
     <script>
          $(document).ready(function() {
             $('.select2').select2();
-            
+
             // Sincronizar Select2 con Livewire
             $('#select2-distribuidor').on('change', function (e) {
                 @this.set('distribuidor_id', e.target.value);
