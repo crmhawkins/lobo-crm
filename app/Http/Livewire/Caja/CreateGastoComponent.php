@@ -9,6 +9,7 @@ use App\Models\Facturas;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use App\Models\Caja;;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delegacion;
 use Livewire\WithFileUploads;
@@ -35,7 +36,7 @@ class CreateGastoComponent extends Component
     public $poveedores;
     public $facturas;
     public $banco;
-    public $estado ='Pendiente';
+    public $estado = 'Pendiente';
     public $delegaciones = [];
     public $delegacion_id;
     public $departamento;
@@ -61,8 +62,8 @@ class CreateGastoComponent extends Component
     public $cuentasContables;
     public $facturasSeleccionadas = [];
     public $pagos = [];
-    
-    
+
+
     public function mount()
     {
         $this->poveedores = Proveedores::all();
@@ -70,12 +71,12 @@ class CreateGastoComponent extends Component
         $this->delegaciones = Delegacion::all();
 
         //generar numero interno de esta manera: 06(nombremesactual)_000(Siguiente numero de la base de datos)
-        $this->nInterno = date('m').'_'.str_pad(Caja::where('tipo_movimiento', 'Gasto')->count() + 1, 3, '0', STR_PAD_LEFT);
-        
+        $this->nInterno = date('m') . '_' . str_pad(Caja::where('tipo_movimiento', 'Gasto')->count() + 1, 3, '0', STR_PAD_LEFT);
+
 
         $this->facturas = Facturas::where('estado', 'Pendiente')
-        ->orWhere('estado', 'Parcial')
-        ->get();
+            ->orWhere('estado', 'Parcial')
+            ->get();
 
         $this->loadCuentasContables();
 
@@ -86,8 +87,6 @@ class CreateGastoComponent extends Component
 
         // Crear el nuevo asiento contable comenzando desde 0001 si es un nuevo año
         $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;
-
-
     }
 
     public function guardarFacturasCompensadas()
@@ -97,16 +96,16 @@ class CreateGastoComponent extends Component
             'facturasSeleccionadas' => 'required|array|min:1',
             'pagos.*' => 'required|numeric|min:0',
         ]);
-    
+
         // Calcular el total de los pagos
         $totalPagadoCompensadas = array_sum($this->pagos);
-    
+
         // Actualizar el valor del campo 'pagado' con la suma
         $this->pagado = $totalPagadoCompensadas;
         $this->pendiente = $this->total - $this->pagado;
 
-        
-    
+
+
         // Alerta de éxito al guardar las facturas compensadas
         $this->alert('success', '¡Facturas seleccionadas para compensar y total pagado actualizado!');
     }
@@ -170,16 +169,17 @@ class CreateGastoComponent extends Component
 
     public function getCliente($id)
     {
-         return $this->clientes->firstWhere('id', $id)->nombre;
+        return $this->clientes->firstWhere('id', $id)->nombre;
     }
     public function render()
     {
         return view('livewire.caja.create-gasto-component');
     }
 
-    public function updating($property , $value){
+    public function updating($property, $value)
+    {
         //dd($property, $value);
-        if($property === 'poveedor_id' && $value !== null && $value !== '0'){
+        if ($property === 'poveedor_id' && $value !== null && $value !== '0') {
             $proveedor = Proveedores::find($value);
             $this->cuenta = $proveedor->cuenta_contable;
         }
@@ -198,32 +198,33 @@ class CreateGastoComponent extends Component
     //     dd( $this->documentoPath);
     // }
 
-    public function calcularTotal(){
-        if($this->importe !== null && $this->importe !== ''){
-            if($this->iva === null || $this->iva === ''){
-                    $this->iva = 0;
+    public function calcularTotal()
+    {
+        if ($this->importe !== null && $this->importe !== '') {
+            if ($this->iva === null || $this->iva === '') {
+                $this->iva = 0;
             }
-            if($this->retencion === null || $this->retencion === ''){
+            if ($this->retencion === null || $this->retencion === '') {
                 $this->retencion = 0;
             }
-            if($this->descuento === null || $this->descuento === ''){
+            if ($this->descuento === null || $this->descuento === '') {
                 $this->descuento = 0;
             }
 
             $this->importeIva = $this->importe * $this->iva / 100;
-            
+
             $retencionTotal = $this->importe * $this->retencion / 100;
             $this->total = $this->importe + $this->importeIva - $retencionTotal;
-            if($this->descuento !== null){
-                $this->total = round($this->total - ($this->total * $this->descuento / 100) , 2);   
+            if ($this->descuento !== null) {
+                $this->total = round($this->total - ($this->total * $this->descuento / 100), 2);
             }
         }
-
     }
 
-    public function updated($property, $value){
-        if($property === 'pagado' || $property === 'total' ){
-            if($this->pagado !== null && $this->total !== null && is_numeric($this->pagado) && is_numeric($this->total)){
+    public function updated($property, $value)
+    {
+        if ($property === 'pagado' || $property === 'total') {
+            if ($this->pagado !== null && $this->total !== null && is_numeric($this->pagado) && is_numeric($this->total)) {
                 $this->pendiente = $this->total - $this->pagado;
             }
         }
@@ -260,7 +261,7 @@ class CreateGastoComponent extends Component
                 'pagado' => 'nullable',
                 'pendiente' => 'nullable',
                 //documento maximo 1gb
-                'documento' => 'required|mimes:pdf|max:1048576',
+                'documento' => 'required|max:1048576',
             ],
             // Mensajes de error
             [
@@ -268,11 +269,11 @@ class CreateGastoComponent extends Component
                 //documento max
                 'documento.max' => 'El documento no puede pesar más de 1GB.',
 
-                
+
             ]
         );
 
-        $this->documento->storeAs('documentos_gastos', $this->documento->hashName() , 'private');
+        $this->documento->storeAs('documentos_gastos', $this->documento->hashName(), 'private');
         $this->documentoPath = $this->documento->hashName();
 
         // Guardar datos validados
@@ -319,7 +320,7 @@ class CreateGastoComponent extends Component
             //         'pendiente' => $factura->total - ($this->pagado != null && $this->pagado > 0 ? $this->pagado : $this->total),
             //         'fecha' => $this->fecha,
             //     ]);
-                
+
             // }
 
             // Guardar facturas compensadas si existen facturas seleccionadas
@@ -372,6 +373,4 @@ class CreateGastoComponent extends Component
         // Do something
         return redirect()->route('caja.index');
     }
-
-
 }
