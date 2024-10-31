@@ -21,7 +21,7 @@
                 <div class="card-body">
                     <form wire:submit.prevent="submit">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
-                            
+
                         <div class="col-md-3" wire:ignore>
                             <label for="rectificativa" class="col-md-12 col-form-label">
                                 Seleccione la factura a rectificar
@@ -38,7 +38,7 @@
                                     wire:model="facturaSeleccionadaId">
                                     <option value="">---SELECCIONE UNA FACTURA---</option>
                                     @foreach ($facturas as $factura)
-                                        <option value="{{ $factura->id }}">{{ $factura->numero_factura }}</option>
+                                        <option value="{{ $factura->id }}">{{ $factura->numero_factura }} - {{ $factura->cliente->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -105,13 +105,13 @@
                                 </div>
                             </div>
 
-                            
-                        </div>  
+
+                        </div>
                         <div class="form-group row">
                             <div class="col-md-4">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Importe sin descuento</label>
                                 <div class="col-sm-12">
-                                    
+
                                     <input type="number" wire:model="subtotal_pedido" class="form-control"
                                         placeholder="subtotal pedido" readonly>
 
@@ -130,7 +130,7 @@
                             <div class="col-md-4">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Total descuento</label>
                                 <div class="col-sm-12">
-                                    
+
                                     <input type="number" wire:model="descuento_total_pedido" class="form-control"
                                         placeholder="descuento total pedido" readonly>
 
@@ -139,7 +139,7 @@
                             <div class="col-md-4">
                                 <label for="fecha_emision" class="col-sm-12 col-form-label">Importe</label>
                                 <div class="col-sm-12">
-                                    
+
                                     <input type="number" wire:model="precio" class="form-control"
                                         placeholder="importe" readonly>
 
@@ -148,7 +148,7 @@
                             <div class="col-md-4">
                                 <label for="iva_total_pedido" class="col-sm-12 col-form-label">Iva total</label>
                                 <div class="col-sm-12">
-                                    
+
                                     <input type="number" wire:model="iva_total_pedido" class="form-control"
                                         placeholder="iva total pedido" readonly>
 
@@ -158,15 +158,15 @@
                             <div class="col-md-4">
                                 <label for="total" class="col-sm-12 col-form-label">Total</label>
                                 <div class="col-sm-12">
-                                    
+
                                     <input type="number" wire:model="total" class="form-control"
                                         placeholder="total" readonly>
 
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
-                        
-                        
+
+
                     </form>
                 </div>
                 @if(count($productos_pedido) > 0)
@@ -175,7 +175,7 @@
                             <div class="form-group col-md-12">
                                 <h5 class="ms-3"
                                     style="border-bottom: 1px gray solid !important;padding-bottom: 10px !important;display: flex !important;flex-direction: row;justify-content: space-between;">
-                                    Lista de productos 
+                                    Lista de productos
                                 </h5>
                                 <div class="form-group col-md-12">
                                     @if (count($productos_pedido) > 0)
@@ -211,15 +211,15 @@
                                     @endif
                                 </div>
                             </div>
-                            
+
                         </div>
-                        
+
                     </div>
                 @endif
             </div>
-            
+
         </div>
-        
+
         <div class="col-md-3">
             <div class="card m-b-30">
                 <div class="card-body">
@@ -238,7 +238,7 @@
 
 @section('scripts')
     <script>
-        
+
 
         $("#alertaGuardar").on("click", () => {
             Swal.fire({
@@ -302,5 +302,5 @@
         });
     </script>
     {{-- SCRIPT PARA SELECT 2 CON LIVEWIRE --}}
-    
+
 @endsection

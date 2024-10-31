@@ -50,91 +50,92 @@ class CreateComponent extends Component
 
 
     public function mount()
-{
-    $this->user = Auth::user();
-    $this->cliente = ClientesComercial::findOrFail($this->identificador)->toArray();
-    // $this->dni = $this->cliente['cif'];
+    {
+        $this->user = Auth::user();
+        $this->mes_firma = 'Enero';
+        $this->cliente = ClientesComercial::findOrFail($this->identificador)->toArray();
+        // $this->dni = $this->cliente['cif'];
 
-    // Inicializar los arrays de productos
-    $this->productos_lobo = [
-        ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => '']
-    ];
+        // Inicializar los arrays de productos
+        $this->productos_lobo = [
+            ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => '']
+        ];
 
-    $this->productos_otros = [
-        ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => '']
-    ];
+        $this->productos_otros = [
+            ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => '']
+        ];
 
-    // Obtener el último acuerdo comercial
-    $ultimoAcuerdoComercial = acuerdosComerciales::where('nAcuerdo', 'like', '%/'.date('Y'))
-        ->orderBy('id', 'desc')
-        ->first();
+        // Obtener el último acuerdo comercial
+        $ultimoAcuerdoComercial = acuerdosComerciales::where('nAcuerdo', 'like', '%/' . date('Y'))
+            ->orderBy('id', 'desc')
+            ->first();
 
-    // Calcular el número del acuerdo comercial basado en el último acuerdo existente
-    if (!$ultimoAcuerdoComercial) {
-        $this->numeroAcuerdoComercial = '01/' . date('Y');
-    } else {
-        // Extraer el número del acuerdo actual y sumarle 1
-        $ultimoNumeroAcuerdo = explode('/', $ultimoAcuerdoComercial->nAcuerdo)[0]; // Obtener el número antes de la barra
-        $nuevoNumeroAcuerdo = str_pad(intval($ultimoNumeroAcuerdo) + 1, 2, '0', STR_PAD_LEFT); // Incrementar y pad con ceros
-        $this->numeroAcuerdoComercial = $nuevoNumeroAcuerdo . '/' . date('Y');
+        // Calcular el número del acuerdo comercial basado en el último acuerdo existente
+        if (!$ultimoAcuerdoComercial) {
+            $this->numeroAcuerdoComercial = '01/' . date('Y');
+        } else {
+            // Extraer el número del acuerdo actual y sumarle 1
+            $ultimoNumeroAcuerdo = explode('/', $ultimoAcuerdoComercial->nAcuerdo)[0]; // Obtener el número antes de la barra
+            $nuevoNumeroAcuerdo = str_pad(intval($ultimoNumeroAcuerdo) + 1, 2, '0', STR_PAD_LEFT); // Incrementar y pad con ceros
+            $this->numeroAcuerdoComercial = $nuevoNumeroAcuerdo . '/' . date('Y');
+        }
+
+        $this->nAcuerdo = $this->numeroAcuerdoComercial;
+
+        // Traducir el mes al español
+        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $this->mesActual = $meses[intval(date('m')) - 1];
     }
 
-    $this->nAcuerdo = $this->numeroAcuerdoComercial;
+    public function formarFechaFirma($dia, $mes, $anio)
+    {
+        $meses = [
+            'Enero' => 1,
+            'Febrero' => 2,
+            'Marzo' => 3,
+            'Abril' => 4,
+            'Mayo' => 5,
+            'Junio' => 6,
+            'Julio' => 7,
+            'Agosto' => 8,
+            'Septiembre' => 9,
+            'Octubre' => 10,
+            'Noviembre' => 11,
+            'Diciembre' => 12
+        ];
 
-    // Traducir el mes al español
-    $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    $this->mesActual = $meses[intval(date('m')) - 1];
-}
+        if (array_key_exists($mes, $meses)) {
+            $mes_numero = $meses[$mes];
+        } else {
+            throw new \Exception("El mes no es válido.");
+        }
 
-public function formarFechaFirma($dia, $mes, $anio)
-{
-    $meses = [
-        'Enero' => 1,
-        'Febrero' => 2,
-        'Marzo' => 3,
-        'Abril' => 4,
-        'Mayo' => 5,
-        'Junio' => 6,
-        'Julio' => 7,
-        'Agosto' => 8,
-        'Septiembre' => 9,
-        'Octubre' => 10,
-        'Noviembre' => 11,
-        'Diciembre' => 12
-    ];
+        $fecha = Carbon::createFromFormat('d/m/Y', $dia . '/' . $mes_numero . '/' . $anio);
 
-    if (array_key_exists($mes, $meses)) {
-        $mes_numero = $meses[$mes];
-    } else {
-        throw new \Exception("El mes no es válido.");
+        return $fecha;
+    }
+    public function addProductLobo()
+    {
+        $this->productos_lobo[] = ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => ''];
     }
 
-    $fecha = Carbon::createFromFormat('d/m/Y', $dia . '/' . $mes_numero . '/' . $anio);
+    public function addProductOtros()
+    {
+        $this->productos_otros[] = ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => ''];
+    }
 
-    return $fecha;
-}
-public function addProductLobo()
-{
-    $this->productos_lobo[] = ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => ''];
-}
+    public function deleteProductLobo($index)
+    {
+        unset($this->productos_lobo[$index]);
+    }
 
-public function addProductOtros()
-{
-    $this->productos_otros[] = ['ref' => '', 'vol_anual' => '', 'aportacion_directa' => '', 'rappel' => '', 'total' => ''];
-}
-
-public function deleteProductLobo($index)
-{
-    unset($this->productos_lobo[$index]);
-}
-
-public function deleteProductOtros($index)
-{
-    unset($this->productos_otros[$index]);
-}
+    public function deleteProductOtros($index)
+    {
+        unset($this->productos_otros[$index]);
+    }
 
     public function saveAcuerdoComercial()
-    {   
+    {
         //dd($this->productos_lobo , $this->productos_otros);
         // Validar los datos del acuerdo comercial
         $this->validate([
@@ -158,14 +159,18 @@ public function deleteProductOtros($index)
             'anio_firma' => 'nullable',
         ]);
 
-        $fecha_firma = $this->formarFechaFirma($this->dia_firma, $this->mes_firma, $this->anio_firma);
+        if ($this->dia_firma == null || $this->mes_firma == null || $this->anio_firma == null) {
+            $fecha_firma = null;
+        } else {
+            $fecha_firma = $this->formarFechaFirma($this->dia_firma, $this->mes_firma, $this->anio_firma);
+        }
 
         // Crear el acuerdo comercial
         $acuerdoComercial = acuerdosComerciales::create([
             'user_id' => $this->user->id,
             'cliente_id' => $this->cliente['id'],
             'nAcuerdo' => $this->nAcuerdo,
-            'nombre_empresa'=> $this->cliente['nombre'],
+            'nombre_empresa' => $this->cliente['nombre'],
             'cif_empresa' => $this->cliente['cif'],
             'nombre' => $this->nombre,
             'dni' => $this->dni,
@@ -184,7 +189,7 @@ public function deleteProductOtros($index)
             'firma_comercial' => $this->firma_comercial_data, // Guardar la firma en base64
             'firma_cliente' => $this->firma_cliente_data, // Guardar la firma en base64
             'firma_distribuidor' => $this->firma_distribuidor_data, // Guardar la firma en base64,
-            'fecha_firma' => $fecha_firma->format('Y-m-d'),
+            'fecha_firma' => $fecha_firma ? $fecha_firma->format('Y-m-d') : null,
         ]);
 
         // Guardar el acuerdo comercial

@@ -1,5 +1,5 @@
 <div class="container-body">
-    
+
 
     <style>
         @page {
@@ -8,7 +8,7 @@
         }
         canvas {
             border: 1px solid black;
-            
+
         }
         .lado-izquierdo {
             position: fixed;
@@ -71,7 +71,7 @@
 
         th {
             background-color: #f2f2f2;
-            
+
         }
 
         .signature-table {
@@ -92,7 +92,7 @@
         }
 
 
-        
+
 
         .container-global {
             padding: 0mm 6mm;
@@ -107,7 +107,7 @@
             font-size: 10px;
             color: #555;
         }
-    
+
         .container-comercial{
             display: flex;
             justify-content: end;
@@ -146,7 +146,7 @@
 
         @media print {
             .container-body {
-            
+
             width: 100%;
             height: 100%;
         }
@@ -226,12 +226,12 @@
         <p>LOBO DEL SUR S.L – domicilio social: Avd. Caetaria 4.5 P.I La Menacha 11205, Algeciras (Cádiz) – R. M. De Cádiz 2 Hoja CA-59264, Folio 205, Libro 0 de sociedades, Inscripción 1º N.I.F. B-1691428</p>
     </div>
     <div class="container-global">
-        
+
         <img src="{{ asset('images/logo.png') }}" style="width: 20% !important; margin-top: 20px;">
         <h1>ACUERDO COMERCIAL LOBO-LA OFICINA</h1>
         <div class="container-comercial">
             <table class="table comercial">
-                
+
                 <tbody>
                     <tr>
                         <td>COMERCIAL</td>
@@ -248,11 +248,11 @@
                 </tbody>
             </table>
         </div>
-    
+
         <p><strong>REUNIDOS:</strong></p>
         <p>De una parte,{{$user->name}} {{$user->surname}} , en representación de LOBO DEL SUR S.L con CIF B16914285 domiciliada en Avd. Caetaria 4.5 P.I La Menacha, Algeciras (Cádiz) 11205 y de otra parte el cliente:</p>
-    
-    
+
+
         <div style="position: relative;">
             <table class="client-table">
                 <tr>
@@ -299,7 +299,7 @@
                 </tr>
             </table>
         </div>
-    
+
         <p class="acuerdan" ><strong>ACUERDAN:</strong></p>
         <ol>
             <li>Que en el periodo que transcurrirá entre el día <input name="fecha_inicio" type="date" wire:model="fecha_inicio">  y el día <input name="fecha_fin"  type="date" wire:model="fecha_fin">, adquiere el compromiso de compra de los siguientes productos con las aportaciones correspondientes:</li>
@@ -317,7 +317,7 @@
                 <tr>
                     <td colspan="5" style="text-align: center; font-weight: bold;">LOBO</td>
                 </tr>
-                
+
                 @foreach ($productos_lobo as $index => $producto)
                     <tr>
                         <td><input type="text" wire:model="productos_lobo.{{ $index }}.ref" /></td>
@@ -329,7 +329,7 @@
 
                     </tr>
                 @endforeach
-                
+
             </table>
         </div>
         <button type="button" class="add-row mb-2" style="margin-bottom: 20px;" wire:click="addProductLobo" >Agregar Producto</button>
@@ -339,7 +339,7 @@
                 <tr>
                     <td colspan="5" style="text-align: center; font-weight: bold;">OTROS</td>
                 </tr>
-                
+
             </thead>
             <tbody>
                 @foreach ($productos_otros as $index => $producto)
@@ -354,12 +354,12 @@
                 </tr>
             @endforeach
             </tbody>
-           
+
         </table>
         <button type="button" class="add-row" wire:click="addProductOtros">Agregar Otro Producto</button>
 
         <p class="small-text">*Volumen de LOBO en botellas.</p>
-    
+
 
         <table>
             <thead>
@@ -377,15 +377,15 @@
                 </tr>
             </tbody>
         </table>
-        
-    
+
+
         <p><strong>Condiciones:</strong></p>
         <ul class="indent">
             <li>Las liquidaciones de aportaciones económicas serán abonadas una vez cumplido el acuerdo. Mientras que las promociones se aplicarán directamente en los pedidos.</li>
             <li>El material se le entregará en el primer pedido o a la firma del acuerdo, al finalizar el mismo, en caso de no haberse cumplido se le descontará el precio del material del abono de liquidación en la parte proporcional.</li>
             <li>En los acuerdos con activaciones, se realizarán a los 3 meses del inicio del acuerdo.</li>
         </ul>
-    
+
         <ol start="2">
             <li>La aportación económica acordada en el punto 1, así como las aportaciones de mercadería y marketing, se llevará a cabo tal y como se deje reflejado en el apartado de observaciones, una vez se haya demostrado el compromiso de unidades mínimas establecidas.</li>
             <li>Para el pago de las aportaciones acordadas con el cliente, tiene que haberse alcanzado un mínimo del 90% de acuerdo, de no ser así, se ampliará el periodo o cancelará el acuerdo dependiendo del consumo que tenga en el momento de finalización de este. El pago de</li>
@@ -407,10 +407,11 @@
                 </tr>
             </tbody>
         </table>
-    
-        
-    
+
+
+
         <p>De conformidad con lo anteriormente expuesto, se firma por las partes a fecha de <input type="text" class="dia"  wire:model="dia_firma"> de <select wire:model="mes_firma">
+            <option value="">---SELECCIONE UN MES---</option>
             <option value="Enero">Enero</option>
             <option value="Febrero">Febrero</option>
             <option value="Marzo">Marzo</option>
@@ -424,7 +425,7 @@
             <option value="Noviembre">Noviembre</option>
             <option value="Diciembre">Diciembre</option>
         </select> de <input type="text"  class="anio" wire:model="anio_firma"></p>
-    
+
         <p style="margin-top: 20px !important;"><strong>FIRMADO:</strong></p>
         <table class="signature-table">
             <thead>
@@ -435,7 +436,7 @@
                     <th>Distribuidor</th>
                 </tr>
             </thead>
-            
+
             <tr>
                 <td>
                     <canvas id="firma_comercial_lobo"></canvas>
