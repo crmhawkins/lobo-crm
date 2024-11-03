@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Comercial;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ClientesComercial;
+use App\Models\Delegacion;
 use App\Models\Productos;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Clients;
@@ -24,6 +25,8 @@ class addcliente extends Component
     public $email;
     public $distribuidores;
     public $distribuidor_id;
+    public $delegaciones;
+    public $delegacion_id;
 
 
 
@@ -38,7 +41,7 @@ class addcliente extends Component
     {
         //array asociativo donde cada producto es una clave y el precio es el valor
         $this->distribuidores = Clients::all();
-
+        $this->delegaciones = Delegacion::all();
     }
 
 
@@ -58,8 +61,8 @@ class addcliente extends Component
             ]
         );
 
-        
-            
+
+
         // Guardar datos validados
         $clienteSave = ClientesComercial::create([
             'comercial_id' => auth()->user()->id,
@@ -69,31 +72,30 @@ class addcliente extends Component
             'provincia' => $this->provincia,
             'localidad' => $this->localidad,
             'cod_postal' => $this->cod_postal,
-            'telefono' => $this->telefono,  
+            'telefono' => $this->telefono,
             'email' => $this->email,
             'distribuidor_id' => $this->distribuidor_id,
+            'delegacion_id' => $this->delegacion_id,
         ]);
-        
-        if($clienteSave){
-            $this->alert('success', '¡Cliente registrado correctamente!', [
-                        'position' => 'center',
-                        'timer' => 3000,
-                        'toast' => false,
-                        'showConfirmButton' => true,
-                        'onConfirmed' => 'confirmed',
-                        'confirmButtonText' => 'ok',
-                        'timerProgressBar' => true,
-                    ]);
 
-            
-        }else{
+        if ($clienteSave) {
+            $this->alert('success', '¡Cliente registrado correctamente!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'onConfirmed' => 'confirmed',
+                'confirmButtonText' => 'ok',
+                'timerProgressBar' => true,
+            ]);
+        } else {
             $this->alert('error', '¡No se ha podido guardar la información del cliente!', [
-                        'position' => 'center',
-                        'timer' => 3000,
-                        'toast' => false,
-                    ]);
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
         }
-    
+
         // Alertas de guardado exitoso
         // if ($clienteSave) {
 
@@ -156,7 +158,7 @@ class addcliente extends Component
         // }
     }
 
- 
+
 
     // Función para cuando se llama a la alerta
     public function getListeners()
@@ -173,7 +175,4 @@ class addcliente extends Component
         // Do something
         return redirect()->route('comercial.clientes');
     }
-
-
-
 }

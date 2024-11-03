@@ -51,8 +51,18 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6 invisible">
+                            <div class="form-group col-md-1 invisible">
                                 &nbsp;
+                            </div>
+                            <div class="col-md-5 ">
+                                <!-- delegacion -->
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Delegación</label>
+                                <select wire:model="delegacion_id" class="form-control select2" id="select2-delegacion">
+                                    <option value="">Selecciona una delegación</option>
+                                    @foreach ($delegaciones as $delegacion)
+                                        <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
@@ -272,6 +282,12 @@
                 @this.set('distribuidor_id', e.target.value);
             });
         });
+
+        $('#select2-delegacion').on('change', function (e) {
+            @this.set('delegacion_id', e.target.value);
+        });
+
+
         $("#alertaGuardar").on("click", () => {
             Swal.fire({
                 title: '¿Estás seguro?',

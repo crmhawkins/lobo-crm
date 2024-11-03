@@ -206,7 +206,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/cuentas-contables/get-cuentas', [App\Http\Controllers\CuentasContableController::class, 'getCuentasByDataTables'])->name('admin.cuentasContables.getClients');
 
     // Sub-Cuentas Contables
-    Route::get('/sub-cuentas-contables', [App\Http\Controllers\SubCuentasContableController::class, 'index'])->name('admin.subCuentasContables.index'); 
+    Route::get('/sub-cuentas-contables', [App\Http\Controllers\SubCuentasContableController::class, 'index'])->name('admin.subCuentasContables.index');
     Route::get('/sub-cuentas-contables/create', [SubCuentasContableController::class, 'create'])->name('admin.subCuentasContables.create');
     Route::post('/sub-cuentas-contables/store', [SubCuentasContableController::class, 'store'])->name('admin.subCuentasContables.store');
     Route::get('/sub-cuentas-contables/{id}/edit', [SubCuentasContableController::class, 'edit'])->name('admin.subCuentasContables.edit');
@@ -215,63 +215,59 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
 
     // Sub-Cuentas Hijas Contables
-Route::get('/sub-cuentas-hijas-contables', [App\Http\Controllers\SubCuentasHijoController::class, 'index'])->name('admin.subCuentasHijaContables.index');
-Route::get('/sub-cuentas-hijas-contables/create', [App\Http\Controllers\SubCuentasHijoController::class, 'create'])->name('admin.subCuentasHijaContables.create');
-Route::post('/sub-cuentas-hijas-contables/store', [App\Http\Controllers\SubCuentasHijoController::class, 'store'])->name('admin.subCuentasHijaContables.store');
-Route::get('/sub-cuentas-hijas-contables/{id}/edit', [App\Http\Controllers\SubCuentasHijoController::class, 'edit'])->name('admin.subCuentasHijaContables.edit');
-Route::put('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'update'])->name('admin.subCuentasHijaContables.update');
-Route::delete('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'destroy'])->name('admin.subCuentasHijaContables.destroy');
+    Route::get('/sub-cuentas-hijas-contables', [App\Http\Controllers\SubCuentasHijoController::class, 'index'])->name('admin.subCuentasHijaContables.index');
+    Route::get('/sub-cuentas-hijas-contables/create', [App\Http\Controllers\SubCuentasHijoController::class, 'create'])->name('admin.subCuentasHijaContables.create');
+    Route::post('/sub-cuentas-hijas-contables/store', [App\Http\Controllers\SubCuentasHijoController::class, 'store'])->name('admin.subCuentasHijaContables.store');
+    Route::get('/sub-cuentas-hijas-contables/{id}/edit', [App\Http\Controllers\SubCuentasHijoController::class, 'edit'])->name('admin.subCuentasHijaContables.edit');
+    Route::put('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'update'])->name('admin.subCuentasHijaContables.update');
+    Route::delete('/sub-cuentas-hijas-contables/{id}', [App\Http\Controllers\SubCuentasHijoController::class, 'destroy'])->name('admin.subCuentasHijaContables.destroy');
 
 
     // Grupos Contables
-Route::get('/grupo-contable', [App\Http\Controllers\GrupoContabilidadController::class, 'index'])->name('admin.grupoContabilidad.index');
-Route::get('/grupo-contable/create', [App\Http\Controllers\GrupoContabilidadController::class, 'create'])->name('admin.grupoContabilidad.create');
-Route::post('/grupo-contable/store', [App\Http\Controllers\GrupoContabilidadController::class, 'store'])->name('admin.grupoContabilidad.store');
-Route::get('/grupo-contable/{id}/edit', [App\Http\Controllers\GrupoContabilidadController::class, 'edit'])->name('admin.grupoContabilidad.edit');
-Route::put('/grupo-contable/{id}/update', [App\Http\Controllers\GrupoContabilidadController::class, 'update'])->name('admin.grupoContabilidad.update');
+    Route::get('/grupo-contable', [App\Http\Controllers\GrupoContabilidadController::class, 'index'])->name('admin.grupoContabilidad.index');
+    Route::get('/grupo-contable/create', [App\Http\Controllers\GrupoContabilidadController::class, 'create'])->name('admin.grupoContabilidad.create');
+    Route::post('/grupo-contable/store', [App\Http\Controllers\GrupoContabilidadController::class, 'store'])->name('admin.grupoContabilidad.store');
+    Route::get('/grupo-contable/{id}/edit', [App\Http\Controllers\GrupoContabilidadController::class, 'edit'])->name('admin.grupoContabilidad.edit');
+    Route::put('/grupo-contable/{id}/update', [App\Http\Controllers\GrupoContabilidadController::class, 'update'])->name('admin.grupoContabilidad.update');
     Route::delete('/grupo-contable/{id}/destroy', [App\Http\Controllers\GrupoContabilidadController::class, 'destroy'])->name('admin.grupoContabilidad.destroy');
 
 
- // Sub Grupos Contables
-Route::get('/sub-grupo-contable', [App\Http\Controllers\SubGrupoContabilidadController::class, 'index'])->name('admin.subGrupoContabilidad.index');
-Route::get('/sub-grupo-contable/create', [App\Http\Controllers\SubGrupoContabilidadController::class, 'create'])->name('admin.subGrupoContabilidad.create');
-Route::post('/sub-grupo-contable/store', [App\Http\Controllers\SubGrupoContabilidadController::class, 'store'])->name('admin.subGrupoContabilidad.store');
-Route::get('/sub-grupo-contable/{id}/edit', [App\Http\Controllers\SubGrupoContabilidadController::class, 'edit'])->name('admin.subGrupoContabilidad.edit');
-Route::put('/sub-grupo-contable/{id}/update', [App\Http\Controllers\SubGrupoContabilidadController::class, 'update'])->name('admin.subGrupoContabilidad.update');
-Route::delete('/sub-grupo-contable/{id}/destroy', [App\Http\Controllers\SubGrupoContabilidadController::class, 'destroy'])->name('admin.subGrupoContabilidad.destroy');
+    // Sub Grupos Contables
+    Route::get('/sub-grupo-contable', [App\Http\Controllers\SubGrupoContabilidadController::class, 'index'])->name('admin.subGrupoContabilidad.index');
+    Route::get('/sub-grupo-contable/create', [App\Http\Controllers\SubGrupoContabilidadController::class, 'create'])->name('admin.subGrupoContabilidad.create');
+    Route::post('/sub-grupo-contable/store', [App\Http\Controllers\SubGrupoContabilidadController::class, 'store'])->name('admin.subGrupoContabilidad.store');
+    Route::get('/sub-grupo-contable/{id}/edit', [App\Http\Controllers\SubGrupoContabilidadController::class, 'edit'])->name('admin.subGrupoContabilidad.edit');
+    Route::put('/sub-grupo-contable/{id}/update', [App\Http\Controllers\SubGrupoContabilidadController::class, 'update'])->name('admin.subGrupoContabilidad.update');
+    Route::delete('/sub-grupo-contable/{id}/destroy', [App\Http\Controllers\SubGrupoContabilidadController::class, 'destroy'])->name('admin.subGrupoContabilidad.destroy');
 
-//Contabilidad
-Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
+    //Contabilidad
+    Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
 
-//Calendario 
-Route::get('/calendario-marketing' ,[CalendarioController::class, 'index'] )->name('calendario.index');
-Route::post('/calendario/event', [CalendarioController::class, 'store'])->name('event.store');
-Route::put('/calendario/event/{id}', [CalendarioController::class, 'update'])->name('event.update');
-Route::delete('/calendario/event/{id}', [CalendarioController::class, 'destroy'])->name('event.destroy');
+    //Calendario
+    Route::get('/calendario-marketing', [CalendarioController::class, 'index'])->name('calendario.index');
+    Route::post('/calendario/event', [CalendarioController::class, 'store'])->name('event.store');
+    Route::put('/calendario/event/{id}', [CalendarioController::class, 'update'])->name('event.update');
+    Route::delete('/calendario/event/{id}', [CalendarioController::class, 'destroy'])->name('event.destroy');
 
-//incidencias
-Route::get('/incidencias', [App\Http\Controllers\IncidenciasController::class, 'index'])->name('admin.incidencias.index');
+    //incidencias
+    Route::get('/incidencias', [App\Http\Controllers\IncidenciasController::class, 'index'])->name('admin.incidencias.index');
+    Route::get('/incidencias/todas', [App\Http\Controllers\IncidenciasController::class, 'todas'])->name('incidencias.todas');
+    //acuerdos comerciales
+    Route::get('/create/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'create'])->name('acuerdos-comerciales.create');
+    Route::get('/edit/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'edit'])->name('acuerdos-comerciales.edit');
 
-//acuerdos comerciales
-Route::get('/create/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'create'])->name('acuerdos-comerciales.create');
-Route::get('/edit/acuerdos-comerciales/{id}', [acuerdosComerciales::class, 'edit'])->name('acuerdos-comerciales.edit');
-
-Route::post('/acuerdos-comerciales', [acuerdosComercialesController::class, 'store'])->name('acuerdos-comerciales.store');
-
-
-//Comercial
-//Route::get('/comercial', [ComercialViewController::class, 'index'])->name('comercial.index');
-Route::get('/clientes-comercial-create', [ComercialViewController::class, 'clientecomercial'])->name('comercial.addcliente');
-Route::get('/comercial', [ComercialViewController::class, 'clientecomercialview'])->name('comercial.clientes');
-Route::get('/comercial/edit/{id}', [ComercialViewController::class, 'editcliente'])->name('comercial.editcliente');
-
-Route::get('/comercial/create-pedido', [ComercialViewController::class, 'createpedido'])->name('comercial.createpedido');
-Route::get('/comercial/edit-pedido/{id}', [ComercialViewController::class, 'editpedido'])->name('comercial.editpedido');
-Route::get('/comercial/pedidos', [ComercialViewController::class, 'pedidos'])->name('comercial.pedidos');
+    Route::post('/acuerdos-comerciales', [acuerdosComercialesController::class, 'store'])->name('acuerdos-comerciales.store');
 
 
+    //Comercial
+    //Route::get('/comercial', [ComercialViewController::class, 'index'])->name('comercial.index');
+    Route::get('/clientes-comercial-create', [ComercialViewController::class, 'clientecomercial'])->name('comercial.addcliente');
+    Route::get('/comercial', [ComercialViewController::class, 'clientecomercialview'])->name('comercial.clientes');
+    Route::get('/comercial/edit/{id}', [ComercialViewController::class, 'editcliente'])->name('comercial.editcliente');
 
-
+    Route::get('/comercial/create-pedido', [ComercialViewController::class, 'createpedido'])->name('comercial.createpedido');
+    Route::get('/comercial/edit-pedido/{id}', [ComercialViewController::class, 'editpedido'])->name('comercial.editpedido');
+    Route::get('/comercial/pedidos', [ComercialViewController::class, 'pedidos'])->name('comercial.pedidos');
 });
 
 Route::get('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'hookWhatsapp'])->name('whatsapp.hookWhatsapp');
@@ -282,4 +278,3 @@ Route::post('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'proce
 Route::get('/mensajes-whatsapp', [App\Http\Controllers\WhatsappController::class, 'whatsapp'])->name('whatsapp.mensajes');
 
 Route::get('/buscar-gastos', [GastosController::class, 'buscarGastos'])->name('buscarGastos');
-

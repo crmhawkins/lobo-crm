@@ -20,54 +20,7 @@
         </div>
     </div>
 
-    <!-- Botón para abrir el modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enviarAlertaModal">
-        Enviar Alerta
-    </button>
 
-    <!-- Modal para enviar alerta -->
-    <div class="modal fade" id="enviarAlertaModal" tabindex="-1" aria-labelledby="enviarAlertaModalLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="enviarAlertaModalLabel">Enviar Alerta</h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form wire:submit.prevent="enviarAlerta">
-                        <div class="mb-3">
-                            <label for="tituloAlerta" class="form-label">Título</label>
-                            <input type="text" class="form-control" id="tituloAlerta" wire:model="titulo" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="descripcionAlerta" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="descripcionAlerta" rows="3" wire:model="descripcion" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="imagenAlerta" class="form-label">Imagen (opcional)</label>
-                            <input type="file" class="form-control" id="imagenAlerta" wire:model="imagen">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="usuariosAlerta" class="form-label">Enviar a</label>
-                            <select id="usuariosAlerta" class="form-control select2" multiple="multiple" wire:model="usuariosSeleccionados" wire:ignore.self>
-                                @foreach($usuarios as $usuario)
-                                    <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Enviar Alerta</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Contenedor del calendario -->
     <div class="container-fluid" x-data>

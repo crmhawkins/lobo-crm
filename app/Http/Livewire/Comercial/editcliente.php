@@ -8,6 +8,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Clients;
+use App\Models\Delegacion;
 
 class editcliente extends Component
 {
@@ -27,6 +28,8 @@ class editcliente extends Component
     public $comercial_id;
     public $distribuidores = [];
     public $distribuidor_id;
+    public $delegaciones;
+    public $delegacion_id;
 
     public function mount()
     {
@@ -44,7 +47,8 @@ class editcliente extends Component
         $this->distribuidor_id = $cliente->distribuidor_id;
         $this->distribuidores = Clients::all();
         $this->acuerdos = acuerdosComerciales::where('cliente_id', $this->identificador)->get();
-        
+        $this->delegaciones = Delegacion::all();
+        $this->delegacion_id = $cliente->delegacion_id;
         //dd($this->emailsExistentes);
     }
 
@@ -55,22 +59,10 @@ class editcliente extends Component
     // Al hacer update en el formulario
     public function update()
     {
-        // Validación de datos
-        $validatedData = $this->validate(
-            [
-                
-                'nombre' => 'required'
 
-            ],
-            // Mensajes de error
-            [
-                'nombre.required' => 'El nombre es obligatorio.',
-                
-            ]);
 
         // Encuentra el identificador
         $cliente = ClientesComercial::find($this->identificador);
-
         // Guardar datos validados
         $clienteSave = $cliente->update([
             'nombre' => $this->nombre,
@@ -83,6 +75,8 @@ class editcliente extends Component
             'email' => $this->email,
             'comercial_id' => $this->comercial_id,
             'distribuidor_id' => $this->distribuidor_id,
+            'delegacion_id' => $this->delegacion_id,
+
         ]);
         //event(new \App\Events\LogEvent(Auth::user(), 9, $cliente->id));
 
@@ -110,8 +104,9 @@ class editcliente extends Component
         $this->emit('eventUpdated');
     }
 
-      // Eliminación
-      public function destroy(){
+    // Eliminación
+    public function destroy()
+    {
 
         $this->alert('warning', '¿Seguro que desea borrar el cliente? No hay vuelta atrás', [
             'position' => 'center',
@@ -124,7 +119,6 @@ class editcliente extends Component
             'denyButtonText' => 'No',
             'timerProgressBar' => true,
         ]);
-
     }
 
     // Función para cuando se llama a la alerta
@@ -143,12 +137,11 @@ class editcliente extends Component
     {
         // Do something
         return redirect()->route('comercial.clientes');
-
     }
     // Función para cuando se llama a la alerta
     public function confirmDelete()
     {
-        
+
         $cliente = ClientesComercial::find($this->identificador);
         //event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
 
@@ -156,6 +149,5 @@ class editcliente extends Component
         //event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
 
         return redirect()->route('comercial.clientes');
-
     }
 }

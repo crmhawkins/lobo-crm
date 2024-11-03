@@ -28,7 +28,8 @@
                     <div class="col-12 mb-5">
                         <a href="comercial/pedidos" class="btn btn-lg w-100 btn-secondary">VER PEDIDOS</a>
                     </div>
-                    
+
+
                     @if ($clientes != null)
                     <table id="clientesTable" class="table table-striped table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -40,6 +41,8 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Dirección</th>
                                 <th scope="col">Distribuidor</th>
+                                <th scope="col">Delegación</th>
+                                <th scope="col">Comercial</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -52,7 +55,9 @@
                                     <td>{{$cliente->email}}</td>
                                     <td>{{ $cliente->direccion }}</td>
                                     <td>{{ $cliente->distribuidor->nombre ?? 'Sin distribuidor' }}</td>
-                                   
+                                    <td>{{ $this->getDelegacion($cliente->id)->nombre ?? 'Sin delegación' }}</td>
+                                    <td>{{ $this->getComercial($cliente->id)->name ?? 'Sin comercial' }}</td>
+
                                     @if(Auth::user()->role != 3 && Auth::user()->role != 2)
                                         <td><a href="comercial/edit/{{ $cliente->id }}" class="btn btn-primary">Ver/Editar</a></td>
                                     @else

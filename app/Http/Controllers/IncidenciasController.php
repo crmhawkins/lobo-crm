@@ -10,4 +10,9 @@ class IncidenciasController extends Controller
     {
         return view('incidencias.index');
     }
+
+    public function todas()
+    {
+        return view('incidencias.todas');
+    }
 }

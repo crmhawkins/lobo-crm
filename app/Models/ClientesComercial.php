@@ -33,6 +33,7 @@ class ClientesComercial extends Model
         'telefono',
         'email',
         'distribuidor_id',
+        'delegacion_id',
     ];
 
 
@@ -45,6 +46,4 @@ class ClientesComercial extends Model
     {
         return $this->belongsTo(Clients::class, 'distribuidor_id');
     }
-
-
 }

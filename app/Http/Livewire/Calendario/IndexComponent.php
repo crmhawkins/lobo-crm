@@ -76,45 +76,45 @@ class IndexComponent extends Component
     }
 
     public function mount()
-{
-    $this->usuarios = User::all(); // Obtener todos los usuarios para el selector
+    {
+        $this->usuarios = User::all(); // Obtener todos los usuarios para el selector
 
-    // Simulación de calendarios (usuarios)
-    $this->calendars = [
-        [
-            'id' => '1',
-            'name' => 'Eventos',
-            'color' => '#ffffff',
-            'borderColor' => '#ff0000',
-            'backgroundColor' => '#ff0000',
-            'dragBackgroundColor' => '#ff0000',
-        ],
-        [
-            'id' => '2',
-            'name' => 'Marketing',
-            'color' => '#ffffff',
-            'borderColor' => '#00ff00',
-            'backgroundColor' => '#00ff00',
-            'dragBackgroundColor' => '#00ff00',
-        ],
-    ];
-
-    // Obtener los eventos desde la base de datos
-    $this->events = Event::all()->map(function ($event) {
-        return [
-            'id' => $event->id,
-            'calendarId' => $event->calendar_id, // Mapeo del campo calendar_id a calendarId
-            'title' => $event->title,
-            'location' => $event->location,
-            'isPrivate' => $event->isPrivate,
-            'isAllday' => $event->isAllDay,
-            'state' => $event->state,
-            'category' => $event->category,
-            'start' => $event->start,  // Ya debe estar en el formato correcto
-            'end' => $event->end,      // Ya debe estar en el formato correcto
+        // Simulación de calendarios (usuarios)
+        $this->calendars = [
+            [
+                'id' => '1',
+                'name' => 'Eventos',
+                'color' => '#ffffff',
+                'borderColor' => '#ff0000',
+                'backgroundColor' => '#ff0000',
+                'dragBackgroundColor' => '#ff0000',
+            ],
+            [
+                'id' => '2',
+                'name' => 'Marketing',
+                'color' => '#ffffff',
+                'borderColor' => '#00ff00',
+                'backgroundColor' => '#00ff00',
+                'dragBackgroundColor' => '#00ff00',
+            ],
         ];
-    });
-}
+
+        // Obtener los eventos desde la base de datos
+        $this->events = Event::all()->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'calendarId' => $event->calendar_id, // Mapeo del campo calendar_id a calendarId
+                'title' => $event->title,
+                'location' => $event->location,
+                'isPrivate' => $event->isPrivate,
+                'isAllday' => $event->isAllDay,
+                'state' => $event->state,
+                'category' => $event->category,
+                'start' => $event->start,  // Ya debe estar en el formato correcto
+                'end' => $event->end,      // Ya debe estar en el formato correcto
+            ];
+        });
+    }
 
 
 

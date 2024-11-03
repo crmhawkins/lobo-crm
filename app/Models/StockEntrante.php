@@ -13,13 +13,16 @@ class StockEntrante extends Model
 
     protected $table = "stock_entrante";
 
+    protected $with = ['salidas'];
+
+
     protected $fillable = [
         'stock_id',
         'lote_id',
         'orden_numero',
         'producto_id',
         'cantidad',
-        ];
+    ];
 
 
     /**
@@ -28,7 +31,9 @@ class StockEntrante extends Model
      * @var array
      */
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     public function stock()
@@ -39,5 +44,11 @@ class StockEntrante extends Model
     public function salidas()
     {
         return $this->hasMany(StockSaliente::class, 'stock_entrante_id');
+    }
+
+    public function isEmpty()
+    {
+
+        return $this->salidas()->count() === 0;
     }
 }

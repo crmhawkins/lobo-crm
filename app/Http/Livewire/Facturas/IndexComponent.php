@@ -64,7 +64,7 @@ class IndexComponent extends Component
     {
         $user = Auth::user();
         $user_rol = $user->role;
-    
+
         // Recuperar filtros desde la sesión si existen
         $this->tipoFactura = session('factura_filtro_tipoFactura', -1);
         $this->delegacionSeleccionadaCOD = session('factura_filtro_delegacionSeleccionadaCOD', -1);
@@ -73,176 +73,176 @@ class IndexComponent extends Component
         $this->clienteSeleccionadoId = session('factura_filtro_clienteSeleccionadoId', -1);
         $this->fecha_min = session('factura_filtro_fecha_min', null);
         $this->fecha_max = session('factura_filtro_fecha_max', null);
-    
+
         $this->pedidos = Pedido::all();
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
-    
+
         // if ($user_rol == 3) {
         //     // Comercial
         //     $clientes_comercial = Clients::where('comercial_id', $user->id)->get();
 
-        //     dd($clientes_comercial);    
-    
+        //     dd($clientes_comercial);
+
         //     foreach ($clientes_comercial as $cliente) {
         //         $this->facturas = Facturas::where('cliente_id', $cliente->id)->get();
         //     }
-    
+
         // } else {
-            $this->updateFacturas();
+        $this->updateFacturas();
         // }
     }
 
 
     public function getTotalSobrante($facturaId)
-{
-    // Busca la factura
-    $factura = Facturas::find($facturaId);
-    $delegacion = $this->getDelegacion($factura->cliente_id);
+    {
+        // Busca la factura
+        $factura = Facturas::find($facturaId);
+        $delegacion = $this->getDelegacion($factura->cliente_id);
 
-    // Asegúrate de que la factura exista
-    if (!$factura) {
-        return "Factura no encontrada";
-    }
+        // Asegúrate de que la factura exista
+        if (!$factura) {
+            return "Factura no encontrada";
+        }
 
-    // Total de la factura en formato numérico (no formatees todavía)
-    $totalFactura = round($factura->total, 2);
-    if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
-        $totalFactura = round($factura->precio, 2);
-    }
+        // Total de la factura en formato numérico (no formatees todavía)
+        $totalFactura = round($factura->total, 2);
+        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+            $totalFactura = round($factura->precio, 2);
+        }
 
-    if($factura->factura_rectificativa_id != null){
-        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
-        if(!$facturaRectificativa || $facturaRectificativa->total == null){
-            $totalFactura = round($factura->total, 2);
-            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
-                $totalFactura = round($factura->precio, 2);
+        if ($factura->factura_rectificativa_id != null) {
+            $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+            if (!$facturaRectificativa || $facturaRectificativa->total == null) {
+                $totalFactura = round($factura->total, 2);
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                    $totalFactura = round($factura->precio, 2);
+                }
+            } else {
+                $totalFactura = round($facturaRectificativa->total, 2);
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                    $totalFactura = round($facturaRectificativa->precio, 2);
+                }
             }
-        }else{
-            $totalFactura = round($facturaRectificativa->total, 2);
-            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
-                $totalFactura = round($facturaRectificativa->precio, 2);
-            }
-
         }
-    }
 
-   $facturasCompensadas = FacturasCompensadas::where('factura_id', $facturaId)->get();
-    $totalCompensado = 0;
-   foreach($facturasCompensadas as $facturaCompensada){
-    $totalCompensado += $facturaCompensada->importe;
-   }
-
-    // Suma los ingresos en la caja
-    $IngresosCaja = Caja::where('pedido_id', $factura->id)->sum('importe');
-
-    // Calcula el sobrante de manera numérica
-    $totalSobrante =  $totalFactura - $IngresosCaja - $totalCompensado;
-
-    if($totalSobrante < 0){
-        $totalSobrante = 0;
-    }
-
-    // Si necesitas formatear para la visualización, hazlo después
-    return number_format($totalSobrante, 2, ',', '.');
-}
-
-
-public function getImporte($facturaId){
-
-    $factura = Facturas::find($facturaId);
-
-    if(!$factura){
-        return 'No definido';
-    }
-
-    //si la factura tiene rectificativa
-
-    if($factura->factura_rectificativa_id != null){
-        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
-        if(!$facturaRectificativa || $facturaRectificativa->total == null){
-            //numbert_format($factura->total, 2, ',', '.');
-
-            return number_format($factura->precio, 2, '.', '');
-        }else{
-            
-            return number_format($facturaRectificativa->precio, 2, '.', '');
+        $facturasCompensadas = FacturasCompensadas::where('factura_id', $facturaId)->get();
+        $totalCompensado = 0;
+        foreach ($facturasCompensadas as $facturaCompensada) {
+            $totalCompensado += $facturaCompensada->importe;
         }
-    }else{
-        return number_format($factura->precio, 2, '.', '');
-    }
 
-}
+        // Suma los ingresos en la caja
+        $IngresosCaja = Caja::where('pedido_id', $factura->id)->sum('importe');
 
-public function getIva($facturaId){
-    $factura = Facturas::find($facturaId);
+        // Calcula el sobrante de manera numérica
+        $totalSobrante =  $totalFactura - $IngresosCaja - $totalCompensado;
 
-    if(!$factura){
-        return 'No definido';
-    }
-    $delegacion = $this->getDelegacion($factura->cliente_id);
-
-    //si la factura tiene rectificativa
-    if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
-        return number_format(0,2, '.', '');
-    }
-    if($factura->factura_rectificativa_id != null){
-        $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
-        if(!$facturaRectificativa || $facturaRectificativa->total == null){
-            //numbert_format($factura->total, 2, ',', '.');
-            //hay que tener en cuenta si la delegacion es de las exentas de iva
-
-            
-            
-            return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
-        }else{
-            
-            
-            return number_format($facturaRectificativa->iva ?? $facturaRectificativa->precio * 0.21, 2, '.', '');
+        if ($totalSobrante < 0) {
+            $totalSobrante = 0;
         }
-    }else{
-        
-        return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
+
+        // Si necesitas formatear para la visualización, hazlo después
+        return number_format($totalSobrante, 2, ',', '.');
     }
 
-}
-    
 
-    public function getTotal($facturaId){
+    public function getImporte($facturaId)
+    {
 
         $factura = Facturas::find($facturaId);
 
-        if(!$factura){
+        if (!$factura) {
+            return 'No definido';
+        }
+
+        //si la factura tiene rectificativa
+
+        if ($factura->factura_rectificativa_id != null) {
+            $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+            if (!$facturaRectificativa || $facturaRectificativa->total == null) {
+                //numbert_format($factura->total, 2, ',', '.');
+
+                return number_format($factura->precio, 2, '.', '');
+            } else {
+
+                return number_format($facturaRectificativa->precio, 2, '.', '');
+            }
+        } else {
+            return number_format($factura->precio, 2, '.', '');
+        }
+    }
+
+    public function getIva($facturaId)
+    {
+        $factura = Facturas::find($facturaId);
+
+        if (!$factura) {
+            return 'No definido';
+        }
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+
+        //si la factura tiene rectificativa
+        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+            return number_format(0, 2, '.', '');
+        }
+        if ($factura->factura_rectificativa_id != null) {
+            $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
+            if (!$facturaRectificativa || $facturaRectificativa->total == null) {
+                //numbert_format($factura->total, 2, ',', '.');
+                //hay que tener en cuenta si la delegacion es de las exentas de iva
+
+
+
+                return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
+            } else {
+
+
+                return number_format($facturaRectificativa->iva ?? $facturaRectificativa->precio * 0.21, 2, '.', '');
+            }
+        } else {
+
+            return number_format($factura->iva ?? $factura->precio * 0.21, 2, '.', '');
+        }
+    }
+
+
+    public function getTotal($facturaId)
+    {
+
+        $factura = Facturas::find($facturaId);
+
+        if (!$factura) {
             return 'No definido';
         }
 
         $delegacion = $this->getDelegacion($factura->cliente_id);
 
-        
-        if($factura->factura_rectificativa_id != null){
+
+        if ($factura->factura_rectificativa_id != null) {
             $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
-            if(!$facturaRectificativa || $facturaRectificativa->total == null){
+            if (!$facturaRectificativa || $facturaRectificativa->total == null) {
                 //numbert_format($factura->total, 2, ',', '.');
                 //si la factura tiene rectificativa
-                if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
                     return number_format($factura->precio, 2, '.', '');
                 }
                 return number_format($factura->total, 2, '.', '');
-            }else{
+            } else {
                 //si la factura tiene rectificativa
-                if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
                     return number_format($facturaRectificativa->precio, 2, '.', '');
                 }
                 return number_format($facturaRectificativa->total, 2, '.', '');
             }
-        }else{
+        } else {
 
-            if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
                 return number_format($factura->precio, 2, '.', '');
             }
 
-            if($factura->total != null){
+            if ($factura->total != null) {
                 return number_format($factura->precio * 1.21, 2, '.', '');
             }
             return number_format($factura->total, 2, '.', '');
@@ -251,10 +251,10 @@ public function getIva($facturaId){
 
     public function getFacturaAsociada($id)
     {
-        
+
         $factura = Facturas::where('id', $id)->first();
 
-        if(!$factura){
+        if (!$factura) {
             return 'No definido';
         }
 
@@ -262,12 +262,12 @@ public function getIva($facturaId){
     }
     public function getNumberFacturaAsociada($id)
     {
-        
+
         $factura = Facturas::where('id', $id)->first();
 
         $facturaNormal = Facturas::where('id', $factura->factura_id)->first();
 
-        if(!$factura){
+        if (!$factura) {
             return 'No definido';
         }
 
@@ -367,29 +367,29 @@ public function getIva($facturaId){
 
 
     public function limpiarFiltros()
-{
-    $this->delegacionSeleccionadaCOD = -1;
-    $this->comercialSeleccionadoId = -1;
-    $this->estadoSeleccionado = -1;
-    $this->clienteSeleccionadoId = -1;
-    $this->tipoFactura = -1;
-    $this->fecha_min = null;
-    $this->fecha_max = null;
+    {
+        $this->delegacionSeleccionadaCOD = -1;
+        $this->comercialSeleccionadoId = -1;
+        $this->estadoSeleccionado = -1;
+        $this->clienteSeleccionadoId = -1;
+        $this->tipoFactura = -1;
+        $this->fecha_min = null;
+        $this->fecha_max = null;
 
-    // Limpiar filtros de la sesión
-    session()->forget([
-        'factura_filtro_tipoFactura',
-        'factura_filtro_delegacionSeleccionadaCOD',
-        'factura_filtro_comercialSeleccionadoId',
-        'factura_filtro_estadoSeleccionado',
-        'factura_filtro_clienteSeleccionadoId',
-        'factura_filtro_fecha_min',
-        'factura_filtro_fecha_max'
-    ]);
+        // Limpiar filtros de la sesión
+        session()->forget([
+            'factura_filtro_tipoFactura',
+            'factura_filtro_delegacionSeleccionadaCOD',
+            'factura_filtro_comercialSeleccionadoId',
+            'factura_filtro_estadoSeleccionado',
+            'factura_filtro_clienteSeleccionadoId',
+            'factura_filtro_fecha_min',
+            'factura_filtro_fecha_max'
+        ]);
 
-    $this->updateFacturas();
-}
-    
+        $this->updateFacturas();
+    }
+
     public function updated($propertyName)
     {
         if (
@@ -397,7 +397,7 @@ public function getIva($facturaId){
             $propertyName == 'comercialSeleccionadoId' ||
             $propertyName == 'estadoSeleccionado' ||
             $propertyName == 'clienteSeleccionadoId' ||
-            $propertyName == 'tipoFactura' || 
+            $propertyName == 'tipoFactura' ||
             $propertyName == 'fecha_min' ||
             $propertyName == 'fecha_max'
 
@@ -406,12 +406,13 @@ public function getIva($facturaId){
         }
     }
 
-    public function descargarFacturas($array) {
+    public function descargarFacturas($array)
+    {
         $this->arrDescargaFacturas = $array;
         $pdfs = [];
 
         // Itera sobre cada factura y genera un PDF por cada una
-        foreach($this->arrDescargaFacturas as $index => $facturaId) {
+        foreach ($this->arrDescargaFacturas as $index => $facturaId) {
             // Llama a la función descargarPdfs para generar el PDF de la factura
             $pdf = $this->descargarPdfs($facturaId);
 
@@ -446,48 +447,48 @@ public function getIva($facturaId){
         return response()->download($zipFileName)->deleteFileAfterSend(true);
     }
 
-    
+
 
 
     public function updateFactura($facturasActualizadas)
     {
         $this->facturas = $facturasActualizadas;
         $this->calcularTotales($this->facturas);
-       // $this->emit('actualizarTablaDespues');
+        // $this->emit('actualizarTablaDespues');
     }
 
-   
+
 
     public function calcularTotales($facturas)
-{
-    $this->totalIva = 0;
-    $this->totalImportes = 0;
-    $this->totalesConIva = 0;
+    {
+        $this->totalIva = 0;
+        $this->totalImportes = 0;
+        $this->totalesConIva = 0;
 
-    foreach ($facturas as $factura) {
-        $delegacion = $this->getDelegacion($factura->cliente_id);
+        foreach ($facturas as $factura) {
+            $delegacion = $this->getDelegacion($factura->cliente_id);
 
-        // Sumar importe total
-        $this->totalImportes += $factura->precio;
+            // Sumar importe total
+            $this->totalImportes += $factura->precio;
 
-        // Sumar IVA si la delegación no está en la lista de exención
-        if (!in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
-            $this->totalIva += $factura->iva;
+            // Sumar IVA si la delegación no está en la lista de exención
+            if (!in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+                $this->totalIva += $factura->iva;
+            }
+
+            // Sumar totales con IVA, considerando las delegaciones
+            if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+                $this->totalesConIva += $factura->precio; // Sin IVA
+            } else {
+                $this->totalesConIva += $factura->total; // Con IVA
+            }
         }
 
-        // Sumar totales con IVA, considerando las delegaciones
-        if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
-            $this->totalesConIva += $factura->precio; // Sin IVA
-        } else {
-            $this->totalesConIva += $factura->total; // Con IVA
-        }
+        // Redondear los totales
+        $this->totalImportes = round($this->totalImportes, 2);
+        $this->totalIva = round($this->totalIva, 2);
+        $this->totalesConIva = round($this->totalesConIva, 2);
     }
-
-    // Redondear los totales
-    $this->totalImportes = round($this->totalImportes, 2);
-    $this->totalIva = round($this->totalIva, 2);
-    $this->totalesConIva = round($this->totalesConIva, 2);
-}
 
 
 
@@ -498,20 +499,20 @@ public function getIva($facturaId){
     }
 
     public function getCliente($id)
-{
-    $cliente = $this->clientes->find($id);
-    if (isset($cliente)) {
-        $clienteModel = Clients::find($id);
-        $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
-        $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
+    {
+        $cliente = $this->clientes->find($id);
+        if (isset($cliente)) {
+            $clienteModel = Clients::find($id);
+            $cliente['delegacion'] = isset($clienteModel->delegacion) ? $clienteModel->delegacion->nombre : 'No definido';
+            $cliente['comercial'] = isset($clienteModel->comercial) ? $clienteModel->comercial->name : 'No definido';
 
-        // Truncamos el nombre del cliente si es demasiado largo
-        $cliente['nombre'] = $cliente['nombre']; // Puedes ajustar el límite de caracteres
+            // Truncamos el nombre del cliente si es demasiado largo
+            $cliente['nombre'] = $cliente['nombre']; // Puedes ajustar el límite de caracteres
 
-        return $cliente;
+            return $cliente;
+        }
+        return "Cliente no definido";
     }
-    return "Cliente no definido";
-}
 
     // Función para truncar texto con puntos suspensivos
     private function truncarTexto($texto, $limite = 10)
@@ -561,7 +562,7 @@ public function getIva($facturaId){
         ];
     }
 
-   public function hasPedido($facturaId)
+    public function hasPedido($facturaId)
     {
         $factura = Facturas::find($facturaId);
         $pedido = Pedido::find($factura->pedido_id);
@@ -614,8 +615,8 @@ public function getIva($facturaId){
         }
 
         $nota = null;
-        if(isset($factura)){
-            if(isset($factura->descripcion) && $factura->descripcion != null){
+        if (isset($factura)) {
+            if (isset($factura->descripcion) && $factura->descripcion != null) {
                 $nota = $factura->descripcion;
             }
         }
@@ -630,8 +631,8 @@ public function getIva($facturaId){
             'pedido' => $pedido,
             'cliente' => $cliente,
             'productos' => $productos,
-            'num_albaran' => $num_albaran = $albaran->num_albaran,
-            'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+            'num_albaran' => $albaran->num_albaran,
+            'fecha_albaran' => $albaran->fecha,
             'nota' => $nota ?? null,
             'configuracion' => $configuracion,
             'productosMarketing' => $productosMarketing
@@ -641,18 +642,18 @@ public function getIva($facturaId){
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
 
-            $totalPages = $pdf->getCanvas()->get_page_count();
+        $totalPages = $pdf->getCanvas()->get_page_count();
 
-            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
-                $text = "Página $pageNumber de $totalPages";
-                $font = $fontMetrics->getFont('Helvetica', 'normal');
-                $size = 10;
-                $width = $canvas->get_width();
-                $canvas->text($width - 100, 15, $text, $font, $size);
-            });
-        
+        $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+            $text = "Página $pageNumber de $totalPages";
+            $font = $fontMetrics->getFont('Helvetica', 'normal');
+            $size = 10;
+            $width = $canvas->get_width();
+            $canvas->text($width - 100, 15, $text, $font, $size);
+        });
+
         return response()->streamDownload(
-            fn () => print($pdf->output()),
+            fn() => print($pdf->output()),
             "albaran_{$albaran->num_albaran}.pdf"
         );
     }
@@ -665,20 +666,20 @@ public function getIva($facturaId){
 
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
-            if($pedido){
+            if ($pedido) {
                 $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
-            }else{
+            } else {
                 $productosMarketing = [];
             }
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
-            if($factura->tipo == 3){
+            if ($factura->tipo == 3) {
                 $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
             }
             //dd($albaran);
-           
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -716,7 +717,7 @@ public function getIva($facturaId){
             foreach ($productosFactura as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_id);
                 $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-               
+
                 if ($stockEntrante) {
                     $lote = $stockEntrante->orden_numero;
                 } else {
@@ -732,8 +733,8 @@ public function getIva($facturaId){
                         'nombre' => $producto->nombre,
                         'cantidad' => $productoPedido->cantidad,
                         'precio_ud' => $productoPedido->precio_ud,
-                        'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
-                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                        'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
                         'lote_id' => $lote,
                         'peso_kg' =>  $peso,
                     ];
@@ -743,14 +744,13 @@ public function getIva($facturaId){
             $base_imponible = 0;
             $iva_productos = 0;
 
-            if ($factura->tipo == 2){
-                
+            if ($factura->tipo == 2) {
+
                 foreach ($productosdeFactura as $producto) {
                     $base_imponible += $producto['precio_total'];
                     $iva_productos += $producto['iva'];
                 }
                 $total = $base_imponible + $iva_productos;
-
             }
 
             $datos = [
@@ -768,10 +768,10 @@ public function getIva($facturaId){
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
                 'productosMarketing' => $productosMarketing,
-                
+
             ];
             $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
-          
+
 
             $pdf->render();
 
@@ -789,18 +789,17 @@ public function getIva($facturaId){
             // $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
 
             return response()->streamDownload(
-                fn () => print($pdf->output()),
+                fn() => print($pdf->output()),
                 // "factura_{$factura->numero_factura}.pdf");
                 "{$factura->numero_factura}.pdf"
             );
-
-
         } else {
             return redirect('admin/facturas');
         }
     }
 
-    public function pdfRectificada($id, $iva){
+    public function pdfRectificada($id, $iva)
+    {
 
         $factura = Facturas::find($id);
         $configuracion = Configuracion::first();
@@ -814,9 +813,9 @@ public function getIva($facturaId){
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
-           
+
             //dd($albaran);
-           
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -851,12 +850,12 @@ public function getIva($facturaId){
                 }
             }
             $arrProductosFactura = [];
-            
-            foreach ($facturasRectificativas as $facturaRectificativa){
+
+            foreach ($facturasRectificativas as $facturaRectificativa) {
                 $productosdeFactura = [];
                 $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
 
-                foreach($productosFactura as $productoPedido){
+                foreach ($productosFactura as $productoPedido) {
                     $producto = Productos::find($productoPedido->producto_id);
                     $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
                     if ($stockEntrante) {
@@ -876,18 +875,15 @@ public function getIva($facturaId){
                             'nombre' => $producto->nombre,
                             'cantidad' => $productoPedido->cantidad,
                             'precio_ud' => $productoPedido->precio_ud,
-                            'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
-                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                            'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
                             'lote_id' => $lote,
                             'peso_kg' =>  $peso,
                             'unidades' => $productoPedido->unidades,
-                            
+
                         ];
                     }
-
                 }
-
-
             }
 
             $totalRectificado = 0;
@@ -897,7 +893,6 @@ public function getIva($facturaId){
             foreach ($arrProductosFactura as $producto) {
                 $base_imponible_rectificado += $producto['precio_total'];
                 $iva_productos_rectificado += $producto['iva'];
-                
             }
 
             //dd($base_imponible_rectificado);
@@ -911,22 +906,22 @@ public function getIva($facturaId){
             //dd($productos);
 
             //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
-            foreach($productos as $index => $producto){
-                
-                foreach($arrProductosFactura as $productoFactura){
-                    
-                    if(($producto['id'] == $productoFactura['id']) && ($producto['cantidad'] == $productoFactura['unidades'] )  ){
-                       
+            foreach ($productos as $index => $producto) {
+
+                foreach ($arrProductosFactura as $productoFactura) {
+
+                    if (($producto['id'] == $productoFactura['id']) && ($producto['cantidad'] == $productoFactura['unidades'])) {
+
                         $productos[$index]['cantidad'] -= $productoFactura['cantidad'];
                         $productos[$index]['precio_total'] -= $productoFactura['precio_total'];
-                        $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100) ;
+                        $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100);
                         //dd($producto['cantidad']);
                     }
                 }
             }
 
 
-            //sumar 
+            //sumar
 
             $datos = [
                 'conIva' => $iva,
@@ -942,9 +937,9 @@ public function getIva($facturaId){
                 'total' => $total,
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
-                
+
             ];
-            
+
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical');
             $pdf->render();
@@ -960,21 +955,19 @@ public function getIva($facturaId){
             });
 
             return response()->streamDownload(
-                fn () => print($pdf->output()),
+                fn() => print($pdf->output()),
                 // "factura_{$factura->numero_factura}.pdf");
                 "{$factura->numero_factura}.pdf"
             );
-
-
         } else {
             return redirect('admin/facturas');
         }
-
     }
 
 
 
-    public function pdfIntermedio($id, $iva){
+    public function pdfIntermedio($id, $iva)
+    {
 
         $factura = Facturas::find($id);
         $configuracion = Configuracion::first();
@@ -985,16 +978,16 @@ public function getIva($facturaId){
         if ($factura != null) {
             $cliente = Clients::find($factura->cliente_id);
             $productos = [];
-           
+
             //dd($albaran);
-           
+
             $arrProductosFactura = [];
-            
-            foreach ($facturasRectificativas as $facturaRectificativa){
+
+            foreach ($facturasRectificativas as $facturaRectificativa) {
                 $productosdeFactura = [];
                 $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
 
-                foreach($productosFactura as $productoPedido){
+                foreach ($productosFactura as $productoPedido) {
                     $producto = Productos::find($productoPedido->producto_id);
                     $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
 
@@ -1015,16 +1008,13 @@ public function getIva($facturaId){
                             'nombre' => $producto->nombre,
                             'cantidad' => -$productoPedido->cantidad,
                             'precio_ud' => $productoPedido->precio_ud,
-                            'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
-                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                            'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
                             'lote_id' => $lote,
                             'peso_kg' =>  $peso,
                         ];
                     }
-
                 }
-
-
             }
 
             $totalRectificado = 0;
@@ -1034,7 +1024,6 @@ public function getIva($facturaId){
             foreach ($arrProductosFactura as $producto) {
                 $base_imponible_rectificado += $producto['precio_total'];
                 $iva_productos_rectificado += $producto['iva'];
-                
             }
 
             //dd($base_imponible_rectificado);
@@ -1059,8 +1048,8 @@ public function getIva($facturaId){
             // }
 
 
-            //sumar 
-                //dd($productosdeFactura);
+            //sumar
+            //dd($productosdeFactura);
 
             $datos = [
                 'conIva' => $iva,
@@ -1074,9 +1063,9 @@ public function getIva($facturaId){
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
                 'facturasRectificativas' => $facturasRectificativas,
-                
+
             ];
-            
+
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf4-component', $datos)->setPaper('a4', 'vertical');
             $pdf->render();
@@ -1092,16 +1081,13 @@ public function getIva($facturaId){
             });
 
             return response()->streamDownload(
-                fn () => print($pdf->output()),
+                fn() => print($pdf->output()),
                 // "factura_{$factura->numero_factura}.pdf");
                 "{$facturasRectificativas[0]->numero_factura}.pdf"
             );
-
-
         } else {
             return redirect('admin/facturas');
         }
-
     }
 
 
@@ -1115,10 +1101,10 @@ public function getIva($facturaId){
         $facturaRectificativa = Facturas::where('factura_id', $facturaId)->get();
 
         return count($facturaRectificativa) > 0;
-       
     }
 
-    public function enviarRecordatorio($id, $tipo){
+    public function enviarRecordatorio($id, $tipo)
+    {
 
 
         $iva = true;
@@ -1126,7 +1112,7 @@ public function getIva($facturaId){
         $configuracion = Configuracion::first();
 
         $facturasRectificativas = Facturas::where('factura_id', $id)->get();
-        if($facturasRectificativas->count() > 0){
+        if ($facturasRectificativas->count() > 0) {
 
             if ($factura != null) {
                 $pedido = Pedido::find($factura->pedido_id);
@@ -1138,16 +1124,16 @@ public function getIva($facturaId){
                 //     }
                 // }
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
                     $iva = false;
                 }
 
-                    
+
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
-               
+
                 //dd($albaran);
-               
+
                 if (isset($pedido)) {
                     $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                     // Preparar los datos de los productos del pedido
@@ -1182,21 +1168,21 @@ public function getIva($facturaId){
                     }
                 }
                 $arrProductosFactura = [];
-                
-                foreach ($facturasRectificativas as $facturaRectificativa){
+
+                foreach ($facturasRectificativas as $facturaRectificativa) {
                     $productosdeFactura = [];
                     $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
-    
-                    foreach($productosFactura as $productoPedido){
+
+                    foreach ($productosFactura as $productoPedido) {
                         $producto = Productos::find($productoPedido->producto_id);
                         $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-    
+
                         if ($stockEntrante) {
                             $lote = $stockEntrante->orden_numero;
                         } else {
                             $lote = "";
                         }
-    
+
                         if ($producto) {
                             if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
                                 $peso = "Peso no definido";
@@ -1208,42 +1194,38 @@ public function getIva($facturaId){
                                 'nombre' => $producto->nombre,
                                 'cantidad' => $productoPedido->cantidad,
                                 'precio_ud' => $productoPedido->precio_ud,
-                                'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
-                                'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                                'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                                'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
                                 'lote_id' => $lote,
                                 'peso_kg' =>  $peso,
                             ];
                         }
-    
                     }
-    
-    
                 }
-    
+
                 $totalRectificado = 0;
                 $base_imponible_rectificado = 0;
                 $iva_productos_rectificado = 0;
-    
+
                 foreach ($arrProductosFactura as $producto) {
                     $base_imponible_rectificado += $producto['precio_total'];
                     $iva_productos_rectificado += $producto['iva'];
-                    
                 }
-    
+
                 $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
                 $total = $factura->total - $totalRectificado;
                 $base_imponible = $factura->precio - $base_imponible_rectificado;
                 $iva_productos = $factura->iva_total_pedido - $iva_productos_rectificado;
-    
-    
+
+
                 //dd($productos);
                 //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
-                foreach($productos as $index => $producto){
-                    foreach($arrProductosFactura as $productoFactura){
-                        if($producto['id'] == $productoFactura['id']){
+                foreach ($productos as $index => $producto) {
+                    foreach ($arrProductosFactura as $productoFactura) {
+                        if ($producto['id'] == $productoFactura['id']) {
                             $productos[$index]['cantidad'] -= $productoFactura['cantidad'];
                             $productos[$index]['precio_total'] -= $productoFactura['precio_total'];
-                            $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100) ;
+                            $productos[$index]['iva'] = $producto['iva'] != 0 ?  (($productos[$index]['precio_total']) * $producto['iva'] / 100) : (($productos[$index]['precio_total']) * 21 / 100);
                             //dd($producto['cantidad']);
                         }
                     }
@@ -1268,13 +1250,13 @@ public function getIva($facturaId){
                     'productosMarketing' => $productosMarketing,
 
                 ];
-                
+
                 // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
                 $pdf = Pdf::loadView('livewire.facturas.pdf2-component', $datos)->setPaper('a4', 'vertical');
                 $pdf->render();
 
                 $totalPages = $pdf->getCanvas()->get_page_count();
-    
+
                 $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
                     $text = "Página $pageNumber de $totalPages";
                     $font = $fontMetrics->getFont('Helvetica', 'normal');
@@ -1284,9 +1266,7 @@ public function getIva($facturaId){
                 });
                 //$pdf->output();
             }
-
-           
-        }else{
+        } else {
 
             if ($factura != null) {
                 $pedido = Pedido::find($factura->pedido_id);
@@ -1299,16 +1279,16 @@ public function getIva($facturaId){
                 //     }
                 // }
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
                     $iva = false;
                 }
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
-                if($factura->tipo == 3){
+                if ($factura->tipo == 3) {
                     $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
                 }
                 //dd($albaran);
-               
+
                 if (isset($pedido)) {
                     $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                     // Preparar los datos de los productos del pedido
@@ -1346,7 +1326,7 @@ public function getIva($facturaId){
                 foreach ($productosFactura as $productoPedido) {
                     $producto = Productos::find($productoPedido->producto_id);
                     $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-                   
+
                     if ($stockEntrante) {
                         $lote = $stockEntrante->orden_numero;
                     } else {
@@ -1362,8 +1342,8 @@ public function getIva($facturaId){
                             'nombre' => $producto->nombre,
                             'cantidad' => $productoPedido->cantidad,
                             'precio_ud' => $productoPedido->precio_ud,
-                            'precio_total' =>  ($productoPedido->cantidad * $productoPedido->precio_ud),
-                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100) ,
+                            'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                            'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
                             'lote_id' => $lote,
                             'peso_kg' =>  $peso,
                         ];
@@ -1373,14 +1353,13 @@ public function getIva($facturaId){
                 $base_imponible = 0;
                 $iva_productos = 0;
                 //$iva = true;
-                if ($factura->tipo == 2){
-                    
+                if ($factura->tipo == 2) {
+
                     foreach ($productosdeFactura as $producto) {
                         $base_imponible += $producto['precio_total'];
                         $iva_productos += $producto['iva'];
                     }
                     $total = $base_imponible + $iva_productos;
-    
                 }
                 // if($cliente->delegacion){
 
@@ -1390,7 +1369,7 @@ public function getIva($facturaId){
                 // }
 
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
                     $iva = false;
                 }
 
@@ -1413,67 +1392,66 @@ public function getIva($facturaId){
                     'iva_productos' => $iva_productos,
                     'tipo' => $tipo,
                     'productosMarketing' => $productosMarketing,
-                    
+
                 ];
-    
+
                 $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
                 $pdf->render();
 
-            $totalPages = $pdf->getCanvas()->get_page_count();
+                $totalPages = $pdf->getCanvas()->get_page_count();
 
-            $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
-                $text = "Página $pageNumber de $totalPages";
-                $font = $fontMetrics->getFont('Helvetica', 'normal');
-                $size = 10;
-                $width = $canvas->get_width();
-                $canvas->text($width - 100, 15, $text, $font, $size);
-            });
+                $pdf->getCanvas()->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($totalPages) {
+                    $text = "Página $pageNumber de $totalPages";
+                    $font = $fontMetrics->getFont('Helvetica', 'normal');
+                    $size = 10;
+                    $width = $canvas->get_width();
+                    $canvas->text($width - 100, 15, $text, $font, $size);
+                });
 
-            //$pdf->output();
+                //$pdf->output();
             }
             //dd($cliente->delegacion['COD'] , $iva);
         }
-        if ($factura != null){
-            try{
+        if ($factura != null) {
+            try {
                 //dd($datos);
                 $emailsDireccion = [
                     'Alejandro.martin@serlobo.com',
                     'Sandra.lopez@serlobo.com'
                 ];
-    
+
                 $cliente = Clients::find($factura->cliente_id);
-                if($cliente != null && $cliente->comercial_id != null){
+                if ($cliente != null && $cliente->comercial_id != null) {
                     $comercial = User::find($cliente->comercial_id);
-                    if($comercial != null && $comercial->email != null){
+                    if ($comercial != null && $comercial->email != null) {
                         $emailsDireccion[] = $comercial->email;
                     }
                 }
-    
+
                 $this->emailsSeleccionados = Emails::where('cliente_id', $cliente->id)->get();
-    
+
                 $this->emailsSeleccionados = $this->emailsSeleccionados->pluck('email')->toArray();
                 //dd($this->emailsSeleccionados);
-                
-                if(count($this->emailsSeleccionados) > 0){
-                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+
+                if (count($this->emailsSeleccionados) > 0) {
+                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
                     //  Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
-                    foreach($this->emailsSeleccionados as $email){
+                    foreach ($this->emailsSeleccionados as $email) {
                         $registroEmail = new RegistroEmail();
                         $registroEmail->factura_id = $factura->id;
                         $registroEmail->pedido_id = null;
                         $registroEmail->cliente_id = $factura->cliente_id;
                         $registroEmail->email = $email;
                         $registroEmail->user_id = Auth::user()->id;
-                        if($tipo == 'impago'){
+                        if ($tipo == 'impago') {
                             $registroEmail->tipo_id = 5;
-                        }else{
+                        } else {
                             $registroEmail->tipo_id = 6;
                         }
                         $registroEmail->save();
                     }
-    
-                }else{
+                } else {
                     //dd($datos);
                     Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
                     //  Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
@@ -1484,13 +1462,12 @@ public function getIva($facturaId){
                     $registroEmail->cliente_id = $factura->cliente_id;
                     $registroEmail->email = $cliente->email;
                     $registroEmail->user_id = Auth::user()->id;
-                    if($tipo == 'impago'){
+                    if ($tipo == 'impago') {
                         $registroEmail->tipo_id = 5;
-                    }else{
+                    } else {
                         $registroEmail->tipo_id = 6;
                     }
                     $registroEmail->save();
-    
                 }
                 $this->alert('success', '¡Factura enviada por email correctamente!', [
                     'position' => 'center',
@@ -1501,8 +1478,7 @@ public function getIva($facturaId){
                     'confirmButtonText' => 'ok',
                     'timerProgressBar' => true,
                 ]);
-    
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
                 //dd($e);
                 $this->alert('error', '¡No se ha podido enviar la factura por email!', [
                     'position' => 'center',
@@ -1511,7 +1487,6 @@ public function getIva($facturaId){
                 ]);
             }
         }
-  
     }
 
 
@@ -1522,14 +1497,13 @@ public function getIva($facturaId){
         $pedido = Pedido::find($pedidoId);
         if ($pedido) {
 
-            if($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']){
+            if ($pedido->departamento_id == config('app.departamentos_pedidos')['Marketing']['id']) {
                 return true;
             }
-
         }
         return false;
     }
-public function descargarPdfs($id)
+    public function descargarPdfs($id)
     {
 
         $factura = Facturas::find($id);
@@ -1542,8 +1516,8 @@ public function descargarPdfs($id)
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
 
-           
-           
+
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -1577,7 +1551,12 @@ public function descargarPdfs($id)
                 }
             }
 
-         
+            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+            $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
+            if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
+                $iva = false;
+            }
+
             $datos = [
                 'conIva' => $iva,
                 'albaran' => $albaran,
@@ -1587,8 +1566,9 @@ public function descargarPdfs($id)
                 'productos' => $productos,
                 'producto' => $productofact,
                 'configuracion' => $configuracion,
+                'productosMarketing' => $productosMarketing,
             ];
-            
+
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
             $pdf = Pdf::loadView('livewire.facturas.pdf-component', $datos)->setPaper('a4', 'vertical');
             $pdf->render();
@@ -1603,10 +1583,6 @@ public function descargarPdfs($id)
                 $canvas->text($width - 100, 15, $text, $font, $size);
             });
             return $pdf;
-
-
-        } 
+        }
     }
-
-
 }

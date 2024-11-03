@@ -10,11 +10,14 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link @if($activeTab === 'normales') active @endif" id="normales-tab" data-toggle="tab" wire:click="setActiveTab('normales')" type="button" role="tab" aria-controls="normales" aria-selected="{{ $activeTab === 'normales' ? 'true' : 'false' }}">Incidencias</button>
         </li>
-        
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="{{ route('incidencias.todas') }}">Todas</a>
+        </li>
+
     </ul>
 
     <div class="tab-content" id="myTabContent">
-        
+
         <div class="tab-pane fade @if($activeTab === 'pedidos') show active @endif" id="pedidos" role="tabpanel" aria-labelledby="pedidos-tab">
 
             <!-- Sección de Incidencias de Pedidos -->
@@ -92,7 +95,7 @@
                                     <label for="observaciones" class="form-label">Observaciones</label>
                                     <textarea class="form-control" id="observaciones" wire:model="observaciones" required></textarea>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label for="estado" class="form-label">Estado</label>
                                     <select class="form-control" id="estado" wire:model="estado" required>
@@ -394,7 +397,7 @@
             background-color: #c82333;
             color: white;
         }
-    
+
         .observaciones-container {
          position: relative;
          max-height: 400px;
@@ -408,36 +411,36 @@
          margin: 20px 0px;
          resize: vertical; /* Permitir que el usuario cambie el tamaño verticalmente */
      }
-     
+
      .observaciones-container.expanded {
          max-height: 500px; /* Altura expandida cuando se muestra todo */
      }
-     
+
      .observaciones-container p {
          margin: 0;
          margin-bottom: 20px;
          margin-top: 20px;
      }
-     
+
      .scrollbar-custom {
          scrollbar-width: thin;
          scrollbar-color: #888 #f9f9f9;
      }
-     
+
      .observaciones-container::-webkit-scrollbar {
          width: 8px;
      }
-     
+
      .observaciones-container::-webkit-scrollbar-thumb {
-         background-color: #888; 
+         background-color: #888;
          border-radius: 10px;
      }
-     
+
      .observaciones-container::-webkit-scrollbar-thumb:hover {
          background-color: #555;
      }
-     
-     
+
+
      </style>
 </div>
 
@@ -554,7 +557,7 @@
             const p = document.getElementById('pedido-observaciones-' + incidenciaId);
             const button = document.getElementById('pedido-toggle-button-' + incidenciaId);
             const shortText = text.substring(0, 100) + '...';
-    
+
             if (p.classList.contains('expanded')) {
                 p.innerText = shortText;
                 button.innerText = 'Ver más';
@@ -562,7 +565,7 @@
                 p.innerText = text;
                 button.innerText = 'Ver menos';
             }
-            
+
             p.classList.toggle('expanded');
         }
     </script>
@@ -571,7 +574,7 @@
             const p = document.getElementById('observaciones-' + incidenciaId);
             const button = document.getElementById('toggle-button-' + incidenciaId);
             const shortText = text.substring(0, 100) + '...';
-    
+
             if (p.classList.contains('expanded')) {
                 p.innerText = shortText;
                 button.innerText = 'Ver más';
@@ -579,7 +582,7 @@
                 p.innerText = text;
                 button.innerText = 'Ver menos';
             }
-            
+
             p.classList.toggle('expanded');
         }
     </script>

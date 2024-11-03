@@ -11,27 +11,27 @@
     <!-- Barra de filtros -->
     <form action="{{ route('contabilidad.index') }}" method="GET" class="mb-4">
         <div class="row bg-gray p-4 rounded shadow-sm" style="align-items: center;">
-            
+
             <!-- Filtro por Cuenta Contable -->
             <div class="col-md-4 mb-3">
                 <label for="cuentaContable_id" class="form-label">Cuenta contable</label>
                 <select name="cuentaContable_id" class="form-control">
                     <option value="">--- Seleccione una cuenta contable ---</option>
-                    
+
                     <!-- Hacer que los grupos contables sean seleccionables -->
                     @foreach($cuentasContables as $grupo)
                         <option value="{{ $grupo['grupo']->numero }}"
                             {{ request('cuentaContable_id') == "{$grupo['grupo']->numero}" ? 'selected' : '' }}>
                             {{ $grupo['grupo']->numero }}. {{ $grupo['grupo']->nombre }}
                         </option>
-            
+
                         <!-- Hacer que los subgrupos contables sean seleccionables -->
                         @foreach($grupo['subGrupo'] as $subGrupo)
                             <option value="{{ $subGrupo['item']->numero }}"
                                 {{ request('cuentaContable_id') == "{$subGrupo['item']->numero}" ? 'selected' : '' }}>
                                 &nbsp;&nbsp;&nbsp;{{ $subGrupo['item']->numero }}. {{ $subGrupo['item']->nombre }}
                             </option>
-            
+
                             <!-- Listar cuentas y subcuentas -->
                             @foreach($subGrupo['cuentas'] as $cuenta)
                                 <option value="{{ $cuenta['item']['numero'] }}"
@@ -99,43 +99,19 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-4">
-                <h5>Control Presupuestario</h5>
-                <!-- Dropdown Button -->
-                <div class="dropdown">
-                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
-                        Opciones de Presupuestos
-                    </button>
-                    <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.index') }}">General</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas') }}">Ventas</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.compras') }}">Compras</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.logistica') }}">Logistica</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.comerciales') }}">Comerciales</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.marketing') }}">Marketing</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.patrocinios') }}">Patrocinios</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.presupuestos-delegacion') }}">Presupuestos por Delegaciones</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-delegaciones') }}">Ventas por Delegaciones</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-por-productos') }}">Ventas por Productos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-global') }}">Analisis Global Por trimestre</a></li>
-                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-ventas') }}">Analisis Ventas</a></li>
 
-
-                    </ul>
-                </div>
-            </div>
         </div>
     </form>
 
     <div class="d-flex justify-content-center mt-4 mb-5">
         {{ $cajas->appends(request()->query())->appends(['saldo_acumulado' => $saldoAcumulado])->links() }}
     </div>
-    
+
     <!-- Mostrar el saldo acumulado al principio de la tabla -->
     <div class="mt-4 mb-3">
         <h4>Saldo acumulado hasta ahora: {{ number_format($saldoAcumulado, 2) }} €</h4>
     </div>
-    
+
     <table class="table table-striped table-bordered dt-responsive nowrap">
         <thead>
             <tr>

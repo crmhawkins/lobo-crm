@@ -14,14 +14,14 @@
         </div> <!-- end row -->
     </div>
     <!-- end page-title -->
-    
+
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
                 <div class="card-body">
                         <input type="hidden" name="csrf-token" value="{{ csrf_token() }}">
                         <input type="hidden" name="id" value="{{ csrf_token() }}">
-                        
+
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-12">
                                 <h5 class="ms-3"
@@ -37,8 +37,18 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6 invisible">
+                            <div class="form-group col-md-1 invisible">
                                 &nbsp;
+                            </div>
+                            <div class="col-md-5">
+                                <!-- delegacion -->
+                                <label for="example-text-input" class="col-sm-12 col-form-label">Delegación</label>
+                                <select wire:model="delegacion_id" class="form-control select2" id="select2-delegacion">
+                                    <option value="">Selecciona una delegación</option>
+                                    @foreach ($delegaciones as $delegacion)
+                                        <option value="{{ $delegacion->id }}">{{ $delegacion->nombre }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Nombre</label>
@@ -154,8 +164,8 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="form-group row justify-content-center">
                             <div class="col-sm-5">
                                 <label for="example-text-input" class="col-sm-12 col-form-label">Teléfono</label>
@@ -195,7 +205,7 @@
                                 </div>
                             </div>
                         </div>
-                            
+
                 </div>
             </div>
         </div>
@@ -218,11 +228,15 @@
         <script>
             $(document).ready(function() {
             $('.select2').select2();
-            
+
             // Sincronizar Select2 con Livewire
             $('#select2-distribuidor').on('change', function (e) {
                 @this.set('distribuidor_id', e.target.value);
             });
+        });
+
+        $('#select2-delegacion').on('change', function (e) {
+            @this.set('delegacion_id', e.target.value);
         });
 
             $("#alertaGuardar").on("click", () => {

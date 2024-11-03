@@ -22,7 +22,54 @@
                     <p class="sub-title">Listado completo de todas las alertas.</p>
 
                     {{-- Aqui va la tabla de alertas con los campos titulo, descripcion e imagen--}}
+ <!-- Botón para abrir el modal -->
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enviarAlertaModal">
+    Enviar Alerta
+</button>
 
+<!-- Modal para enviar alerta -->
+<div class="modal fade" id="enviarAlertaModal" tabindex="-1" aria-labelledby="enviarAlertaModalLabel" aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="enviarAlertaModalLabel">Enviar Alerta</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form wire:submit.prevent="enviarAlerta">
+                    <div class="mb-3">
+                        <label for="tituloAlerta" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="tituloAlerta" wire:model="titulo" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcionAlerta" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionAlerta" rows="3" wire:model="descripcion" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imagenAlerta" class="form-label">Imagen (opcional)</label>
+                        <input type="file" class="form-control" id="imagenAlerta" wire:model="imagen">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="usuariosAlerta" class="form-label">Enviar a</label>
+                        <select id="usuariosAlerta" class="form-control select2" multiple="multiple" wire:model="usuariosSeleccionados" wire:ignore.self>
+                            @foreach($usuarios as $usuario)
+                                <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Enviar Alerta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
                     <table id="alertasTable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
@@ -42,7 +89,7 @@
                                     <td>{{ $this->getNombreUsuario($alerta->user_id) }}</td>
                                     <td>{{ $alerta->created_at->format('d/m/Y H:i') }}</td>
                                     {{-- Eliminar --}}
-                                    
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -52,7 +99,7 @@
 
                 </div>
             </div>
-        </div>  
+        </div>
 
     </div> <!-- end row -->
     <div id="imageModal" class="image-modal">
@@ -147,5 +194,31 @@
             modal.style.display = "none";
         }
     }
+</script>
+
+<script>
+    document.addEventListener('livewire:load', function () {
+        // Inicializar Select2
+        $('#usuariosAlerta').select2({
+            placeholder: "Seleccionar usuarios",
+            allowClear: true
+        });
+
+        // Escuchar cambios en el selector y sincronizarlos con Livewire
+        $('#usuariosAlerta').on('change', function () {
+            var data = $(this).val();
+            @this.set('usuariosSeleccionados', data);
+        });
+
+        // Actualizar select2 cuando Livewire cambie el estado
+        Livewire.hook('message.processed', () => {
+            $('#usuariosAlerta').select2({
+                placeholder: "Seleccionar usuarios",
+                allowClear: true
+            });
+        });
+
+
+    });
 </script>
 @endsection
