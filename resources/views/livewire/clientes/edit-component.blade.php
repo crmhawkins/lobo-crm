@@ -439,96 +439,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row justify-content-center px-5">
-                            <div class="precioProductoClientes">
-                                @foreach ($productos as $producto)
-
-
-                                    <div >
-                                        <label for="example-text-input" class="col-sm-12 col-form-label">{{ $producto->nombre }}</label>
-                                        <div class="col-sm-12">
-                                            <input type="number" step=".01" wire:model="arrProductos.{{ $producto->id }}" class="form-control" name="{{ $producto->nombre }}"
-                                                id="{{ $producto->nombre }}" placeholder="8.34" @if(!$canEdit) disabled @endif>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        {{-- <div class="form-group row justify-content-center">
-                            <div class="col-sm-2">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Cremas</label>
-                                <div class="col-sm-12">
-                                    <input type="number" step=".01" wire:model="precio_crema" class="form-control" name="precio_crema"
-                                        id="precio_crema" placeholder="8.34">
-                                    @error('precio_crema')
-                                        <span class="text-danger">{{ $message }}</span>
-
-                                        <style>
-                                            .precio_crema {
-                                                color: red;
-                                            }
-                                        </style>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="form-group col-sm-1">
-                                &nbsp;
-                            </div>
-                            <div class="col-sm-2">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 0,7L</label>
-                                <div class="col-sm-12">
-                                    <input type="number" step=".01" wire:model="precio_vodka07l" class="form-control" name="precio_vodka07l"
-                                        id="precio_vodka07l" placeholder="23.50">
-                                    @error('precio_vodka07l')
-                                        <span class="text-danger">{{ $message }}</span>
-
-                                        <style>
-                                            .precio_vodka07l {
-                                                color: red;
-                                            }
-                                        </style>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="form-group col-sm-1">
-                                &nbsp;
-                            </div>
-                            <div class="col-sm-2">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 1,75L</label>
-                                <div class="col-sm-12">
-                                    <input type="number" step=".01" wire:model="precio_vodka175l" class="form-control" name="precio_vodka175l"
-                                        id="precio_vodka175l" placeholder="52.00">
-                                    @error('precio_vodka175l')
-                                        <span class="text-danger">{{ $message }}</span>
-
-                                        <style>
-                                            .precio_vodka175l {
-                                                color: red;
-                                            }
-                                        </style>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="form-group col-sm-1">
-                                &nbsp;
-                            </div>
-                            <div class="col-sm-2">
-                                <label for="example-text-input" class="col-sm-12 col-form-label">Precio Vodka 3L</label>
-                                <div class="col-sm-12">
-                                    <input type="number" step=".01" wire:model="precio_vodka3l" class="form-control" name="precio_vodka3l"
-                                        id="precio_vodka3l" placeholder="135.00">
-                                    @error('precio_vodka3l')
-                                        <span class="text-danger">{{ $message }}</span>
-
-                                        <style>
-                                            .precio_vodka3l {
-                                                color: red;
-                                            }
-                                        </style>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div> --}}
+                        
+                        
 
                         <div wire:ignore.self class="modal fade" id="viewModal" tabindex="-1" role="dialog">
                             <div class="modal-dialog"
@@ -743,6 +655,31 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             }
                                         </style>
                                     @enderror
+                                </div>
+                            </div>
+                            <div class="form-group row justify-content-center px-5">
+                                <div class="">
+                                    <div class="form-group row justify-content-center px-5 row">
+                                        <div class="">
+                                            <div class="row">
+                                                @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
+                                                    <div class="col-12">
+                                                        <h5><strong>{{ $grupo ? $grupo : 'Sin Grupo' }}</strong></h5>
+                                                    </div>
+                                                    @foreach ($productosGrupo->chunk(3) as $chunk)
+                                                        <div class="row">
+                                                            @foreach ($chunk as $producto)
+                                                                <div class="col-md-4">
+                                                                    <strong>{{ $producto->nombre }}</strong>
+                                                                    <input type="number" step=".01" wire:model="arrProductos.{{ $producto->id }}" class="form-control mt-2" name="{{ $producto->nombre }}" id="{{ $producto->nombre }}" placeholder="8.34">
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    @endforeach
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

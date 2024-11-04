@@ -66,7 +66,12 @@ class CreateRectificativa extends Component
     {
 
         $this->facturas = Facturas::where('tipo', null)->get();
-        $this->productos = Productos::all();
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
         $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
         if ($lastInvoice) {

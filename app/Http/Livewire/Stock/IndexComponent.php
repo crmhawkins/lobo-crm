@@ -33,7 +33,12 @@ class IndexComponent extends Component
         $this->producto_seleccionado = session('stock_filtro_producto_seleccionado', 0);
     
         $this->almacenes = Almacen::all();
-        $this->productos = Productos::all();
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();
     
         $this->setLotes();
     }

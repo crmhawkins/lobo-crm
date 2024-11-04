@@ -46,8 +46,13 @@ class CreateComponent extends Component
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 0;
         $this->qr_id = $this->identificador;
-        $this->productos = Productos::all();
-        $this->almacenes = Almacen::all();
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();       
+         $this->almacenes = Almacen::all();
         $user = Auth::user();
         $this->almacen_id = $user->almacen_id;
     }

@@ -84,8 +84,18 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                         <label for="fechaVencimiento">Producto</label>
                         <select class="form-control" name="producto" id="select2-producto">
                             <option value="0">Mostrar todo</option>
-                            @foreach ($productos as $presup)
-                            <option value="{{ $presup->id }}">{{ $presup->nombre }}</option>
+                            @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
+                                @if ($grupo)
+                                    <optgroup label="{{ $grupo }}">
+                                        @foreach ($productosGrupo as $producto)
+                                            <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @else
+                                    @foreach ($productosGrupo as $producto)
+                                        <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                    @endforeach
+                                @endif
                             @endforeach
                         </select>
                     </div>

@@ -50,7 +50,12 @@ class CreateComponent extends Component
         $this->estado = 0;
         $this->almacenes = Almacen::all();
         $this->mercaderias = Mercaderia::all();
-        $this->productos = Productos::all();
+        $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
+        ->orderBy('orden', 'asc')  // Ordenar primero por orden
+        ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
+        ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
+        ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
+        ->get();
         $this->ordenes_mercaderias = OrdenProduccion::all();
         //$this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
         //$this->numero debe de ser el numero siguiente del ultimo orden de produccion. Es decir, hay que coger el ultimo orden de produccion y sumarle 1. Teniendo en cuenta que el numero tiene este formato: 24/0001 teniendo en cuenta que 24 hace referencia al año actual y 0001 hace referencia al numero de orden de produccion.

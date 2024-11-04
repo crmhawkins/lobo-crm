@@ -173,9 +173,18 @@
                                                 wire:model="producto_seleccionado" style="width: 100% !important">
                                                 <option value="{{ null }}">-- Selecciona un producto --
                                                 </option>
-                                                @foreach ($productos as $presup)
-                                                    <option value="{{ $presup->id }}">{{ $presup->nombre }}
-                                                    </option>
+                                                @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
+                                                    @if ($grupo)
+                                                        <optgroup label="{{ $grupo }}">
+                                                            @foreach ($productosGrupo as $producto)
+                                                                <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @else
+                                                        @foreach ($productosGrupo as $producto)
+                                                            <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                                                        @endforeach
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>
