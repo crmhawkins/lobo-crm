@@ -146,6 +146,7 @@ class IndexComponent extends Component
 
 
             }catch (\Exception $e) {
+                //dd($e);
             }
            
 
