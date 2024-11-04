@@ -65,10 +65,13 @@ class Historial extends Component
     if($this->isEntrada){
         //dd('Entrada');
         $this->setLotes();
-        //dd($this->producto_lotes);
-        $arrayProductosLotes = [];
+        // //dd($this->producto_lotes);
+         $arrayProductosLotes = [];
+         $this->producto_lotes = $this->producto_lotes->sortBy('created_at');
         foreach ($this->producto_lotes as $loteIndex => $lote) {
-           
+            if ($lote->created_at == null) continue;
+            if($lote->created_at->year != $this->anio) continue;
+            if($lote->created_at->month != $this->mes) continue;
             if($lote->stockEntrante == null) {
                 //dd($lote);
                 $qr = stock::where('id', $lote->stock_id)->first() ?  stock::where('id', $lote->stock_id)->first()->qr_id : 'No asignado';
@@ -103,18 +106,156 @@ class Historial extends Component
 
         $this->producto_lotes = $arrayProductosLotes;
 
+        // $query = StockRegistro::with('stockEntrante')->where('motivo', 'Entrada');
+        // if ($this->producto_id != 0) {
+        //     $query->whereHas('stockEntrante', function ($q) {
+        //         $q->where('producto_id', $this->producto_id);
+        //     });
+        // }
+
+        // if ($this->almacen_id != 0) {
+        //     $query->whereHas('stockEntrante', function ($q) {
+        //         $q->where('almacen_id', $this->almacen_id);
+        //     });
+        // }
+
+        // // Aplicar filtro por mes y año
+        // $query->whereYear('created_at', $this->anio);
+        // $this->mes = 10;
+        // if ($this->mes != 0) {
+        //     $query->whereMonth('created_at', $this->mes);
+        // }
+        // //dd($query->get());
+
+        // $this->producto_lotes = $query->get();
+
+        // $this->filters();
+
     } else {
 
+        // $this->allData = collect([]);
+
+        // $stocks = Stock::with([
+        //     'entrantes',
+            
+        // ])->get();
+
+        
+
+        // // Unificar los datos para la vista
+        // foreach ($stocks as $stock) {
+
+        //     // Si stock entrantes esta vacío, continúa
+        //     if($stock->entrantes == null) continue;
+
+        //     foreach ($stock->entrantes as $stockEntrante) {
+        //         foreach ($stock->entrantes->salidas as $salida) {
+        //             if(count($stock->entrantes->salidas) == 0) continue;
+
+        //             // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
+        //             if($this->allData->contains('id_salida', $salida->id)) continue;
+        //             $this->allData->push([
+        //                 'id_salida' => $salida->id,
+        //                 'interno' => $salida->stock_entrante_id,
+        //                 'lote_id' => $stock->entrantes->lote_id,
+        //                 'orden_numero' => $stock->entrantes->orden_numero,
+        //                 'almacen' => $this->getAlmacen($salida->almacen_origen_id) ?? 'Almacen no asignado',
+        //                 'producto' => $this->getProducto($salida->producto_id),
+        //                 'fecha' => Carbon::parse($salida->fecha_salida)->format('d/m/Y'),
+        //                 'order_date' => Carbon::parse($salida->fecha_salida)->format('Ymd'),
+        //                 'cantidad' => $salida->cantidad_salida,
+        //                 'cajas' => floor($salida->cantidad_salida / $this->getUnidadeCaja($salida->producto_id)),
+        //                 'tipo' => $salida->pedido_id ? 'Venta' : 'Salida',
+        //                 'created_at' => $salida->created_at,
+        //                 'pedido_id' => $salida->pedido_id ?? '',
+        //                 'qr' => $stock->qr_id,
+        //             ]);
+        //         }
+
+        //         foreach ($stock->modificaciones as $modificacion) {
+
+        //             // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
+        //             if($this->allData->contains('id_modificacion', $modificacion->id)) continue;
+
+        //             // Si la modificación es tipo 'Suma', no la meto
+        //             if($modificacion->tipo == 'Suma') continue;
+
+        //             $this->allData->push([
+        //                 'id_modificacion' => $modificacion->id,
+        //                 'interno' => $modificacion->stock_id,
+        //                 'lote_id' => $stock->entrantes->lote_id,
+        //                 'orden_numero' => $stock->entrantes->orden_numero,
+        //                 'almacen' => $modificacion->almacen_id ? $this->getAlmacen($modificacion->almacen_id) : "Almacén no asignado.",
+        //                 'producto' => $this->getProducto($stock->entrantes->producto_id),
+        //                 'fecha' => Carbon::parse($modificacion->fecha)->format('d/m/Y'),
+        //                 'order_date' => Carbon::parse($modificacion->fecha)->format('Ymd'),
+        //                 'cantidad' => $modificacion->cantidad,
+        //                 'cajas' => floor($modificacion->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
+        //                 'tipo' => 'Modificación',
+        //                 'created_at' => $modificacion->created_at,
+        //                 'pedido_id' => '-',
+        //                 'qr' => $stock->qr_id,
+        //             ]);
+        //         }
+
+        //         foreach ($stock->roturas as $rotura) {
+
+        //             // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
+        //             if($this->allData->contains('id_rotura', $rotura->id)) continue;
+
+        //             $this->allData->push([
+        //                 'id_rotura' => $rotura->id,
+        //                 'interno' => $rotura->stock_id,
+        //                 'lote_id' => $stock->entrantes->lote_id,
+        //                 'orden_numero' => $stock->entrantes->orden_numero,
+        //                 'almacen' => $rotura->almacen_id ? $this->getAlmacen($rotura->almacen_id) : "Almacén no asignado.",
+        //                 'producto' => $this->getProducto($stock->entrantes->producto_id),
+        //                 'fecha' => Carbon::parse($rotura->fecha)->format('d/m/Y'),
+        //                 'order_date' => Carbon::parse($rotura->fecha)->format('Ymd'),
+        //                 'cantidad' => $rotura->cantidad,
+        //                 'cajas' => floor($rotura->cantidad / $this->getUnidadeCaja($stock->entrantes->producto_id)),
+        //                 'tipo' => 'Rotura',
+        //                 'created_at' => $rotura->created_at,
+        //                 'pedido_id' => '-',
+        //                 'qr' => $stock->qr_id,
+        //             ]);
+        //         }
+        //     }
+        // }
+      
+        // // Ordenar todos los datos por created_at
+        // $this->allData = $this->allData->sortBy('created_at');
+        // $this->producto_lotes = $this->allData;
+        // $this->filters();        
+
+        $query = Stock::with(['entrantes', 'entrantes.salidas', 'modificaciones', 'roturas']);
+        //$this->mes = 1;
+        // Aplicar filtro de mes y año para las salidas
+        $query->whereHas('entrantes.salidas', function ($q) {
+            $q->whereYear('fecha_salida', $this->anio);
+            if ($this->mes != 0) {
+                $q->whereMonth('fecha_salida', $this->mes);
+            }
+        });
+
+
+        if ($this->producto_id != 0) {
+            $query->whereHas('entrantes.salidas', function ($q) {
+                $q->where('producto_id', $this->producto_id);
+            });
+        }
+
+        if ($this->almacen_id != 0) {
+            $query->whereHas('entrantes.salidas', function ($q) {
+                $q->where('almacen_origen_id', $this->almacen_id);
+            });
+        }
+
+        // Obtener los resultados y procesar la data unificada
+        $stocks = $query->get();
+        //dd($stocks);
         $this->allData = collect([]);
 
-        $stocks = Stock::with([
-            'entrantes',
-            'entrantes.salidas',
-            'modificaciones',
-            'roturas'
-        ])->get();
-
-        // Unificar los datos para la vista
         foreach ($stocks as $stock) {
 
             // Si stock entrantes esta vacío, continúa
@@ -194,11 +335,9 @@ class Historial extends Component
                 }
             }
         }
-      
-        // Ordenar todos los datos por created_at
+
         $this->allData = $this->allData->sortBy('created_at');
         $this->producto_lotes = $this->allData;
-        $this->filters();        
 
     }
     
@@ -296,6 +435,8 @@ class Historial extends Component
 
                 $this->producto_lotes = StockRegistro::with('stockEntrante')
                 ->where('motivo', 'Entrada')
+                ->whereYear('created_at', $this->anio)
+                ->whereMonth('created_at', $this->mes)
                 ->get();
 
                 //a productos lotes debo añadirle los stockEntrantes que no esten en StockRegistro
@@ -310,6 +451,8 @@ class Historial extends Component
                     $query->where('producto_id', $this->producto_seleccionado);
                 }])
                 ->where('motivo', 'Entrada')
+                ->whereYear('created_at', $this->anio)
+                ->whereMonth('created_at', $this->mes)
                 ->get();
 
                 //a productos lotes debo añadirle los stockEntrantes que no esten en StockRegistro
@@ -324,6 +467,8 @@ class Historial extends Component
 
                 $this->producto_lotes = StockRegistro::with('stockEntrante')
                 ->where('motivo', 'Entrada')
+                ->whereYear('created_at', $this->anio)
+                ->whereMonth('created_at', $this->mes)
                 ->get();
 
 
@@ -346,6 +491,8 @@ class Historial extends Component
                     $query->where('producto_id', $this->producto_seleccionado);
                 }])
                 ->where('motivo', 'Entrada')
+                ->whereYear('created_at', $this->anio)
+                ->whereMonth('created_at', $this->mes)
                 ->get();
 
                 $this->producto_lotes = $this->producto_lotes->filter(function ($value, $key) {
@@ -405,7 +552,10 @@ class Historial extends Component
     public function updated($field)
     {
         if($field == 'almacen_id' || $field == 'producto_id' || $field == 'tipo' || $field == 'mes' || $field == 'anio' || $field == 'comercial_id' || $field == 'delegacion_id'){
-            $this->filters();
+            $this->mount();
+            if(!$this->isEntrada){
+                $this->filters();
+            }
         }
 
         if($field == 'isEntrada' && !($this->isEntrada)){
@@ -413,6 +563,8 @@ class Historial extends Component
             $this->filters();
         }else if($field == 'isEntrada' && $this->isEntrada){
             $this->mount();
+            $this->filters();
+
         }
 
     }
