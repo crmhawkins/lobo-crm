@@ -71,7 +71,7 @@ class IndexComponent extends Component
         $this->comercialSeleccionadoId = session('factura_filtro_comercialSeleccionadoId', -1);
         $this->estadoSeleccionado = session('factura_filtro_estadoSeleccionado', -1);
         $this->clienteSeleccionadoId = session('factura_filtro_clienteSeleccionadoId', -1);
-        $this->fecha_min = session('factura_filtro_fecha_min', null);
+        $this->fecha_min = session('factura_filtro_fecha_min', now()->startOfMonth()->toDateString()); // Establecer al primer día del mes actual
         $this->fecha_max = session('factura_filtro_fecha_max', null);
 
         $this->pedidos = Pedido::all();
