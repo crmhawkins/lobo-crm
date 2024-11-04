@@ -265,6 +265,10 @@ class Historial extends Component
                 foreach ($stock->entrantes->salidas as $salida) {
                     if(count($stock->entrantes->salidas) == 0) continue;
 
+                    if($salida->created_at == null) continue;
+                    if($salida->created_at->year != $this->anio) continue;
+                    if($salida->created_at->month != $this->mes) continue;
+
                     // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
                     if($this->allData->contains('id_salida', $salida->id)) continue;
                     $this->allData->push([
@@ -289,6 +293,9 @@ class Historial extends Component
 
                     // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
                     if($this->allData->contains('id_modificacion', $modificacion->id)) continue;
+                    if($modificacion->created_at == null) continue;
+                    if($modificacion->created_at->year != $this->anio) continue;
+                    if($modificacion->created_at->month != $this->mes) continue;
 
                     // Si la modificación es tipo 'Suma', no la meto
                     if($modificacion->tipo == 'Suma') continue;
@@ -315,6 +322,9 @@ class Historial extends Component
 
                     // Antes de meterlo, comprueba si el id ya está en el array, y si lo está, no lo meto.
                     if($this->allData->contains('id_rotura', $rotura->id)) continue;
+                    if($rotura->created_at == null) continue;
+                    if($rotura->created_at->year != $this->anio) continue;
+                    if($rotura->created_at->month != $this->mes) continue;
 
                     $this->allData->push([
                         'id_rotura' => $rotura->id,
@@ -553,17 +563,17 @@ class Historial extends Component
     {
         if($field == 'almacen_id' || $field == 'producto_id' || $field == 'tipo' || $field == 'mes' || $field == 'anio' || $field == 'comercial_id' || $field == 'delegacion_id'){
             $this->mount();
-            if(!$this->isEntrada){
-                $this->filters();
-            }
+            // if(!$this->isEntrada){
+            //     $this->filters();
+            // }
         }
 
         if($field == 'isEntrada' && !($this->isEntrada)){
             $this->mount();
-            $this->filters();
+            // $this->filters();
         }else if($field == 'isEntrada' && $this->isEntrada){
             $this->mount();
-            $this->filters();
+            // $this->filters();
 
         }
 
