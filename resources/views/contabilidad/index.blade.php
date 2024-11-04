@@ -2,7 +2,9 @@
 
 @section('title', 'Contabilidad')
 
+
 @section('content-principal')
+<link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
 
 <div class="container-fluid">
     <h1>Libro Mayor</h1>
@@ -112,67 +114,91 @@
         <h4>Saldo acumulado hasta ahora: {{ number_format($saldoAcumulado, 2) }} €</h4>
     </div>
 
-    <table class="table table-striped table-bordered dt-responsive nowrap">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Debe</th>
-                <th>Haber</th>
-                <th>Saldo</th>
-                <th>Proveedor/Cliente</th>
-                <th>Número de Cuenta Contable</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-    // Iniciar el saldo con el saldo acumulado hasta antes de la página actual
-                $saldo = $saldoAcumulado ?? 0;
-            @endphp
-
-            @foreach($cajas as $caja)
-                @php
-                    // Ajusta el saldo según el tipo de movimiento
-                    if ($caja->tipo_movimiento == 'Ingreso') {
-                        $saldo += $caja->importe; // Debe (Ingreso)
-                    } else {
-                        $saldo -= $caja->importe; // Haber (Gasto)
-                    }
-                @endphp
+    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+        $('#dataTable-buttons').DataTable({
+            responsive: true,
+            lengthChange: false,
+            pageLength: 30,
+            dom: 'Bfrtip',
+            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            language: {
+                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                'zeroRecords': 'No se encontraron registros',
+                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                'infoEmpty': 'No hay registros disponibles',
+                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                'search': 'Buscar:',
+            }
+        });
+    })">
+        <table id="dataTable-buttons" class="table table-striped table-bordered dt-responsive nowrap">
+            <thead>
                 <tr>
-                    <td>{{ $caja->fecha }}</td>
-                    <td>{{ $caja->descripcion }}</td>
-                    <td>{{ $caja->tipo_movimiento == 'Ingreso' ? number_format($caja->importe, 2) : '' }}</td>
-                    <td>{{ $caja->tipo_movimiento == 'Gasto' ? number_format($caja->total, 2) : '' }}</td>
-                    <td>{{ number_format($saldo, 2) }}</td>
-                    <td>
-                        @if($caja->proveedor)
-                            {{ $caja->proveedor->nombre }}
-                        @elseif( $caja->gasto_id)
-                            {{ $caja->gasto->proveedor->nombre }}
-                        @else
-                            {{ $caja->facturas->first()->cliente->nombre ?? '' }}
-                        @endif
-                    </td>
-                    <td>
-                        @if($caja->proveedor && $caja->proveedor->cuentaContable)
-                            {{ $caja->proveedor->cuentaContable->numero }}
-                        @elseif($caja->gasto_id && $caja->gasto->proveedor && $caja->gasto->proveedor->cuentaContable)
-                            {{ $caja->gasto->proveedor->cuentaContable->numero }}
-                        @elseif($caja->facturas->first() && $caja->facturas->first()->cliente->cuentaContable)
-                            {{ $caja->facturas->first()->cliente->cuentaContable->numero }}
-                        @endif
-                    </td>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Debe</th>
+                    <th>Haber</th>
+                    <th>Saldo</th>
+                    <th>Proveedor/Cliente</th>
+                    <th>Número de Cuenta Contable</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @php
+                // Iniciar el saldo con el saldo acumulado hasta antes de la página actual
+                $saldo = $saldoAcumulado ?? 0;
+                @endphp
+
+                @foreach($cajas as $caja)
+                    @php
+                        // Ajusta el saldo según el tipo de movimiento
+                        if ($caja->tipo_movimiento == 'Ingreso') {
+                            $saldo += $caja->importe; // Debe (Ingreso)
+                        } else {
+                            $saldo -= $caja->importe; // Haber (Gasto)
+                        }
+                    @endphp
+                    <tr>
+                        <td>{{ $caja->fecha }}</td>
+                        <td>{{ $caja->descripcion }}</td>
+                        <td>{{ $caja->tipo_movimiento == 'Ingreso' ? number_format($caja->importe, 2) : '' }}</td>
+                        <td>{{ $caja->tipo_movimiento == 'Gasto' ? number_format($caja->total, 2) : '' }}</td>
+                        <td>{{ number_format($saldo, 2) }}</td>
+                        <td>
+                            @if($caja->proveedor)
+                                {{ $caja->proveedor->nombre }}
+                            @elseif( $caja->gasto_id)
+                                {{ $caja->gasto->proveedor->nombre }}
+                            @else
+                                {{ $caja->facturas->first()->cliente->nombre ?? '' }}
+                            @endif
+                        </td>
+                        <td>
+                            @if($caja->proveedor && $caja->proveedor->cuentaContable)
+                                {{ $caja->proveedor->cuentaContable->numero }}
+                            @elseif($caja->gasto_id && $caja->gasto->proveedor && $caja->gasto->proveedor->cuentaContable)
+                                {{ $caja->gasto->proveedor->cuentaContable->numero }}
+                            @elseif($caja->facturas->first() && $caja->facturas->first()->cliente->cuentaContable)
+                                {{ $caja->facturas->first()->cliente->cuentaContable->numero }}
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     <!-- Paginación -->
     <div class="d-flex justify-content-center mt-4 mb-5">
         {{ $cajas->appends(request()->query())->links() }}
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+
+
+@endsection
+@section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 @endsection

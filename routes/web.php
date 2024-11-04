@@ -105,9 +105,9 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/productos-pedido-create', [ProductosPedidoController::class, 'create'])->name('productos-pedido.create');
     Route::get('/productos-pedido-edit/{id}', [ProductosPedidoController::class, 'edit'])->name('productos-pedido.edit');
 
-    Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('productos-pedido.index');
-    Route::get('/contabilidad-create', [ContabilidadController::class, 'create'])->name('productos-pedido.create');
-    Route::get('/contabilidad-edit/{id}', [ContabilidadController::class, 'edit'])->name('productos-pedido.edit');
+    Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
+    Route::get('/contabilidad-create', [ContabilidadController::class, 'create'])->name('contabilidad.create');
+    Route::get('/contabilidad-edit/{id}', [ContabilidadController::class, 'edit'])->name('contabilidad.edit');
 
     Route::get('/produccion', [ProduccionController::class, 'index'])->name('produccion.index');
     Route::get('/produccion-create', [ProduccionController::class, 'create'])->name('produccion.create');
