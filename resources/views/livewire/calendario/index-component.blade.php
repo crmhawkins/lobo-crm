@@ -5,6 +5,28 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" />
 
+    <style>
+        .toastui-calendar-popup-section.toastui-calendar-dropdown-section.toastui-calendar-state-section{
+            display: none;
+        }
+        .toastui-calendar-popup-section-item.toastui-calendar-popup-section-private.toastui-calendar-popup-button{
+            display: none;
+        }
+        .toastui-calendar-ic-location-b,
+        .toastui-calendar-icon.toastui-calendar-ic-location {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 512'%3E%3Cpath fill='%23000000' d='M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z'/%3E%3C/svg%3E");
+            
+        }
+
+        .toastui-calendar-detail-item.toastui-calendar-detail-item-indent,
+        .toastui-calendar-icon.toastui-calendar-ic-state-b,
+        .toastui-calendar-template-popupDetailState
+        {
+            display: none;
+        }
+
+    </style>
+
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
