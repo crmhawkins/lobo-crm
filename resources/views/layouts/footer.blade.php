@@ -254,6 +254,7 @@
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.marketing') }}">Marketing</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.patrocinios') }}">Patrocinios</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.presupuestos-delegacion') }}">Presupuestos por Delegaciones</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.proyeccion') }}">Proyección</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-delegaciones') }}">Ventas por Delegaciones</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-por-productos') }}">Ventas por Productos</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-global') }}">Analisis Global Por trimestre</a></li>
@@ -1935,6 +1936,7 @@
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.marketing') }}">Marketing</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.patrocinios') }}">Patrocinios</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.presupuestos-delegacion') }}">Presupuestos por Delegaciones</a></li>
+                        <li><a class="dropdown-item" href="{{ route('control-presupuestario.proyeccion') }}">Proyección</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-delegaciones') }}">Ventas por Delegaciones</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.ventas-por-productos') }}">Ventas por Productos</a></li>
                         <li><a class="dropdown-item" href="{{ route('control-presupuestario.analisis-global') }}">Analisis Global Por trimestre</a></li>

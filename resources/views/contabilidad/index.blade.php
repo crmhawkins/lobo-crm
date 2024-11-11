@@ -89,7 +89,7 @@
                 <h5>Contabilidad</h5>
                 <!-- Dropdown Button -->
                 <div class="dropdown">
-                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-toggle="dropdown" aria-expanded="false">
                         Opciones de Contabilidad
                     </button>
                     <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
