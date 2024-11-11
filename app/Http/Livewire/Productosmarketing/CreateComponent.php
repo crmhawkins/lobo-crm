@@ -38,7 +38,7 @@ class CreateComponent extends Component
         $validatedData = $this->validate(
             [
                 'nombre' => 'required|string|max:255',
-                'description' => 'nullable|string|max:1000',
+                'descripcion' => 'nullable|string|max:1000',
                 'materiales' => 'nullable|string|max:1000',
                 'peso_neto_unidad' => 'nullable|numeric|min:0',
                 'unidades_por_caja' => 'nullable|integer|min:1',
