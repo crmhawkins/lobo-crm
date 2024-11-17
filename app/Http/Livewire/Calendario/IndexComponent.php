@@ -24,6 +24,8 @@ class IndexComponent extends Component
     public $imagen;
     public $usuariosSeleccionados = []; // Aquí se almacenan los usuarios seleccionados
     public $usuarios;
+    public $userRole;
+
     public function getListeners()
     {
         return [
@@ -78,6 +80,7 @@ class IndexComponent extends Component
     public function mount()
     {
         $this->usuarios = User::all(); // Obtener todos los usuarios para el selector
+        $this->userRole = auth()->user()->role; // Obtener el rol del usuario autenticado
 
         // Simulación de calendarios (usuarios)
         $this->calendars = [
@@ -135,6 +138,45 @@ class IndexComponent extends Component
             return redirect()->to(request()->header('Referer'));
         } catch (\Exception $e) {
             $this->alert('error', 'Error al eliminar el evento', [
+                'position' => 'center',
+                'timer' => 1000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+        }
+    }
+
+    public function actualizarEvento($eventId, $title, $location)
+    {
+        if ($this->userRole != 1) {
+            $this->alert('error', 'No tienes permiso para editar este evento', [
+                'position' => 'center',
+                'timer' => 1000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+            return;
+        }
+
+        try {
+            $event = Event::findOrFail($eventId);
+            $event->title = $title;
+            $event->location = $location;
+            $event->save();
+
+            $this->alert('success', 'Evento actualizado correctamente', [
+                'position' => 'center',
+                'timer' => 1000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+
+            return redirect()->to(request()->header('Referer'));
+        } catch (\Exception $e) {
+            $this->alert('error', 'Error al actualizar el evento', [
                 'position' => 'center',
                 'timer' => 1000,
                 'toast' => false,

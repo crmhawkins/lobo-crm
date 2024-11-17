@@ -220,26 +220,40 @@
                 var fechaFin = new Date(eventData.end).toLocaleDateString('es-ES', opcionesFecha);
                 var horaFin = new Date(eventData.end).toLocaleTimeString('es-ES', opcionesHora);
 
-                // Determinar si las fechas son iguales
                 var fechaTexto = fechaInicio === fechaFin
                     ? `${fechaInicio} de ${horaInicio} a ${horaFin}`
                     : `De ${fechaInicio} a las ${horaInicio} hasta ${fechaFin} a las ${horaFin}`;
 
-                // Aquí puedes abrir tu modal personalizado
+                // Abrir el modal y rellenar los campos con los datos del evento
                 $('#miModal').modal('show');
-
-                // Puedes actualizar el contenido del modal con los detalles del evento
                 $('#miModal .modal-title').html(`
-                    ${eventData.title}
-                    <small class="text-white d-block ">${fechaTexto}</small>
+                    <input type="text" id="eventTitle" class="form-control" value="${eventData.title}" />
+                    <small class="text-white d-block">${fechaTexto}</small>
                 `);
                 $('#miModal .modal-body').html(`
-                    <p>${eventData.location || 'No disponible'}</p>
-                    <!-- Añadir más detalles si es necesario -->
+                    <input type="text" id="eventLocation" class="form-control" value="${eventData.location || ''}" />
                 `);
 
                 // Guardar el ID del evento en un atributo de datos del botón de eliminación
                 $('#btnEliminarEvento').data('eventId', eventData.id);
+                $('#btnGuardarCambios').data('eventId', eventData.id);
+
+                // Deshabilitar el botón de guardar cambios si el rol no es 1
+                if (@this.userRole != 1) {
+                    $('#btnGuardarCambios').prop('disabled', true);
+                } else {
+                    $('#btnGuardarCambios').prop('disabled', false);
+                }
+            });
+
+            // Función para guardar los cambios del evento
+            $('#btnGuardarCambios').on('click', function () {
+                var eventId = $(this).data('eventId');
+                var updatedTitle = $('#eventTitle').val();
+                var updatedLocation = $('#eventLocation').val();
+
+                @this.actualizarEvento(eventId, updatedTitle, updatedLocation);
+                $('#miModal').modal('hide');
             });
 
             // Función para eliminar el evento usando Livewire
@@ -266,7 +280,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" id="btnEliminarEvento">Eliminar Evento</button>
-                <button type="button" class="btn btn-primary">Guardar Cambios</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarCambios">Guardar Cambios</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
