@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Alertas;
 use Livewire\WithFileUploads; // Importa el trait para manejar archivos
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Illuminate\Support\Facades\Mail;
 
 
 class IndexComponent extends Component
@@ -184,6 +185,25 @@ class IndexComponent extends Component
                 'timerProgressBar' => true,
             ]);
         }
+    }
+
+    public function enviarEmail($userIds, $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $users = User::whereIn('id', $userIds)->get();
+        //dd($users);
+
+        foreach ($users as $user) {
+            Mail::to($user->email)->cc('Alejandro.martin@serlobo.com')->send(new \App\Mail\EventNotification($event));
+        }
+
+        $this->alert('success', 'Emails enviados correctamente', [
+            'position' => 'center',
+            'timer' => 1000,
+            'toast' => false,
+            'showConfirmButton' => false,
+            'timerProgressBar' => true,
+        ]);
     }
 
     public function render()

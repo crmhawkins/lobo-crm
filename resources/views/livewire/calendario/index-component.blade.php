@@ -262,6 +262,38 @@
                 @this.eliminarEvento(eventId);
                 $('#miModal').modal('hide');
             });
+
+            $('#btnMostrarSelector').on('click', function () {
+                $('#userSelector').toggle(); // Mostrar/ocultar el selector de usuarios
+            });
+
+            $('#usuariosEmail').select2({
+                placeholder: "Seleccionar usuarios",
+                allowClear: true
+            });
+
+            $('#btnEnviarEmail').off('click').on('click', function () {
+                var selectedUsers = $('#usuariosEmail').val();
+                var eventId = $('#btnGuardarCambios').data('eventId');
+                console.log(selectedUsers);
+                if (selectedUsers.length > 0) {
+                    @this.enviarEmail(selectedUsers, eventId);
+                    $('#emailModal').modal('hide');
+                } else {
+                    alert('Por favor, selecciona al menos un usuario.');
+                }
+            });
+
+            // Inicializar Select2 para el modal de email
+            $('#usuariosEmail').select2({
+                placeholder: "Seleccionar usuarios",
+                allowClear: true
+            });
+
+            // Mostrar el modal de email al hacer clic en el botón
+            $('#btnMostrarSelector').on('click', function () {
+                $('#emailModal').modal('show');
+            });
         });
     </script>
 
@@ -277,11 +309,46 @@
             </div>
             <div class="modal-body">
                 <!-- Detalles del evento se actualizarán aquí -->
+                <div id="userSelector" style="display: none;">
+                    <label for="usuariosEmail">Seleccionar usuarios para enviar email:</label>
+                    <select id="usuariosEmail" class="form-control" multiple>
+                        @foreach($usuarios as $usuario)
+                            <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" id="btnEliminarEvento">Eliminar Evento</button>
                 <button type="button" class="btn btn-primary" id="btnGuardarCambios">Guardar Cambios</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-info" id="btnMostrarSelector">Seleccionar Usuarios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para seleccionar usuarios y enviar email -->
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="emailModalLabel">Enviar Email a Usuarios</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="usuariosEmail">Seleccionar usuarios para enviar email:</label>
+                <select id="usuariosEmail" class="form-control" multiple>
+                    @foreach($usuarios as $usuario)
+                        <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-info" id="btnEnviarEmail">Enviar Email</button>
             </div>
         </div>
     </div>
