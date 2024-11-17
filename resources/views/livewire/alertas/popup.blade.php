@@ -23,7 +23,7 @@
 
                     {{-- Aqui va la tabla de alertas con los campos titulo, descripcion e imagen--}}
  <!-- Botón para abrir el modal -->
- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#enviarAlertaModal">
+ <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#enviarAlertaModal">
     Enviar Alerta
 </button>
 
@@ -95,7 +95,7 @@
                         </tbody>
                     </table>
 
-
+                    {{ $alertas->links() }}
 
                 </div>
             </div>
