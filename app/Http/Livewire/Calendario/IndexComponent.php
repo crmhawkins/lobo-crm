@@ -116,7 +116,33 @@ class IndexComponent extends Component
         });
     }
 
+    public function eliminarEvento($eventId)
+    {
+        try {
+            $event = Event::findOrFail($eventId);
+            $event->delete();
 
+            // Emitir un evento para notificar que el evento fue eliminado
+            $this->alert('success', 'Evento eliminado correctamente', [
+                'position' => 'center',
+                'timer' => 1000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+
+            // Redirigir a la misma página para recargarla
+            return redirect()->to(request()->header('Referer'));
+        } catch (\Exception $e) {
+            $this->alert('error', 'Error al eliminar el evento', [
+                'position' => 'center',
+                'timer' => 1000,
+                'toast' => false,
+                'showConfirmButton' => false,
+                'timerProgressBar' => true,
+            ]);
+        }
+    }
 
     public function render()
     {

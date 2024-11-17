@@ -15,7 +15,7 @@
         .toastui-calendar-ic-location-b,
         .toastui-calendar-icon.toastui-calendar-ic-location {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 512'%3E%3Cpath fill='%23000000' d='M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z'/%3E%3C/svg%3E");
-            
+
         }
 
         .toastui-calendar-detail-item.toastui-calendar-detail-item-indent,
@@ -24,6 +24,10 @@
         {
             display: none;
         }
+
+        #miModal .modal-title small {
+        color: white;
+    }
 
     </style>
 
@@ -105,7 +109,7 @@
                     daynames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
                 },
                 useFormPopup: true,
-                useDetailPopup: true,
+                useDetailPopup: false,
                 template: {
                     popupIsAllday: () => '¿Todo el día?',
                     popupStateFree: () => 'Libre',
@@ -203,6 +207,70 @@
                 })
                 .catch(error => console.error('Error al eliminar evento:', error));
             });
+
+            // Manejar el clic en un evento para abrir un modal personalizado
+            cal.on('clickEvent', function (event) {
+                var eventData = event.event;
+
+                // Formatear las fechas y horas al español
+                var opcionesFecha = { year: 'numeric', month: 'long', day: 'numeric' };
+                var opcionesHora = { hour: '2-digit', minute: '2-digit' };
+                var fechaInicio = new Date(eventData.start).toLocaleDateString('es-ES', opcionesFecha);
+                var horaInicio = new Date(eventData.start).toLocaleTimeString('es-ES', opcionesHora);
+                var fechaFin = new Date(eventData.end).toLocaleDateString('es-ES', opcionesFecha);
+                var horaFin = new Date(eventData.end).toLocaleTimeString('es-ES', opcionesHora);
+
+                // Determinar si las fechas son iguales
+                var fechaTexto = fechaInicio === fechaFin
+                    ? `${fechaInicio} de ${horaInicio} a ${horaFin}`
+                    : `De ${fechaInicio} a las ${horaInicio} hasta ${fechaFin} a las ${horaFin}`;
+
+                // Aquí puedes abrir tu modal personalizado
+                $('#miModal').modal('show');
+
+                // Puedes actualizar el contenido del modal con los detalles del evento
+                $('#miModal .modal-title').html(`
+                    ${eventData.title}
+                    <small class="text-white d-block ">${fechaTexto}</small>
+                `);
+                $('#miModal .modal-body').html(`
+                    <p>${eventData.location || 'No disponible'}</p>
+                    <!-- Añadir más detalles si es necesario -->
+                `);
+
+                // Guardar el ID del evento en un atributo de datos del botón de eliminación
+                $('#btnEliminarEvento').data('eventId', eventData.id);
+            });
+
+            // Función para eliminar el evento usando Livewire
+            $('#btnEliminarEvento').on('click', function () {
+                var eventId = $(this).data('eventId');
+                @this.eliminarEvento(eventId);
+                $('#miModal').modal('hide');
+            });
         });
     </script>
+
+<!-- Modal personalizado -->
+<div class="modal fade" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="miModalLabel">Detalles del Evento</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Detalles del evento se actualizarán aquí -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnEliminarEvento">Eliminar Evento</button>
+                <button type="button" class="btn btn-primary">Guardar Cambios</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+
