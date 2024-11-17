@@ -11,7 +11,7 @@
             <p class="card-text observaciones" id="observaciones-{{ $incidencia->id }}">
                 {{ Str::limit($incidencia->observaciones, 100) }} <!-- Muestra un límite de 100 caracteres -->
             </p>
-           
+
             @if(strlen($incidencia->observaciones) > 100)
                 <button class="btn btn-link p-0" onclick="toggleObservaciones({{ $incidencia->id }}, `{{ addslashes($incidencia->observaciones) }}`)" id="toggle-button-{{ $incidencia->id }}">
                     Ver más
@@ -29,13 +29,15 @@
         @endif
         <p class="card-text">
             <small class="text-muted">Creado el {{ $incidencia->created_at->format('d-m-Y H:i') }}</small>
-            <br>    
+            <br>
             <small class="text-success">Actualizado el {{ $incidencia->updated_at->format('d-m-Y H:i') }}</small>
         </p>
 
         @if(Auth::user()->isAdmin())
         <button class="btn btn-warning" wire:click="editIncidencia({{ $incidencia->id }})" data-toggle="modal" data-target="#editIncidenciaModal">Editar</button>
-        <button class="btn btn-info" wire:click="deleteIncidencia({{ $incidencia->id }})">Archivar</button>
+        <button class="btn btn-info" wire:click="recordatorioIncidencia({{ $incidencia->id }}, 'normal')">Recordatorio</button>
+        <button class="btn btn-danger mt-2"  wire:click="deleteIncidencia({{ $incidencia->id }})">Archivar</button>
+
         @endif
     </div>
 </div>

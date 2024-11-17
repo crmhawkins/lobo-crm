@@ -12,7 +12,7 @@
             <p class="card-text observaciones" id="pedido-observaciones-{{ $incidencia->id }}">
                 {{ Str::limit($incidencia->observaciones, 100) }} <!-- Muestra un límite de 100 caracteres -->
             </p>
-            
+
             @if(strlen($incidencia->observaciones) > 100)
                 <button class="btn btn-link p-0" onclick="pedidotoggleObservaciones({{ $incidencia->id }}, `{{ addslashes($incidencia->observaciones) }}`)" id="pedido-toggle-button-{{ $incidencia->id }}">
                     Ver más
@@ -41,7 +41,8 @@
         </p>
         @if(Auth::user()->isAdmin())
         <button class="btn btn-warning" wire:click="editPedidoIncidencia({{ $incidencia->id }})" data-toggle="modal" data-target="#editPedidoIncidenciaModal">Editar</button>
-        <button class="btn btn-danger" wire:click="deletePedidoIncidencia({{ $incidencia->id }})">Eliminar</button>
+        <button class="btn btn-info" wire:click="recordatorioIncidencia({{ $incidencia->id }}, 'pedido')">Recordatorio</button>
+        <button class="btn btn-danger mt-2" wire:click="deletePedidoIncidenciaPedido({{ $incidencia->id }})">Archivar</button>
         @endif
     </div>
 </div>

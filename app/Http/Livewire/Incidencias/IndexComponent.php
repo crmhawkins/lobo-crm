@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire\Incidencias;
 
 use App\Models\Incidencias;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Alertas;
 use App\Mail\IncidenciaAsignadaMail;
 use App\Mail\CambioEstadoIncidenciaMail;
+use App\Mail\RecordatorioIncidenciaMail;
 
 use Illuminate\Support\Facades\Mail;
 
@@ -33,13 +35,13 @@ class IndexComponent extends Component
     public $activeTab = 'normales';  // Nueva propiedad para la pestaña activa
     public $notas; // Nuevo campo para notas
 
- // Método para cambiar la pestaña activa
- public function setActiveTab($tab)
- {
-     $this->activeTab = $tab;
- }
+    // Método para cambiar la pestaña activa
+    public function setActiveTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
     public function mount()
-    {   
+    {
         $this->users = User::orderBy('name')->get();
         $this->pedidos = Pedido::all();
         $this->loadIncidencias();
@@ -47,7 +49,7 @@ class IndexComponent extends Component
 
     public function loadIncidencias()
     {
-        if(Auth::user()->isAdmin()){
+        if (Auth::user()->isAdmin()) {
             // Cargar todas las incidencias normales
             $this->incidencias = Incidencias::orderBy('estado')
                 ->orderBy('created_at', 'desc')
@@ -57,7 +59,7 @@ class IndexComponent extends Component
             $this->pedidosIncidencias = PedidosIncidencias::orderBy('estado')
                 ->orderBy('created_at', 'desc')
                 ->get();
-        }else{
+        } else {
             //cargar solo las del usuario que esta viendo la vista
             $user = Auth::user();
 
@@ -73,8 +75,6 @@ class IndexComponent extends Component
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
-
-       
     }
 
     public function getListeners()
@@ -98,9 +98,9 @@ class IndexComponent extends Component
         }
     }
     public function resetForm()
-{
-    $this->reset(['user_id', 'observaciones', 'estado', 'pedido_id', 'factura_id']);
-}
+    {
+        $this->reset(['user_id', 'observaciones', 'estado', 'pedido_id', 'factura_id']);
+    }
 
 
     // Editar Incidencia de Pedido
@@ -124,12 +124,12 @@ class IndexComponent extends Component
         if ($incidencia) {
             $incidencia->update(['estado' => $newEstado]);
 
-            try{
+            try {
 
                 $empleado = User::find($incidencia->user_id);
                 Mail::to($empleado->email)
-                ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-                ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'normal'));
+                    ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                    ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia, 'normal'));
 
                 // Mail::to('ivan.mayol@hawkins.es')
                 // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
@@ -140,15 +140,13 @@ class IndexComponent extends Component
                     'stage' => 9,
                     'titulo' => 'Cambio de estado de incidencia',
                     'descripcion' => 'Se ha cambiado el estado de la incidencia',
-                    'referencia_id' => $incidencia->id ,
+                    'referencia_id' => $incidencia->id,
                     'leida' => null,
                 ]);
-
-
-            }catch (\Exception $e) {
+            } catch (\Exception $e) {
                 //dd($e);
             }
-           
+
 
 
             $this->loadIncidencias();
@@ -162,28 +160,26 @@ class IndexComponent extends Component
         if ($pedidoIncidencia) {
             $pedidoIncidencia->update(['estado' => $newEstado]);
 
-            try{
+            try {
 
                 $empleado = User::find($pedidoIncidencia->user_id);
                 Mail::to($empleado->email)
-                ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-                ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'pedido'));
-    
+                    ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                    ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia, 'pedido'));
+
                 // Mail::to('ivan.mayol@hawkins.es')
                 // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
                 // ->send(new CambioEstadoIncidenciaMail($empleado, $pedidoIncidencia, 'pedido'));
-    
+
                 Alertas::create([
                     'user_id' => 13,
                     'stage' => 9,
                     'titulo' => 'Cambio de estado de incidencia',
                     'descripcion' => 'Se ha cambiado el estado de la incidencia',
-                    'referencia_id' => $pedidoIncidencia->id ,
+                    'referencia_id' => $pedidoIncidencia->id,
                     'leida' => null,
                 ]);
-    
-    
-            }catch (\Exception $e) {
+            } catch (\Exception $e) {
             }
 
             $this->loadIncidencias();
@@ -194,7 +190,7 @@ class IndexComponent extends Component
     public function createIncidencia()
     {
 
-        if(!Auth::user()->isAdmin() && !Auth::user()->role == '7'){
+        if (!Auth::user()->isAdmin() && !Auth::user()->role == '7') {
             //alert para usuarios que no son admin
             $this->alert('warning', 'No tienes permisos para crear incidencias', [
                 'position' =>  'center',
@@ -203,7 +199,7 @@ class IndexComponent extends Component
                 'showConfirmButton' => false,
                 'timerProgressBar' => true,
             ]);
-            return;  
+            return;
         }
 
 
@@ -213,49 +209,83 @@ class IndexComponent extends Component
             'estado' => 'required|in:recibida,tramite,solucionada,rechazada',
         ]);
 
-       $incidencia = Incidencias::create([
+        $incidencia = Incidencias::create([
             'user_id' => $this->user_id,
             'observaciones' => $this->observaciones,
             'estado' => $this->estado,
         ]);
 
-         // Obtener el empleado asignado
-            $empleado = User::find($this->user_id);
-            Mail::to($empleado->email)
+        // Obtener el empleado asignado
+        $empleado = User::find($this->user_id);
+        Mail::to($empleado->email)
             ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
             ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'normal'));
 
-            // Mail::to('ivan.mayol@hawkins.es')
-            // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-            // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'normal'));
+        // Mail::to('ivan.mayol@hawkins.es')
+        // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+        // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'normal'));
 
 
-        try{
+        try {
             Alertas::create([
                 'user_id' => 13,
                 'stage' => 9,
                 'titulo' => 'Incidencia Creada',
-                'descripcion' => 'Tiene una incidencia nueva a cargo del usuario '.$incidencia->user->name .' '. $incidencia->user->surname . ' a fecha '. $incidencia->created_at,
-                'referencia_id' =>$incidencia->id ,
+                'descripcion' => 'Tiene una incidencia nueva a cargo del usuario ' . $incidencia->user->name . ' ' . $incidencia->user->surname . ' a fecha ' . $incidencia->created_at,
+                'referencia_id' => $incidencia->id,
                 'leida' => null,
             ]);
-    
+
             Alertas::create([
                 'user_id' => $this->user_id,
                 'stage' => 9,
                 'titulo' => 'Incidencia Creada',
-                'descripcion' => 'Tiene una incidencia nueva a su cargo '.$incidencia->user->name .' '. $incidencia->user->surname . ' a fecha '. $incidencia->created_at,
-                'referencia_id' =>$incidencia->id ,
+                'descripcion' => 'Tiene una incidencia nueva a su cargo ' . $incidencia->user->name . ' ' . $incidencia->user->surname . ' a fecha ' . $incidencia->created_at,
+                'referencia_id' => $incidencia->id,
                 'leida' => null,
             ]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             //dd($e);
         }
-       
+
 
         $this->reset('observaciones', 'estado');
         $this->loadIncidencias();
         $this->dispatchBrowserEvent('close-modal');
+    }
+
+    public function recordatorioIncidencia($id, $type = 'normal')
+    {
+        if ($type === 'normal') {
+            $incidencia = Incidencias::find($id);
+        } else {
+            $incidencia = PedidosIncidencias::find($id);
+        }
+
+        if ($incidencia) {
+            $empleado = User::find($incidencia->user_id);
+            try {
+                Mail::to($empleado->email)
+                    ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                    ->send(new RecordatorioIncidenciaMail($empleado, $incidencia, $type));
+
+                $this->alert('success', 'Recordatorio enviado correctamente', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => false,
+                    'timerProgressBar' => true,
+                ]);
+            } catch (\Exception $e) {
+                $this->alert('error', 'Error al enviar el recordatorio', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => false,
+                    'timerProgressBar' => true,
+                ]);
+            }
+        }
     }
 
     // Crear Incidencia de Pedido
@@ -263,7 +293,7 @@ class IndexComponent extends Component
     {
 
 
-        if(!Auth::user()->isAdmin() && !Auth::user()->role == '7'){            //alert para usuarios que no son admin
+        if (!Auth::user()->isAdmin() && !Auth::user()->role == '7') {            //alert para usuarios que no son admin
             $this->alert('warning', 'No tienes permisos para crear incidencias', [
                 'position' =>  'center',
                 'timer' => 3000,
@@ -271,7 +301,7 @@ class IndexComponent extends Component
                 'showConfirmButton' => false,
                 'timerProgressBar' => true,
             ]);
-            return;  
+            return;
         }
 
         $this->validate([
@@ -282,7 +312,7 @@ class IndexComponent extends Component
             'estado' => 'required|in:recibida,tramite,solucionada,rechazada',
         ]);
 
-       $incidencia =  PedidosIncidencias::create([
+        $incidencia =  PedidosIncidencias::create([
             'user_id' => $this->user_id,
             'pedido_id' => $this->pedido_id,
             'factura_id' => $this->factura_id,
@@ -291,33 +321,33 @@ class IndexComponent extends Component
         ]);
 
         $empleado = User::find($this->user_id);
-            Mail::to($empleado->email)
+        Mail::to($empleado->email)
             ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-            ->send(new IncidenciaAsignadaMail($empleado, $incidencia , 'pedido'));
+            ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'pedido'));
 
-            // Mail::to('ivan.mayol@hawkins.es')
-            // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-            // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'pedido'));
+        // Mail::to('ivan.mayol@hawkins.es')
+        // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+        // ->send(new IncidenciaAsignadaMail($empleado, $incidencia, 'pedido'));
 
-        try{
+        try {
             Alertas::create([
                 'user_id' => 13,
                 'stage' => 9,
-                'titulo' => 'Incidencia de Pedido Creada a cargo del usuario '.$incidencia->user->name .' '. $incidencia->user->surname . ' a fecha '. $incidencia->created_at,
+                'titulo' => 'Incidencia de Pedido Creada a cargo del usuario ' . $incidencia->user->name . ' ' . $incidencia->user->surname . ' a fecha ' . $incidencia->created_at,
                 'descripcion' => 'Tiene una incidencia de Pedido nueva',
-                'referencia_id' =>$incidencia->id ,
+                'referencia_id' => $incidencia->id,
                 'leida' => null,
             ]);
-    
+
             Alertas::create([
                 'user_id' => $this->user_id,
                 'stage' => 9,
                 'titulo' => 'Incidencia de Pedido Creada',
-                'descripcion' => 'Tiene una incidencia de Pedido nueva a su cargo '.$incidencia->user->name .' '. $incidencia->user->surname . ' a fecha '. $incidencia->created_at,
-                'referencia_id' =>$incidencia->id ,
+                'descripcion' => 'Tiene una incidencia de Pedido nueva a su cargo ' . $incidencia->user->name . ' ' . $incidencia->user->surname . ' a fecha ' . $incidencia->created_at,
+                'referencia_id' => $incidencia->id,
                 'leida' => null,
             ]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             //dd($e);
         }
 
@@ -325,6 +355,8 @@ class IndexComponent extends Component
         $this->loadIncidencias();
         $this->dispatchBrowserEvent('close-modal');
     }
+
+
 
     public function editNotas($id, $type = 'normal')
     {
@@ -340,26 +372,26 @@ class IndexComponent extends Component
         }
     }
 
-public function updateNotas( $type = 'normal')
-{
-    $this->validate([
-        'notas' => 'required|string',
-    ]);
-    if ($type === 'normal') {
-        $incidencia = Incidencias::find($this->editingIncidenciaId);
-    } else {
-        $incidencia = PedidosIncidencias::find($this->editingIncidenciaId);
-    }
-
-    if ($incidencia && Auth::user()->id === $incidencia->user_id) {
-        $incidencia->update([
-            'notas' => $this->notas,
+    public function updateNotas($type = 'normal')
+    {
+        $this->validate([
+            'notas' => 'required|string',
         ]);
+        if ($type === 'normal') {
+            $incidencia = Incidencias::find($this->editingIncidenciaId);
+        } else {
+            $incidencia = PedidosIncidencias::find($this->editingIncidenciaId);
+        }
 
-        $this->reset('notas');
-        $this->loadIncidencias();
+        if ($incidencia && Auth::user()->id === $incidencia->user_id) {
+            $incidencia->update([
+                'notas' => $this->notas,
+            ]);
+
+            $this->reset('notas');
+            $this->loadIncidencias();
+        }
     }
-}
 
     // Actualizar Incidencia Normal
     public function updateIncidencia()
@@ -379,7 +411,6 @@ public function updateNotas( $type = 'normal')
             ]);
             $this->resetForm();
             $this->loadIncidencias();
-                
         }
     }
 
