@@ -73,6 +73,7 @@ $canEdit = $EsAdmin;
                     <div class="card-body">
                         <h5>Acciones</h5>
                         <button class="w-100 btn btn-success mb-2" id="alertaGuardar">Guardar producto</button>
+                        <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar producto</button>
                     </div>
                 </div>
 
@@ -111,6 +112,20 @@ $canEdit = $EsAdmin;
         }).then((result) => {
             if (result.isConfirmed) {
                 window.livewire.emit('update');
+            }
+        });
+    });
+
+    $("#alertaEliminar").on("click", () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Pulsa el botón de confirmar para eliminar el producto.',
+            icon: 'warning',
+            showConfirmButton: true,
+            showCancelButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.livewire.emit('confirmDelete');
             }
         });
     });

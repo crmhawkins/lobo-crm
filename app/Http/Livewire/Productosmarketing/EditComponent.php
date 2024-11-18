@@ -23,6 +23,7 @@ class EditComponent extends Component
     public $foto_ruta;
     public $foto_rutaOld;
     public $nueva_foto = 0;
+    public $producto;
 
     public function mount($identificador)
     {
@@ -30,6 +31,7 @@ class EditComponent extends Component
         $producto = ProductosMarketing::find($identificador);
 
         if ($producto) {
+            $this->producto = $producto;
             $this->identificador = $producto->id;
             $this->nombre = $producto->nombre;
             $this->peso_neto_unidad = $producto->peso_neto_unidad;
@@ -113,6 +115,8 @@ class EditComponent extends Component
             return redirect()->route('productosmarketing.index')->with('success', 'Producto eliminado con éxito.');
         }
     }
+
+  
 
     // Maneja la subida de la nueva foto
     public function nuevaFoto()
