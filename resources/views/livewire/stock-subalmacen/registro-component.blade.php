@@ -50,7 +50,7 @@
                     @forelse ($registros as $registro)
                         <tr>
                             <td>{{ $registro->subalmacen->almacen }}</td>
-                            <td>{{ $registro->producto->nombre }}</td>
+                            <td>{{ $registro->producto->nombre ?? '' }}</td>
                             <td>{{ $registro->tipo_entrada ? 'Entrada' : 'Salida' }}</td>
                             <td>{{ $registro->cantidad }}</td>
                             <td>{{ \Carbon\Carbon::parse($registro->fecha)->format('d/m/Y') }}</td>

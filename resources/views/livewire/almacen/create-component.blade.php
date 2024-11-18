@@ -65,7 +65,7 @@
                             <div class="col-md-4">
                                 <label class="col-sm-12 col-form-label">Nombre</label>
                                 <div class="col-sm-12">
-                                    <input type="text" class="form-control" value="{{ $cliente->nombre }}" disabled>
+                                    <input type="text" class="form-control" value="{{ $cliente->nombre  ?? ''}}" disabled>
                                     @error('num_albaran')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -275,7 +275,7 @@
                                     <tbody>
                                         @foreach ($productosMarketingPedidos as $producto)
                                             <tr>
-                                                <td>{{ $producto->producto->nombre }}</td>
+                                                <td>{{ $producto->producto->nombre ?? '' }}</td>
                                                 <td>{{ $producto->unidades }}</td>
                                                 <td @if($producto->unidades <= $producto->producto->stockEnAlmacen($pedido->almacen_id) ) class="text-success" @else class="text-danger" @endif>{{ $producto->producto->stockEnAlmacen($pedido->almacen_id) }}</td>
                                                 <td>{{ $producto->precio_ud }} €</td>
