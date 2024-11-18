@@ -313,6 +313,11 @@ class EditComponent extends Component
         }
     }
 
+    public function getNombreProductoMarketing($id){
+        $producto = ProductosMarketing::find($id);
+        return $producto->nombre ?? 'Producto no encontrado';
+    }
+
     public function mount()
     {
         $pedido = Pedido::find($this->identificador);
@@ -387,11 +392,15 @@ class EditComponent extends Component
                                 'unidades' => $productoAsociadoModel->unidades,
                             ];
                         }else{
+							//dd($productoAsociado);
+							$productoAsociadoModel = Productos::find($productoAsociado);
+							//dd($productoAsociadoModel->nombre);
                             $productosAsociadosPedido[] = [
                                 'id' => $productoAsociado,
-                                'nombre' => $productoAsociadoModel->producto->nombre,
-                                'unidades' => $productoAsociadoModel->unidades,
+                                'nombre' => $productoAsociadoModel->nombre,
+                                'unidades' => 0,
                             ];
+							//dd($productoModel);
                         }
 
                     }

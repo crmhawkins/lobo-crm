@@ -561,6 +561,8 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             @this.set('unidades_caja_producto', 0);
                                             @this.set('unidades_producto', 0);
                                         });">
+
+                                        
                                             <select name="producto" id="select2-producto" wire:model="producto_seleccionado" style="width: 100% !important">
                                                 <option value="{{ null }}">-- Selecciona un producto --</option>
                                                 
@@ -793,7 +795,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                     <tbody>
                                         @foreach ($productos_marketing_pedido as $productoIndex => $producto)
                                             <tr>
-                                                <td>{{ $producto['producto_marketing_id'] }}</td>
+                                                <td>{{ $this->getNombreProductoMarketing($producto['producto_marketing_id']) }}</td>
                                                 <td>{{ $producto['unidades'] }}</td>
                                                 <td><input type="number" wire:model.lazy="productos_marketing_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotalMarketing({{ $productoIndex }})" class="form-control" style="width:70%; display:inline-block">€</td>
                                                 <td>{{ $producto['precio_total'] }} €</td>
