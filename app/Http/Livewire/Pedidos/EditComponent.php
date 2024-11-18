@@ -393,7 +393,7 @@ class EditComponent extends Component
                 'unidades' => $producto->unidades,
                 'precio_ud' => $producto->precio_ud,
                 'precio_total' => $producto->precio_total,
-                'is_pack' => $productoModel->is_pack ?? false,
+                'is_pack' => isset($productoModel->is_pack) ? $productoModel->is_pack : false,
                 'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
                 'borrar' => 0,
             ];
