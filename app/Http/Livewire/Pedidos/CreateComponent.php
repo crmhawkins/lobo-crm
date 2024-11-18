@@ -23,6 +23,7 @@ use App\Models\Stock;
 use App\Models\StockEntrante;
 use App\Models\StockRegistro;
 use App\Models\ProductosMarketing;
+use App\Models\ProductosPedidoPack;
 
 use App\Models\ProductosMarketingPedido;
 
@@ -113,17 +114,29 @@ class CreateComponent extends Component
         //dd($this->productos);
         $this->productosMarketing = ProductosMarketing::all(); // Cargar productos de marketing
 
-        $this->clientes = Clients::where('estado', 2)->get();
-        //si el usuario autenticado es comercial, solo ve sus clientes asociados.
-        if (Auth::user()->role == 3 ){
-            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->where('estado', 2)->get();
+        $this->clientes = Clients::where('estado', 2)
+            ->orderBy('nombre', 'asc') // Ordenar clientes por nombre
+            ->get();
+
+        // Si el usuario autenticado es comercial, solo ve sus clientes asociados.
+        if (Auth::user()->role == 3) {
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)
+                ->where('estado', 2)
+                ->orderBy('nombre', 'asc') // Ordenar clientes por nombre
+                ->get();
         }
-        if(Auth::user()->user_department_id == 2){
-            $this->clientes = Clients::where('comercial_id', Auth::user()->id)->orWhere('delegacion_COD', 0)->orWhere('delegacion_COD', 16)//y estado 2
-            ->where('estado', 2)->get();
+
+        if (Auth::user()->user_department_id == 2) {
+            $this->clientes = Clients::where('comercial_id', Auth::user()->id)
+                ->orWhere('delegacion_COD', 0)
+                ->orWhere('delegacion_COD', 16)
+                ->where('estado', 2)
+                ->orderBy('nombre', 'asc') // Ordenar clientes por nombre
+                ->get();
 
             $this->almacen_id = 6;
         }
+
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
         $this->cliente_id = null;
@@ -551,6 +564,8 @@ class CreateComponent extends Component
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
+        
+
         foreach ($this->productos_marketing_pedido as $productoMarketing) {
             ProductosMarketingPedido::create([
                 'pedido_id' => $pedidosSave->id,
@@ -719,8 +734,27 @@ class CreateComponent extends Component
                     'precio_ud' => $productos['precio_ud'],
                     'precio_total' => $productos['precio_total']
                 ]);
+               // dd($productos);
+                // Crear productos del pack después de guardar el pedido
+                $producto = Productos::find($productos['producto_pedido_id']);
+                if ($producto->is_pack) {
+                    $productosAsociados = $productos['productos_asociados'];
+                    foreach ($productosAsociados as $productoAsociado) {
+                       // dd($productoAsociado);
+                        ProductosPedidoPack::create([
+                            'pedido_id' => $pedidosSave->id,
+                            'producto_id' => $productoAsociado['id'],
+                            'pack_id' => $producto->id,
+                            'unidades' => $productoAsociado['unidades'], // Inicialmente 0, el usuario puede ajustar después
+                        ]);
+                    }
+                }
 
             }
+
+       
+
+
             event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
 
             // Alertas de guardado exitoso
@@ -760,6 +794,11 @@ class CreateComponent extends Component
 
     // Refresca el componente para reflejar los cambios
     $this->emit('refreshComponent');
+}
+
+public function getNombreProductoMarketing($id){
+    $producto = ProductosMarketing::find($id);
+    return $producto->nombre ?? '';
 }
 
     // Función para cuando se llama a la alerta
@@ -1005,11 +1044,11 @@ public function addProductosMarketing($id)
 }
 
 
+
     public function addProductos($id)
     {
         $producto = Productos::find($id);
         if (!$producto) {
-            // Muestra una alerta al usuario indicando que el producto no se encontró
             $this->alert('error', 'Producto no encontrado.', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -1020,63 +1059,85 @@ public function addProductosMarketing($id)
             return;
         }
 
+        $productosAsociados = [];
+        // Verificar si el producto es un pack
+        if ($producto->is_pack) {
+            $productosAsociadosIds = json_decode($producto->products_id, true); // Asegúrate de que products_id sea un JSON válido
+            if (is_array($productosAsociadosIds)) {
+                foreach ($productosAsociadosIds as $productoAsociadoId) {
+                    $productosAsociados[] = [
+                        'id' => $productoAsociadoId,
+                        'unidades' => 1 // Puedes ajustar la cantidad inicial según sea necesario
+                    ];
+                }
+            } else {
+                $this->alert('error', 'Error al procesar los productos del pack.', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => false,
+                    'timerProgressBar' => true,
+                ]);
+                return;
+            }
+        }
+
         $precioUnitario = $this->obtenerPrecioPorTipo($producto);
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
-        $producto_existe_sincargo =false;
+        $producto_existe_sincargo = false;
         foreach ($this->productos_pedido as $productoPedido) {
             if ($productoPedido['producto_pedido_id'] == $id) {
                 if ($productoPedido['precio_ud'] !== 0) {
-                $producto_existe = true;
-                break;
-                }else{
-                $producto_existe_sincargo = true;
+                    $producto_existe = true;
+                    break;
+                } else {
+                    $producto_existe_sincargo = true;
                 }
             }
         }
-		if($this->sinCargo == true){
+        if ($this->sinCargo == true) {
             if ($producto_existe_sincargo) {
                 foreach ($this->productos_pedido as $index => $productoPedido) {
                     if ($productoPedido['producto_pedido_id'] == $id) {
                         if ($productoPedido['precio_ud'] == 0) {
-                        $key=$index;
+                            $key = $index;  
                         }
                     }
                 }
-				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
-			} else {
-			$this->productos_pedido[] = [
-                'producto_pedido_id' => $id,
-                'unidades' => $this->unidades_producto,
-                'precio_ud' => 0,
-                'precio_total' => 0
-            ];}
-
-		} else{
-
-
-			if ($producto_existe) {
+                $this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+            } else {
+                $this->productos_pedido[] = [
+                    'producto_pedido_id' => $id,
+                    'unidades' => $this->unidades_producto,
+                    'precio_ud' => 0,
+                    'precio_total' => 0,
+                    'productos_asociados' => $productosAsociados // Añadir productos asociados
+                ];
+            }
+        } else {
+            if ($producto_existe) {
                 foreach ($this->productos_pedido as $index => $productoPedido) {
                     if ($productoPedido['producto_pedido_id'] == $id) {
                         if ($productoPedido['precio_ud'] !== 0) {
-                        $key=$index;
+                            $key = $index;
                         }
                     }
                 }
-				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
-				$this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
-				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
-			} else {
-				$this->productos_pedido[] = [
-					'producto_pedido_id' => $id,
-					'unidades' => $this->unidades_producto,
-					'precio_ud' => $precioUnitario,
-					'precio_total' => $precioTotal
-				];
-			}
-
-		}
+                $this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
+                $this->productos_pedido[$key]['precio_ud'] = $precioUnitario;
+                $this->productos_pedido[$key]['precio_total'] += $precioTotal;
+            } else {
+                $this->productos_pedido[] = [
+                    'producto_pedido_id' => $id,
+                    'unidades' => $this->unidades_producto,
+                    'precio_ud' => $precioUnitario,
+                    'precio_total' => $precioTotal,
+                    'productos_asociados' => $productosAsociados // Añadir productos asociados
+                ];
+            }
+        }
 
         $this->sinCargo = false;
 
@@ -1086,6 +1147,21 @@ public function addProductosMarketing($id)
         $this->unidades_pallet_producto = 0;
         $this->setPrecioEstimado();
         $this->emit('refreshComponent');
+    }
+
+    private function mostrarProductosAsociados($productosAsociados)
+    {
+        // Aquí puedes implementar la lógica para mostrar los productos asociados al usuario
+        // Por ejemplo, podrías usar una alerta o actualizar una propiedad para mostrar en la vista
+        $nombresProductos = Productos::whereIn('id', $productosAsociados)->pluck('nombre')->toArray();
+        $mensaje = 'Este pack incluye los siguientes productos: ' . implode(', ', $nombresProductos);
+        $this->alert('info', $mensaje, [
+            'position' => 'center',
+            'timer' => 5000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'confirmButtonText' => 'Cerrar',
+        ]);
     }
 
     public function actualizarPrecioTotal($index)

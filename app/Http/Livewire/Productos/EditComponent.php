@@ -46,6 +46,11 @@ class EditComponent extends Component
     public $precio;
     public $ivas;
     public $iva_id;
+    public $is_pack = false;
+    public $productosDisponibles = [];
+    public $productosSeleccionados = [];
+    public $searchTerm = 'Mini';
+
     public function mount()
     {
         $product = Productos::find($this->identificador);
@@ -69,6 +74,9 @@ class EditComponent extends Component
         $this->domicilio_fabricante = $product->domicilio_fabricante;
         $this->ivas = Iva::all();
         $this->iva_id = $product->iva_id;
+        $this->is_pack = $product->is_pack;
+        $this->productosSeleccionados = json_decode($product->products_id, true) ?? [];
+        $this->productosDisponibles = Productos::all();
 
         $product->foto_ruta != null ? $this->foto_rutaOld = $product->foto_ruta : $this->foto_rutaOld = '';
 
@@ -113,6 +121,7 @@ class EditComponent extends Component
                 'stock_seguridad' => 'nullable',
                 'precio' => 'nullable',
                 'iva_id' => 'required',
+                'is_pack' => 'boolean',
             ],
             // Mensajes de error
             [
@@ -134,6 +143,15 @@ class EditComponent extends Component
                 $this->foto_ruta->storeAs('photos', $name, 'public'); // Guarda en storage/app/public/photos
                 $validatedData['foto_ruta'] = $name; // Actualiza la base de datos con el nuevo nombre de archivo
             }
+
+        // Si is_pack es false, limpiar productosSeleccionados
+        if (!$this->is_pack) {
+            $this->productosSeleccionados = [];
+        }
+
+        // Convertir productos seleccionados a JSON
+        $validatedData['products_id'] = json_encode($this->productosSeleccionados);
+        $validatedData['is_pack'] = $this->is_pack;
 
         // Encuentra el producto identificado
         $product = Productos::find($this->identificador);
@@ -219,5 +237,26 @@ class EditComponent extends Component
     public function nuevaFoto()
     {
         $this->nueva_foto = 1;
+    }
+
+    public function agregarProducto($productoId)
+    {
+        if (!in_array($productoId, $this->productosSeleccionados)) {
+            $this->productosSeleccionados[] = $productoId;
+        }
+    }
+
+    public function eliminarProducto($productoId)
+    {
+        $this->productosSeleccionados = array_filter($this->productosSeleccionados, function($id) use ($productoId) {
+            return $id !== $productoId;
+        });
+    }
+
+    public function getFilteredProductosProperty()
+    {
+        return $this->productosDisponibles->filter(function($producto) {
+            return stripos($producto->nombre, $this->searchTerm) !== false;
+        });
     }
 }

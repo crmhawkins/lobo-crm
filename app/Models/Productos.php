@@ -36,6 +36,8 @@ class Productos extends Model
         'iva_id',
         'grupo',
         'orden',
+        'is_pack',
+        'products_id',
 
     ];
 
@@ -48,5 +50,13 @@ class Productos extends Model
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];
+
+    public function productos()
+    {
+        return $this->belongsToMany(Productos::class, 'productos_pedido_pack', 'pack_id', 'producto_id');
+    }
+
+
+    
 
 }

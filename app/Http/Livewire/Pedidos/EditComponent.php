@@ -35,6 +35,7 @@ use App\Models\StockEntrante;
 use App\Models\StockRegistro;
 use App\Models\ProductosMarketing;
 use App\Models\ProductosMarketingPedido;
+use App\Models\ProductosPedidoPack;
 
 
 class EditComponent extends Component
@@ -128,6 +129,8 @@ class EditComponent extends Component
     public $precioEstimadoMarketing = 0;
     public $precioMarketing;
 
+    public $productos_asociados = []; // Nueva propiedad para productos asociados
+
     public function getTipo($id){
 
         $tipo = TipoEmails::find($id);
@@ -180,6 +183,9 @@ class EditComponent extends Component
         //dd("hola");
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
+            if($producto->is_pack){
+                continue;
+            }
             if($producto){
                 $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
                     if(!$stock){
@@ -364,15 +370,36 @@ class EditComponent extends Component
         $this->transporte = $pedido->transporte;
         $productos = DB::table('productos_pedido')->where('pedido_id', $this->identificador)->get();
         foreach ($productos as $producto) {
+            $productoModel = Productos::find($producto->producto_pedido_id);
+
+            if($productoModel->is_pack){
+                $productosAsociados = json_decode($productoModel->products_id);
+                $productosAsociadosPedido = [];
+
+                foreach($productosAsociados as $productoAsociado){
+                    $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
+                    $productosAsociadosPedido[] = [
+                        'id' => $productoAsociadoModel->producto_id,
+                        'nombre' => $productoAsociadoModel->producto->nombre,
+                        'unidades' => $productoAsociadoModel->unidades,
+                    ];
+                }
+
+            }
+            //dd($productoModel);
             $this->productos_pedido[] = [
                 'id' => $producto->id,
                 'producto_pedido_id' => $producto->producto_pedido_id,
                 'unidades' => $producto->unidades,
                 'precio_ud' => $producto->precio_ud,
                 'precio_total' => $producto->precio_total,
+                'is_pack' => $productoModel->is_pack ?? false,
+                'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
                 'borrar' => 0,
             ];
+            
         }
+        //dd($this->productos_pedido);
         $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
         //alert si hay anotaciones pendientes con botón para cerrar y boton para ver anotaciones
@@ -775,18 +802,50 @@ public function setPrecioEstimadoMarketing()
                     'unidades' => $productos['unidades'],
                     'precio_ud' => $productos['precio_ud'],
                     'precio_total' => $productos['precio_total']]);
+
+                    if(isset($productos['productos_asociados'])){
+                        foreach($productos['productos_asociados'] as $productoAsociado){
+                            ProductosPedidoPack::create([
+                                'producto_id' => $productoAsociado['id'],
+                                'pedido_id' => $this->identificador,
+                                'pack_id' => $productos['producto_pedido_id'],
+                                'unidades' => $productoAsociado['unidades'],
+                                
+                            ]);
+                        }
+                    }
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades'] ;
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['unidades' => $unidades_finales, 'precio_ud' => $productos['precio_ud'], 'precio_total' => $productos['precio_total']]);
+                    if(isset($productos['productos_asociados'])){
+                        //dd($productos['productos_asociados']);
+                        foreach($productos['productos_asociados'] as $productoAsociado){
+                           $productoPack = ProductosPedidoPack::where('producto_id', $productoAsociado['id'])->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->first();
+                           if($productoPack){
+                            //dd($productoPack , $productoAsociado);
+                            $productoPack->update(['unidades' => $productoAsociado['unidades']]);
+                           }
+                        }
+                    }
                 } else {
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
+                    if(isset($productos['productos_asociados'])){
+                        foreach($productos['productos_asociados'] as $productoAsociado){
+                            ProductosPedidoPack::where('producto_id', $productoAsociado['id'])->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
+                        }
+                    }
                 }
             }
         }
         foreach ($this->productos_pedido_borrar as $productos) {
             if (isset($productos['id'])) {
                 DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->delete();
+                if(isset($productos['productos_asociados'])){
+                    foreach($productos['productos_asociados'] as $productoAsociado){
+                        ProductosPedidoPack::where('producto_id', $productoAsociado['id'])->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
+                    }
+                }
             }
         }
        // event(new \App\Events\LogEvent(Auth::user(), 4, $pedido->id));
@@ -1447,7 +1506,6 @@ public function setPrecioEstimadoMarketing()
     {
         $producto = Productos::find($id);
         if (!$producto) {
-            // Muestra una alerta al usuario indicando que el producto no se encontró
             $this->alert('error', 'Producto no encontrado.', [
                 'position' => 'center',
                 'timer' => 3000,
@@ -1458,13 +1516,39 @@ public function setPrecioEstimadoMarketing()
             return;
         }
 
+        // Verificar si el producto es un pack
+        if ($producto->is_pack) {
+            $productosAsociados = $producto->productos_asociados; // Asumiendo que tienes una relación definida
+            foreach ($productosAsociados as $productoAsociado) {
+                $this->productos_asociados[] = [
+                    'id' => $productoAsociado->id,
+                    'nombre' => $productoAsociado->nombre,
+                    'unidades' => 0, // Inicialmente 0, el usuario puede ajustar después
+                ];
+            }
+        } else {
+            // Lógica existente para productos que no son pack
+            $this->productos_pedido[] = [
+                'producto_pedido_id' => $producto->id,
+                'unidades' => $this->unidades_producto,
+                'precio_ud' => $this->productoEditarPrecio,
+                'precio_total' => $this->unidades_producto * $this->productoEditarPrecio,
+            ];
+        }
+
+        $this->setPrecioEstimado();
+        $this->emit('refreshComponent');
+    }
+
+    private function agregarProductoAlPedido($producto)
+    {
         $precioUnitario = $this->obtenerPrecioPorTipo($producto);
         $precioTotal = $precioUnitario * $this->unidades_producto;
 
         $producto_existe = false;
         $producto_existe_sincargo =false;
         foreach ($this->productos_pedido as $productoPedido) {
-            if ($productoPedido['producto_pedido_id'] == $id) {
+            if ($productoPedido['producto_pedido_id'] == $producto->id) {
                 if ($productoPedido['precio_ud'] !== 0) {
                 $producto_existe = true;
                 break;
@@ -1476,7 +1560,7 @@ public function setPrecioEstimadoMarketing()
 		if($this->sinCargo == true){
             if ($producto_existe_sincargo) {
                 foreach ($this->productos_pedido as $index => $productoPedido) {
-                    if ($productoPedido['producto_pedido_id'] == $id) {
+                    if ($productoPedido['producto_pedido_id'] == $producto->id) {
                         if ($productoPedido['precio_ud'] == 0) {
                         $key=$index;
                         }
@@ -1485,7 +1569,7 @@ public function setPrecioEstimadoMarketing()
 				$this->productos_pedido[$key]['unidades'] += $this->unidades_producto;
 			} else {
 			$this->productos_pedido[] = [
-                'producto_pedido_id' => $id,
+                'producto_pedido_id' => $producto->id,
                 'unidades' => $this->unidades_producto,
                 'precio_ud' => 0,
                 'precio_total' => 0
@@ -1496,7 +1580,7 @@ public function setPrecioEstimadoMarketing()
 
 			if ($producto_existe) {
                 foreach ($this->productos_pedido as $index => $productoPedido) {
-                    if ($productoPedido['producto_pedido_id'] == $id) {
+                    if ($productoPedido['producto_pedido_id'] == $producto->id) {
                         if ($productoPedido['precio_ud'] !== 0) {
                         $key=$index;
                         }
@@ -1508,7 +1592,7 @@ public function setPrecioEstimadoMarketing()
 				$this->productos_pedido[$key]['precio_total'] += $precioTotal;
 			} else {
 				$this->productos_pedido[] = [
-					'producto_pedido_id' => $id,
+					'producto_pedido_id' => $producto->id,
 					'unidades' => $this->unidades_producto,
 					'precio_ud' => $precioUnitario,
 					'precio_total' => $precioTotal
@@ -1516,16 +1600,8 @@ public function setPrecioEstimadoMarketing()
 			}
 
 		}
-
-        $this->sinCargo = false;
-
-        $this->producto_seleccionado = 0;
-        $this->unidades_producto = 0;
-        $this->unidades_caja_producto = 0;
-        $this->unidades_pallet_producto = 0;
-        $this->setPrecioEstimado();
-        $this->emit('refreshComponent');
     }
+
     private function obtenerPrecioPorTipo($producto)
     {
         if(isset($producto)){
@@ -1912,5 +1988,37 @@ public function setPrecioEstimadoMarketing()
         "pedido_{$pedido->id}.pdf"
     );*/
 }
+
+    public function save()
+    {
+        // Lógica para guardar el pedido
+        $pedido = Pedido::find($this->identificador);
+        $pedido->update([
+            // ... otros campos ...
+        ]);
+
+        // Guardar productos asociados
+        foreach ($this->productos_asociados as $productoAsociado) {
+            ProductosPedidoPack::create([
+                'pedido_id' => $pedido->id,
+                'producto_id' => $productoAsociado['id'],
+                'unidades' => $productoAsociado['unidades'],
+            ]);
+        }
+
+        // Lógica existente para guardar productos
+        foreach ($this->productos_pedido as $productoPedido) {
+            // ... lógica existente ...
+        }
+
+        $this->alert('success', '¡Pedido actualizado correctamente!', [
+            'position' => 'center',
+            'timer' => 3000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'onConfirmed' => 'confirmed',
+            'confirmButtonText' => 'ok',
+        ]);
+    }
 
 }

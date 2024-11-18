@@ -220,6 +220,48 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card m-b-30">
+                {{-- preguntar si es pack con check --}}
+                <div class="card-body">
+                    <label for="is_pack" class="col-form-label">¿Es un pack?</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" wire:model="is_pack" name="is_pack" id="is_pack_si" value="1">
+                        <label class="form-check-label" for="is_pack_si">Sí</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" wire:model="is_pack" name="is_pack" id="is_pack_no" value="0">
+                        <label class="form-check-label" for="is_pack_no">No</label>
+                    </div>
+                </div>
+
+                @if($is_pack)
+                <div class="card-body">
+                    <h5>Seleccionar productos para el pack</h5>
+                    <input type="text" class="form-control mb-3" placeholder="Buscar productos..." wire:model="searchTerm">
+
+                    <ul class="list-group mb-3">
+                        @foreach($this->filteredProductos as $producto)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $producto->nombre }}
+                                <button type="button" class="btn btn-primary btn-sm" wire:click="agregarProducto({{ $producto->id }})" {{ in_array($producto->id, $productosSeleccionados) ? 'disabled' : '' }}>Añadir</button>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <h5>Productos seleccionados</h5>
+                    <ul class="list-group">
+                        @foreach($productosSeleccionados as $productoId)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ $productosDisponibles->find($productoId)->nombre }}
+                                <button type="button" class="btn btn-danger btn-sm" wire:click="eliminarProducto({{ $productoId }})">Eliminar</button>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+            </div>
+
             <div class="card m-b-30">
                 <div class="card-body">
                     <h5>Imagen del producto</h5>

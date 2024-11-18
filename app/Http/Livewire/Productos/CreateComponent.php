@@ -37,10 +37,16 @@ class CreateComponent extends Component
     public $precio;
     public $ivas;
     public $iva_id = 1;
+    public $is_pack = false;
+    public $products_id = [];
+    public $productosDisponibles = [];
+    public $productosSeleccionados = [];
+    public $searchTerm = 'Mini';
 
     public function mount()
     {
         $this->ivas = Iva::all();
+        $this->productosDisponibles = Productos::all();
     }
 
     public function render()
@@ -75,6 +81,8 @@ class CreateComponent extends Component
                 'stock_seguridad' => 'nullable',
                 'precio' => 'nullable',
                 'iva_id' => 'required',
+                'is_pack' => 'nullable',
+                'products_id' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -85,6 +93,9 @@ class CreateComponent extends Component
                 'cajas_por_pallet.required' => 'La descripción es obligatoria.',
             ]
         );
+
+        // Convertir productos seleccionados a JSON
+        $validatedData['products_id'] = json_encode($this->productosSeleccionados);
 
         if(isset($this->foto_ruta))
         {
@@ -133,5 +144,26 @@ class CreateComponent extends Component
     {
         // Do something
         return redirect()->route('productos.index');
+    }
+
+    public function agregarProducto($productoId)
+    {
+        if (!in_array($productoId, $this->productosSeleccionados)) {
+            $this->productosSeleccionados[] = $productoId;
+        }
+    }
+
+    public function eliminarProducto($productoId)
+    {
+        $this->productosSeleccionados = array_filter($this->productosSeleccionados, function($id) use ($productoId) {
+            return $id !== $productoId;
+        });
+    }
+
+    public function getFilteredProductosProperty()
+    {
+        return $this->productosDisponibles->filter(function($producto) {
+            return stripos($producto->nombre, $this->searchTerm) !== false;
+        });
     }
 }

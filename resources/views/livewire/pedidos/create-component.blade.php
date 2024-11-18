@@ -32,12 +32,14 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     </button>
                 </div>
                 <div class="modal-body">
-                    @if (count($anotacionesProximoPedido) > 0)
-                        <ul>
-                            @foreach ($anotacionesProximoPedido as $anotacion)
-                                <li>{{ $anotacion->anotacion }} - <span class="badge badge-warning text-uppercase">{{ $anotacion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $anotacion->id }}')">Completar</button></li>
-                            @endforeach
-                        </ul>
+                    @if (is_array($anotacionesProximoPedido) || $anotacionesProximoPedido instanceof \Countable)
+                        @if (count($anotacionesProximoPedido) > 0)
+                            <ul>
+                                @foreach ($anotacionesProximoPedido as $anotacion)
+                                    <li>{{ $anotacion->anotacion }} - <span class="badge badge-warning text-uppercase">{{ $anotacion->estado }} </span> <br> <button class="btn btn-info" data-dismiss="modal" wire:click="completarAnotacion('{{ $anotacion->id }}')">Completar</button></li>
+                                @endforeach
+                            </ul>
+                        @endif
                     @endif
                 </div>
                 <div class="modal-footer">
@@ -242,32 +244,62 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             </h5>
                             <div class="form-group col-md-12 tabla-productos">
                                 @if (count($productos_pedido) > 0)
-                                    <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                        <thead>
-                                            <tr>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio unidad</th>
-                                                <th>Precio total</th>
-                                                <th>Eliminar</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productos_pedido as $productoIndex => $producto)
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered">
+                                            <thead class="thead-dark">
                                                 <tr>
-                                                    <td>{{ $this->getNombreTabla($producto['producto_pedido_id']) }}</td>
-                                                    <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
-                                                    <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
-                                                    <td>{{ $producto['precio_total']}} €</td>
-                                                    <td><button type="button" class="btn btn-danger" wire:click="deleteArticulo('{{$productoIndex}}')">X</button></td>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio unidad</th>
+                                                    <th>Precio total</th>
+                                                    <th>Eliminar</th>
                                                 </tr>
-                                            @endforeach
-                                            <tr>
-                                                <th colspan="3">Precio estimado</th>
-                                                <th>{{ $precioSinDescuento }} €</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productos_pedido as $productoIndex => $producto)
+                                                    <tr>
+                                                        <td>
+                                                            {{ $this->getNombreTabla($producto['producto_pedido_id']) }}
+                                                            @if (!empty($producto['productos_asociados']))
+                                                                <i class="fas fa-boxes text-primary"></i> <!-- Icono para packs -->
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $producto['unidades'] }}</td>
+                                                        <td>{{ $producto['precio_ud'] }} €</td>
+                                                        <td>{{ $producto['precio_total'] }} €</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-sm" wire:click="deleteArticulo('{{ $productoIndex }}')">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    @if (!empty($producto['productos_asociados']))
+                                                        <tr>
+                                                            <td colspan="5">
+                                                                <div class="card mt-2">
+                                                                    <div class="card-header bg-info text-white">
+                                                                        <strong>Productos Asociados</strong>
+                                                                    </div>
+                                                                    <ul class="list-group list-group-flush">
+                                                                        @foreach ($producto['productos_asociados'] as $productoAsociado)
+                                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                                {{ $this->getNombreTabla($productoAsociado['id']) }}
+                                                                                <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm" style="width: 60px;">
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                                <tr>
+                                                    <th colspan="3">Precio estimado</th>
+                                                    <th>{{ $precioSinDescuento }} €</th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -470,7 +502,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             <tbody>
                                                 @foreach ($productos_marketing_pedido as $productoIndex => $producto)
                                                     <tr>
-                                                        <td>{{ $producto['producto_marketing_id'] }}</td>
+                                                        <td>{{$this->getNombreProductoMarketing($producto['producto_marketing_id']) }}</td>
                                                         <td>{{ $producto['unidades'] }}</td>
                                                         <td><input type="number" wire:model.lazy="productos_marketing_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotalMarketing({{ $productoIndex }})" class="form-control" style="width:70%; display:inline-block">€</td>
                                                         <td>{{ $producto['precio_total'] }} €</td>

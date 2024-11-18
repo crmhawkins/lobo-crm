@@ -218,9 +218,15 @@
                                                    
                                                 </td>
                                                 @if (is_null($producto['lote_id']))
-                                                <td>
-                                                <button type="button" onclick="iniciarEscaneo({{ $productoIndex }})" class="btn btn-lg btn-primary">Escanera lote</button>
-                                                </td>
+                                                    <td>
+                                                        @if($producto['is_pack'] && collect($producto['productos_asociados'])->every(fn($p) => !is_null($p['lote_id'])))
+                                                            <!-- No mostrar el botón si todos los productos asociados tienen lote_id -->
+                                                        @else
+                                                            <button type="button" 
+                                                                {{ $producto['is_pack'] ? 'wire:click=handleQrScanned("",' . $productoIndex . ')' : 'onclick=iniciarEscaneo(' . $productoIndex . ')' }} 
+                                                                class="btn btn-lg btn-primary">Asignar lote</button>
+                                                        @endif
+                                                    </td>
                                                 @else
                                                 <td>{{ $producto['lote_id']}}
                                                 @endif
@@ -234,7 +240,31 @@
 
                                                 </td>
                                             </tr>
+                                            @if (isset($producto['is_pack']) && count($producto['productos_asociados']) > 0)
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <div class="card mt-2">
+                                                            <div class="card-header bg-info text-white">
+                                                                <strong>Productos Asociados</strong>
+                                                            </div>
+                                                            <ul class="list-group list-group-flush">
+                                                                @foreach ($producto['productos_asociados'] as $productoAsociado)
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <strong>{{ $this->getNombreTabla($productoAsociado['id']) }}</strong>
+                                                                            <span class="badge bg-secondary">Lote: {{$productoAsociado['lote_id']}}</span>
+                                                                        </div>
+                                                                        <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm w-auto" disabled>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                            
                                         @endforeach
+                                        
                                         @if ($descuento)
                                         <tr>
                                             <th colspan="1">Descuento aplicado</th>

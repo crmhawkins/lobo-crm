@@ -382,8 +382,8 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <div class="form-group col-md-12">
                                 @if (count($productos_pedido) > 0)
                                     <div class="table-responsive">
-                                        <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
-                                            <thead>
+                                        <table class="table table-striped table-bordered">
+                                            <thead class="thead-dark">
                                                 <tr>
                                                     <th>Producto</th>
                                                     <th>Cantidad</th>
@@ -418,6 +418,32 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                             </td>
                                                         @endif
                                                     </tr>
+                                                    @if (isset($producto['is_pack']) && count($producto['productos_asociados']) > 0)
+                                                        {{-- @foreach ($producto['productos_asociados'] as $productoAsociado) --}}
+                                                            {{-- <tr>
+                                                                <td>{{ $productoAsociado['nombre'] }}</td>
+                                                                <td>{{ $productoAsociado['unidades'] }}</td>
+                                                                <td colspan="3">Producto asociado</td>
+                                                            </tr> --}}
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                    <div class="card mt-2">
+                                                                        <div class="card-header bg-info text-white">
+                                                                            <strong>Productos Asociados</strong>
+                                                                        </div>
+                                                                        <ul class="list-group list-group-flush">
+                                                                            @foreach ($producto['productos_asociados'] as $productoAsociado)
+                                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                                    {{ $this->getNombreTabla($productoAsociado['id']) }}
+                                                                                    <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm" style="width: 60px;" >
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        {{-- @endforeach --}}
+                                                    @endif
                                                 @endforeach
                                                 <tr>
                                                     <th colspan="3">Precio estimado</th>

@@ -28,6 +28,7 @@ use App\Models\StockSubalmacen;
 use App\Models\ProductosMarketing;
 use App\Models\ProductosMarketingPedido;
 use App\Models\Subalmacenes;
+use App\Models\ProductosPedidoPack;
 
 
 class CreateComponent extends Component
@@ -82,6 +83,25 @@ class CreateComponent extends Component
         $this->productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get();
 
         foreach ($productos as $producto) {
+            $productoModel = Productos::find($producto->producto_pedido_id);
+
+            if($productoModel->is_pack){
+                $productosAsociados = json_decode($productoModel->products_id);
+                $productosAsociadosPedido = [];
+
+                foreach($productosAsociados as $productoAsociado){
+                    $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
+                    $productosAsociadosPedido[] = [
+                        'id' => $productoAsociadoModel->producto_id,
+                        'nombre' => $productoAsociadoModel->producto->nombre,
+                        'unidades' => $productoAsociadoModel->unidades,
+                        'lote_id' => $productoAsociadoModel->lote_id,
+                    ];
+                }
+
+            }
+
+
             $this->productos_pedido[] = [
                 'id' => $producto->id,
                 'producto_pedido_id' => $producto->producto_pedido_id,
@@ -91,7 +111,13 @@ class CreateComponent extends Component
                 'unidades' => 0,
                 'borrar' => 0,
                 'lote_id' => $producto->lote_id,
+                'is_pack' => $productoModel->is_pack ?? false,
+
+
+                'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
             ];
+
+            
         }
         
     }
@@ -203,6 +229,16 @@ class CreateComponent extends Component
         $pesoUnidad = isset($producto) ? $producto->peso_neto_unidad : 0;
         $Cantidad = $this->productos_pedido[$In]['unidades_old'];
         $pesoTotal= ($pesoUnidad * $Cantidad)/1000;
+
+        if($this->productos_pedido[$In]['is_pack']){
+            $pesoTotal = 0;
+            foreach($this->productos_pedido[$In]['productos_asociados'] as $productoAsociado){
+                $productoAsociadoModel = Productos::find($productoAsociado['id']);
+                $pesoTotal += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
+
+            }
+        }
+
         return $pesoTotal;
 
     }
@@ -438,7 +474,9 @@ class CreateComponent extends Component
        
             // Verificar que todos los productos tienen un lote_id asignado
         foreach ($this->productos_pedido as $productoPedido) {
-            if (empty($productoPedido['lote_id'])) {
+
+
+            if (empty($productoPedido['lote_id']) && !$productoPedido['is_pack']) {
                 $this->alert('error', 'Todos los productos deben tener un lote asignado.', [
                     'position' => 'center',
                     'timer' => 3000,
@@ -447,12 +485,27 @@ class CreateComponent extends Component
                     'confirmButtonText' => 'Aceptar',
                 ]);
                 return;
-            }else{
+            }else if(!empty($productoPedido['lote_id']) && !$productoPedido['is_pack']){
                 DB::table('productos_pedido')
                 ->where('pedido_id',$this->identificador)
                 ->where('producto_pedido_id',$productoPedido['producto_pedido_id'])
                 ->update(['lote_id' => $productoPedido['lote_id']
                 ]);
+            }
+
+            if($productoPedido['is_pack']){
+                //comprobar que todos los productos asociados tienen lote_id
+                if(collect($productoPedido['productos_asociados'])->every(fn($p) => !is_null($p['lote_id']))){
+                    //todos los productos asociados tienen lote_id
+                }else{
+                    $this->alert('error', 'Todos los productos asociados deben tener un lote asignado.', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                        'showConfirmButton' => true,
+                        'confirmButtonText' => 'Aceptar',
+                    ]);
+                }
             }
         }
         $productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get();
@@ -504,6 +557,17 @@ class CreateComponent extends Component
                 $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
                 $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
 
+                //el peso total de los packs depende de los productos asociados y sus unidades
+                if($productoPedido['is_pack']){
+                    $pesoTotalProducto = 0;
+                    foreach($productoPedido['productos_asociados'] as $productoAsociado){
+                        $productoAsociadoModel = Productos::find($productoAsociado['id']);
+                        $pesoTotalProducto += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
+                    }
+                }
+
+
+
                 // Añadir el producto al array de productos
                 $productos[] = [
                     'nombre' => $producto->nombre,
@@ -547,7 +611,16 @@ class CreateComponent extends Component
                 $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
                 $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
 
+                if($productoPedido['is_pack']){
+                    $pesoTotalProducto = 0;
+                    foreach($productoPedido['productos_asociados'] as $productoAsociado){
+                        $productoAsociadoModel = Productos::find($productoAsociado['id']);
+                        $pesoTotalProducto += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
+                    }
+                }
+
                 // Añadir el producto al array de productos
+
                 $productos[] = [
                     'nombre' => $producto->nombre,
                     'lote_id' => $productoPedido['lote_id'],
@@ -730,6 +803,112 @@ class CreateComponent extends Component
     //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
     {
+
+
+        if($this->productos_pedido[$rowIndex]['is_pack']){
+            
+            //coger los pedidos asociados y asociarles un lote
+            $productosAsociados = $this->productos_pedido[$rowIndex]['productos_asociados'];
+            foreach($productosAsociados as $index => $productoAsociado){
+                if($productoAsociado['lote_id'] != null){
+
+                    continue;
+                }
+                $stocksEntrantes = StockEntrante::where('producto_id', $productoAsociado['id'])->get();
+                $stocks = [];
+
+                //filtrar de esos stockEntrantes cuales pertenecen a este almacen, para ello debemos mirar en stock que este relacionado con este stockEntrante
+                foreach($stocksEntrantes as $stockEntrante){
+                    $stock = Stock::where('id', $stockEntrante->stock_id)->first();
+                    if($stock->almacen_id == $this->pedido_almacen_id){
+                        $stocks[] = $stockEntrante;
+                    }
+                }
+
+                //filtrar de esos stocks cuales tienen stock suficiente
+                $stocksValidos = [];
+                foreach($stocks as $stock){
+                    $stockRegistro = StockRegistro::where('stock_entrante_id', $stock->id)->sum('cantidad');
+                    $cantidadStock = $stock->cantidad - $stockRegistro;
+                    if($cantidadStock >= $productoAsociado['unidades']){
+                        $stocksValidos[] = $stock;
+                    }
+                }
+
+                //dd($stocksValidos);
+                //filtrar de esos stocksValidos cuales tienen la cantidad de stock necesaria
+                $stocksValidosConStockSuficiente = [];
+                foreach($stocksValidos as $stock){
+                    $stockRegistro = StockRegistro::where('stock_entrante_id', $stock->id)->sum('cantidad');
+                    $cantidadStock = $stock->cantidad - $stockRegistro;
+                    if($cantidadStock >= $productoAsociado['unidades']){
+                        $stocksValidosConStockSuficiente[] = $stock;
+                    }
+                }
+
+                //dd($stocksValidosConStockSuficiente);
+
+                //de los stocksValidosConStockSuficiente cogemos el mas antiguo dependiendo de su created_at
+                $stockMasAntiguo = null;
+                foreach($stocksValidosConStockSuficiente as $stock){
+                    if(!isset($stockMasAntiguo) || $stock->created_at < $stockMasAntiguo->created_at){
+                        $stockMasAntiguo = $stock;
+                    }
+                
+                
+                }
+                //dd($stockMasAntiguo);
+               // dd($stockMasAntiguo);
+
+                if($stockMasAntiguo){
+                    $this->productos_pedido[$rowIndex]['productos_asociados'][$index]['lote_id'] = $stockMasAntiguo->lote_id;
+                    //restar la cantidad en el registro de stock
+                    $stockRegistro = StockRegistro::where('stock_entrante_id', $stockMasAntiguo->id)->sum('cantidad');
+
+                    if($productoAsociado['unidades'] > 0){
+                        StockRegistro::create([
+                            'stock_entrante_id' => $stockMasAntiguo->id,
+                            'cantidad' => $productoAsociado['unidades'],
+                            'motivo' => 'Salida',
+                            'tipo' => 'Venta',
+                            'pedido_id' => $this->pedido_id,
+
+                        ]);
+
+                        StockSaliente::create([
+                            'stock_entrante_id' => $stockMasAntiguo->id,
+                            'producto_id' => $productoAsociado['id'],
+                            'cantidad_salida' => $productoAsociado['unidades'],
+                            'fecha_salida' => Carbon::now(),
+                            'pedido_id' => $this->pedido_id,
+                            'tipo' => 'Pedido',
+                            'almacen_origen_id' => $this->pedido_almacen_id,
+                        ]);
+
+
+                    }
+                        
+
+                    ProductosPedidoPack::where('pack_id', $this->productos_pedido[$rowIndex]['producto_pedido_id'])->where('producto_id', $productoAsociado['id'])->where('pedido_id', $this->pedido_id)->update([
+                        'lote_id' => $stockMasAntiguo->lote_id
+                    ]); 
+                    
+                }
+
+   
+
+            }
+            $this->alert('success', 'Lotes asignados correctamente.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
+            return;
+
+        }
+
         //dd("hola");
         if($this->pedido_almacen_id == null){
             $this->alert('error', 'No tienes un almacén asignado.', [
@@ -797,6 +976,13 @@ class CreateComponent extends Component
         // Si el stock del lote es suficiente
         if ($cantidadStock >= $this->productos_pedido[$rowIndex]['unidades_old']) {
             $this->productos_pedido[$rowIndex]['lote_id'] = $entradaStock->id;
+            $this->alert('success', 'Lote asignado correctamente.', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+                'showConfirmButton' => true,
+                'confirmButtonText' => 'Aceptar',
+            ]);
         } else {
             // Si no es suficiente, dividir la cantidad necesaria entre los lotes disponibles
             $this->productos_pedido[$rowIndex]['unidades_old'] -= $cantidadStock; // Restar la cantidad que puede proporcionar este lote
