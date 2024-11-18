@@ -372,7 +372,7 @@ class EditComponent extends Component
         foreach ($productos as $producto) {
             $productoModel = Productos::find($producto->producto_pedido_id);
 
-            if($productoModel->is_pack){
+            if(isset($productoModel->is_pack) && $productoModel->is_pack){
                 $productosAsociados = json_decode($productoModel->products_id);
                 $productosAsociadosPedido = [];
 
