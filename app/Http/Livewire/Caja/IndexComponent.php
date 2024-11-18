@@ -45,6 +45,12 @@ class IndexComponent extends Component
     {
         $caja = $this->caja->where('documento_pdf', '!=', null)
                         ->where('tipo_movimiento', 'Gasto');
+                        
+        if($this->proveedorId != null){
+            $caja = $caja->where('poveedor_id', $this->proveedorId);
+        }
+
+        dd($caja);
         
         $zip = new \ZipArchive;
         
@@ -72,6 +78,8 @@ class IndexComponent extends Component
 
         $zipFileName = 'documentos_gastos_' . $mesActual . '_' . $ano . '.zip';
         $zipFilePath = storage_path($zipFileName);
+
+
         try{
             if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
                 foreach ($caja as $c) {
@@ -89,7 +97,7 @@ class IndexComponent extends Component
                 
                 return response()->download($zipFilePath)->deleteFileAfterSend(true);
             } else {
-                return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+                return response()->json(['error' => 'No se pudo crear el archivo ZIP' ], 500);
             }
         }catch(\Exception $e){
             

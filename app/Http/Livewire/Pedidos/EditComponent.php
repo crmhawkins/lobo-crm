@@ -177,13 +177,17 @@ class EditComponent extends Component
 
     public function ComprobarStockPedido(){
         $stock = true;
+        //dd("hola");
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
-            $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
-            if(!$stock){
-                break;
+            if($producto){
+                $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
+                    if(!$stock){
+                    break;
+                }
             }
         }
+        
         return $stock;
     }
 
@@ -193,12 +197,14 @@ class EditComponent extends Component
         $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
 
         foreach ($stocks as $stock) {
+            
             $stockEntrante = StockEntrante::where('stock_id', $stock->id)->where('producto_id', $producto->id)->first();
             if($stockEntrante){
 
                 $stockEntrantes[] = $stockEntrante;
             }
         }
+        
         $numStockTotal = 0;
         foreach ($stockEntrantes as $stockEntrante) {
             $historialStock = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
@@ -397,6 +403,7 @@ class EditComponent extends Component
         }else{
             $this->setPrecioEstimado();
         }
+       
 
         $this->canAccept = $this->ComprobarStockPedido();
 
