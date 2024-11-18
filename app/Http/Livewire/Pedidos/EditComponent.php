@@ -372,31 +372,34 @@ class EditComponent extends Component
         foreach ($productos as $producto) {
             $productoModel = Productos::find($producto->producto_pedido_id);
 
-            if(isset($productoModel->is_pack) && $productoModel->is_pack){
-                $productosAsociados = json_decode($productoModel->products_id);
-                $productosAsociadosPedido = [];
+            if($productoModel){
 
-                foreach($productosAsociados as $productoAsociado){
-                    $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
-                    $productosAsociadosPedido[] = [
-                        'id' => $productoAsociadoModel->producto_id,
-                        'nombre' => $productoAsociadoModel->producto->nombre,
-                        'unidades' => $productoAsociadoModel->unidades,
-                    ];
+                if(isset($productoModel->is_pack) && $productoModel->is_pack){
+                    $productosAsociados = json_decode($productoModel->products_id);
+                    $productosAsociadosPedido = [];
+
+                    foreach($productosAsociados as $productoAsociado){
+                        $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
+                        $productosAsociadosPedido[] = [
+                            'id' => $productoAsociadoModel->producto_id,
+                            'nombre' => $productoAsociadoModel->producto->nombre,
+                            'unidades' => $productoAsociadoModel->unidades,
+                        ];
+                    }
+
                 }
-
+                //dd($productoModel);
+                $this->productos_pedido[] = [
+                    'id' => $producto->id,
+                    'producto_pedido_id' => $producto->producto_pedido_id,
+                    'unidades' => $producto->unidades,
+                    'precio_ud' => $producto->precio_ud,
+                    'precio_total' => $producto->precio_total,
+                    'is_pack' => isset($productoModel->is_pack) ? $productoModel->is_pack : false,
+                    'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
+                    'borrar' => 0,
+                ];
             }
-            //dd($productoModel);
-            $this->productos_pedido[] = [
-                'id' => $producto->id,
-                'producto_pedido_id' => $producto->producto_pedido_id,
-                'unidades' => $producto->unidades,
-                'precio_ud' => $producto->precio_ud,
-                'precio_total' => $producto->precio_total,
-                'is_pack' => isset($productoModel->is_pack) ? $productoModel->is_pack : false,
-                'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
-                'borrar' => 0,
-            ];
             
         }
         //dd($this->productos_pedido);
