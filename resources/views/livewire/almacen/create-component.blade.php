@@ -274,13 +274,15 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($productosMarketingPedidos as $producto)
-                                            <tr>
-                                                <td>{{ $producto->producto->nombre ?? '' }}</td>
-                                                <td>{{ $producto->unidades }}</td>
-                                                <td @if($producto->unidades <= $producto->producto->stockEnAlmacen($pedido->almacen_id) ) class="text-success" @else class="text-danger" @endif>{{ $producto->producto->stockEnAlmacen($pedido->almacen_id) }}</td>
-                                                <td>{{ $producto->precio_ud }} €</td>
-                                                <td>{{ $producto->precio_total }} €</td>
-                                            </tr>
+                                            @if($producto->producto)
+                                                <tr>
+                                                    <td>{{ $producto->producto->nombre ?? '' }}</td>
+                                                    <td>{{ $producto->unidades }}</td>
+                                                    <td @if($producto->unidades <= $producto->producto->stockEnAlmacen($pedido->almacen_id) ) class="text-success" @else class="text-danger" @endif>{{ $producto->producto->stockEnAlmacen($pedido->almacen_id) }}</td>
+                                                    <td>{{ $producto->precio_ud }} €</td>
+                                                    <td>{{ $producto->precio_total }} €</td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>
