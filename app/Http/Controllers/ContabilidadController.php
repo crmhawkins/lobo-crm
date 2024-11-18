@@ -103,15 +103,41 @@ class ContabilidadController extends Controller
         return view('contabilidad.index', compact('cajas', 'cuentasContables', 'saldoAcumulado'));
     }
 
-    public function getLibroDiario()
+    public function getLibroDiario(Request $request)
     {
-        // Obtener todas las transacciones con relaciones cargadas
-        $transacciones = Caja::whereNotNull('asientoContable')
+        // Obtener el año actual por defecto
+        $year = $request->input('year', date('Y'));
+        $month = $request->input('month', null);
+        $cuentaContableId = $request->input('cuentaContable_id', null);
+
+        // Crear una consulta base
+        $query = Caja::whereNotNull('asientoContable')
             ->with(['proveedor', 'facturas.cliente'])
-            ->get();
+            ->whereYear('fecha', $year);
+
+        // Aplicar filtro de mes si está presente
+        if ($month) {
+            $query->whereMonth('fecha', $month);
+        }
+
+        // Aplicar filtro de cuenta contable si está presente
+        if ($cuentaContableId) {
+            $query->where(function ($query) use ($cuentaContableId) {
+                $query->whereHas('proveedor.cuentaContable', function ($query) use ($cuentaContableId) {
+                    $query->where('numero', 'like', $cuentaContableId . '%');
+                })->orWhereHas('facturas.cliente.cuentaContable', function ($query) use ($cuentaContableId) {
+                    $query->where('numero', 'like', $cuentaContableId . '%');
+                });
+            });
+        }
+
+        // Obtener las transacciones filtradas
+        $transacciones = $query->get();
 
         // Inicializar un array para almacenar los totales por cuenta contable
         $totalesPorCuenta = [];
+        $totalDebe = 0;
+        $totalHaber = 0;
 
         // Filtrar y agrupar transacciones para excluir aquellas sin cuenta contable
         foreach ($transacciones as $transaccion) {
@@ -137,8 +163,10 @@ class ContabilidadController extends Controller
 
                 if ($transaccion->tipo_movimiento == 'Ingreso') {
                     $totalesPorCuenta[$cuentaContable]['Haber'] += $transaccion->importe;
+                    $totalHaber += $transaccion->importe;
                 } else {
                     $totalesPorCuenta[$cuentaContable]['Debe'] += $transaccion->total;
+                    $totalDebe += $transaccion->total;
                 }
             }
         }
@@ -157,8 +185,8 @@ class ContabilidadController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        // Pasar los totales por cuenta a la vista
-        return view('contabilidad.libroDiario', compact('paginatedTotalesPorCuenta'));
+        // Pasar los totales por cuenta y los totales generales a la vista
+        return view('contabilidad.libroDiario', compact('paginatedTotalesPorCuenta', 'year', 'month', 'cuentaContableId', 'totalDebe', 'totalHaber'));
     }
 
 
