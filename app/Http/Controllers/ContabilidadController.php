@@ -21,88 +21,146 @@ class ContabilidadController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-{
-    // Cargar las cuentas contables utilizando el helper
-    $cuentasContables = GlobalFunctions::loadCuentasContables();
+    {
+        // Cargar las cuentas contables utilizando el helper
+        $cuentasContables = GlobalFunctions::loadCuentasContables();
 
-    // Determinar el número de transacciones por página (por defecto 10)
-    $perPage = $request->input('per_page', 10);
+        // Determinar el número de transacciones por página (por defecto 10)
+        $perPage = $request->input('per_page', 10);
 
-    // Crear una consulta base
-    $query = Caja::with(['proveedor', 'facturas.cliente'])
-    ->whereNotNull('asientoContable') // Filtrar solo cajas con asiento contable
-    ->orderBy('asientoContable', 'asc'); // Ordenar por asiento contable
+        // Crear una consulta base
+        $query = Caja::with(['proveedor', 'facturas.cliente'])
+            ->whereNotNull('asientoContable') // Filtrar solo cajas con asiento contable
+            ->orderBy('asientoContable', 'asc'); // Ordenar por asiento contable
 
-// Aplicar filtro de cuenta contable
-if ($request->filled('cuentaContable_id')) {
-    $cuentaContableId = $request->cuentaContable_id;
+        // Aplicar filtro de cuenta contable
+        if ($request->filled('cuentaContable_id')) {
+            $cuentaContableId = $request->cuentaContable_id;
 
-    // Buscar todas las cuentas, subcuentas, y subcuentas hijas que comiencen con el número seleccionado
-    $subCuentasNumeros = $this->getAllSubCuentasNumeros($cuentaContableId);
+            // Buscar todas las cuentas, subcuentas, y subcuentas hijas que comiencen con el número seleccionado
+            $subCuentasNumeros = $this->getAllSubCuentasNumeros($cuentaContableId);
 
-    // Aplicar filtro en base a las cuentas encontradas
-    $query->where(function ($query) use ($subCuentasNumeros) {
-        $query->whereHas('proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
-            $query->whereIn('numero', $subCuentasNumeros);
-        })->orWhereHas('facturas.cliente.cuentaContable', function ($query) use ($subCuentasNumeros) {
-            $query->whereIn('numero', $subCuentasNumeros);
-        })
-        // Nueva condición para filtrar cuando gasto_id no sea null y buscar en gasto.proveedor.cuentaContable
-        ->orWhereHas('gasto.proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
-            $query->whereIn('numero', $subCuentasNumeros);
-        });
-    });
-}
-
-    // Aplicar filtro de fechas
-    if ($request->filled('fecha_desde')) {
-        $query->where('fecha', '>=', $request->fecha_desde);
-    }
-    if ($request->filled('fecha_hasta')) {
-        $query->where('fecha', '<=', $request->fecha_hasta);
-    }
-
-    // Calcular el número de página actual
-    $currentPage = $request->input('page', 1);
-
-    // Clonar la consulta antes de aplicar la paginación para calcular el saldo acumulado
-    $saldoAcumulado = 0;
-
-    if ($currentPage > 1) {
-        $primerAsientoEnPagina = $query->clone()
-        ->skip(($currentPage - 1) * $perPage)
-        ->first()
-        ->asientoContable ?? null;
-        if ($primerAsientoEnPagina) {
-            // Calcular el saldo acumulado antes del asientoContable de la primera transacción visible
-            $saldoAcumulado = Caja::where('asientoContable', '<', $primerAsientoEnPagina)
-                ->whereNotNull('asientoContable')
-                ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -total END) as saldo_acumulado')
-                ->value('saldo_acumulado') ?? 0;
+            // Aplicar filtro en base a las cuentas encontradas
+            $query->where(function ($query) use ($subCuentasNumeros) {
+                $query->whereHas('proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
+                    $query->whereIn('numero', $subCuentasNumeros);
+                })->orWhereHas('facturas.cliente.cuentaContable', function ($query) use ($subCuentasNumeros) {
+                    $query->whereIn('numero', $subCuentasNumeros);
+                })
+                    // Nueva condición para filtrar cuando gasto_id no sea null y buscar en gasto.proveedor.cuentaContable
+                    ->orWhereHas('gasto.proveedor.cuentaContable', function ($query) use ($subCuentasNumeros) {
+                        $query->whereIn('numero', $subCuentasNumeros);
+                    });
+            });
         }
+
+        // Aplicar filtro de fechas
+        if ($request->filled('fecha_desde')) {
+            $query->where('fecha', '>=', $request->fecha_desde);
+        }
+        if ($request->filled('fecha_hasta')) {
+            $query->where('fecha', '<=', $request->fecha_hasta);
+        }
+
+        // Calcular el número de página actual
+        $currentPage = $request->input('page', 1);
+
+        // Clonar la consulta antes de aplicar la paginación para calcular el saldo acumulado
+        $saldoAcumulado = 0;
+
+        if ($currentPage > 1) {
+            $primerAsientoEnPagina = $query->clone()
+                ->skip(($currentPage - 1) * $perPage)
+                ->first()
+                ->asientoContable ?? null;
+            if ($primerAsientoEnPagina) {
+                // Calcular el saldo acumulado antes del asientoContable de la primera transacción visible
+                $saldoAcumulado = Caja::where('asientoContable', '<', $primerAsientoEnPagina)
+                    ->whereNotNull('asientoContable')
+                    ->selectRaw('SUM(CASE WHEN tipo_movimiento = "Ingreso" THEN importe ELSE -total END) as saldo_acumulado')
+                    ->value('saldo_acumulado') ?? 0;
+            }
+        }
+
+        // Obtener las transacciones paginadas (transacciones actuales de la página)
+        $cajas = $query->paginate($perPage);
+
+
+        //sumar todos los ingresos y sumar todos los gatos y ver el beneficio
+        // $ingresos = 0;
+        // $gastos = 0;
+        // $cajitas = Caja::all();
+        // foreach ($cajitas as $caja) {
+        //     if($caja->tipo_movimiento == 'Ingreso'){
+        //         $ingresos += $caja->importe;
+        //     }else{
+        //         $gastos += $caja->pagado ? $caja->pagado : $caja->total;
+        //     }
+        // }
+
+        // $beneficio = $ingresos - $gastos;
+        // Retornar la vista con los datos filtrados y el saldo acumulado
+        return view('contabilidad.index', compact('cajas', 'cuentasContables', 'saldoAcumulado'));
     }
 
-    // Obtener las transacciones paginadas (transacciones actuales de la página)
-    $cajas = $query->paginate($perPage);
+    public function getLibroDiario()
+    {
+        // Obtener todas las transacciones con relaciones cargadas
+        $transacciones = Caja::whereNotNull('asientoContable')
+            ->with(['proveedor', 'facturas.cliente'])
+            ->get();
 
+        // Inicializar un array para almacenar los totales por cuenta contable
+        $totalesPorCuenta = [];
 
-    //sumar todos los ingresos y sumar todos los gatos y ver el beneficio
-    // $ingresos = 0;
-    // $gastos = 0;
-    // $cajitas = Caja::all();
-    // foreach ($cajitas as $caja) {
-    //     if($caja->tipo_movimiento == 'Ingreso'){
-    //         $ingresos += $caja->importe;
-    //     }else{
-    //         $gastos += $caja->pagado ? $caja->pagado : $caja->total;
-    //     }
-    // }
+        // Filtrar y agrupar transacciones para excluir aquellas sin cuenta contable
+        foreach ($transacciones as $transaccion) {
+            $cuentaContable = null;
+            $nombreCuenta = null;
 
-    // $beneficio = $ingresos - $gastos;
-    // Retornar la vista con los datos filtrados y el saldo acumulado
-    return view('contabilidad.index', compact('cajas', 'cuentasContables', 'saldoAcumulado' ));
-}
-    
+            if ($transaccion->tipo_movimiento == 'Ingreso' && !empty($transaccion->facturas) && !empty($transaccion->facturas[0]->cliente)) {
+                $cuentaContable = $transaccion->facturas[0]->cliente->cuenta_contable;
+                $nombreCuenta = $transaccion->facturas[0]->cliente->nombre;
+            } else if ($transaccion->tipo_movimiento == 'Gasto' && !empty($transaccion->proveedor)) {
+                $cuentaContable = $transaccion->proveedor->cuenta_contable;
+                $nombreCuenta = $transaccion->proveedor->nombre;
+            }
+
+            if ($cuentaContable) {
+                if (!isset($totalesPorCuenta[$cuentaContable])) {
+                    $totalesPorCuenta[$cuentaContable] = [
+                        'nombre' => $nombreCuenta,
+                        'Debe' => 0,
+                        'Haber' => 0
+                    ];
+                }
+
+                if ($transaccion->tipo_movimiento == 'Ingreso') {
+                    $totalesPorCuenta[$cuentaContable]['Haber'] += $transaccion->importe;
+                } else {
+                    $totalesPorCuenta[$cuentaContable]['Debe'] += $transaccion->total;
+                }
+            }
+        }
+
+        // Convertir el array a una colección para paginar
+        $totalesPorCuentaCollection = collect($totalesPorCuenta);
+
+        // Paginación manual
+        $perPage = 10;
+        $currentPage = request()->input('page', 1);
+        $paginatedTotalesPorCuenta = new \Illuminate\Pagination\LengthAwarePaginator(
+            $totalesPorCuentaCollection->forPage($currentPage, $perPage),
+            $totalesPorCuentaCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        // Pasar los totales por cuenta a la vista
+        return view('contabilidad.libroDiario', compact('paginatedTotalesPorCuenta'));
+    }
+
 
 
     /**
@@ -116,7 +174,7 @@ if ($request->filled('cuentaContable_id')) {
         $grupo = GrupoContable::where('numero', $numeroCuenta)->first();
         //dd($numeroCuenta);
 
-        if($grupo){
+        if ($grupo) {
             $numerosCuentas[] = $grupo->numero; // Añadir la cuenta general
 
             $subGrupos = SubGrupoContable::where('grupo_id', $grupo->id)->get();
@@ -143,13 +201,11 @@ if ($request->filled('cuentaContable_id')) {
                     }
                 }
             }
-
-
-        }else{
+        } else {
 
             $subgrupo = SubGrupoContable::where('numero', $numeroCuenta)->first();
 
-            if($subgrupo){
+            if ($subgrupo) {
                 $numerosCuentas[] = $subgrupo->numero; // Añadir la cuenta general
 
                 // Buscar subcuentas asociadas
@@ -169,11 +225,11 @@ if ($request->filled('cuentaContable_id')) {
                         }
                     }
                 }
-            }else{
+            } else {
 
                 $cuenta = CuentasContable::where('numero', $numeroCuenta)->first();
 
-                if($cuenta){
+                if ($cuenta) {
                     $numerosCuentas[] = $cuenta->numero; // Añadir la cuenta general
 
                     // Buscar subcuentas asociadas
@@ -187,10 +243,10 @@ if ($request->filled('cuentaContable_id')) {
                             $numerosCuentas[] = $subCuentaHija->numero;
                         }
                     }
-                }else{
-                    
+                } else {
+
                     $subCuenta = SubCuentaContable::where('numero', $numeroCuenta)->first();
-                    if($subCuenta){
+                    if ($subCuenta) {
                         $numerosCuentas[] = $subCuenta->numero; // Añadir la cuenta general
 
                         // Buscar subcuentas hijas asociadas
@@ -198,22 +254,14 @@ if ($request->filled('cuentaContable_id')) {
                         foreach ($subCuentasHijas as $subCuentaHija) {
                             $numerosCuentas[] = $subCuentaHija->numero;
                         }
-                    }else{
+                    } else {
                         $subCuentaHija = SubCuentaHijo::where('numero', $numeroCuenta)->first();
-                        if($subCuentaHija){
+                        if ($subCuentaHija) {
                             $numerosCuentas[] = $subCuentaHija->numero;
                         }
-
                     }
-                    
-                
                 }
-
-
             }
-
-
-
         }
 
         return $numerosCuentas;
@@ -226,7 +274,6 @@ if ($request->filled('cuentaContable_id')) {
     public function create()
     {
         return view('contabilidad.create');
-
     }
 
     /**
@@ -260,7 +307,6 @@ if ($request->filled('cuentaContable_id')) {
     public function edit($id)
     {
         return view('contabilidad.edit', compact('id'));
-
     }
 
     /**

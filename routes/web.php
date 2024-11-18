@@ -269,6 +269,8 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/comercial/create-pedido', [ComercialViewController::class, 'createpedido'])->name('comercial.createpedido');
     Route::get('/comercial/edit-pedido/{id}', [ComercialViewController::class, 'editpedido'])->name('comercial.editpedido');
     Route::get('/comercial/pedidos', [ComercialViewController::class, 'pedidos'])->name('comercial.pedidos');
+
+    Route::get('/contabilidad/libro-diario', [ContabilidadController::class, 'getLibroDiario'])->name('contabilidad.libroDiario');
 });
 
 Route::get('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'hookWhatsapp'])->name('whatsapp.hookWhatsapp');

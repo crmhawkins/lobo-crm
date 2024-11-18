@@ -47,13 +47,13 @@ class Caja extends Model
         'gasto_id',
     ];
 
-     // Relación con Proveedores (Una caja pertenece a un proveedor)
-     public function proveedor()
+    // Relación con Proveedores (Una caja pertenece a un proveedor)
+    public function proveedor()
     {
         return $this->belongsTo(Proveedores::class, 'poveedor_id', 'id'); // Cambiado a 'poveedor_id'
     }
 
-      // Relación con Facturas (Una caja puede tener muchas facturas asociadas)
+    // Relación con Facturas (Una caja puede tener muchas facturas asociadas)
     public function facturas()
     {
         return $this->hasMany(Facturas::class, 'id', 'pedido_id');
@@ -87,6 +87,8 @@ class Caja extends Model
      * @var array
      */
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }
