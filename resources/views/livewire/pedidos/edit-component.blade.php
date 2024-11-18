@@ -425,6 +425,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                                 <td>{{ $productoAsociado['unidades'] }}</td>
                                                                 <td colspan="3">Producto asociado</td>
                                                             </tr> --}}
+                                                            {{-- {{dd($producto['productos_asociados'])}} --}}
                                                             <tr>
                                                                 <td colspan="5">
                                                                     <div class="card mt-2">

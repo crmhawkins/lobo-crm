@@ -380,11 +380,20 @@ class EditComponent extends Component
 
                     foreach($productosAsociados as $productoAsociado){
                         $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
-                        $productosAsociadosPedido[] = [
-                            'id' => $productoAsociadoModel->producto_id,
-                            'nombre' => $productoAsociadoModel->producto->nombre,
-                            'unidades' => $productoAsociadoModel->unidades,
-                        ];
+                        if($productoAsociadoModel){
+                            $productosAsociadosPedido[] = [
+                                'id' => $productoAsociadoModel->producto_id,
+                                'nombre' => $productoAsociadoModel->producto->nombre,
+                                'unidades' => $productoAsociadoModel->unidades,
+                            ];
+                        }else{
+                            $productosAsociadosPedido[] = [
+                                'id' => $productoAsociado,
+                                'nombre' => $productoAsociadoModel->producto->nombre,
+                                'unidades' => $productoAsociadoModel->unidades,
+                            ];
+                        }
+
                     }
 
                 }
@@ -1521,14 +1530,30 @@ public function setPrecioEstimadoMarketing()
 
         // Verificar si el producto es un pack
         if ($producto->is_pack) {
-            $productosAsociados = $producto->productos_asociados; // Asumiendo que tienes una relación definida
+            $productosAsociados = json_decode($producto->products_id ?? '[]'); // Asegúrate de que sea un array
+           $productos_asociados = [];
+
             foreach ($productosAsociados as $productoAsociado) {
-                $this->productos_asociados[] = [
-                    'id' => $productoAsociado->id,
-                    'nombre' => $productoAsociado->nombre,
-                    'unidades' => 0, // Inicialmente 0, el usuario puede ajustar después
-                ];
+                $productoAsociadoModel = Productos::find($productoAsociado);
+                if($productoAsociadoModel){
+                    $productos_asociados[] = [
+                        'id' => $productoAsociadoModel->id,
+                        'nombre' => $productoAsociadoModel->nombre,
+                        'unidades' => 0, // Inicialmente 0, el usuario puede ajustar después
+                    ];
+                }
             }
+
+            $this->productos_pedido[] = [
+                'producto_pedido_id' => $producto->id,
+                'unidades' => $this->unidades_producto,
+                'precio_ud' => $this->productoEditarPrecio,
+                'precio_total' => $this->unidades_producto * $this->productoEditarPrecio,
+                'is_pack' => true,
+                'productos_asociados' => $productos_asociados,
+            ];
+
+            //dd($this->productos_pedido);
         } else {
             // Lógica existente para productos que no son pack
             $this->productos_pedido[] = [
