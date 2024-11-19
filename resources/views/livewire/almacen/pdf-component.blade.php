@@ -137,10 +137,8 @@
                 
                         // Cálculos
                         $unidades = $productoMarketingPedido->unidades;
-                        $cajas = floor($unidades / $producto->unidades_por_caja); // Calculamos las cajas
-                        $unidadesRestantes = $unidades % $producto->unidades_por_caja; // Unidades sobrantes
-                        $pallets = floor($cajas / $producto->cajas_por_pallet); // Calculamos los pallets
-                        $cajasSobrantes = $cajas % $producto->cajas_por_pallet; // Cajas sobrantes que no llenan un pallet
+                        $cajas = ceil($unidades / $producto->unidades_por_caja); // Calculamos el total de cajas
+                        $pallets = ceil($cajas / $producto->cajas_por_pallet); // Calculamos el total de pallets
                         $pesoTotalProducto = $unidades * $producto->peso_neto_unidad / 1000; // Peso total en kg
                 
                         // Sumamos el peso total al peso total de todo el pedido
@@ -152,8 +150,8 @@
                         </td>
                         <td>{{ $productoMarketingPedido->lote_id ?? '' }}</td> <!-- Lote -->
                         <td>{{ $pallets }}</td> <!-- Número de pallets -->
-                        <td>{{ $cajasSobrantes }}</td> <!-- Cajas sobrantes -->
-                        <td>{{ $unidadesRestantes }}</td> <!-- Unidades restantes -->
+                        <td>{{ $cajas }}</td> <!-- Cajas sobrantes -->
+                        <td>{{ $unidades }}</td> <!-- Unidades restantes -->
                         @php
                         $pesoTotal += $pesoTotalProducto;
                         @endphp

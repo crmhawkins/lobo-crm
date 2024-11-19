@@ -604,14 +604,14 @@ class IndexComponent extends Component
         $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
 
         $datos = [
-        'conIva' => $Iva,
-        'pedido' => $pedido ,
-        'cliente' => $cliente,
-        'productos' => $productos,
-        'num_albaran' => $num_albaran = $albaran->num_albaran,
-        'fecha_albaran' => $fecha_albaran = $albaran->fecha,
-        'configuracion' => $configuracion,
-        'productosMarketing' => $productosMarketing,
+            'conIva' => $Iva,
+            'pedido' => $pedido ,
+            'cliente' => $cliente,
+            'productos' => $productos,
+            'num_albaran' => $num_albaran = $albaran->num_albaran,
+            'fecha_albaran' => $fecha_albaran = $albaran->fecha,
+            'configuracion' => $configuracion,
+            'productosMarketing' => $productosMarketing,
         ];
 
         // Generar y mostrar el PDF
