@@ -264,9 +264,9 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                                 <i class="fas fa-boxes text-primary"></i> <!-- Icono para packs -->
                                                             @endif
                                                         </td>
-                                                        <td>{{ $producto['unidades'] }}</td>
-                                                        <td>{{ $producto['precio_ud'] }} €</td>
-                                                        <td>{{ $producto['precio_total'] }} €</td>
+                                                        <td>{{ $this->getUnidadesTabla($productoIndex) }}</td>
+                                                        <td><input type="number" wire:model.lazy="productos_pedido.{{ $productoIndex }}.precio_ud" wire:change="actualizarPrecioTotal({{$productoIndex}})" class="form-control" style="width:70%; display:inline-block">€</td>
+                                                        <td>{{ $producto['precio_total']}} €</td>
                                                         <td>
                                                             <button type="button" class="btn btn-danger btn-sm" wire:click="deleteArticulo('{{ $productoIndex }}')">
                                                                 <i class="fas fa-trash-alt"></i>
