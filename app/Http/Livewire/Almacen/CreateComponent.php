@@ -91,12 +91,25 @@ class CreateComponent extends Component
 
                 foreach($productosAsociados as $productoAsociado){
                     $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
-                    $productosAsociadosPedido[] = [
-                        'id' => $productoAsociadoModel->producto_id,
-                        'nombre' => $productoAsociadoModel->producto->nombre,
-                        'unidades' => $productoAsociadoModel->unidades,
-                        'lote_id' => $productoAsociadoModel->lote_id,
-                    ];
+                    if($productoAsociadoModel){
+					
+						$productosAsociadosPedido[] = [
+							'id' => $productoAsociadoModel->producto_id,
+							'nombre' => $productoAsociadoModel->producto->nombre,
+							'unidades' => $productoAsociadoModel->unidades,
+							'lote_id' => $productoAsociadoModel->lote_id,
+						];
+					}else{
+						
+						$productoAsociadoModel = Productos::find($productoAsociado);
+								//dd($productoAsociadoModel->nombre);
+								$productosAsociadosPedido[] = [
+									'id' => $productoAsociado,
+									'nombre' => $productoAsociadoModel->nombre,
+									'unidades' => 0,
+									'lote_id' => null
+								];
+					}
                 }
 
             }
