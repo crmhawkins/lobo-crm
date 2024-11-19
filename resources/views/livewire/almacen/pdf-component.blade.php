@@ -134,11 +134,12 @@
                 @foreach($productosMarketing as $productoMarketingPedido)
                     @php
                         $producto = $productoMarketingPedido->producto; // Obtenemos el producto de marketing
-                
+                        
                         // Cálculos
                         $unidades = $productoMarketingPedido->unidades;
-                        $cajas = ceil($unidades / $producto->unidades_por_caja); // Calculamos el total de cajas
-                        $pallets = ceil($cajas / $producto->cajas_por_pallet); // Calculamos el total de pallets
+                        $cajas = floor($unidades / $producto->unidades_por_caja); // Calculamos el total de cajas redondeando hacia abajo
+                        $pallets = floor($cajas / $producto->cajas_por_pallet); // Calculamos el total de pallets redondeando hacia abajo
+                        $cajasSobrantes = $cajas % $producto->cajas_por_pallet; // Cajas sobrantes que no llenan un pallet
                         $pesoTotalProducto = $unidades * $producto->peso_neto_unidad / 1000; // Peso total en kg
                 
                         // Sumamos el peso total al peso total de todo el pedido
