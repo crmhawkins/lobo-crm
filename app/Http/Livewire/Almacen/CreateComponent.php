@@ -820,17 +820,19 @@ class CreateComponent extends Component
 
 
         if($this->productos_pedido[$rowIndex]['is_pack']){
-            
+            //dd("hola");
             //coger los pedidos asociados y asociarles un lote
             $productosAsociados = $this->productos_pedido[$rowIndex]['productos_asociados'];
+            $text = '';
             foreach($productosAsociados as $index => $productoAsociado){
-                if($productoAsociado['lote_id'] != null){
-
+                //dd($productoAsociado['nombre']);
+                if($productoAsociado['lote_id'] != null || $productoAsociado['lote_id'] != ''){
+                    //dd("hola");
                     continue;
                 }
                 $stocksEntrantes = StockEntrante::where('producto_id', $productoAsociado['id'])->get();
                 $stocks = [];
-
+                
                 //filtrar de esos stockEntrantes cuales pertenecen a este almacen, para ello debemos mirar en stock que este relacionado con este stockEntrante
                 foreach($stocksEntrantes as $stockEntrante){
                     $stock = Stock::where('id', $stockEntrante->stock_id)->first();
@@ -839,14 +841,34 @@ class CreateComponent extends Component
                     }
                 }
 
+                //dd($stocks);
+                if(count($stocks) == 0){
+                    //dd("hola");
+                    //crear un text para despues generar alerta
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociado['nombre'] . ". <br>";
+                    continue;
+                }
+                //dd($stocks);
                 //filtrar de esos stocks cuales tienen stock suficiente
                 $stocksValidos = [];
                 foreach($stocks as $stock){
                     $stockRegistro = StockRegistro::where('stock_entrante_id', $stock->id)->sum('cantidad');
+                    //dd($stockRegistro);
+                    //dd($stock);
                     $cantidadStock = $stock->cantidad - $stockRegistro;
+                    //dd($cantidadStock);
                     if($cantidadStock >= $productoAsociado['unidades']){
                         $stocksValidos[] = $stock;
                     }
+                }
+                if(count($stocksValidos) == 0){
+                    $this->alert('error', 'No hay stock disponible para este producto.', [
+                        'position' => 'center',
+                        'timer' => 3000,
+                        'toast' => false,
+                    ]);
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociado['nombre'] . ". <br>";
+                    continue;
                 }
 
                 //dd($stocksValidos);
@@ -859,7 +881,10 @@ class CreateComponent extends Component
                         $stocksValidosConStockSuficiente[] = $stock;
                     }
                 }
-
+                if(count($stocksValidosConStockSuficiente) == 0){
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociado['nombre'] . ". <br>";
+                    continue;
+                }
                 //dd($stocksValidosConStockSuficiente);
 
                 //de los stocksValidosConStockSuficiente cogemos el mas antiguo dependiendo de su created_at
@@ -870,6 +895,10 @@ class CreateComponent extends Component
                     }
                 
                 
+                }
+                if(!isset($stockMasAntiguo)){
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociado['nombre'] . ". <br>";
+                    continue;
                 }
                 //dd($stockMasAntiguo);
                // dd($stockMasAntiguo);
@@ -912,13 +941,23 @@ class CreateComponent extends Component
    
 
             }
-            $this->alert('success', 'Lotes asignados correctamente.', [
-                'position' => 'center',
-                'timer' => 3000,
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'Aceptar',
-            ]);
+            //dd($text);
+            if($text != ''){
+                $this->alert('error', $text, [
+                    'position' => 'center',
+                    'timer' => false,
+                    'toast' => false,
+                ]);
+                
+            }else{
+                $this->alert('success', 'Lotes asignados correctamente.', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Aceptar',
+                ]);
+            }
             return;
 
         }
