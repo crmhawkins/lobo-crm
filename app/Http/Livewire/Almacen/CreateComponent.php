@@ -242,13 +242,14 @@ class CreateComponent extends Component
         $pesoUnidad = isset($producto) ? $producto->peso_neto_unidad : 0;
         $Cantidad = $this->productos_pedido[$In]['unidades_old'];
         $pesoTotal= ($pesoUnidad * $Cantidad)/1000;
+        if(isset($this->productos_pedido[$In]['is_pack'])){
+            if($this->productos_pedido[$In]['is_pack']){
+                $pesoTotal = 0;
+                foreach($this->productos_pedido[$In]['productos_asociados'] as $productoAsociado){
+                    $productoAsociadoModel = Productos::find($productoAsociado['id']);
+                    $pesoTotal += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
 
-        if($this->productos_pedido[$In]['is_pack']){
-            $pesoTotal = 0;
-            foreach($this->productos_pedido[$In]['productos_asociados'] as $productoAsociado){
-                $productoAsociadoModel = Productos::find($productoAsociado['id']);
-                $pesoTotal += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
-
+                }
             }
         }
 
