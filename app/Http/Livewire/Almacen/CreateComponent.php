@@ -826,6 +826,12 @@ class CreateComponent extends Component
             $text = '';
             foreach($productosAsociados as $index => $productoAsociado){
                 //dd($productoAsociado['nombre']);
+                //si la cantidad es 0 no se le asigna lote
+                if($productoAsociado['unidades'] == 0){
+                    $this->productos_pedido[$rowIndex]['productos_asociados'][$index]['lote_id'] = 'Sin asignar';
+                    continue;
+                }
+
                 if($productoAsociado['lote_id'] != null || $productoAsociado['lote_id'] != ''){
                     //dd("hola");
                     continue;
