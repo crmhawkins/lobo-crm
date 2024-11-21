@@ -904,7 +904,7 @@ class CreateComponent extends Component
                // dd($stockMasAntiguo);
 
                 if($stockMasAntiguo){
-                    $this->productos_pedido[$rowIndex]['productos_asociados'][$index]['lote_id'] = $stockMasAntiguo->lote_id;
+                    $this->productos_pedido[$rowIndex]['productos_asociados'][$index]['lote_id'] = $stockMasAntiguo->orden_numero;
                     //restar la cantidad en el registro de stock
                     $stockRegistro = StockRegistro::where('stock_entrante_id', $stockMasAntiguo->id)->sum('cantidad');
 
@@ -933,7 +933,7 @@ class CreateComponent extends Component
                         
 
                     ProductosPedidoPack::where('pack_id', $this->productos_pedido[$rowIndex]['producto_pedido_id'])->where('producto_id', $productoAsociado['id'])->where('pedido_id', $this->pedido_id)->update([
-                        'lote_id' => $stockMasAntiguo->lote_id
+                        'lote_id' => $stockMasAntiguo->orden_numero
                     ]); 
                     
                 }
