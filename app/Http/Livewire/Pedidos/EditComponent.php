@@ -422,6 +422,8 @@ class EditComponent extends Component
                     'borrar' => 0,
                 ];
             }
+
+
             
         }
         //dd($this->productos_pedido);
@@ -470,7 +472,7 @@ class EditComponent extends Component
                 'timerProgressBar' => true,
             ]);
         }
-
+        $this->setPrecioEstimadoMarketing();
        // 
         $this->emit('refreshComponent');
 
