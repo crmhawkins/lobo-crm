@@ -162,6 +162,9 @@
                                 <th scope="col">Fecha</th>
                                 <th scope="col">Cliente: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Factura</th>
+                                <th scope="col">Transporte</th>
+                                <th scope="col">Gastos Transporte</th>
+
                                 <th scope="col">Precio: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Estado: @mobile &nbsp; @endmobile</th>
                                 <th scope="col">Acciones: @mobile &nbsp; @endmobile</th>
@@ -170,7 +173,7 @@
                         <tbody>
                             {{-- Recorre los pedidos --}}
                             @foreach ($pedidos as $presup)
-                            <tr>
+                           <tr>
                                 @if($presup->departamento_id == config('app.departamentos_pedidos')['Marketing']['id'])
                                     <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->id }}</td>
                                 @else
@@ -188,6 +191,8 @@
                                 @else
                                     <td></td>
                                 @endif
+                                <td>{{ $presup->transporte ?? '' }}</td>
+                                <td>{{ $presup->gastos_envio ?? 0.00 }} €</td>
                                 <td>{{ $presup->precio }} €</td>
                                 <td>
                                     @if($this->getEstadoNombre($presup->estado) == "Recibido")

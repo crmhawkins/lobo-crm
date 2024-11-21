@@ -299,9 +299,14 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <div class="form-group col-md-1">
                                 &nbsp;
                             </div>
-                            <div class="form-group col-md-5">
-                                <label for="localidad_entrega">Empresa de transporte @if($estado ==8)<span class="badge badge-warning">En ruta</span>@endif</label>
-                                <input type="text" wire:model="empresa_transporte" class="form-control" >
+                            <div wire:ignore.self class="form-group col-md-5">
+                                <label for="empresa_transporte">Empresa de transporte @if($estado ==8)<span class="badge badge-warning">En ruta</span>@endif</label>
+                                <input type="text" list="empresas" class="form-control" wire:model="empresa_transporte" placeholder="Escribe o selecciona una empresa">
+                                <datalist id="empresas">
+                                    @foreach ($empresasTransporte as $empresa)
+                                        <option value="{{ $empresa->nombre }}">{{ $empresa->nombre }}</option>
+                                    @endforeach
+                                </datalist>
                             </div>
                         @endif
                     </div>
@@ -485,9 +490,14 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 <label for="fecha">Gastos de transporte</label>
                                 <input type="number" min=0 wire:model="gastos_envio" wire:change='setPrecioEstimado()' class="form-control" >
                             </div>
-                            <div class="form-group col-md-4">
-                                <label for="fecha">Empresa de transporte</label>
-                                <input type="text" wire:model="transporte" class="form-control" >
+                            <div wire:ignore.self class="form-group col-md-5">
+                                <label for="empresa_transporte">Empresa de transporte</label>
+                                <input type="text" list="empresas" class="form-control" wire:model="empresa_transporte" placeholder="Escribe o selecciona una empresa">
+                                <datalist id="empresas">
+                                    @foreach ($empresasTransporte as $empresa)
+                                        <option value="{{ $empresa->nombre }}">{{ $empresa->nombre }}</option>
+                                    @endforeach
+                                </datalist>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="fecha">Precio final</label>
@@ -1053,6 +1063,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
     
 </div>
     @section('scripts')
+    
         {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
@@ -1061,6 +1072,32 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script> --}}
         {{-- <script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script> --}}
+        <script>
+            document.addEventListener('livewire:load', function () {
+        $('#select2-empresa-transporte').select2({
+            tags: true, // Permite escribir nuevas opciones
+            placeholder: "Escribe o selecciona una empresa",
+            allowClear: true,
+            width: '100%' // Asegura que el select2 ocupe todo el ancho del contenedor
+        });
+
+        $('#select2-empresa-transporte').on('change', function (e) {
+            var data = $(this).val();
+            @this.set('empresa_transporte', data);
+        });
+        $('#select2-empresa-transporte2').select2({
+            tags: true, // Permite escribir nuevas opciones
+            placeholder: "Escribe o selecciona una empresa",
+            allowClear: true,
+            width: '100%' // Asegura que el select2 ocupe todo el ancho del contenedor
+        });
+
+        $('#select2-empresa-transporte2').on('change', function (e) {
+            var data = $(this).val();
+            @this.set('empresa_transporte', data);
+        });
+    });
+        </script>
         <script>
             // In your Javascript (external .js resource or <script> tag)
 
@@ -1132,11 +1169,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     $('.js-example-basic-single').select2();
                 });
 
-                // $('#id_cliente').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // // var data = $('.js-example-basic-single').select2("val");
-                // })
+               
             });
             $('#addProductModal').on('shown.bs.modal', function () {
 
@@ -1155,60 +1188,12 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
             $(document).ready(function() {
                 $('.js-example-basic-single').select2();
-                // $('.js-example-basic-single').on('change', function (e) {
-                // console.log('change')
-                // console.log( e.target.value)
-                // var data = $('.js-example-basic-single').select2("val");
-
-                // @this.set('foo', data);
-                //     livewire.emit('selectedCompanyItem', e.target.value)
-                // });
-                // $('#tableServicios').DataTable({
-                //     responsive: true,
-                //     dom: 'Bfrtip',
-                //     buttons: [
-                //         'copy', 'csv', 'excel', 'pdf', 'print'
-                //     ],
-                //     buttons: [{
-                //         extend: 'collection',
-                //         text: 'Export',
-                //         buttons: [{
-                //                 extend: 'pdf',
-                //                 className: 'btn-export'
-                //             },
-                //             {
-                //                 extend: 'excel',
-                //                 className: 'btn-export'
-                //             }
-                //         ],
-                //         className: 'btn btn-info text-white'
-                //     }],
-                //     "language": {
-                //         "lengthMenu": "Mostrando _MENU_ registros por página",
-                //         "zeroRecords": "Nothing found - sorry",
-                //         "info": "Mostrando página _PAGE_ of _PAGES_",
-                //         "infoEmpty": "No hay registros disponibles",
-                //         "infoFiltered": "(filtrado de _MAX_ total registros)",
-                //         "search": "Buscar:",
-                //         "paginate": {
-                //             "first": "Primero",
-                //             "last": "Ultimo",
-                //             "next": "Siguiente",
-                //             "previous": "Anterior"
-                //         },
-                //         "zeroRecords": "No se encontraron registros coincidentes",
-                //     }
+                
 
             });
 
 
 
-            // $("#fechaEmision").datepicker();
-
-
-            // $("#fechaEmision").on('change', function(e) {
-            //     @this.set('fechaEmision', $('#fechaEmision').val());
-            // });
 
 
 

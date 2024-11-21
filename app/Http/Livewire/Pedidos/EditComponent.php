@@ -36,6 +36,7 @@ use App\Models\StockRegistro;
 use App\Models\ProductosMarketing;
 use App\Models\ProductosMarketingPedido;
 use App\Models\ProductosPedidoPack;
+use App\Models\EmpresasTransporte;
 
 
 class EditComponent extends Component
@@ -128,6 +129,8 @@ class EditComponent extends Component
     public $precio_producto_marketing = 0.01;
     public $precioEstimadoMarketing = 0;
     public $precioMarketing;
+
+    public $empresasTransporte = [];
 
     public $productos_asociados = []; // Nueva propiedad para productos asociados
 
@@ -364,6 +367,7 @@ class EditComponent extends Component
         $this->documentos = PedidosDocuments::where('pedido_id', $this->identificador)->get();
         $this->productosMarketing = ProductosMarketing::all();
         $this->productos_marketing_pedido = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get()->toArray();
+        $this->empresasTransporte = EmpresasTransporte::all();
 
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         // if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){

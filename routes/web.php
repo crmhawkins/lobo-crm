@@ -40,6 +40,7 @@ use App\Http\Controllers\StockSubalmacenController;
 use App\Http\Controllers\AlertasController;
 use App\Http\Controllers\ComercialViewController;
 
+use App\Http\Controllers\EmpresasTransporte;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +68,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::post('/alertas/marcar-leida/{id}', [AlertasController::class, 'marcarLeida'])->name('alertas.marcarLeida');
     Route::post('/alertas/marcar-todas-leidas', [AlertasController::class, 'marcarTodasLeidas'])->name('alertas.marcarTodasLeidas');
-
     Route::get('/alertas/popup', [AlertasController::class, 'popup'])->name('alertas.popup');
 
     // Settings
@@ -271,6 +271,11 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/comercial/pedidos', [ComercialViewController::class, 'pedidos'])->name('comercial.pedidos');
 
     Route::get('/contabilidad/libro-diario', [ContabilidadController::class, 'getLibroDiario'])->name('contabilidad.libroDiario');
+    Route::get('/empresas-transporte', [EmpresasTransporte::class , 'index'])->name('empresas-transporte.index');
+
+
+
+
 });
 
 Route::get('/whatsapp', [App\Http\Controllers\WhatsappController::class, 'hookWhatsapp'])->name('whatsapp.hookWhatsapp');

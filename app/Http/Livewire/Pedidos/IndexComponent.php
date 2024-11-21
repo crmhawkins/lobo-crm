@@ -16,6 +16,7 @@ use App\Models\Delegacion;
 use App\Models\Configuracion;
 use App\Helpers\FacturaHelper;
 use App\Models\ProductosMarketingPedido;
+use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
 //pdf
@@ -267,7 +268,7 @@ class IndexComponent extends Component
         $this->comercialSeleccionadoId = session('pedido_filtro_comercialSeleccionadoId', -1);
         $this->clienteSeleccionadoId = session('pedido_filtro_clienteSeleccionadoId', -1);
         $this->estadoSeleccionado = session('pedido_filtro_estadoSeleccionado', -1);
-        $this->fecha_min = session('pedido_filtro_fecha_min', null);
+        $this->fecha_min = session('pedido_filtro_fecha_min', Carbon::now()->startOfMonth()->toDateString());
         $this->fecha_max = session('pedido_filtro_fecha_max', null);
 
         if (Auth::user()->role != 3) {

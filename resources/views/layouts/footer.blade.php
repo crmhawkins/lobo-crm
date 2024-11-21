@@ -314,11 +314,18 @@
                     </a>
                 </div>
                 <div class="exit-button-col">
+                    <a class="footer-button" href="{{ route('empresas-transporte.index') }}">
+                        <i class="fa-solid fa-truck-fast" style="font-size: 44px"></i>
+                        <span>Empresas Transporte </span>
+                    </a>
+                </div>
+                <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('configuracion.edit') }}">
                         <i class="fa-solid fa-gears" style="font-size: 44px"></i>
                         <span>OPCIONES </span>
                     </a>
                 </div>
+                
 
                 <div class="col-2 col-md-2 col-lg-1 exit-button-col">
                     <button class="footer-button" href="{{ route('logout') }}"
