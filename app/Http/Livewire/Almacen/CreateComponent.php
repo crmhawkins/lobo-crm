@@ -347,7 +347,7 @@ class CreateComponent extends Component
         }
     
         // Buscar el stock en subalmacenes de marketing
-        $stockDisponible = $productoMarketing->stockEnAlmacen($this->pedido_almacen_id);
+        $stockDisponible = $productoMarketing->stockEnAlmacen(1);
     
         // Verificar si hay suficiente stock
         if ($stockDisponible < $productoMarketingPedido->unidades) {
@@ -525,7 +525,7 @@ class CreateComponent extends Component
         $productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get();
         foreach ($productosMarketingPedidos as $productoMarketingPedido) {
             $productoMarketing = ProductosMarketing::find($productoMarketingPedido->producto_marketing_id);
-            $subAlmacenMarketing = Subalmacenes::where('almacen_id', $this->pedido_almacen_id)
+            $subAlmacenMarketing = Subalmacenes::where('almacen_id', 1)
                                         ->first();
     
             // Verificar el stock disponible en el subalmacén de marketing

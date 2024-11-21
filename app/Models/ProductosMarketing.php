@@ -41,7 +41,7 @@ public function stockEnAlmacen($almacenId)
             ->where('tipo_entrada', '=', null)
             ->where('tipo_salida', '!=', null)
             ->sum('cantidad');
-
+        
         return $tockEntrante - $stockSalida;
 
     }
