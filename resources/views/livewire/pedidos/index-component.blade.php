@@ -191,7 +191,7 @@
                                 @else
                                     <td></td>
                                 @endif
-                                <td>{{ $presup->transporte ?? '' }}</td>
+                                <td>{{ $presup->empresa_transporte ?? '' }}</td>
                                 <td>{{ $presup->gastos_envio ?? 0.00 }} €</td>
                                 <td>{{ $presup->precio }} €</td>
                                 <td>
