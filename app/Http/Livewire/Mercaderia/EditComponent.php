@@ -18,6 +18,7 @@ class EditComponent extends Component
     public $precio;
     public $categoria_id;
     public $categorias;
+    public $stock_seguridad;
 
 
 
@@ -27,6 +28,8 @@ class EditComponent extends Component
         $this->nombre = $mercaderia->nombre;
         $this->categoria_id = $mercaderia->categoria_id;
         $this->categorias = MercaderiaCategoria::all();
+        $this->stock_seguridad = $mercaderia->stock_seguridad;
+        
     }
     public function render()
     {
@@ -46,6 +49,7 @@ class EditComponent extends Component
                 'nombre' => 'required',
                 'categoria_id' => 'required',
                 'precio' => 'nullable',
+                'stock_seguridad' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -62,6 +66,7 @@ class EditComponent extends Component
         $tipoSave = $mercaderia->update([
             'nombre' => $this->nombre,
             'categoria_id' => $this->categoria_id,
+            'stock_seguridad' => $this->stock_seguridad,
         ]);
 
         if ($tipoSave) {

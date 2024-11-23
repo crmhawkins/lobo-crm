@@ -43,6 +43,11 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <label for="stock_seguridad" class="col-form-label">Stock de seguridad</label>
+                                <input type="number" class="form-control" wire:model="stock_seguridad" name="stock_seguridad"
+                                    id="stock_seguridad" placeholder="Stock de seguridad...">
+                            </div>
                         </div>
                     </form>
                 </div>

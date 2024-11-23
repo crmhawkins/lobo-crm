@@ -164,6 +164,8 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         <th scope="col">Categoría</th>
                                         <th scope="col">Cantidad</th>
                                         <th scope="col">Cantidad asignada</th>
+                                        <th scope="col">Stock de seguridad</th>
+                                        
                                         <th scope="col">Acciones</th>
                                     </tr>
                                 </thead>
@@ -174,6 +176,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                             <td>{{ $this->getCategoria($mercaderia->categoria_id) }}</td>
                                             <td>{{ $this->getCantidad($mercaderia->id)}}</td>
                                             <td>{{ $this->getCantidadProduccion($mercaderia->id) }}</td>
+                                            <td>{{ $mercaderia->stock_seguridad }}</td>
                                             <td> 
                                                 @if($canEdit)
                                                     <a href="mercaderia-edit/{{ $mercaderia->id }}" class="btn btn-primary">Ver/Editar</a> 
