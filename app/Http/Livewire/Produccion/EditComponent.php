@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Pedido;
+use App\Models\Alertas;
+use Illuminate\Support\Facades\Mail;
+
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -325,9 +328,30 @@ class EditComponent extends Component
             'tipo' => 'Saliente',
         ]);
 
+        $mercaderia = Mercaderia::find($productoId);
+        $stock = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->get()->sum('cantidad');
+        if($stock < $mercaderia->stock_seguridad){
+            $this->alertaStockBajo($mercaderia);
+        }
+
     }
 
-    
+    public function alertaStockBajo($mercaderia){
+        Alertas::create([
+            'user_id' => 13,
+            'stage' => 7,
+            'titulo' => $mercaderia->nombre.' - Alerta de Stock Mercaderia Bajo',
+            'descripcion' =>'Stock de '.$mercaderia->nombre. ' insuficiente',
+            'referencia_id' =>$mercaderia->id,
+            'leida' => null,
+        ]);
+
+        Mail::to('Alejandro.martin@serlobo.com')
+            ->send(new \App\Mail\AlertaStockBajo($mercaderia));
+
+
+    }
+
     public function sumarStock($productoId, $cantidad){
         // Obtener las entradas de StockEntrante para el producto, ordenadas por ejemplo por fecha
         $entradas = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->orderBy('created_at')->get();
@@ -337,6 +361,12 @@ class EditComponent extends Component
             'cantidad' => abs($cantidad),
             'tipo' => 'Entrante',
         ]);
+
+        $mercaderia = Mercaderia::find($productoId);
+        $stock = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->get()->sum('cantidad');
+        if($stock < $mercaderia->stock_seguridad){
+            $this->alertaStockBajo($mercaderia);
+        }
     }
 
     public function enProduccion(){

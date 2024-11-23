@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\DB;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Pedido;
+use App\Models\Alertas;
+use Illuminate\Support\Facades\Mail;
 
 class CreateComponent extends Component
 {
@@ -218,6 +220,15 @@ class CreateComponent extends Component
             'cantidad' => -abs($cantidad),
             'tipo' => 'Saliente',
         ]);
+
+        //alerta si el stock es menor al stock de seguridad. El stock es la suma de los stock entrantes de esa mercaderia id
+        $stock = StockMercaderiaEntrante::where('mercaderia_id', $productoId)->get()->sum('cantidad');
+        $mercaderia = Mercaderia::find($productoId);
+        if($stock < $mercaderia->stock_seguridad){
+            $this->alertaStockBajo($mercaderia);
+        }
+
+
         // if ($entradas->sum('cantidad') > $cantidad) {
         //     foreach ($entradas as $entrada) {
         //         if ($cantidad <= 0) break;
@@ -244,6 +255,22 @@ class CreateComponent extends Component
         //         }
         //     }
         // }
+    }
+
+    public function alertaStockBajo($mercaderia){
+        Alertas::create([
+            'user_id' => 13,
+            'stage' => 7,
+            'titulo' => $mercaderia->nombre.' - Alerta de Stock Mercaderia Bajo',
+            'descripcion' =>'Stock de '.$mercaderia->nombre. ' insuficiente',
+            'referencia_id' =>$mercaderia->id,
+            'leida' => null,
+        ]);
+
+        Mail::to('Alejandro.martin@serlobo.com')
+            ->send(new \App\Mail\AlertaStockBajo($mercaderia));
+
+
     }
 
     public function sumarStock()

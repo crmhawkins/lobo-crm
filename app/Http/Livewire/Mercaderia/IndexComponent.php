@@ -14,6 +14,8 @@ use App\Models\RoturaMercaderia;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Alertas;
 
 class IndexComponent extends Component
 {
@@ -189,6 +191,18 @@ class IndexComponent extends Component
                 'cantidad' => -abs($this->cantidad),
                 'tipo' => 'Saliente',
             ]);
+            
+
+            //alerta si el stock es menor al stock de seguridad. El stock es la suma de los stock entrantes de esa mercaderia id
+            $stock = StockMercaderiaEntrante::where('mercaderia_id', $this->mercaderiaSeleccionada->id)->get()->sum('cantidad');
+            if($stock < $this->mercaderiaSeleccionada->stock_seguridad){
+                $this->alertaStockBajo();
+
+            }
+            
+
+
+
 
         }else{
             $mercaderiaEntranteNew = StockMercaderiaEntrante::create([
@@ -196,6 +210,13 @@ class IndexComponent extends Component
                 'cantidad' => abs($this->cantidad),
                 'tipo' => 'Entrante',
             ]);
+
+            //alerta si el stock es menor al stock de seguridad. El stock es la suma de los stock entrantes de esa mercaderia id
+            $stock = StockMercaderiaEntrante::where('mercaderia_id', $this->mercaderiaSeleccionada->id)->get()->sum('cantidad');
+            if($stock < $this->mercaderiaSeleccionada->stock_seguridad){
+               $this->alertaStockBajo();
+            }
+            
         }
         
         //dd($mercaderiaEntrante);
@@ -226,6 +247,22 @@ class IndexComponent extends Component
        }
 
        return $mercaderiaEntranteNew;
+
+    }
+
+    public function alertaStockBajo(){
+        Alertas::create([
+            'user_id' => 13,
+            'stage' => 7,
+            'titulo' => $this->mercaderiaSeleccionada->nombre.' - Alerta de Stock Mercaderia Bajo',
+            'descripcion' =>'Stock de '.$this->mercaderiaSeleccionada->nombre. ' insuficiente',
+            'referencia_id' =>$this->mercaderiaSeleccionada->id,
+            'leida' => null,
+        ]);
+
+        Mail::to('Alejandro.martin@serlobo.com')
+            ->send(new \App\Mail\AlertaStockBajo($this->mercaderiaSeleccionada));
+
 
     }
 
