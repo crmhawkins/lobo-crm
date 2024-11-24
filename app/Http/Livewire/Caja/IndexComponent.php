@@ -50,7 +50,7 @@ class IndexComponent extends Component
             $caja = $caja->where('poveedor_id', $this->proveedorId);
         }
 
-        dd($caja);
+       // dd($caja);
         
         $zip = new \ZipArchive;
         
@@ -102,7 +102,7 @@ class IndexComponent extends Component
         }catch(\Exception $e){
             
             //livewire alert error
-            $this->alert('error', '¡No se ha podido descargar los documentos!', [
+            $this->alert('error', '¡No se ha podido descargar los documentos!' . $e->getMessage(), [
                 'position' => 'center',
                 'timer' => 3000,
                 'toast' => false,
