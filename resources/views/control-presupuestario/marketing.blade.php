@@ -36,6 +36,13 @@
         .collapsed .collapse-icon {
             transform: rotate(90deg);
         }
+
+        /* Estilos para el loader */
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 @endsection
 
@@ -43,6 +50,16 @@
 
 <div class="container-fluid">
     <h2>Control PTO. Marketing {{ $year }}</h2>
+    <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
+    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+
+    <!-- Loader -->
+    <div id="loader">
+        <p>Generando PDF, por favor espera...</p>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <!-- Filtro por año -->
     <form action="{{ route('control-presupuestario.marketing') }}" method="GET" class="mb-4">
@@ -338,5 +355,108 @@
             }
         });
     });
+    </script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function exportarTablasAExcel() {
+            // Crear un nuevo libro de trabajo
+            var wb = XLSX.utils.book_new();
+    
+            // Seleccionar todas las tablas dentro del contenedor principal
+            document.querySelectorAll('.container-fluid .table-responsive').forEach((tableContainer, index) => {
+                // Obtener el nombre de la tabla desde el h3 anterior
+                var tableNameElement = tableContainer.previousElementSibling;
+                while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                    tableNameElement = tableNameElement.previousElementSibling;
+                }
+                var tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+    
+                // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+                tableName = tableName.replace(/[:\\\/?*\[\]]/g, '');
+    
+                // Truncar el nombre de la hoja si es necesario
+                if (tableName.length > 31) {
+                    tableName = tableName.substring(0, 28) + '...';
+                }
+    
+                // Convertir la tabla HTML a una hoja de cálculo
+                var table = tableContainer.querySelector('table');
+                var ws = XLSX.utils.table_to_sheet(table);
+    
+                // Añadir la hoja de cálculo al libro de trabajo
+                XLSX.utils.book_append_sheet(wb, ws, tableName);
+            });
+    
+            // Exportar el libro de trabajo a un archivo Excel
+            XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+        }
+    </script>
+    <script>
+        async function exportarTablasAPDF() {
+        // Mostrar el loader
+        document.getElementById('loader').style.display = 'block';
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        const tables = document.querySelectorAll('.container-fluid .table');
+        for (let index = 0; index < tables.length; index++) {
+            const table = tables[index];
+
+            // Obtener el nombre de la tabla desde el h3 anterior
+            let tableNameElement = table.closest('.table-responsive').previousElementSibling;
+            while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                tableNameElement = tableNameElement.previousElementSibling;
+            }
+            const tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Convertir la tabla a imagen usando html2canvas
+            const canvas = await html2canvas(table);
+            const imgData = canvas.toDataURL('image/png');
+
+            // Obtener las propiedades de la imagen
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // Ajustar la imagen al tamaño de la página
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            let position = 0;
+
+            // Si la imagen es más alta que la página, dividirla en varias páginas
+            if (pdfHeight > pageHeight) {
+                const totalPages = Math.ceil(pdfHeight / pageHeight);
+                for (let i = 0; i < totalPages; i++) {
+                    const sourceY = i * pageHeight;
+                    const newCanvas = document.createElement('canvas');
+                    newCanvas.width = canvas.width;
+                    newCanvas.height = pageHeight * (canvas.width / pdfWidth);
+                    const newCtx = newCanvas.getContext('2d');
+                    newCtx.drawImage(canvas, 0, sourceY, canvas.width, pageHeight * (canvas.width / pdfWidth), 0, 0, canvas.width, pageHeight * (canvas.width / pdfWidth));
+                    const newImgData = newCanvas.toDataURL('image/png');
+                    pdf.addImage(newImgData, 'PNG', 0, position, pdfWidth, pageHeight);
+                    if (i < totalPages - 1) {
+                        pdf.addPage();
+                    }
+                }
+            } else {
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            }
+
+            // Añadir una nueva página si no es la última tabla
+            if (index < tables.length - 1) {
+                pdf.addPage();
+            }
+        }
+
+        // Guardar el archivo PDF
+        pdf.save('marketing.pdf');
+
+        // Ocultar el loader
+        document.getElementById('loader').style.display = 'none';
+    }
     </script>
 @endsection

@@ -41,6 +41,8 @@
 @section('content-principal')
     <div class="container-fluid">
         <h2>Análisis Global - Trimestre {{ $trimestre }} - Año {{ $year }}</h2>
+        <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+
 
         <!-- Filtro por año y trimestre -->
         <form action="{{ route('control-presupuestario.analisis-global') }}" method="GET" class="mb-4">
@@ -625,6 +627,38 @@
                 </tbody>
             </table>
         </div>
-        
+           <!-- Incluyendo SheetJS desde un CDN -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+   <script>
+    function exportarTablasAExcel() {
+        // Crear un nuevo libro de trabajo
+        var wb = XLSX.utils.book_new();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        document.querySelectorAll('.container-fluid .table-responsive').forEach((tableContainer, index) => {
+            // Obtener el nombre de la tabla desde el h3 anterior
+            var tableName = tableContainer.previousElementSibling;
+            while (tableName && tableName.tagName !== 'H3') {
+                tableName = tableName.previousElementSibling;
+            }
+            tableName = tableName ? tableName.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Truncar el nombre de la hoja si es necesario
+            if (tableName.length > 31) {
+                tableName = tableName.substring(0, 28) + '...';
+            }
+
+            // Convertir la tabla HTML a una hoja de cálculo
+            var table = tableContainer.querySelector('table');
+            var ws = XLSX.utils.table_to_sheet(table);
+
+            // Añadir la hoja de cálculo al libro de trabajo
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+        });
+
+        // Exportar el libro de trabajo a un archivo Excel
+        XLSX.writeFile(wb, 'analisis_global.xlsx');
+    }
+</script>
     </div>
 @endsection

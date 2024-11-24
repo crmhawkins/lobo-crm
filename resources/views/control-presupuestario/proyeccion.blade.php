@@ -34,6 +34,8 @@
 @section('content-principal')
 <div class="container" style="min-height: 100vh;">
     <h2 class="text-center mb-4 d-flex justify-content-center gap-2 align-items-center">Presupuesto por Delegación @if($delegacion)<span style="font-size: 22px;" class="badge badge-secondary text-center">{{$delegacion->nombre}}</span> @endif <span style="font-size: 22px"  class="badge badge-primary">{{ $year }}</span></h2>
+    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -744,5 +746,52 @@
     @endif
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+   <script>
+    function exportarTablasAExcel() {
+        // Crear un nuevo libro de trabajo
+        var wb = XLSX.utils.book_new();
+        var tablesFound = false; // Variable para verificar si se encontraron tablas
+        var sheetNames = new Set(); // Conjunto para almacenar nombres de hojas únicos
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        document.querySelectorAll('.container .table').forEach((table, index) => {
+            // Obtener el nombre de la tabla desde el h2 anterior
+            var tableNameElement = table.closest('div.collapse').querySelector('h2');
+            var baseTableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+            baseTableName = baseTableName.replace(/[:\\\/?*\[\]]/g, '');
+
+            // Truncar el nombre de la hoja si es necesario
+            if (baseTableName.length > 31) {
+                baseTableName = baseTableName.substring(0, 28) + '...';
+            }
+
+            // Asegurar que el nombre de la hoja sea único
+            var tableName = baseTableName;
+            var suffix = 1;
+            while (sheetNames.has(tableName)) {
+                tableName = baseTableName + ' (' + suffix + ')';
+                suffix++;
+            }
+            sheetNames.add(tableName);
+
+            // Convertir la tabla HTML a una hoja de cálculo
+            var ws = XLSX.utils.table_to_sheet(table);
+            // Añadir la hoja de cálculo al libro de trabajo
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+            tablesFound = true; // Indicar que se encontró al menos una tabla
+        });
+
+        // Verificar si se encontraron tablas antes de intentar exportar
+        if (tablesFound) {
+            // Exportar el libro de trabajo a un archivo Excel
+            XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+        } else {
+            alert('No se encontraron tablas para exportar.');
+        }
+    }
+</script>
     
 @endsection

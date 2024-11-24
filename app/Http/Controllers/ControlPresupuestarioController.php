@@ -23,6 +23,11 @@ class ControlPresupuestarioController extends Controller
         return view('control-presupuestario.index');
     }
 
+    public function show()
+    {
+        return view('control-presupuestario.show');
+    }
+
 
     public function guardarCostes(Request $request)
 {
@@ -556,7 +561,7 @@ public function ventasPorProductos(Request $request)
         // Procesar los productos del pedido
         if ($factura->pedido) {
             foreach ($factura->pedido->productosPedido as $productoPedido) {
-                $productoNombre = $productoPedido->producto->nombre;
+                $productoNombre = $productoPedido->producto->nombre ?? 'No-definido';
                 $esSinCargo = ($productoPedido->precio_ud == 0);
 
                 // Inicializar el array para el producto

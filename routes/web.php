@@ -177,7 +177,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     //ruta ver emails
     Route::get('/ver-emails', [VerEmailsController::class, 'index'])->name('ver-emails.index');
 
-
+    Route::get('/presupuestos', [ControlPresupuestarioController::class, 'show'])->name('control-presupuestario.show');
     Route::get('/control-presupuestario', [ControlPresupuestarioController::class, 'index'])->name('control-presupuestario.index');
     // Route::get('/control-presupuestario/ventas', [ControlPresupuestarioController::class, 'ventas'])->name('control-presupuestario.ventas');
     Route::get('/control-presupuestario/ventas', [ControlPresupuestarioController::class, 'ventas'])->name('control-presupuestario.ventas');

@@ -24,6 +24,16 @@
 @section('content-principal')
     <div class="container mb-5">
         <h2 class="text-center mb-4">Ventas por Productos - Año {{ $year }}</h2>
+        <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+        <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
+
+        <!-- Loader -->
+        <div id="loader" style="display: none; text-align: center;">
+            <p>Generando PDF, por favor espera...</p>
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
 
         @foreach ($delegaciones as $delegacion)
             <h3>{{ $delegacion['nombre'] }}</h3>
@@ -80,3 +90,109 @@
         @endforeach
     </div>
 @endsection
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    function exportarTablasAExcel() {
+        // Crear un nuevo libro de trabajo
+        var wb = XLSX.utils.book_new();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        document.querySelectorAll('.container .table').forEach((table, index) => {
+            // Obtener el nombre de la tabla desde el h3 anterior
+            var tableNameElement = table.previousElementSibling;
+            console.log(table);
+            while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                tableNameElement = tableNameElement.previousElementSibling;
+            }
+            var tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+            tableName = tableName.replace(/[:\\\/?*\[\]]/g, '');
+
+            // Truncar el nombre de la hoja si es necesario
+            if (tableName.length > 28) {
+                tableName = tableName.substring(0, 28);
+            }
+
+            // Asegurar que el nombre de la hoja sea único
+            tableName += ' ' + (index + 1);
+
+            // Convertir la tabla HTML a una hoja de cálculo
+            var ws = XLSX.utils.table_to_sheet(table);
+
+            // Añadir la hoja de cálculo al libro de trabajo
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+        });
+
+        // Exportar el libro de trabajo a un archivo Excel
+        XLSX.writeFile(wb, 'ventas_por_productos.xlsx');
+    }
+
+    async function exportarTablasAPDF() {
+        // Mostrar el loader
+        document.getElementById('loader').style.display = 'block';
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        const tables = document.querySelectorAll('.container .table');
+        for (let index = 0; index < tables.length; index++) {
+            const table = tables[index];
+
+            // Obtener el nombre de la tabla desde el h3 anterior
+            let tableNameElement = table.closest('.table-responsive').previousElementSibling;
+            while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                tableNameElement = tableNameElement.previousElementSibling;
+            }
+            const tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Convertir la tabla a imagen usando html2canvas
+            const canvas = await html2canvas(table);
+            const imgData = canvas.toDataURL('image/png');
+
+            // Obtener las propiedades de la imagen
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // Ajustar la imagen al tamaño de la página
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            let position = 0;
+
+            // Si la imagen es más alta que la página, dividirla en varias páginas
+            if (pdfHeight > pageHeight) {
+                const totalPages = Math.ceil(pdfHeight / pageHeight);
+                for (let i = 0; i < totalPages; i++) {
+                    const sourceY = i * pageHeight;
+                    const newCanvas = document.createElement('canvas');
+                    newCanvas.width = canvas.width;
+                    newCanvas.height = pageHeight * (canvas.width / pdfWidth);
+                    const newCtx = newCanvas.getContext('2d');
+                    newCtx.drawImage(canvas, 0, sourceY, canvas.width, pageHeight * (canvas.width / pdfWidth), 0, 0, canvas.width, pageHeight * (canvas.width / pdfWidth));
+                    const newImgData = newCanvas.toDataURL('image/png');
+                    pdf.addImage(newImgData, 'PNG', 0, position, pdfWidth, pageHeight);
+                    if (i < totalPages - 1) {
+                        pdf.addPage();
+                    }
+                }
+            } else {
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            }
+
+            // Añadir una nueva página si no es la última tabla
+            if (index < tables.length - 1) {
+                pdf.addPage();
+            }
+        }
+
+        // Guardar el archivo PDF
+        pdf.save('ventas_por_productos.pdf');
+
+        // Ocultar el loader
+        document.getElementById('loader').style.display = 'none';
+    }
+</script>

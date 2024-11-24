@@ -47,8 +47,10 @@
 @endsection
 
 @section('content-principal')
+
 <div class="container-fluid mb-5">
     <h2>Análisis de Ventas - Trimestre {{ $trimestre }} - Año {{ $year }}</h2>
+    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
     
     <!-- Formulario para seleccionar trimestre y año -->
     <form action="{{ route('control-presupuestario.analisis-ventas') }}" method="GET" class="mb-4">
@@ -240,5 +242,45 @@
         }
     });
     @endforeach
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    function exportarTablasAExcel() {
+        // Crear un nuevo libro de trabajo
+        var wb = XLSX.utils.book_new();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        document.querySelectorAll('.container-fluid .table-responsive').forEach((tableContainer, index) => {
+            // Obtener el nombre de la tabla desde el h3
+            var tableNameElement = tableContainer.querySelector('h3');
+            var tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+            tableName = tableName.replace(/[:\\\/?*\[\]]/g, '');
+
+            // Truncar el nombre de la hoja si es necesario
+            if (tableName.length > 31) {
+                tableName = tableName.substring(0, 28) + '...';
+            }
+
+            // Convertir la tabla HTML a una hoja de cálculo
+            var table = tableContainer.querySelector('table');
+            var ws = XLSX.utils.table_to_sheet(table);
+
+            // Añadir la hoja de cálculo al libro de trabajo
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+        });
+
+        // Capturar el gráfico como imagen
+        html2canvas(document.querySelector('#ventasChart')).then(canvas => {
+            var imgData = canvas.toDataURL('image/png');
+            // Aquí puedes decidir cómo manejar la imagen, por ejemplo, mostrarla o guardarla
+            console.log(imgData); // Muestra la imagen en la consola
+        });
+
+        // Exportar el libro de trabajo a un archivo Excel
+        XLSX.writeFile(wb, 'analisis_ventas.xlsx');
+    }
 </script>
 @endsection

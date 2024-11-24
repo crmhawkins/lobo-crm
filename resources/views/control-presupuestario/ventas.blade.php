@@ -13,6 +13,28 @@
         table th, table td {
             white-space: nowrap;
         }
+
+        /* Estilos para impresión */
+        @media print {
+            body {
+                font-size: 12px;
+                color: #000;
+            }
+            .btn, .breadcrumb, .page-title-box {
+                display: none; /* Ocultar elementos no necesarios en impresión */
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            table th, table td {
+                border: 1px solid #000;
+                padding: 5px;
+            }
+            .table-responsive {
+                overflow: visible;
+            }
+        }
     </style>
 @endsection
 
@@ -22,6 +44,8 @@
         <div class="row align-items-center">
             <div class="col-sm-6">
                 <h4 class="page-title">CONTROL PTO. VENTAS</h4>
+                <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+                <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
@@ -187,5 +211,72 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function exportarTablasAExcel() {
+            // Crear un nuevo libro de trabajo
+            var wb = XLSX.utils.book_new();
+    
+            // Seleccionar todas las tablas dentro del contenedor principal
+            document.querySelectorAll('.container-fluid .table-responsive').forEach((tableContainer, index) => {
+                // Obtener el nombre de la tabla desde el h3 anterior
+                var tableNameElement = tableContainer.previousElementSibling;
+                while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                    tableNameElement = tableNameElement.previousElementSibling;
+                }
+                var tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+    
+                // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+                tableName = tableName.replace(/[:\\\/?*\[\]]/g, '');
+    
+                // Truncar el nombre de la hoja si es necesario
+                if (tableName.length > 31) {
+                    tableName = tableName.substring(0, 28) + '...';
+                }
+    
+                // Convertir la tabla HTML a una hoja de cálculo
+                var table = tableContainer.querySelector('table');
+                var ws = XLSX.utils.table_to_sheet(table);
+    
+                // Añadir la hoja de cálculo al libro de trabajo
+                XLSX.utils.book_append_sheet(wb, ws, tableName);
+            });
+    
+            // Exportar el libro de trabajo a un archivo Excel
+            XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+        }
+    </script>   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        async function exportarTablasAPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape', // Cambia a 'portrait' si prefieres
+                unit: 'pt',
+                format: 'a4'
+            });
+    
+            // Seleccionar la tabla que deseas exportar
+            const table = document.querySelector('.table-responsive table');
+    
+            // Usar html2canvas para capturar la tabla como imagen
+            await html2canvas(table, {
+                scale: 2, // Aumenta la escala para mejorar la calidad
+                useCORS: true // Permite cargar imágenes de otros dominios
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+                // Añadir la imagen al PDF
+                doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            });
+    
+            // Descargar el PDF
+            doc.save('ventas.pdf');
+        }
+    </script>
 </div>
 @endsection

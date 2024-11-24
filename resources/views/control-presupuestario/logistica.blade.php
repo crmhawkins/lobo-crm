@@ -33,6 +33,7 @@
 
 <div class="container-fluid">
     <h2>Gastos de Transporte por Logística - Año {{ $year }}</h2>
+    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
 
     <!-- Filtro por año -->
     <form action="{{ route('control-presupuestario.logistica') }}" method="GET" class="mb-4">
@@ -90,6 +91,42 @@
             </table>
         </div>
     @endforeach
+       <!-- Incluyendo SheetJS desde un CDN -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+   <script>
+    function exportarTablasAExcel() {
+        // Crear un nuevo libro de trabajo
+        var wb = XLSX.utils.book_new();
+
+        // Seleccionar todas las tablas dentro del contenedor principal
+        document.querySelectorAll('.container-fluid .table-responsive').forEach((tableContainer, index) => {
+            // Obtener el nombre de la tabla desde el h3 anterior
+            var tableNameElement = tableContainer.previousElementSibling;
+            while (tableNameElement && tableNameElement.tagName !== 'H3') {
+                tableNameElement = tableNameElement.previousElementSibling;
+            }
+            var tableName = tableNameElement ? tableNameElement.textContent.trim() : 'Tabla ' + (index + 1);
+
+            // Limpiar el nombre de la hoja eliminando caracteres no permitidos
+            tableName = tableName.replace(/[:\\\/?*\[\]]/g, '');
+
+            // Truncar el nombre de la hoja si es necesario
+            if (tableName.length > 31) {
+                tableName = tableName.substring(0, 28) + '...';
+            }
+
+            // Convertir la tabla HTML a una hoja de cálculo
+            var table = tableContainer.querySelector('table');
+            var ws = XLSX.utils.table_to_sheet(table);
+
+            // Añadir la hoja de cálculo al libro de trabajo
+            XLSX.utils.book_append_sheet(wb, ws, tableName);
+        });
+
+        // Exportar el libro de trabajo a un archivo Excel
+        XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+    }
+</script>
 </div>
 
 @endsection
