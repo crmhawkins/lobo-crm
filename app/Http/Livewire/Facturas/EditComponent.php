@@ -975,7 +975,8 @@ class EditComponent extends Component
                 $total = $base_imponible + $iva_productos;
 
             }
-            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+
+            $productosMarketing = $pedido != null ? ProductosMarketingPedido::where('pedido_id', $pedido->id)->get() : [];
 
             $datos = [
                 'conIva' => $iva,
@@ -1019,11 +1020,11 @@ class EditComponent extends Component
         try{
 
             $emailsDireccion = [
-                 'Alejandro.martin@serlobo.com',
-                 'Ivan.ruiz@serlobo.com',
-                 'Administracion@serlobo.com',
-                 'Sandra.lopez@serlobo.com',
-                 'vanessa.casanova@serlobo.com'
+                //  'Alejandro.martin@serlobo.com',
+                //  'Ivan.ruiz@serlobo.com',
+                //  'Administracion@serlobo.com',
+                //  'Sandra.lopez@serlobo.com',
+                //  'vanessa.casanova@serlobo.com'
             ];
 
             $cliente = Clients::find($factura->cliente_id);
@@ -1040,8 +1041,8 @@ class EditComponent extends Component
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
 
-                Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
-
+                // Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
+                Mail::to('ivan.mayol@hawkins.es')->send(new FacturaMail($pdf->output(), $datos));
                 foreach($this->emailsSeleccionados as $email){
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
@@ -1067,9 +1068,11 @@ class EditComponent extends Component
             }else{
 
                 if($this->emailNuevo != null){
-                    Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
+                    // Mail::to($this->emailNuevo)->cc($this->emailNuevo)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
+                    Mail::to('ivan.mayol@hawkins.es')->send(new FacturaMail($pdf->output(), $datos));
                 }else{
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
+                    // Mail::to($cliente->email)->bcc($emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
+                    Mail::to('ivan.mayol@hawkins.es')->send(new FacturaMail($pdf->output(), $datos));
                 }
 
 
@@ -1537,7 +1540,7 @@ class EditComponent extends Component
                 $total = $base_imponible + $iva_productos;
 
             }
-            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+            $productosMarketing = $pedido != null ? ProductosMarketingPedido::where('pedido_id', $pedido->id)->get() : [];
 
             $datos = [
                 'conIva' => $iva,
