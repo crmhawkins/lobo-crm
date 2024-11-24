@@ -23,6 +23,7 @@ class IndexComponent extends Component
     public $fechas;
     public $dias;
     public $mes;
+    public $ano;
     public $saldo_inicial= 0;
     public $saldo_array = [];
     public $clientes;
@@ -114,7 +115,9 @@ class IndexComponent extends Component
 
     public function mount()
 {
-    $this->mes = session('caja_filtro_mes', Carbon::now()->format('Y-m'));
+    $this->mes = session('caja_filtro_mes', Carbon::now()->format('m')); // 'n' devuelve el mes como número sin ceros iniciales
+    $this->ano = session('caja_filtro_ano', Carbon::now()->format('Y'));
+   // dd($this->mes);
     $this->filtro = session('caja_filtro', null);
     $this->filtroEstado = session('caja_filtro_estado', null);
     $this->delegacion = session('caja_filtro_delegacion', null);
@@ -277,11 +280,19 @@ class IndexComponent extends Component
             'caja_filtro_fecha' => $this->fecha,
             'caja_filtro_proveedor_id' => $this->proveedorId,
             'caja_filtro_mes' => $this->mes,
+            'caja_filtro_ano' => $this->ano,
         ]);
 
-        list($year, $month) = explode('-', $this->mes);
-        $fechaInicio  = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-        $fechaFin = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        // Si $this->mes es null o vacío, mostrar todo el año
+        if (empty($this->mes)) {
+            $fechaInicio = Carbon::createFromDate($this->ano, 1, 1)->startOfYear();
+            $fechaFin = Carbon::createFromDate($this->ano, 12, 31)->endOfYear();
+        } else {
+            // Asegúrate de que $this->mes sea un número de mes válido
+            $mesNumero = is_numeric($this->mes) ? $this->mes : Carbon::parse($this->mes)->month;
+            $fechaInicio = Carbon::createFromDate($this->ano, $mesNumero, 1)->startOfMonth();
+            $fechaFin = Carbon::createFromDate($this->ano, $mesNumero, 1)->endOfMonth();
+        }
 
         $fechaInicio = $fechaInicio->format('Y-m-d');
         $fechaFin = $fechaFin->format('Y-m-d');
@@ -313,7 +324,6 @@ class IndexComponent extends Component
         }
 
         if ($this->proveedorId != null && $this->proveedorId != 'Todos') {
-            
             $this->caja = $this->caja->where('poveedor_id', $this->proveedorId);
         }
 
@@ -332,5 +342,16 @@ class IndexComponent extends Component
     public function Ingreso()
     {
         return redirect()->route('caja.create-ingreso');
+    }
+
+    public function updatedMes($value)
+    {
+        // Si el valor es un string en formato 'YYYY-MM', extrae solo el mes
+        if (preg_match('/^\d{4}-(\d{2})$/', $value, $matches)) {
+            $this->mes = (int)$matches[1]; // Convierte a número
+        } else {
+            $this->mes = (int)$value; // Asegúrate de que sea un número
+        }
+        $this->cambioMes();
     }
 }
