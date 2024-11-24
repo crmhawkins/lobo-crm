@@ -115,7 +115,7 @@ class IndexComponent extends Component
 
     public function mount()
 {
-    $this->mes = session('caja_filtro_mes', Carbon::now()->format('m')); // 'n' devuelve el mes como número sin ceros iniciales
+    $this->mes = session('caja_filtro_mes', Carbon::now()->format('n')); // 'n' devuelve el mes como número sin ceros iniciales
     $this->ano = session('caja_filtro_ano', Carbon::now()->format('Y'));
    // dd($this->mes);
     $this->filtro = session('caja_filtro', null);
