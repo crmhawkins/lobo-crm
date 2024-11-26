@@ -8,11 +8,13 @@ use App\Models\ClientesComercial;
 use App\Models\acuerdosComerciales;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\DocumentosAcuerdosComerciales;
+use Livewire\WithFileUploads;
 
 class EditComponent extends Component
 {
     use LivewireAlert;
-
+    use WithFileUploads;
     public $acuerdo;
     public $cliente;
     public $productos_lobo = [];
@@ -45,7 +47,8 @@ class EditComponent extends Component
     public $firma_cliente_data;
     public $firma_distribuidor_data;
     public $fecha_firma;
-
+    public $documentos = [];
+    public $nuevosDocumentos = [];
 
     public function getListeners()
     {
@@ -93,6 +96,7 @@ class EditComponent extends Component
         $this->firma_comercial_data = $this->acuerdo->firma_comercial;
         $this->firma_cliente_data = $this->acuerdo->firma_cliente;
         $this->firma_distribuidor_data = $this->acuerdo->firma_distribuidor;
+        $this->documentos = DocumentosAcuerdosComerciales::where('acuerdo_comercial_id', $this->identificador)->get();
     }
     public function fechaFirma($fecha_firma)
     {
@@ -137,7 +141,29 @@ class EditComponent extends Component
         $this->anio_firma = $fecha_firma->format('Y');
     }
 
+    public function subirDocumentos()
+    {
+        foreach ($this->nuevosDocumentos as $documento) {
+            $ruta = $documento->store('documentos_acuerdos', 'public');
+            DocumentosAcuerdosComerciales::create([
+                'acuerdo_comercial_id' => $this->acuerdo->id,
+                'ruta' => $ruta,
+            ]);
+        }
+        // Actualizar la lista de documentos después de subirlos
+        $this->documentos = DocumentosAcuerdosComerciales::where('acuerdo_comercial_id', $this->acuerdo->id)->get();
+    }
 
+    public function eliminarDocumento($documentoId)
+    {
+        $documento = DocumentosAcuerdosComerciales::findOrFail($documentoId);
+        \Storage::delete($documento->ruta);
+        $documento->delete();
+
+        $this->documentos = DocumentosAcuerdosComerciales::where('acuerdo_comercial_id', $this->acuerdo->id)->get();
+        $this->alert('success', 'Documento eliminado correctamente.');
+    }
+    
     public function formarFechaFirma($dia, $mes, $anio)
     {
         // Crear un mapeo de los meses en español a sus correspondientes números

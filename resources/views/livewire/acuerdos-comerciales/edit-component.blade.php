@@ -150,6 +150,10 @@
             width: 100%;
             height: 100%;
         }
+
+        .documentos-section{
+            display: none;
+        }
         .btn{
             display: none;
         }
@@ -218,10 +222,36 @@
             .dia, .anio {
                 width: 30px;
             }
+           
         }
     </style>
 
 <article>
+    <div class="documentos-section">
+        <h2>Documentos</h2>
+        <input type="file" wire:model="nuevosDocumentos" multiple>
+        <button type="button" wire:click="subirDocumentos">Subir Documentos</button>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($documentos as $documento)
+                    <tr>
+                        <td>{{ basename($documento->ruta) }}</td>
+                        <td>
+                            <a href="{{ Storage::url($documento->ruta) }}" target="_blank">Descargar</a>
+                            <button type="button" wire:click="eliminarDocumento({{ $documento->id }})">Eliminar</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
     <div class="lado-izquierdo">
         <p>LOBO DEL SUR S.L – domicilio social: Avd. Caetaria 4.5 P.I La Menacha 11205, Algeciras (Cádiz) – R. M. De Cádiz 2 Hoja CA-59264, Folio 205, Libro 0 de sociedades, Inscripción 1º N.I.F. B-1691428</p>
     </div>

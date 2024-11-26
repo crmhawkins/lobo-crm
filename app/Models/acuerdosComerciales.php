@@ -54,4 +54,10 @@ class acuerdosComerciales extends Model
     {
         return $this->belongsTo(Clientes::class);
     }
+
+    //documentos
+    public function documentos()
+    {
+        return $this->hasMany(DocumentosAcuerdosComerciales::class);
+    }
 }
