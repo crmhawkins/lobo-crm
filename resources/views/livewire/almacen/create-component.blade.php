@@ -219,7 +219,7 @@
                                                 </td>
                                                 @if (is_null($producto['lote_id']))
                                                     <td>
-                                                        @if($producto['is_pack'] && collect($producto['productos_asociados'])->every(fn($p) => !is_null($p['lote_id'])))
+                                                        @if($producto['is_pack'] && collect($producto['productos_asociados'])->every(fn($p) => !is_null($p['lote_id']) && collect($producto['productos_asociados_marketing'])->every(fn($pm) => !is_null($pm['lote_id']))))
                                                             <!-- No mostrar el botón si todos los productos asociados tienen lote_id -->
                                                         @else
                                                             <button type="button" 
@@ -262,7 +262,28 @@
                                                     </td>
                                                 </tr>
                                             @endif
-                                            
+                                            @if (isset($producto['is_pack']) && count($producto['productos_asociados_marketing']) > 0)
+                                                <tr>
+                                                    <td colspan="6">
+                                                        <div class="card mt-2">
+                                                            <div class="card-header bg-info text-white">
+                                                                <strong>Productos Asociados Marketing</strong>
+                                                            </div>
+                                                        </div>
+                                                        <ul class="list-group list-group-flush">
+                                                            @foreach ($producto['productos_asociados_marketing'] as $productoAsociadoMarketing)
+                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <strong>{{ $this->getNombreTablaMarketing($productoAsociadoMarketing['id']) }}</strong>
+                                                                        <span class="badge bg-secondary">Lote: {{$productoAsociadoMarketing['lote_id']}}</span>
+                                                                    </div>
+                                                                    <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados_marketing.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm w-auto" disabled>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                         
                                         @if ($descuento)
@@ -314,6 +335,7 @@
                                                 </tr>
                                             @endif
                                         @endforeach
+
                                     </tbody>
                                 </table>
                             </div>

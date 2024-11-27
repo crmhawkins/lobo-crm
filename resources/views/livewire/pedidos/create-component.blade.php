@@ -292,6 +292,30 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                             </td>
                                                         </tr>
                                                     @endif
+
+                                                    @if (!empty($producto['productos_asociados_marketing']))
+                                                            {{-- {{dd($producto['productos_asociados'])}} --}}
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                    <div class="card mt-2">
+                                                                        <div class="card-header bg-info text-white">
+                                                                            <strong>Productos Asociados Marketing</strong>
+                                                                        </div>
+                                                                        <ul class="list-group list-group-flush">
+                                                                            @foreach ($producto['productos_asociados_marketing'] as $productoAsociadoMarketing)
+                                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                                    {{ $this->getNombreTablaMarketing($productoAsociadoMarketing['id']) }}
+                                                                                    <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados_marketing.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm" style="width: 60px;">
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            {{-- <tr>
+                                                                <td>{{ $this->getNombreTablaMarketing($productoAsociadoMarketing['id']) }}</td>
+                                                            </tr> --}}
+                                                    @endif
                                                 @endforeach
                                                 <tr>
                                                     <th colspan="3">Precio estimado</th>

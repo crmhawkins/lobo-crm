@@ -38,6 +38,7 @@ class Productos extends Model
         'orden',
         'is_pack',
         'products_id',
+        'products_id_marketing',
 
     ];
 
@@ -54,6 +55,11 @@ class Productos extends Model
     public function productos()
     {
         return $this->belongsToMany(Productos::class, 'productos_pedido_pack', 'pack_id', 'producto_id');
+    }
+
+    public function productosMarketing()
+    {
+        return $this->belongsToMany(ProductosMarketing::class, 'productos_pedido_pack', 'pack_id', 'producto_id');
     }
 
 

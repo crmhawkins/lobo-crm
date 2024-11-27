@@ -11,7 +11,7 @@ use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\Models\ProductoPrecioCliente;
 use App\Models\Iva;
-
+use App\Models\ProductosMarketing;
 use function PHPUnit\Framework\isNull;
 
 class EditComponent extends Component
@@ -50,6 +50,9 @@ class EditComponent extends Component
     public $productosDisponibles = [];
     public $productosSeleccionados = [];
     public $searchTerm = 'Mini';
+    public $searchTerm2 = 'Caja';
+    public $productosMarketingDisponibles = [];
+    public $productosMarketingSeleccionados = [];
 
     public function mount()
     {
@@ -77,7 +80,8 @@ class EditComponent extends Component
         $this->is_pack = $product->is_pack;
         $this->productosSeleccionados = json_decode($product->products_id, true) ?? [];
         $this->productosDisponibles = Productos::all();
-
+        $this->productosMarketingDisponibles = ProductosMarketing::all();
+        $this->productosMarketingSeleccionados = json_decode($product->products_id_marketing, true) ?? [];
         $product->foto_ruta != null ? $this->foto_rutaOld = $product->foto_ruta : $this->foto_rutaOld = '';
 
         $lotes = ProductoLote::where('producto_id', $this->identificador)->get();
@@ -147,10 +151,12 @@ class EditComponent extends Component
         // Si is_pack es false, limpiar productosSeleccionados
         if (!$this->is_pack) {
             $this->productosSeleccionados = [];
+            $this->productosMarketingSeleccionados = [];
         }
 
         // Convertir productos seleccionados a JSON
         $validatedData['products_id'] = json_encode($this->productosSeleccionados);
+        $validatedData['products_id_marketing'] = json_encode($this->productosMarketingSeleccionados);
         $validatedData['is_pack'] = $this->is_pack;
 
         // Encuentra el producto identificado
@@ -246,9 +252,23 @@ class EditComponent extends Component
         }
     }
 
+    public function agregarProductoMarketing($productoId)
+    {
+        if (!in_array($productoId, $this->productosMarketingSeleccionados)) {
+            $this->productosMarketingSeleccionados[] = $productoId;
+        }
+    }
+
     public function eliminarProducto($productoId)
     {
         $this->productosSeleccionados = array_filter($this->productosSeleccionados, function($id) use ($productoId) {
+            return $id !== $productoId;
+        });
+    }
+
+    public function eliminarProductoMarketing($productoId)
+    {
+        $this->productosMarketingSeleccionados = array_filter($this->productosMarketingSeleccionados, function($id) use ($productoId) {
             return $id !== $productoId;
         });
     }
@@ -257,6 +277,13 @@ class EditComponent extends Component
     {
         return $this->productosDisponibles->filter(function($producto) {
             return stripos($producto->nombre, $this->searchTerm) !== false;
+        });
+    }
+
+    public function getFilteredProductosMarketingProperty()
+    {
+        return $this->productosMarketingDisponibles->filter(function($producto) {
+            return stripos($producto->nombre, $this->searchTerm2) !== false;
         });
     }
 }

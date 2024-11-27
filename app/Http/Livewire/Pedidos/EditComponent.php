@@ -37,6 +37,7 @@ use App\Models\ProductosMarketing;
 use App\Models\ProductosMarketingPedido;
 use App\Models\ProductosPedidoPack;
 use App\Models\EmpresasTransporte;
+use App\Models\ProductosMarketingPedidoPack;
 
 
 class EditComponent extends Component
@@ -133,6 +134,7 @@ class EditComponent extends Component
     public $empresasTransporte = [];
 
     public $productos_asociados = []; // Nueva propiedad para productos asociados
+    public $productos_asociados_marketing = []; // Nueva propiedad para productos asociados marketing
 
     public function getTipo($id){
 
@@ -384,8 +386,11 @@ class EditComponent extends Component
             if($productoModel){
 
                 if(isset($productoModel->is_pack) && $productoModel->is_pack){
-                    $productosAsociados = json_decode($productoModel->products_id);
+                    $productosAsociados = json_decode($productoModel->products_id) ?? [];
+                    $productosAsociadosMarketing = json_decode($productoModel->products_id_marketing) ?? [];
+                    //dd($productoModel);
                     $productosAsociadosPedido = [];
+                    $productosAsociadosMarketingPedido = [];
 
                     foreach($productosAsociados as $productoAsociado){
                         $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
@@ -409,6 +414,24 @@ class EditComponent extends Component
 
                     }
 
+                    foreach($productosAsociadosMarketing as $productoAsociadoMarketing){
+                        $productoAsociadoMarketingModel = ProductosMarketingPedidoPack::where('producto_id', $productoAsociadoMarketing)->where('pedido_id', $this->identificador)->first();
+                        if($productoAsociadoMarketingModel){
+                            $productosAsociadosMarketingPedido[] = [
+                                'id' => $productoAsociadoMarketingModel->producto_id,
+                                'nombre' => $productoAsociadoMarketingModel->producto->nombre,
+                                'unidades' => $productoAsociadoMarketingModel->unidades,
+                            ];
+                        }else{
+                            $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing);
+                            $productosAsociadosMarketingPedido[] = [
+                                'id' => $productoAsociadoMarketing,
+                                'nombre' => $productoAsociadoMarketingModel->nombre,
+                                'unidades' => 0,
+                            ];
+                        }
+                    }
+
                 }
                 //dd($productoModel);
                 $this->productos_pedido[] = [
@@ -419,6 +442,7 @@ class EditComponent extends Component
                     'precio_total' => $producto->precio_total,
                     'is_pack' => isset($productoModel->is_pack) ? $productoModel->is_pack : false,
                     'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
+                    'productos_asociados_marketing' => $productoModel->is_pack ? $productosAsociadosMarketingPedido : [],
                     'borrar' => 0,
                 ];
             }
@@ -729,7 +753,7 @@ public function setPrecioEstimadoMarketing()
 
     public function update()
     {
-
+        //dd("hola");
         $totalUnidades = 0;
         $totalUnidadesSinCargo = 0;
         foreach ($this->productos_pedido as $productoPedido) {
@@ -841,6 +865,16 @@ public function setPrecioEstimadoMarketing()
                             ]);
                         }
                     }
+                    if(isset($productos['productos_asociados_marketing'])){
+                        foreach($productos['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                            ProductosMarketingPedidoPack::create([
+                                'producto_id' => $productoAsociadoMarketing,
+                                'pedido_id' => $this->identificador,
+                                'pack_id' => $productos['producto_pedido_id'],
+                                'unidades' => $productoAsociadoMarketing['unidades'],
+                            ]);
+                        }
+                    }
             } else {
                 if ($productos['unidades'] > 0) {
                     $unidades_finales = $productos['unidades'] ;
@@ -854,12 +888,30 @@ public function setPrecioEstimadoMarketing()
                             $productoPack->update(['unidades' => $productoAsociado['unidades']]);
                            }
                         }
+
+
                     }
+
+                    if(isset($productos['productos_asociados_marketing'])){
+                        foreach($productos['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                            $productoPackMarketing = ProductosMarketingPedidoPack::where('producto_id', $productoAsociadoMarketing)->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->first();
+                            if($productoPackMarketing){
+                                $productoPackMarketing->update(['unidades' => $productoAsociadoMarketing['unidades']]);
+                            }
+                        }
+                    }
+                    //dd(ProductosMarketingPedidoPack::where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->get());
                 } else {
                     DB::table('productos_pedido')->where('id', $productos['id'])->limit(1)->update(['precio_ud' => $productos['precio_ud']]);
                     if(isset($productos['productos_asociados'])){
                         foreach($productos['productos_asociados'] as $productoAsociado){
                             ProductosPedidoPack::where('producto_id', $productoAsociado['id'])->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
+                        }
+                    }
+
+                    if(isset($productos['productos_asociados_marketing'])){
+                        foreach($productos['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                            ProductosMarketingPedidoPack::where('producto_id', $productoAsociadoMarketing)->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
                         }
                     }
                 }
@@ -871,6 +923,12 @@ public function setPrecioEstimadoMarketing()
                 if(isset($productos['productos_asociados'])){
                     foreach($productos['productos_asociados'] as $productoAsociado){
                         ProductosPedidoPack::where('producto_id', $productoAsociado['id'])->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
+                    }
+                }
+
+                if(isset($productos['productos_asociados_marketing'])){
+                    foreach($productos['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                        ProductosMarketingPedidoPack::where('producto_id', $productoAsociadoMarketing)->where('pack_id', $productos['producto_pedido_id'])->where('pedido_id', $this->identificador)->delete();
                     }
                 }
             }
@@ -1096,6 +1154,7 @@ public function setPrecioEstimadoMarketing()
     }
     public function alertaGuardar()
     {
+        
         $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
             'position' => 'center',
             'toast' => false,
@@ -1488,6 +1547,17 @@ public function setPrecioEstimadoMarketing()
 
     }
 
+    
+    public function getNombreTablaMarketing($id)
+    {
+        $producto = ProductosMarketing::find($id);
+        if(!isset($producto)){
+            $producto = 'producto no encontrado';
+            return $producto;
+        }else{
+            return $producto->nombre;
+        }
+    }
 
     public function editProductos($id){
         
@@ -1546,7 +1616,9 @@ public function setPrecioEstimadoMarketing()
         // Verificar si el producto es un pack
         if ($producto->is_pack) {
             $productosAsociados = json_decode($producto->products_id ?? '[]'); // Asegúrate de que sea un array
+            $productosAsociadosMarketing = json_decode($producto->products_marketing_id ?? '[]'); // Asegúrate de que sea un array
            $productos_asociados = [];
+           $productos_asociados_marketing = [];
 
             foreach ($productosAsociados as $productoAsociado) {
                 $productoAsociadoModel = Productos::find($productoAsociado);
@@ -1559,6 +1631,17 @@ public function setPrecioEstimadoMarketing()
                 }
             }
 
+            foreach($productosAsociadosMarketing as $productoAsociadoMarketing){
+                $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing);
+                if($productoAsociadoMarketingModel){
+                    $productos_asociados_marketing[] = [
+                        'id' => $productoAsociadoMarketingModel->id,
+                        'nombre' => $productoAsociadoMarketingModel->nombre,
+                        'unidades' => 0, // Inicialmente 0, el usuario puede ajustar después
+                    ];
+                }
+            }
+
             $this->productos_pedido[] = [
                 'producto_pedido_id' => $producto->id,
                 'unidades' => $this->unidades_producto,
@@ -1566,6 +1649,7 @@ public function setPrecioEstimadoMarketing()
                 'precio_total' => $this->unidades_producto * $this->productoEditarPrecio,
                 'is_pack' => true,
                 'productos_asociados' => $productos_asociados,
+                'productos_asociados_marketing' => $productos_asociados_marketing,
             ];
 
             //dd($this->productos_pedido);
@@ -1593,10 +1677,10 @@ public function setPrecioEstimadoMarketing()
         foreach ($this->productos_pedido as $productoPedido) {
             if ($productoPedido['producto_pedido_id'] == $producto->id) {
                 if ($productoPedido['precio_ud'] !== 0) {
-                $producto_existe = true;
-                break;
+                    $producto_existe = true;
+                    break;
                 }else{
-                $producto_existe_sincargo = true;
+                    $producto_existe_sincargo = true;
                 }
             }
         }
@@ -2046,6 +2130,14 @@ public function setPrecioEstimadoMarketing()
                 'pedido_id' => $pedido->id,
                 'producto_id' => $productoAsociado['id'],
                 'unidades' => $productoAsociado['unidades'],
+            ]);
+        }
+
+        foreach ($this->productos_asociados_marketing as $productoAsociadoMarketing) {
+            ProductosMarketingPedidoPack::create([
+                'pedido_id' => $pedido->id,
+                'producto_id' => $productoAsociadoMarketing['id'],
+                'unidades' => $productoAsociadoMarketing['unidades'],
             ]);
         }
 

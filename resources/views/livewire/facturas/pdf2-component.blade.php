@@ -161,14 +161,18 @@
     <!-- Concepto, Precio, Unidades, Subtotal, IVA, Total -->
     @php
         $productosPorPagina = 10;
-        $totalProductos = count($productos) + count($productosMarketing);
+        if(isset($productosMarketing)){
+            $totalProductos = count($productos) + count($productosMarketing);
+        }else{
+            $totalProductos = count($productos);
+        }
         $numeroPaginasProductos = ceil($totalProductos / $productosPorPagina);
         $ultimoProductoEnPagina = $totalProductos % $productosPorPagina;
         
     @endphp
 
     @for ($i = 0; $i < $numeroPaginasProductos; $i++)
-    
+
         <table class="avoid-page-break">
             <tr style="background-color:#0196eb; color: #fff;" class="left-aligned">
                 <th style="text-align: left !important">CONCEPTO</th>
@@ -198,7 +202,8 @@
                     <td>{{ number_format($producto['precio_total'], 2) }} €</td>
                 </tr>
             @endforeach
-            @if($productosMarketing)
+
+            @if(isset($productosMarketing))
                 @if(count($productosMarketing) > 0)
                     @foreach($productosMarketing as $productoMarketingPedido)
                         @php
@@ -369,12 +374,13 @@
             <p style="background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
         </div>
     @endif
-    @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 3) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 3 ) )
+    {{-- @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 3) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 3 ) )
         
         <div class="page-break"></div>
-    @endif
+    @endif --}}
+    <div class="page-break"></div>
     
-    <footer style="margin-top: 100px; page-break-after: avoid;position: absolute; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+    <footer style="margin-top: 100px; page-break-after: avoid;position: absolute; top: -60px;padding-left:30px;padding-right:30px;height: 200px;">
         <strong>Condiciones legales</strong>
         <p>{{ $configuracion->texto_factura }}</p>
         

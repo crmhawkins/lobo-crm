@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Productos;
 use App\Models\Productos;
 use App\Models\ProductosCategories;
 use App\Models\Iva;
-
+use App\Models\ProductosMarketing;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -39,14 +39,21 @@ class CreateComponent extends Component
     public $iva_id = 1;
     public $is_pack = false;
     public $products_id = [];
+    public $products_id_marketing = [];
     public $productosDisponibles = [];
     public $productosSeleccionados = [];
+
+    public $productosMarketingDisponibles = [];
+    public $productosMarketingSeleccionados = [];
     public $searchTerm = 'Mini';
+    public $searchTerm2 = 'Caja';
+
 
     public function mount()
     {
         $this->ivas = Iva::all();
         $this->productosDisponibles = Productos::all();
+        $this->productosMarketingDisponibles = ProductosMarketing::all();
     }
 
     public function render()
@@ -83,6 +90,7 @@ class CreateComponent extends Component
                 'iva_id' => 'required',
                 'is_pack' => 'nullable',
                 'products_id' => 'nullable',
+                'products_id_marketing' => 'nullable',
             ],
             // Mensajes de error
             [
@@ -96,6 +104,7 @@ class CreateComponent extends Component
 
         // Convertir productos seleccionados a JSON
         $validatedData['products_id'] = json_encode($this->productosSeleccionados);
+        $validatedData['products_id_marketing'] = json_encode($this->productosMarketingSeleccionados);
 
         if(isset($this->foto_ruta))
         {
@@ -153,6 +162,13 @@ class CreateComponent extends Component
         }
     }
 
+    public function agregarProductoMarketing($productoId)
+    {
+        if (!in_array($productoId, $this->productosMarketingSeleccionados)) {
+            $this->productosMarketingSeleccionados[] = $productoId;
+        }
+    }
+
     public function eliminarProducto($productoId)
     {
         $this->productosSeleccionados = array_filter($this->productosSeleccionados, function($id) use ($productoId) {
@@ -160,10 +176,25 @@ class CreateComponent extends Component
         });
     }
 
+    public function eliminarProductoMarketing($productoId)
+    {
+        $this->productosMarketingSeleccionados = array_filter($this->productosMarketingSeleccionados, function($id) use ($productoId) {
+            return $id !== $productoId;
+        });
+    }
+
+
     public function getFilteredProductosProperty()
     {
         return $this->productosDisponibles->filter(function($producto) {
             return stripos($producto->nombre, $this->searchTerm) !== false;
+        });
+    }
+
+    public function getFilteredProductosMarketingProperty()
+    {
+        return $this->productosMarketingDisponibles->filter(function($producto) {
+            return stripos($producto->nombre, $this->searchTerm2) !== false;
         });
     }
 }

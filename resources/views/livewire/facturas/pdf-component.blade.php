@@ -393,16 +393,17 @@
             <p style="background-color:#ececec; padding: 10px">{{$factura->descripcion}}</p>
         </div>
     @endif
-    @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4 ) )
+    {{-- @if(($i == $numeroPaginasProductos  && $ultimoProductoEnPagina > 4) || ($i < $numeroPaginasProductos - 1 && $productosPorPagina > 4 ) )
         
         <div class="page-break"></div>
-    @endif
-    
-    <footer style="margin-top: 100px; page-break-after: avoid;position: absolute; bottom: -60px;padding-left:30px;padding-right:30px;height: 200px;">
+    @endif --}}
+    <div class="page-break"></div>
+
+    <div style="margin-top: 100px; page-break-after: avoid;position: absolute; top: -60px;padding-left:30px;padding-right:30px;height: 200px;">
         <strong>Condiciones legales</strong>
         <p>{{ $configuracion->texto_factura }}</p>
         
-    </footer>
+    </div>
 </body>
 
 </html>

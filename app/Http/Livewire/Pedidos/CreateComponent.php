@@ -26,6 +26,7 @@ use App\Models\ProductosMarketing;
 use App\Models\ProductosPedidoPack;
 
 use App\Models\ProductosMarketingPedido;
+use App\Models\ProductosMarketingPedidoPack;
 
 
 use Illuminate\Support\Facades\Mail;
@@ -739,6 +740,7 @@ class CreateComponent extends Component
                 $producto = Productos::find($productos['producto_pedido_id']);
                 if ($producto->is_pack) {
                     $productosAsociados = $productos['productos_asociados'];
+                    $productosAsociadosMarketing = $productos['productos_asociados_marketing'];
                     foreach ($productosAsociados as $productoAsociado) {
                        // dd($productoAsociado);
                         ProductosPedidoPack::create([
@@ -748,9 +750,20 @@ class CreateComponent extends Component
                             'unidades' => $productoAsociado['unidades'], // Inicialmente 0, el usuario puede ajustar después
                         ]);
                     }
+
+                    foreach ($productosAsociadosMarketing as $productoAsociadoMarketing) {
+                        ProductosMarketingPedidoPack::create([
+                            'pedido_id' => $pedidosSave->id,
+                            'producto_id' => $productoAsociadoMarketing['id'],
+                            'pack_id' => $producto->id,
+                            'unidades' => $productoAsociadoMarketing['unidades'], // Inicialmente 0, el usuario puede ajustar después
+                        ]);
+                    }
                 }
 
+
             }
+
 
        
 
@@ -925,6 +938,13 @@ public function getNombreProductoMarketing($id){
         $nombre_producto = $this->productos->where('id', $id)->first()->nombre;
         return $nombre_producto;
     }
+
+    public function getNombreTablaMarketing($id)
+    {
+        $nombre_producto = ProductosMarketing::find($id)->nombre;
+        return $nombre_producto;
+    }
+
     public function getUnidadesTabla($id)
     {
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
@@ -1060,9 +1080,11 @@ public function addProductosMarketing($id)
         }
 
         $productosAsociados = [];
+        $productosAsociadosMarketing = [];
         // Verificar si el producto es un pack
         if ($producto->is_pack) {
             $productosAsociadosIds = json_decode($producto->products_id, true); // Asegúrate de que products_id sea un JSON válido
+            $productosAsociadosIdsMarketing = json_decode($producto->products_id_marketing, true); // Asegúrate de que products_id_marketing sea un JSON válido
             if (is_array($productosAsociadosIds)) {
                 foreach ($productosAsociadosIds as $productoAsociadoId) {
                     $productosAsociados[] = [
@@ -1079,6 +1101,20 @@ public function addProductosMarketing($id)
                     'timerProgressBar' => true,
                 ]);
                 return;
+            }
+
+            if (is_array($productosAsociadosIdsMarketing)) {
+                foreach ($productosAsociadosIdsMarketing as $productoAsociadoIdMarketing) {
+                    $productosAsociadosMarketing[] = [
+                        'id' => $productoAsociadoIdMarketing,
+                        'unidades' => 1 // Puedes ajustar la cantidad inicial según sea necesario
+                    ];
+                }
+            }else{
+                $this->alert('error', 'Error al procesar los productos del pack.', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                ]);
             }
         }
 
@@ -1113,7 +1149,8 @@ public function addProductosMarketing($id)
                     'unidades' => $this->unidades_producto,
                     'precio_ud' => 0,
                     'precio_total' => 0,
-                    'productos_asociados' => $productosAsociados // Añadir productos asociados
+                    'productos_asociados' => $productosAsociados, // Añadir productos asociados
+                    'productos_asociados_marketing' => $productosAsociadosMarketing // Añadir productos asociados marketing
                 ];
             }
         } else {
@@ -1134,7 +1171,8 @@ public function addProductosMarketing($id)
                     'unidades' => $this->unidades_producto,
                     'precio_ud' => $precioUnitario,
                     'precio_total' => $precioTotal,
-                    'productos_asociados' => $productosAsociados // Añadir productos asociados
+                    'productos_asociados' => $productosAsociados, // Añadir productos asociados
+                    'productos_asociados_marketing' => $productosAsociadosMarketing // Añadir productos asociados marketing
                 ];
             }
         }
@@ -1154,6 +1192,22 @@ public function addProductosMarketing($id)
         // Aquí puedes implementar la lógica para mostrar los productos asociados al usuario
         // Por ejemplo, podrías usar una alerta o actualizar una propiedad para mostrar en la vista
         $nombresProductos = Productos::whereIn('id', $productosAsociados)->pluck('nombre')->toArray();
+        $mensaje = 'Este pack incluye los siguientes productos: ' . implode(', ', $nombresProductos);
+        $this->alert('info', $mensaje, [
+            'position' => 'center',
+            'timer' => 5000,
+            'toast' => false,
+            'showConfirmButton' => true,
+            'confirmButtonText' => 'Cerrar',
+        ]);
+    }
+
+
+    public function mostrarProductosAsociadosMarketing($productosAsociadosMarketing)
+    {
+        // Aquí puedes implementar la lógica para mostrar los productos asociados al usuario
+        // Por ejemplo, podrías usar una alerta o actualizar una propiedad para mostrar en la vista
+        $nombresProductos = ProductosMarketing::whereIn('id', $productosAsociadosMarketing)->pluck('nombre')->toArray();
         $mensaje = 'Este pack incluye los siguientes productos: ' . implode(', ', $nombresProductos);
         $this->alert('info', $mensaje, [
             'position' => 'center',

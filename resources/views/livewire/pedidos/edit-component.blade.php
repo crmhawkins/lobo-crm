@@ -1,3 +1,5 @@
+
+
 @php
 $mostrarElemento = Auth::user()->role == 2;
 $EsAdmin = Auth::user()->isAdmin();
@@ -163,7 +165,6 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
         </div>
     </div>
 </div>
-    
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
             <div class="card m-b-30">
@@ -449,6 +450,26 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                                 </td>
                                                             </tr>
                                                         {{-- @endforeach --}}
+                                                    @endif
+                                                    @if (isset($producto['productos_asociados_marketing']) && count($producto['productos_asociados_marketing']) > 0)
+                                                        <tr>
+                                                            <td colspan="5">
+                                                                <div class="card mt-2">
+                                                                    <div class="card-header bg-info text-white">
+                                                                        <strong>Productos Asociados Marketing</strong>
+                                                                    </div>
+                                                                    <ul class="list-group list-group-flush">
+                                                                        {{-- {{dd($producto['productos_asociados_marketing'])}} --}}
+                                                                            @foreach ($producto['productos_asociados_marketing'] as $productoAsociadoMarketing)
+                                                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                                    {{ $this->getNombreTablaMarketing($productoAsociadoMarketing['id']) }}
+                                                                                    <input type="number" wire:model="productos_pedido.{{ $productoIndex }}.productos_asociados_marketing.{{ $loop->index }}.unidades" min="1" class="form-control form-control-sm" style="width: 60px;" >
+                                                                                </li>
+                                                                            @endforeach
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     @endif
                                                 @endforeach
                                                 <tr>

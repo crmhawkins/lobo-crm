@@ -29,6 +29,7 @@ use App\Models\ProductosMarketing;
 use App\Models\ProductosMarketingPedido;
 use App\Models\Subalmacenes;
 use App\Models\ProductosPedidoPack;
+use App\Models\ProductosMarketingPedidoPack;
 
 
 class CreateComponent extends Component
@@ -86,8 +87,10 @@ class CreateComponent extends Component
             $productoModel = Productos::find($producto->producto_pedido_id);
 
             if($productoModel->is_pack){
-                $productosAsociados = json_decode($productoModel->products_id);
+                $productosAsociados = json_decode($productoModel->products_id) ?? [];
+                $productosAsociadosMarketing = json_decode($productoModel->products_id_marketing) ?? [];
                 $productosAsociadosPedido = [];
+                $productosAsociadosMarketingPedido = [];
 
                 foreach($productosAsociados as $productoAsociado){
                     $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
@@ -112,6 +115,26 @@ class CreateComponent extends Component
 					}
                 }
 
+                foreach($productosAsociadosMarketing as $productoAsociadoMarketing){
+                    $productoAsociadoMarketingModel = ProductosMarketingPedidoPack::where('producto_id', $productoAsociadoMarketing)->where('pedido_id', $this->identificador)->first();
+                    if($productoAsociadoMarketingModel){
+                        $productosAsociadosMarketingPedido[] = [
+                            'id' => $productoAsociadoMarketingModel->producto_id,
+                            'nombre' => $productoAsociadoMarketingModel->producto->nombre,
+                            'unidades' => $productoAsociadoMarketingModel->unidades,
+                            'lote_id' => $productoAsociadoMarketingModel->lote_id,
+                        ];
+                    }else{
+                        $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing);
+                        $productosAsociadosMarketingPedido[] = [
+                            'id' => $productoAsociadoMarketing,
+                            'nombre' => $productoAsociadoMarketingModel->nombre,
+                            'unidades' => 0,
+                            'lote_id' => null
+                        ];
+                    }
+                }
+
             }
 
 
@@ -128,6 +151,7 @@ class CreateComponent extends Component
 
 
                 'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
+                'productos_asociados_marketing' => $productoModel->is_pack ? $productosAsociadosMarketingPedido : [],
             ];
 
             
@@ -235,6 +259,17 @@ class CreateComponent extends Component
         return $nombre_producto;
     }
 
+    public function getNombreTablaMarketing($id)
+    {
+        $producto = ProductosMarketing::find($id);
+        if(!isset($producto)){
+            $producto = 'producto no encontrado';
+            return $producto;
+        }else{
+            return $producto->nombre;
+        }
+    }
+
 
     public function getPesoTotal($id,$In)
     {
@@ -249,6 +284,11 @@ class CreateComponent extends Component
                     $productoAsociadoModel = Productos::find($productoAsociado['id']);
                     $pesoTotal += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
 
+                }
+
+                foreach($this->productos_pedido[$In]['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                    $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing['id']);
+                    $pesoTotal += ($productoAsociadoMarketing['unidades'] * $productoAsociadoMarketingModel->peso_neto_unidad) / 1000;
                 }
             }
         }
@@ -509,7 +549,7 @@ class CreateComponent extends Component
 
             if($productoPedido['is_pack']){
                 //comprobar que todos los productos asociados tienen lote_id
-                if(collect($productoPedido['productos_asociados'])->every(fn($p) => !is_null($p['lote_id']))){
+                if(collect($productoPedido['productos_asociados'])->every(fn($p) => !is_null($p['lote_id'])) && collect($productoPedido['productos_asociados_marketing'])->every(fn($p) => !is_null($p['lote_id']))){
                     //todos los productos asociados tienen lote_id
                 }else{
                     $this->alert('error', 'Todos los productos asociados deben tener un lote asignado.', [
@@ -578,6 +618,10 @@ class CreateComponent extends Component
                         $productoAsociadoModel = Productos::find($productoAsociado['id']);
                         $pesoTotalProducto += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
                     }
+                    foreach($productoPedido['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                        $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing['id']);
+                        $pesoTotalProducto += ($productoAsociadoMarketing['unidades'] * $productoAsociadoMarketingModel->peso_neto_unidad) / 1000;
+                    }
                 }
 
 
@@ -630,6 +674,10 @@ class CreateComponent extends Component
                     foreach($productoPedido['productos_asociados'] as $productoAsociado){
                         $productoAsociadoModel = Productos::find($productoAsociado['id']);
                         $pesoTotalProducto += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
+                    }
+                    foreach($productoPedido['productos_asociados_marketing'] as $productoAsociadoMarketing){
+                        $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing['id']);
+                        $pesoTotalProducto += ($productoAsociadoMarketing['unidades'] * $productoAsociadoMarketingModel->peso_neto_unidad) / 1000;
                     }
                 }
 
@@ -823,6 +871,7 @@ class CreateComponent extends Component
             //dd("hola");
             //coger los pedidos asociados y asociarles un lote
             $productosAsociados = $this->productos_pedido[$rowIndex]['productos_asociados'];
+            $productosAsociadosMarketing = $this->productos_pedido[$rowIndex]['productos_asociados_marketing'];
             $text = '';
             foreach($productosAsociados as $index => $productoAsociado){
                 //dd($productoAsociado['nombre']);
@@ -947,6 +996,59 @@ class CreateComponent extends Component
    
 
             }
+
+            foreach($productosAsociadosMarketing as $index => $productoAsociadoMarketing){
+                if($productoAsociadoMarketing['unidades'] == 0){
+                    $this->productos_pedido[$rowIndex]['productos_asociados_marketing'][$index]['lote_id'] = 'Sin asignar';
+                    continue;
+                }
+
+                if($productoAsociadoMarketing['lote_id'] != null || $productoAsociadoMarketing['lote_id'] != ''){
+                    //dd("hola");
+                    continue;
+                }
+                
+                $stock  = StockSubalmacen::where('producto_id', $productoAsociadoMarketing['id'])->where('subalmacen_id', 1)->get();
+                
+                if(count($stock) == 0){
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociadoMarketing['nombre'] . ". <br>";
+                    continue;
+                }
+
+                $cantidadStock = 0;
+                foreach($stock as $stockSubalmacen){
+                    if($stockSubalmacen->tipo_entrada != null){
+                        $cantidadStock += $stockSubalmacen->cantidad;
+                    }else{
+                        $cantidadStock -= $stockSubalmacen->cantidad;
+                    }
+                }
+
+               if($cantidadStock < 0 ){
+                 $cantidadStock = 0;
+               }
+
+                if($cantidadStock < $productoAsociadoMarketing['unidades']){
+                    $text = $text . "No hay stock disponible para este producto: " . $productoAsociadoMarketing['nombre'] . ". <br>";
+                    continue;
+                }
+
+                $this->productos_pedido[$rowIndex]['productos_asociados_marketing'][$index]['lote_id'] = 'Asignado';
+
+                if($productoAsociadoMarketing['unidades'] > 0){
+                    StockSubalmacen::create([
+                        'subalmacen_id' => 1,
+                        'producto_id' => $productoAsociadoMarketing['id'],
+                        'cantidad' => $productoAsociadoMarketing['unidades'],
+                        'fecha' => Carbon::now(),
+                        'observaciones' => 'Venta de producto marketing en pack',
+                        'tipo_salida' => 'Venta',
+
+                    ]);
+                }
+
+            }
+
             //dd($text);
             if($text != ''){
                 $this->alert('error', $text, [
