@@ -42,7 +42,7 @@
         @if(Auth::user()->isAdmin())
         <button class="btn btn-warning" wire:click="editPedidoIncidencia({{ $incidencia->id }})" data-toggle="modal" data-target="#editPedidoIncidenciaModal">Editar</button>
         <button class="btn btn-info" wire:click="recordatorioIncidencia({{ $incidencia->id }}, 'pedido')">Recordatorio</button>
-        <button class="btn btn-danger mt-2" wire:click="deletePedidoIncidenciaPedido({{ $incidencia->id }})">Archivar</button>
+        <button class="btn btn-danger mt-2" wire:click="deletePedidoIncidencia({{ $incidencia->id }})">Archivar</button>
         @endif
     </div>
 </div>
