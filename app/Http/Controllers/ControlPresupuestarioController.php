@@ -653,8 +653,9 @@ public function presupuestosDelegacion(Request $request)
         // Procesar los productos del pedido
         if ($factura->pedido) {
             foreach ($factura->pedido->productosPedido as $productoPedido) {
-                $productoNombre = $productoPedido->producto->nombre;
-                $productId = $productoPedido->producto->id;
+
+                $productoNombre = $productoPedido->producto ? $productoPedido->producto->nombre : 'Producto no encontrado';
+                $productId = $productoPedido->producto ? $productoPedido->producto->id : 'Producto no encontrado';
                 $unidadesVendidas = $productoPedido->unidades;
                 $precioTotal = $productoPedido->precio_total; // Precio total del producto
 
