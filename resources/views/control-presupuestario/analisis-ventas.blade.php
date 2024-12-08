@@ -51,6 +51,7 @@
 <div class="container-fluid mb-5">
     <h2>Análisis de Ventas - Trimestre {{ $trimestre }} - Año {{ $year }}</h2>
     <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+    <a href="{{ route('exportarAnalisisVentasAPDF', ['year' => $year, 'trimestre' => $trimestre]) }}" class="btn btn-success mb-4">Exportar a PDF</a>
     
     <!-- Formulario para seleccionar trimestre y año -->
     <form action="{{ route('control-presupuestario.analisis-ventas') }}" method="GET" class="mb-4">

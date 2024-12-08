@@ -8,6 +8,7 @@ use App\Models\Delegacion;
 use App\Models\Facturas;
 use Illuminate\Support\Facades\DB;
 use App\Models\Caja;
+use PDF;
 
 //collection
 use Illuminate\Support\Collection;
@@ -28,6 +29,34 @@ class IndexComponent extends Component
         $this->filtrarCompras();
         $this->calcularResultado();
 
+    }
+    public function exportarAPDF()
+    {
+        $this->delegaciones = Delegacion::all();
+        $this->filtrarVentas();
+        $this->filtrarCompras();
+        $this->calcularResultado();
+        $delegaciones = $this->delegaciones ?? [];
+        $totalesPorDelegacionYTrimestre = $this->totalesPorDelegacionYTrimestre ?? [];
+        $totalesPorDelegacionYTrimestreCompras = $this->totalesPorDelegacionYTrimestreCompras ?? [];
+        $resultadosPorDelegacion = $this->resultadosPorDelegacion ?? [];
+        //dd($this->delegaciones);
+        // Depurar datos
+        // dd(compact(
+        //     'delegaciones',
+        //     'totalesPorDelegacionYTrimestre',
+        //     'totalesPorDelegacionYTrimestreCompras',
+        //     'resultadosPorDelegacion'
+        // ));
+    
+        $pdf = PDF::loadView('pdf.control-presupuestario', compact(
+            'delegaciones',
+            'totalesPorDelegacionYTrimestre',
+            'totalesPorDelegacionYTrimestreCompras',
+            'resultadosPorDelegacion'
+        ))->setPaper('a2', 'landscape');
+    
+        return $pdf->download('ControlPresupuestario.pdf');
     }
 
     public function filtrarVentas()

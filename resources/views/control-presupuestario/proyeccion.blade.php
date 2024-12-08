@@ -35,6 +35,9 @@
 <div class="container" style="min-height: 100vh;">
     <h2 class="text-center mb-4 d-flex justify-content-center gap-2 align-items-center">Presupuesto por Delegación @if($delegacion)<span style="font-size: 22px;" class="badge badge-secondary text-center">{{$delegacion->nombre}}</span> @endif <span style="font-size: 22px"  class="badge badge-primary">{{ $year }}</span></h2>
     <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+    @if($delegacion)
+        <a href="{{ route('exportarProyeccionAPDF', ['delegacion' => $delegacion->id, 'year' => $year]) }}" class="btn btn-success mb-4">Exportar a PDF</a>
+    @endif
 
     <div class="container">
         <div class="row">

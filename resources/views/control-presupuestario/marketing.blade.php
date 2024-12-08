@@ -50,8 +50,8 @@
 
 <div class="container-fluid">
     <h2>Control PTO. Marketing {{ $year }}</h2>
-    <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
     <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+    <a href="{{ route('exportarMarketingAPDF', request()->query()) }}" class="btn btn-success mb-4">Exportar a PDF</a>
 
     <!-- Loader -->
     <div id="loader">

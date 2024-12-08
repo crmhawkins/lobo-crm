@@ -42,6 +42,7 @@
     <div class="container-fluid">
         <h2>Análisis Global - Trimestre {{ $trimestre }} - Año {{ $year }}</h2>
         <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+        <a href="{{ route('exportarAnalisisGlobalAPDF', ['year' => $year, 'trimestre' => $trimestre]) }}" class="btn btn-success mb-4">Exportar a PDF</a>
 
 
         <!-- Filtro por año y trimestre -->

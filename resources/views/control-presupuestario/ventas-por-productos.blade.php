@@ -25,7 +25,7 @@
     <div class="container mb-5">
         <h2 class="text-center mb-4">Ventas por Productos - Año {{ $year }}</h2>
         <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
-        <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
+        <a href="{{ route('exportarVentasPorProductosAPDF', ['year' => $year]) }}" class="btn btn-success mb-4">Exportar a PDF</a>
 
         <!-- Loader -->
         <div id="loader" style="display: none; text-align: center;">

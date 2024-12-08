@@ -3,6 +3,9 @@
         <div class="row align-items-center">
             <div class="col-sm-6">
                 <h4 class="page-title">Control Presupuestario</h4>
+                <!-- Botones de exportación -->
+                <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+                <a href="{{ route('exportarControlPresupuestarioAPDF') }}" class="btn btn-success mb-4">Exportar a PDF</a>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">
@@ -279,5 +282,52 @@
 <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
 <!-- Responsive examples -->
 {{-- <script src="../assets/pages/datatables.init.js"></script> --}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    function exportarTablasAExcel() {
+        var wb = XLSX.utils.book_new();
+        var ws_data = []; // Array para almacenar los datos de todas las tablas
+
+        // Función para añadir los datos de una tabla al array ws_data
+        function addTableToSheet(table) {
+            var rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                var rowData = [];
+                row.querySelectorAll('th, td').forEach(cell => {
+                    rowData.push(cell.innerText);
+                });
+                ws_data.push(rowData);
+            });
+            // Añadir una fila vacía para separar las tablas
+            ws_data.push([]);
+        }
+
+        // Obtener las tablas por ID y añadir sus datos al array
+        var tables = [
+            document.getElementById('datatable-buttons'),
+            document.getElementById('datatable-compras'),
+            document.getElementById('resultado-ab')
+        ];
+
+        tables.forEach(table => {
+            if (table) {
+                addTableToSheet(table);
+            }
+        });
+
+        if (ws_data.length === 0) {
+            alert('No se encontraron tablas para exportar.');
+            return;
+        }
+
+        // Crear una hoja de cálculo a partir de los datos combinados
+        var ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, 'ControlPresupuestario');
+
+        // Guardar el archivo Excel
+        XLSX.writeFile(wb, 'ControlPresupuestario.xlsx');
+    }
+</script>
 
 @endsection

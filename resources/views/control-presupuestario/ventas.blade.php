@@ -44,8 +44,8 @@
         <div class="row align-items-center">
             <div class="col-sm-6">
                 <h4 class="page-title">CONTROL PTO. VENTAS</h4>
-                <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
-                <button onclick="exportarTablasAPDF()" class="btn btn-success mb-4">Exportar a PDF</button>
+                <button onclick="exportarTablasAExcel()" class="btn btn-success ">Exportar a Excel</button>
+                <a href="{{ route('exportarVentasAPDF', request()->query()) }}" class="btn btn-success">Exportar a PDF</a>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-right">

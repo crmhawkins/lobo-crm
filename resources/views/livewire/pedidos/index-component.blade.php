@@ -1,3 +1,4 @@
+<div>
 <div class="container-fluid">
     <style>
         @media(max-width: 1042px) {
@@ -217,20 +218,20 @@
                                 <td>
                                     <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver/Editar</a>
                                     @if($this->albaranExiste($presup->id))
-                                        <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                        <button class="btn btn-secondary" onclick="descargarAlbaran({{ $presup->id }})">Descargar albaran</button>
                                     @endif
-                                    @if($presup->factura)  {{-- Directamente chequeas si el pedido tiene una factura --}}
-                                        <button class="btn btn-warning" wire:click="factura({{ $presup->factura->id }})">Descargar factura</button>
+                                    @if($presup->factura)
+                                        <button class="btn btn-warning" onclick="descargarFactura({{ $presup->factura->id }})">Descargar factura</button>
                                     @endif
                                 </td>
                                 @else
                                 <td>
                                     <a href="pedidos-edit/{{ $presup->id }}" class="btn btn-primary">Ver</a>
                                     @if($this->albaranExiste($presup->id))
-                                        <button class="btn btn-secondary" wire:click="albaran({{ $presup->id }})">Descargar albaran </button>
+                                        <button class="btn btn-secondary" onclick="descargarAlbaran({{ $presup->id }})">Descargar albaran</button>
                                     @endif
-                                    @if($presup->factura)  {{-- Directamente chequeas si el pedido tiene una factura --}}
-                                        <button class="btn btn-warning" wire:click="factura({{  $presup->factura->id }})">Descargar factura</button>
+                                    @if($presup->factura)
+                                        <button class="btn btn-warning" onclick="descargarFactura({{ $presup->factura->id }})">Descargar factura</button>
                                     @endif
                                 </td>
                                 @endif
@@ -254,6 +255,15 @@
 
 
 @section('scripts')
+<script>
+    function descargarAlbaran(pedidoId) {
+        Livewire.emit('albaran', pedidoId);
+    }
+
+    function descargarFactura(facturaId) {
+        Livewire.emit('factura', facturaId);
+    }
+</script>
 {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
@@ -316,3 +326,4 @@
 {{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 
 @endsection
+</div>

@@ -34,6 +34,7 @@
 <div class="container-fluid">
     <h2>Control PTO. Patrocinios {{ $year }}</h2>
     <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
+    <a href="{{ route('exportarPatrociniosAPDF', request()->query()) }}" class="btn btn-success mb-4">Exportar a PDF</a>    
 
     <!-- Filtro por año -->
     <form action="{{ route('control-presupuestario.patrocinios') }}" method="GET" class="mb-4">

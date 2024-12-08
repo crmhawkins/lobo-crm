@@ -39,6 +39,7 @@ use App\Http\Controllers\ProductosMarketingController;
 use App\Http\Controllers\StockSubalmacenController;
 use App\Http\Controllers\AlertasController;
 use App\Http\Controllers\ComercialViewController;
+use App\Http\Livewire\ControlPresupuestario\IndexComponent;
 
 use App\Http\Controllers\EmpresasTransporte;
 
@@ -194,8 +195,21 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/control-presupuestario/analisis-global', [ControlPresupuestarioController::class, 'analisisGlobal'])->name('control-presupuestario.analisis-global');
     Route::get('/control-presupuestario/analisis-ventas', [ControlPresupuestarioController::class, 'analisisVentas'])->name('control-presupuestario.analisis-ventas');
     Route::get('/control-presupuestario/proyeccion', [ControlPresupuestarioController::class, 'proyeccion'])->name('control-presupuestario.proyeccion');
-
-
+    Route::get('/control-presupuestario/gastos', [ControlPresupuestarioController::class, 'gastos'])->name('control-presupuestario.gastos');
+    Route::get('/exportar-gastos-pdf', [ControlPresupuestarioController::class, 'exportarGastosAPDF'])->name('exportarGastosAPDF');
+    Route::get('/exportar-control-presupuestario-pdf', [IndexComponent::class, 'exportarAPDF'])->name('exportarControlPresupuestarioAPDF');
+    Route::get('/exportar-control-presupuestario/ventas/pdf', [ControlPresupuestarioController  ::class, 'exportarVentasAPDF'])->name('exportarVentasAPDF');
+    Route::get('/exportar-control-presupuestario/compras/pdf', [ControlPresupuestarioController  ::class, 'exportarComprasAPDF'])->name('exportarComprasAPDF');
+    Route::get('/exportar-control-presupuestario/logistica/pdf', [ControlPresupuestarioController  ::class, 'exportarLogisticaAPDF'])->name('exportarLogisticaAPDF');
+    Route::get('/exportar-control-presupuestario/comerciales/pdf', [ControlPresupuestarioController  ::class, 'exportarComercialesAPDF'])->name('exportarComercialesAPDF');
+    Route::get('/exportar-control-presupuestario/marketing/pdf', [ControlPresupuestarioController  ::class, 'exportarMarketingAPDF'])->name('exportarMarketingAPDF');
+    Route::get('/exportar-control-presupuestario/patrocinios/pdf', [ControlPresupuestarioController  ::class, 'exportarPatrociniosAPDF'])->name('exportarPatrociniosAPDF');
+    Route::get('/exportar-control-presupuestario/presupuestos-delegacion/pdf', [ControlPresupuestarioController  ::class, 'exportarPresupuestosDelegacionAPDF'])->name('exportarPresupuestosDelegacionAPDF');
+    Route::get('/exportar-control-presupuestario/ventas-delegaciones/pdf', [ControlPresupuestarioController  ::class, 'exportarVentasDelegacionesAPDF'])->name('exportarVentasDelegacionesAPDF');
+    Route::get('/exportar-control-presupuestario/ventas-por-productos/pdf', [ControlPresupuestarioController  ::class, 'exportarVentasPorProductosAPDF'])->name('exportarVentasPorProductosAPDF');
+    Route::get('/exportar-control-presupuestario/analisis-global/pdf', [ControlPresupuestarioController  ::class, 'exportarAnalisisGlobalAPDF'])->name('exportarAnalisisGlobalAPDF');
+    Route::get('/exportar-control-presupuestario/analisis-ventas/pdf', [ControlPresupuestarioController  ::class, 'exportarAnalisisVentasAPDF'])->name('exportarAnalisisVentasAPDF');
+    Route::get('/exportar-control-presupuestario/proyeccion/pdf', [ControlPresupuestarioController  ::class, 'exportarProyeccionAPDF'])->name('exportarProyeccionAPDF');
     // Cuentas Contables
     Route::get('/cuentas-contables', [App\Http\Controllers\CuentasContableController::class, 'index'])->name('admin.cuentasContables.index');
     Route::get('/cuentas-contables/create', [App\Http\Controllers\CuentasContableController::class, 'create'])->name('admin.cuentasContables.create');

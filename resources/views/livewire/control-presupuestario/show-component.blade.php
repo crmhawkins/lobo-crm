@@ -17,6 +17,7 @@
         <div class="btn-group-vertical" role="group" aria-label="Control Presupuestario" style="width: 300px;">
             <a href="{{ route('control-presupuestario.index') }}" class="btn btn-primary btn-lg mb-2">General</a>
             <a href="{{ route('control-presupuestario.ventas') }}" class="btn btn-primary btn-lg mb-2">Ventas</a>
+            <a href="{{ route('control-presupuestario.gastos') }}" class="btn btn-primary btn-lg mb-2">Gastos</a>
             <a href="{{ route('control-presupuestario.compras') }}" class="btn btn-primary btn-lg mb-2">Compras</a>
             <a href="{{ route('control-presupuestario.logistica') }}" class="btn btn-primary btn-lg mb-2">Logística</a>
             <a href="{{ route('control-presupuestario.comerciales') }}" class="btn btn-primary btn-lg mb-2">Comerciales</a>

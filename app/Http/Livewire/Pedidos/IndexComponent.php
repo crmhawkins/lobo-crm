@@ -36,6 +36,15 @@ class IndexComponent extends Component
     public $fecha_max = null;
     protected $listeners = ['refreshComponent' => '$refresh'];
 
+    public function getListeners()
+    {
+        return [
+            'albaran',
+            'factura',
+        ];
+    }
+
+
     public function updatePedidos()
     {
         // Guardar los filtros en la sesión
@@ -378,7 +387,7 @@ class IndexComponent extends Component
 
     public function albaran($pedidoId)
     {
-        
+        //dd($pedidoId);
         // Buscar el albarán asociado con el ID del pedido
 		//$factura = Facturas::find($pedidoId);
         $albaran = Albaran::where('pedido_id', $pedidoId)->first();

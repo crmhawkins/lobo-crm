@@ -49,8 +49,8 @@
 
 <div class="container-fluid">
     <h2>Control PTO. COMPRAS {{ $year }}</h2>
-    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-4">Exportar a Excel</button>
-
+    <button onclick="exportarTablasAExcel()" class="btn btn-success mb-2">Exportar a Excel</button>
+    <a href="{{ route('exportarComprasAPDF', request()->query()) }}" class="btn btn-success mb-2">Exportar a PDF</a>
     <!-- Filtro por año -->
     <form action="{{ route('control-presupuestario.compras') }}" method="GET" class="mb-4">
         <div class="form-group">
