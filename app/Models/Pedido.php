@@ -77,6 +77,11 @@ class Pedido extends Model
         return $this->hasMany(ProductosPedido::class, 'pedido_id');
     }
 
+    public function productosMarketingPedido()
+    {
+        return $this->hasMany(ProductosMarketingPedido::class, 'pedido_id');
+    }
+
    
 
 }

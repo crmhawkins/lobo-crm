@@ -184,7 +184,9 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/control-presupuestario/ventas', [ControlPresupuestarioController::class, 'ventas'])->name('control-presupuestario.ventas');
     Route::get('/control-presupuestario/compras', [ControlPresupuestarioController::class, 'compras'])->name('control-presupuestario.compras');
     Route::post('/guardar-costes', [ControlPresupuestarioController::class, 'guardarCostes'])->name('control-presupuestario.guardarCostes');
+    Route::post('/control-presupuestario/guardarCostesMarketing', [ControlPresupuestarioController::class, 'guardarCostesMarketing'])->name('control-presupuestario.guardarCostesMarketing');
     Route::post('/costes/{id}', [ControlPresupuestarioController::class, 'eliminarCoste'])->name('costes.eliminar');
+    Route::delete('/costes-marketing/{id}', [ControlPresupuestarioController::class, 'eliminarCosteMarketing'])->name('costes-marketing.eliminar');
     Route::get('/control-presupuestario/logistica', [ControlPresupuestarioController::class, 'logistica'])->name('control-presupuestario.logistica');
     Route::get('/control-presupuestario/comerciales', [ControlPresupuestarioController::class, 'comerciales'])->name('control-presupuestario.comerciales');
     Route::get('/control-presupuestario/marketing', [ControlPresupuestarioController::class, 'marketing'])->name('control-presupuestario.marketing');

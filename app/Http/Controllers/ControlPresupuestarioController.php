@@ -14,6 +14,9 @@ use App\Models\Costes;
 use App\Models\Pedido;
 use App\Models\User;
 use App\Models\Caja;
+use App\Models\ProductosMarketing;
+use App\Models\CostesMarketing;
+
 
 //PDF
 use PDF;
@@ -72,6 +75,52 @@ class ControlPresupuestarioController extends Controller
     }
 
     return redirect()->back()->with('success', 'Costes guardados correctamente.');
+}
+public function guardarCostesMarketing(Request $request)
+{
+    // Validar los datos del formulario
+    $validatedData = $request->validate([
+        'productos_marketing' => 'required|array',
+        'productos_marketing.*' => 'required|exists:productos_marketing,id',
+        'costes_marketing' => 'required|array',
+        'costes_marketing.*' => 'required|numeric|min:0',
+        'delegaciones_marketing' => 'nullable|array',
+        'año' => 'required|numeric',
+        'eliminados' => 'nullable|string',
+    ]);
+
+    // Eliminar los costes de marketing cuyos IDs están en el campo "eliminados"
+    if (!empty($validatedData['eliminados'])) {
+        $idsEliminados = explode(',', $validatedData['eliminados']);
+        CostesMarketing::whereIn('id', $idsEliminados)->delete();
+    }
+
+    // Guardar o actualizar cada coste de marketing
+    foreach ($request->productos_marketing as $index => $productoId) {
+        CostesMarketing::updateOrCreate(
+            [
+                'product_id' => $productoId,
+                'year' => $request->año,
+                'COD' => $request->delegaciones_marketing[$index] ?? null,
+            ],
+            [
+                'cost' => $request->costes_marketing[$index],
+            ]
+        );
+    }
+
+    return redirect()->back()->with('success', 'Costes de marketing guardados correctamente.');
+}
+
+public function eliminarCosteMarketing($id)
+{
+    // Buscar y eliminar el coste por su ID
+    $coste = CostesMarketing::find($id);
+    if ($coste) {
+        $coste->delete();
+        return response()->json(['success' => 'Coste de marketing eliminado correctamente.']);
+    }
+    return response()->json(['error' => 'No se pudo eliminar el coste de marketing.'], 404);
 }
 
 public function eliminarCoste($id)
@@ -2554,6 +2603,7 @@ public function marketing(Request $request)
     // Obtener todas las delegaciones
     $delegaciones = Delegacion::all();
     $productos2 = Productos::all();
+    $productosMarketing = ProductosMarketing::all();
 
     // Obtener las cajas del departamento de marketing (id 2), cuyas cuentas contables comiencen por '6270'
     $cajas = Caja::where('departamento', 'marketing')
@@ -2600,24 +2650,37 @@ public function marketing(Request $request)
         ->whereHas('cliente', function($query) use ($comercialesMarketing) {
             $query->whereIn('comercial_id', $comercialesMarketing);
         })
-        ->with(['productosPedido.producto', 'cliente.delegacion'])
+        ->with(['productosPedido.producto', 'productosMarketingPedido.producto', 'cliente.delegacion'])
         ->get();
 
-    // Obtener los costes por año
-    $costes = Costes::where('year', $year)
+    // Obtener los costes de productos normales por año
+    $costesProductos = Costes::where('year', $year)
+        ->with('producto', 'delegacion')
+        ->get();
+
+    // Obtener los costes de productos de marketing por año
+    $costesMarketing = CostesMarketing::where('year', $year)
         ->with('producto', 'delegacion')
         ->get();
 
     // Mapa de costes por producto y delegación
-    $costesMap = [];
-    foreach ($costes as $coste) {
+    $costesMapProductos = [];
+    foreach ($costesProductos as $coste) {
         $productId = $coste->product_id;
         $delegacionCOD = $coste->COD ?? 'General';
-        $costesMap[$productId][$delegacionCOD] = $coste->cost;
+        $costesMapProductos[$productId][$delegacionCOD] = $coste->cost;
+    }
+
+    $costesMapMarketing = [];
+    foreach ($costesMarketing as $coste) {
+        $productId = $coste->product_id;
+        $delegacionCOD = $coste->COD ?? 'General';
+        $costesMapMarketing[$productId][$delegacionCOD] = $coste->cost;
     }
 
     // Calcular las ventas por trimestre, mes, producto y delegación
     $ventasPorTrimestre = [];
+    $ventasMarketingPorTrimestre = [];
 
     foreach ($pedidos as $pedido) {
         $mes = Carbon::parse($pedido->created_at)->month; // Obtener el mes del pedido
@@ -2628,18 +2691,18 @@ public function marketing(Request $request)
         // Inicializar el trimestre y mes en el array si no existen
         if (!isset($ventasPorTrimestre[$trimestre])) {
             $ventasPorTrimestre[$trimestre] = [];
+            $ventasMarketingPorTrimestre[$trimestre] = [];
         }
         if (!isset($ventasPorTrimestre[$trimestre][$mes])) {
             $ventasPorTrimestre[$trimestre][$mes] = [];
+            $ventasMarketingPorTrimestre[$trimestre][$mes] = [];
         }
 
         // Procesar los productos del pedido para registrar las ventas por producto
         foreach ($pedido->productosPedido as $productoPedido) {
-            try{
+            try {
                 if ($productoPedido->precio_ud != 0) {
-
                     continue;
-
                 }
                 $productoNombre = $productoPedido->producto->nombre;
                 $productId = $productoPedido->producto->id;
@@ -2656,7 +2719,7 @@ public function marketing(Request $request)
                 $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General'; // Usar 'General' si la delegación no existe
 
                 // Obtener el coste para la delegación o el coste general si no existe
-                $costeProducto = $costesMap[$productId][$delegacionCOD] ?? $costesMap[$productId]['General'] ?? 0;
+                $costeProducto = $costesMapProductos[$productId][$delegacionCOD] ?? $costesMapProductos[$productId]['General'] ?? 0;
 
                 // Inicializar la delegación si no existe para este producto
                 if (!isset($ventasPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
@@ -2673,13 +2736,52 @@ public function marketing(Request $request)
                 continue;
             }
         }
-    }
- // Agrupar los costes por delegación
- $costesPorDelegacion = $costes->groupBy(function ($coste) {
-    return $coste->delegacion ? $coste->delegacion->nombre : 'General';
-});
 
-    return view('control-presupuestario.marketing', compact('cajaPorTrimestre', 'ventasPorTrimestre', 'delegaciones', 'year' , 'costesPorDelegacion' , 'productos2'));
+        // Procesar los productos de marketing del pedido
+        foreach ($pedido->productosMarketingPedido as $productoMarketingPedido) {
+            try {
+                $productoNombre = $productoMarketingPedido->producto->nombre;
+                $productId = $productoMarketingPedido->producto->id;
+                $unidadesVendidas = $productoMarketingPedido->unidades;
+
+                // Inicializar el producto en el mes si no existe
+                if (!isset($ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre])) {
+                    $ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre] = [
+                        'nombre' => $productoNombre,
+                        'ventasDelegaciones' => [],
+                    ];
+                }
+
+                $delegacionCOD = $pedido->cliente->delegacion->COD ?? 'General';
+                $costeProducto = $costesMapMarketing[$productId][$delegacionCOD] ?? $costesMapMarketing[$productId]['General'] ?? 0;
+
+                // Inicializar la delegación si no existe para este producto
+                if (!isset($ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre])) {
+                    $ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre] = [
+                        'unidadesVendidas' => 0,
+                        'costeTotal' => 0,
+                    ];
+                }
+
+                // Sumar las unidades vendidas y calcular el coste total
+                $ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['unidadesVendidas'] += $unidadesVendidas;
+                $ventasMarketingPorTrimestre[$trimestre][$mes][$productoNombre]['ventasDelegaciones'][$delegacionNombre]['costeTotal'] += $unidadesVendidas * $costeProducto;
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+    }
+
+    // Agrupar los costes por delegación
+    $costesProductosPorDelegacion = $costesProductos->groupBy(function ($coste) {
+        return $coste->delegacion ? $coste->delegacion->nombre : 'General';
+    });
+
+    $costesMarketingPorDelegacion = $costesMarketing->groupBy(function ($coste) {
+        return $coste->delegacion ? $coste->delegacion->nombre : 'General';
+    });
+
+    return view('control-presupuestario.marketing', compact('cajaPorTrimestre', 'ventasPorTrimestre', 'ventasMarketingPorTrimestre', 'delegaciones', 'year', 'costesProductosPorDelegacion', 'costesMarketingPorDelegacion', 'productos2', 'productosMarketing'));
 }
 
 public function exportarMarketingAPDF(Request $request)

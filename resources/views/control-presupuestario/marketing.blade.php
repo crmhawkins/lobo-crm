@@ -209,73 +209,121 @@
             </table>
         </div>
     @endforeach
-    <form action="{{ route('control-presupuestario.guardarCostes') }}" method="POST" id="costesForm">
+    <!-- Formulario para costes de productos normales -->
+    <form action="{{ route('control-presupuestario.guardarCostes') }}" method="POST" id="costesFormProductos">
         @csrf
         <input type="hidden" name="año" value="{{ $year }}">
 
-        <!-- Campo oculto para almacenar los IDs de los costes eliminados -->
-        <input type="hidden" name="eliminados" id="eliminados" value="">
-
-        <!-- Tabla dinámica para añadir/editar costes -->
-        <!-- Tabla dinámica para añadir/editar costes -->
-<div class="table-responsive">
-    <table class="table table-bordered mb-5" id="costesTable">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Coste</th>
-                <th>Delegación (opcional)</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Mostrar los costes existentes -->
-            @foreach($costesPorDelegacion as $delegacion => $costes)
-                @foreach($costes as $coste)
-                    <tr data-id="{{ $coste->id }}">
-                        <!-- Campo oculto para el ID del coste -->
-                        <input type="hidden" name="coste_ids[]" value="{{ $coste->id }}">
-                        
-                        <td>
-                            <select class="form-control producto-select" name="productos[]" required>
-                                <option value="">Seleccione un producto</option>
-                                @foreach($productos2 as $producto)
-                                    <option value="{{ $producto->id }}" {{ $producto->id == $coste->product_id ? 'selected' : '' }}>
-                                        {{ $producto->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" step="0.01" name="costes[]" class="form-control" value="{{ $coste->cost }}" required>
-                        </td>
-                        <td>
-                            <select class="form-control" name="delegaciones[]">
-                                <option value="" {{ is_null($coste->COD) ? 'selected' : '' }}>General</option>
-                                @foreach($delegaciones as $deleg)
-                                    <option value="{{ $deleg->COD }}" {{ (!is_null($coste->COD) && ($coste->COD == $deleg->COD)) ? 'selected' : '' }}>
-                                        {{ $deleg->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
-                            <!-- Botón para eliminar -->
-                            <form action="{{ route('costes.eliminar', $coste->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este coste?');">
-                                @csrf
-                                {{-- @method('DELETE') --}}
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-                        </td>
+        <h3>Costes de Productos</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered mb-5" id="costesTableProductos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Coste</th>
+                        <th>Delegación (opcional)</th>
+                        <th>Acción</th>
                     </tr>
-                @endforeach
-            @endforeach
-        </tbody>
-    </table>
-</div>
+                </thead>
+                <tbody>
+                    @foreach($costesProductosPorDelegacion as $delegacion => $costes)
+                        @foreach($costes as $coste)
+                            <tr data-id="{{ $coste->id }}">
+                                <input type="hidden" name="coste_ids_productos[]" value="{{ $coste->id }}">
+                                <td>
+                                    <select class="form-control producto-select" name="productos[]" required>
+                                        <option value="">Seleccione un producto</option>
+                                        @foreach($productos2 as $producto)
+                                            <option value="{{ $producto->id }}" {{ $producto->id == $coste->product_id ? 'selected' : '' }}>
+                                                {{ $producto->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="costes[]" class="form-control" value="{{ $coste->cost }}" required>
+                                </td>
+                                <td>
+                                    <select class="form-control" name="delegaciones[]">
+                                        <option value="" {{ is_null($coste->COD) ? 'selected' : '' }}>General</option>
+                                        @foreach($delegaciones as $deleg)
+                                            <option value="{{ $deleg->COD }}" {{ (!is_null($coste->COD) && ($coste->COD == $deleg->COD)) ? 'selected' : '' }}>
+                                                {{ $deleg->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <form action="{{ route('costes.eliminar', $coste->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este coste?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary mb-5" id="addRowBtnProductos">Añadir Producto</button>
+        <button type="submit" class="btn btn-primary mb-5">Guardar costes</button>
+    </form>
 
-<button type="button" class="btn btn-secondary mb-5" id="addRowBtn">Añadir Producto</button>
-<button type="submit" class="btn btn-primary mb-5">Guardar costes</button>
+    <!-- Formulario para costes de productos de marketing -->
+    <form action="{{ route('control-presupuestario.guardarCostesMarketing') }}" method="POST" id="costesFormMarketing">
+        @csrf
+        <input type="hidden" name="año" value="{{ $year }}">
+
+        <h3>Costes de Productos de Marketing</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered mb-5" id="costesTableMarketing">
+                <thead>
+                    <tr>
+                        <th>Producto Marketing</th>
+                        <th>Coste</th>
+                        <th>Delegación (opcional)</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($costesMarketingPorDelegacion as $delegacion => $costes)
+                        @foreach($costes as $coste)
+                            <tr data-id="{{ $coste->id }}">
+                                <input type="hidden" name="coste_ids_marketing[]" value="{{ $coste->id }}">
+                                <td>
+                                    <select class="form-control producto-select" name="productos_marketing[]" required>
+                                        <option value="">Seleccione un producto</option>
+                                        @foreach($productosMarketing as $productoMarketing)
+                                            <option value="{{ $productoMarketing->id }}" {{ $productoMarketing->id == $coste->product_id ? 'selected' : '' }}>
+                                                {{ $productoMarketing->nombre }} (Producto marketing)
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="costes_marketing[]" class="form-control" value="{{ $coste->cost }}" required>
+                                </td>
+                                <td>
+                                    <select class="form-control" name="delegaciones_marketing[]">
+                                        <option value="" {{ is_null($coste->COD) ? 'selected' : '' }}>General</option>
+                                        @foreach($delegaciones as $deleg)
+                                            <option value="{{ $deleg->COD }}" {{ (!is_null($coste->COD) && ($coste->COD == $deleg->COD)) ? 'selected' : '' }}>
+                                                {{ $deleg->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                        <button  class="btn btn-danger delete-cost-marketing" data-id="{{ $coste->id }}">Eliminar</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary mb-5" id="addRowBtnMarketing">Añadir Producto Marketing</button>
+        <button type="submit" class="btn btn-primary mb-5">Guardar costes de marketing</button>
     </form>
 </div>
 
@@ -459,4 +507,187 @@
         document.getElementById('loader').style.display = 'none';
     }
     </script>
+<script>
+    $(document).ready(function() {
+        let eliminados = $('#eliminados').val() ? $('#eliminados').val().split(',') : [];
+    
+        // Añadir nueva fila a la tabla de productos normales
+        $('#addRowBtnProductos').click(function() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <select class="form-control producto-select" name="productos[]" required>
+                            <option value="">Seleccione un producto</option>
+                            @foreach($productos2 as $producto)
+                                <option value="{{ $producto->id }}">{{ $producto->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="costes[]" class="form-control" required>
+                    </td>
+                    <td>
+                        <select class="form-control" name="delegaciones[]">
+                            <option value="">General</option>
+                            @foreach($delegaciones as $delegacion)
+                                <option value="{{ $delegacion->COD }}">{{ $delegacion->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+            $('#costesTableProductos tbody').append(newRow);
+        });
+
+        // Añadir nueva fila a la tabla de productos de marketing
+        $('#addRowBtnMarketing').click(function() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <select class="form-control producto-select" name="productos_marketing[]" required>
+                            <option value="">Seleccione un producto</option>
+                            @foreach($productosMarketing as $productoMarketing)
+                                <option value="{{ $productoMarketing->id }}">{{ $productoMarketing->nombre }} (Producto marketing)</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="costes_marketing[]" class="form-control" required>
+                    </td>
+                    <td>
+                        <select class="form-control" name="delegaciones_marketing[]">
+                            <option value="">General</option>
+                            @foreach($delegaciones as $delegacion)
+                                <option value="{{ $delegacion->COD }}">{{ $delegacion->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+            $('#costesTableMarketing tbody').append(newRow);
+        });
+
+        // Eliminar fila de la tabla
+        $(document).on('click', '.remove-row', function() {
+            let row = $(this).closest('tr');
+            let costeId = $(this).data('id');
+    
+            // Si tiene un ID, añadirlo a la lista de eliminados
+            if (costeId) {
+                eliminados.push(costeId); 
+                $('#eliminados').val(eliminados.join(',')); // Actualizar el campo oculto
+            }
+    
+            row.remove(); // Eliminar la fila visualmente
+        });
+
+        // Código para eliminar costes
+        $('.delete-cost').click(function() {
+            const costeId = $(this).data('id');
+        
+            // Confirmación antes de eliminar
+            if (confirm('¿Estás seguro de eliminar este coste?')) {
+                $.ajax({
+                    url: `/costes/${costeId}`, // Cambia esto a la ruta correcta para tu aplicación
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}', // Incluye el token CSRF
+                    },
+                    success: function(response) {
+                        // Si la eliminación fue exitosa, elimina la fila
+                        $(`tr[data-id="${costeId}"]`).remove();
+                        alert('Coste eliminado correctamente.');
+                    },
+                    error: function(xhr) {
+                        // Manejo de errores
+                        alert('No se pudo eliminar el coste. Por favor, inténtalo de nuevo.');
+                    }
+                });
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        let eliminadosMarketing = $('#eliminadosMarketing').val() ? $('#eliminadosMarketing').val().split(',') : [];
+    
+        // Añadir nueva fila a la tabla de productos de marketing
+        $('#addRowBtnMarketing').click(function() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <select class="form-control producto-select" name="productos_marketing[]" required>
+                            <option value="">Seleccione un producto</option>
+                            @foreach($productosMarketing as $productoMarketing)
+                                <option value="{{ $productoMarketing->id }}">{{ $productoMarketing->nombre }} (Producto marketing)</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" name="costes_marketing[]" class="form-control" required>
+                    </td>
+                    <td>
+                        <select class="form-control" name="delegaciones_marketing[]">
+                            <option value="">General</option>
+                            @foreach($delegaciones as $delegacion)
+                                <option value="{{ $delegacion->COD }}">{{ $delegacion->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row-marketing">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+            $('#costesTableMarketing tbody').append(newRow);
+        });
+
+        // Eliminar fila de la tabla de productos de marketing
+        $(document).on('click', '.remove-row-marketing', function() {
+            let row = $(this).closest('tr');
+            let costeId = $(this).data('id');
+    
+            // Si tiene un ID, añadirlo a la lista de eliminados
+            if (costeId) {
+                eliminadosMarketing.push(costeId); 
+                $('#eliminadosMarketing').val(eliminadosMarketing.join(',')); // Actualizar el campo oculto
+            }
+    
+            row.remove(); // Eliminar la fila visualmente
+        });
+
+        // Código para eliminar costes de marketing
+        $('.delete-cost-marketing').click(function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+
+            const costeId = $(this).data('id');
+            
+            // Confirmación antes de eliminar
+            if (confirm('¿Estás seguro de eliminar este coste de marketing?')) {
+                $.ajax({
+                    url: `/admin/costes-marketing/${costeId}`, // Asegúrate de que esta URL sea correcta
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}', // Incluye el token CSRF
+                    },
+                    success: function(response) {
+                        // Si la eliminación fue exitosa, elimina la fila
+                        $(`tr[data-id="${costeId}"]`).remove();
+                        alert('Coste de marketing eliminado correctamente.');
+                    },
+                    error: function(xhr) {
+                        // Manejo de errores
+                        alert('No se pudo eliminar el coste de marketing. Por favor, inténtalo de nuevo.');
+                    }
+                });
+            }
+        });
+    });
+</script>
 @endsection
