@@ -78,14 +78,14 @@ class CreateRectificativa extends Component
             // Extrae el número secuencial de la última factura del año y lo incrementa
             $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
         } else {
-            if ($year = 24) {
+            if ($year == 24) {
                 $lastNumber = 20;
             } else {
                 $lastNumber = 1;
             }
         }
 
-        if ($year = 24) {
+        if ($year == 24) {
             if ($lastNumber == 30) {
                 $lastNumber = 31; //FACTURA EN HOLDED
             }
@@ -165,7 +165,7 @@ class CreateRectificativa extends Component
             // Extrae el número secuencial de la última factura del año y lo incrementa
             $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
         } else {
-            if ($year = 24) {
+            if ($year == 24) {
                 $lastNumber = 20;
             } else {
                 $lastNumber = 1;

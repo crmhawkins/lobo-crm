@@ -94,7 +94,7 @@ class CreateComponent extends Component
             // Extrae el número secuencial de la última factura del año y lo incrementa
             $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
         } else {
-            if($year = 24 ){
+            if($year == 24 ){
                 $lastNumber = 150;
             }else{
                 $lastNumber = 1;
@@ -104,7 +104,7 @@ class CreateComponent extends Component
 
        
         // si es el numero F240428, que lo excluya y coja el siguiente
-        if($year = 24){
+        if($year == 24){
             if($lastNumber == 428){
                 $lastNumber = 429; //FACTURA EN HOLDED
             }
@@ -113,6 +113,7 @@ class CreateComponent extends Component
         //dd($lastNumber);
         // Genera el nuevo número de factura con relleno para asegurar 4 dígitos
         $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+        //dd($this->numero_factura);
         $this->fecha_emision = Carbon::now()->format('Y-m-d');
     }
 
@@ -169,14 +170,15 @@ class CreateComponent extends Component
     }
     public function getNumeroFactura(){
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
+            
         if($this->isFacturaRectificativa){
             $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
-            
             if ($lastInvoice) {
+                
                 // Extrae el número secuencial de la última factura del año y lo incrementa
                 $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
             } else {
-                if($year = 24 ){
+                if($year ==  24 ){
                     $lastNumber = 20;
                 }else{
                     $lastNumber = 1;
@@ -185,7 +187,14 @@ class CreateComponent extends Component
            
         }else{
             //donde tipo sea distinto de 2
-            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->orWhere('tipo', null)->max('numero_factura');
+            $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)
+            ->where(function($query) {
+                $query->where('tipo', '!=', 2)
+                      ->orWhereNull('tipo');
+            })
+            ->max('numero_factura');
+                       // dd($lastInvoice);
+
             //numero de facturas perdidos
             // $facturas = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', '!=', 2)->orWhere('tipo', null)->get();
             // //para coger el lastInvoice necesito que recorra todas las facturas no rectificativas, es decir de que no sean de tipo 2, y coja la que la ultima cuyo siguiente no sea consecutivo
@@ -217,7 +226,7 @@ class CreateComponent extends Component
                 $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
                 
             } else {
-                if($year = 24 ){
+                if($year == 24 ){
                     $lastNumber = 150;
                 }else{
                     $lastNumber = 1;
@@ -227,16 +236,18 @@ class CreateComponent extends Component
         }
         
         if($this->isFacturaRectificativa){
+            
             $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }else{
-            if($year = 24){
+            if($year == 24){
                 if($lastNumber == 428){
                     $lastNumber = 429; //FACTURA EN HOLDED
                 }
             }
             $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
+
         }
-        //dd("prueba");
+        //dd( $lastInvoice);
 
     }
 
