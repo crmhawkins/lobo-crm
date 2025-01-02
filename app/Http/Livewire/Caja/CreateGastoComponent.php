@@ -19,7 +19,7 @@ use App\Models\SubGrupoContable;
 use App\Models\CuentasContable;
 use App\Models\SubCuentaContable;
 use App\Models\SubCuentaHijo;
-
+use Carbon\Carbon;
 
 class CreateGastoComponent extends Component
 {
@@ -71,7 +71,7 @@ class CreateGastoComponent extends Component
         $this->delegaciones = Delegacion::all();
 
         //generar numero interno de esta manera: 06(nombremesactual)_000(Siguiente numero de la base de datos)
-        $this->nInterno = date('m') . '_' . str_pad(Caja::where('tipo_movimiento', 'Gasto')->count() + 1, 3, '0', STR_PAD_LEFT);
+        $this->nInterno = date('m') . '_' . str_pad(Caja::where('tipo_movimiento', 'Gasto')->whereYear('created_at', Carbon::now()->year)->count() + 1, 3, '0', STR_PAD_LEFT);
 
 
         $this->facturas = Facturas::where('estado', 'Pendiente')
