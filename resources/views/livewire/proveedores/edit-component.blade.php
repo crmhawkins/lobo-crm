@@ -282,7 +282,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                     <select wire:model="delegacion_COD" class="form-control" name="delegacion_COD" id="delegacion_COD" @if(!$canEdit) disabled @endif>
                                         <option value="" disabled selected>Selecciona una opción</option>
                                         @foreach ($delegaciones as $delegacion )
-                                            <option value="{{$delegacion->COD}}">{{$delegacion->nombre}}</option>
+                                            <option @if(!$delegacion->created_at) style="background-color: #f8d7da; color: black;" @endif value="{{$delegacion->COD}}">{{$delegacion->nombre}} @if(!$delegacion->created_at)  <span class="badge badge-warning">*No seleccionar*</span> @endif</option>
                                         @endforeach
                                     </select>
                                 </div>

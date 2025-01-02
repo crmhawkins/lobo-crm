@@ -178,7 +178,7 @@ class EditComponent extends Component
                 $this->crearCuentaContable($cod);
             }else{
                 //si hay cuenta contable, se cambia el codigo de delegacion
-                $this->cuenta_contable = substr_replace($this->cuenta_contable, $cod, 3, 2);
+                //$this->cuenta_contable = substr_replace($this->cuenta_contable, $cod, 3, 2);
                 //dd($this->cuenta_contable);
             }
 
