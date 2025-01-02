@@ -60,7 +60,8 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Pedido</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Pedido Nº</th>
                                     <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
@@ -74,10 +75,11 @@
                                 @foreach ($pedidos_pendientes as $pedido)
                                     
                                     <tr>
+                                        <td>{{ $pedido->id }}</td>
                                         @if($pedido->departamento_id)
-                                            <td>M{{ $pedido->id }}</td>
+                                            <td>M{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @else
-                                            <td>G{{ $pedido->id }}</td>
+                                            <td>G{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
 
@@ -140,7 +142,8 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Pedido</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Pedido Nº</th>
                                     <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
@@ -153,10 +156,11 @@
                             <tbody>
                                 @foreach ($pedidos_preparacion as $pedido)
                                     <tr>
+                                        <td>{{ $pedido->id }}</td>
                                         @if($pedido->departamento_id)
-                                            <td>M{{ $pedido->id }}</td>
+                                            <td>M{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @else
-                                            <td>G{{ $pedido->id }}</td>
+                                            <td>G{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
@@ -332,7 +336,8 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th scope="col">Pedido</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Pedido Nº</th>
                                     <th scope="col">Nº Ped. Cliente</th>
                                     <th scope="col">Cliente</th>
                                     <th scope="col">Almacen</th>
@@ -346,10 +351,11 @@
                             <tbody>
                                 @foreach ($pedidos_enviados as $pedido)
                                     <tr>
+                                        <td>{{ $pedido->id }}</td>
                                         @if($pedido->departamento_id)
-                                            <td>M{{ $pedido->id }}</td>
+                                            <td>M{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @else
-                                            <td>G{{ $pedido->id }}</td>
+                                            <td>G{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
                                         @endif
                                         <td>{{ $pedido->npedido_cliente }}</td>
                                         <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>

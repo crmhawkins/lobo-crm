@@ -156,6 +156,7 @@
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th scope="col">Nº</th>
                                 <th scope="col">Nº ped. Cliente</th>
                                 <th scope="col">Delegación</th>
@@ -175,10 +176,11 @@
                             {{-- Recorre los pedidos --}}
                             @foreach ($pedidos as $presup)
                            <tr>
+                            <td>{{ $presup->id }}</td>
                                 @if($presup->departamento_id == config('app.departamentos_pedidos')['Marketing']['id'])
-                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->id }}</td>
+                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}{{ $presup->numero ? $presup->numero : $presup->id }}</td>
                                 @else
-                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['General']['pedido'] }}{{ $presup->id }}</td>
+                                    <td data-order="{{ $presup->id }}">{{ config('app.departamentos_pedidos')['General']['pedido'] }}{{ $presup->numero ? $presup->numero : $presup->id }}</td>
                                 @endif
                                 <td>{{ $presup->npedido_cliente }}</td>
                                 

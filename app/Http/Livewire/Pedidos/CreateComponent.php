@@ -70,6 +70,7 @@ class CreateComponent extends Component
     public $anotacionesProximoPedido = [];
     public $productosPecioCliente = [];
     public $almacenes = [];
+    public $numero;
 
     public $subtotal = 0;
     public $iva_total = 0;
@@ -142,6 +143,7 @@ class CreateComponent extends Component
         $this->estado = 1;
         $this->cliente_id = null;
         $this->almacenes = Almacen::all(); 
+        $this->numero = Pedido::whereYear('created_at', Carbon::now()->year)->max('numero') + 1;
     }
     public function isOnline(){
         $this->almacen_id = 6;
@@ -286,7 +288,7 @@ class CreateComponent extends Component
                 'user_id' => 13,
                 'stage' => 3,
                 'titulo' => 'Estado del Pedido: Aceptado en Almacén',
-                'descripcion' => 'El pedido nº ' . $pedido->id.' ha sido aceptado',
+                'descripcion' => 'El pedido nº ' . $pedido->numero.'  del cliente '.$pedido->nombre_cliente.' ha sido aceptado',
                 'referencia_id' => $pedido->id,
                 'leida' => null,
             ]);
@@ -482,6 +484,7 @@ class CreateComponent extends Component
                     'nombre' => 'nullable',
                     'precio' => 'required',
                     'estado' => 'required',
+                    'numero' => 'nullable',
                     'fecha' => 'required',
                     'tipo_pedido_id' => 'required',
                     'almacen_id' => 'required',
@@ -537,6 +540,7 @@ class CreateComponent extends Component
                     'gastos_envio' => 'nullable',
                     'transporte' => 'nullable',
                     'gastos_transporte' => 'nullable',
+                    'numero' => 'nullable',
                 ],
                 // Mensajes de error
                 [
@@ -581,7 +585,7 @@ class CreateComponent extends Component
         try{
             Mail::send([], [], function ($message) use ($pedidosSave) {
                 $message->to('Alejandro.martin@serlobo.com')
-                        ->subject('Nuevo Pedido Creado')
+                        ->subject('Nuevo Pedido Creado Nº '.$pedidosSave->numero .' - '.$pedidosSave->nombre_cliente)
                         ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->nombre_cliente . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
             });
         }catch(\Exception $e){
@@ -597,14 +601,14 @@ class CreateComponent extends Component
 
                 try{
                     Mail::send([], [], function ($message) use ($hasStock, $almacen, $producto, $pedidosSave) {
-                        $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->id.'</h1>';
+                        $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->numero.' - '.$pedidosSave->nombre_cliente.'</h1>';
                         
                         foreach ($hasStock as $producto) {
                             $htmlContent .= '<p>El stock de ' . $producto . ' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>';
                         }
                     
                         $message->to('Alejandro.martin@serlobo.com')
-                                ->subject($producto->nombre.' - Alerta de Stock Bajo')
+                                ->subject('Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->numero.' - '.$pedidosSave->nombre_cliente)
                                 ->html($htmlContent);
                         // $message->to('ivan.mayol@hawkins.es')
                         // ->subject($producto.' - Alerta de Stock Bajo')
@@ -619,7 +623,7 @@ class CreateComponent extends Component
                     'user_id' => 13,
                     'stage' => 2,
                     'titulo' => 'Stock Insuficiente, Pedido Pendiente',
-                    'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de stock',
+                    'descripcion' => 'El pedido nº ' . $pedidosSave->numero.' - '.$pedidosSave->nombre_cliente.' esta a la espera de stock',
                     'referencia_id' => $pedidosSave->id,
                     'leida' => null,
                 ]);
@@ -631,7 +635,7 @@ class CreateComponent extends Component
                 'user_id' => 13,
                 'stage' => 2,
                 'titulo' => 'Pedido Bloqueado: Pendiente de Aprobación',
-                'descripcion' => 'El pedido nº ' . $pedidosSave->id.' esta a la espera de aprobación',
+                'descripcion' => 'El pedido nº ' . $pedidosSave->numero.' - '.$pedidosSave->nombre_cliente.' esta a la espera de aprobación',
                 'referencia_id' => $pedidosSave->id,
                 'leida' => null,
             ]);}
@@ -680,7 +684,7 @@ class CreateComponent extends Component
                     'user_id' => 13,
                     'stage' => 3,
                     'titulo' => 'Estado del Pedido: Recibido',
-                    'descripcion' => 'El pedido nº ' . $pedidosSave->id.' ha sido recibido',
+                    'descripcion' => 'El pedido nº ' . $pedidosSave->numero.' - '.$pedidosSave->nombre_cliente.' ha sido recibido',
                     'referencia_id' => $pedidosSave->id,
                     'leida' => null,
                 ]);

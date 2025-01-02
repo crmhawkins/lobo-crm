@@ -286,7 +286,7 @@
                                             @else
                                                 <td><a href="{{ route('pedidos.edit', ['id' => $fact->pedido_id]) }}"
                                                         class="btn btn-primary" target="_blank"> &nbsp;Pedido
-                                                        @if($this->isPedidoMarketing($fact->pedido_id)) {{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}@else {{ config('app.departamentos_pedidos')['General']['pedido'] }}@endif{{ $fact->pedido_id }}</a></td>
+                                                        @if($this->isPedidoMarketing($fact->pedido_id)) {{ config('app.departamentos_pedidos')['Marketing']['pedido'] }}@else {{ config('app.departamentos_pedidos')['General']['pedido'] }}@endif{{ $fact->pedido->numero ? $fact->pedido->numero : $fact->pedido->id }}</a></td>
                                             @endif
                                         
                                             <td>{{ $this->getComercial($fact->cliente_id)}}</td>
@@ -522,7 +522,7 @@
                                         @else
                                             <td><a href="{{ route('pedidos.edit', ['id' => $fact->pedido_id]) }}"
                                                     class="btn btn-primary" target="_blank"> &nbsp;Pedido
-                                                    {{ $fact->pedido_id }}</a></td>
+                                                    {{ $fact->pedido->numero ? $fact->pedido->numero : $fact->pedido->id }}</a></td>
                                         @endif
                                          <td>
                                             <a href="{{ route('facturas.edit', ['id' => $this->getFacturaAsociada($fact->id)]) }}"

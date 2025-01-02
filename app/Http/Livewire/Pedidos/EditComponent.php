@@ -132,6 +132,7 @@ class EditComponent extends Component
     public $precioMarketing;
 
     public $empresasTransporte = [];
+    public $numero;
 
     public $productos_asociados = []; // Nueva propiedad para productos asociados
     public $productos_asociados_marketing = []; // Nueva propiedad para productos asociados marketing
@@ -370,6 +371,7 @@ class EditComponent extends Component
         $this->productosMarketing = ProductosMarketing::all();
         $this->productos_marketing_pedido = ProductosMarketingPedido::where('pedido_id', $this->identificador)->get()->toArray();
         $this->empresasTransporte = EmpresasTransporte::all();
+        $this->numero = $pedido->numero ? $pedido->numero : $pedido->id;
 
         $this->registroEmails = RegistroEmail::where('pedido_id', $this->identificador)->get();
         // if($this->gastos_envio != null && $this->gastos_envio != 0 && is_numeric($this->gastos_envio)){
