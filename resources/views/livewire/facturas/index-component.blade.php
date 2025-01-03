@@ -291,7 +291,7 @@
                                                         @else 
                                                             {{ config('app.departamentos_pedidos')['General']['pedido'] }}
                                                         @endif
-                                                        {{ $fact->pedido->numero ?? $fact->pedido->id }}
+                                                        {{ optional($fact->pedido)->numero ?? $fact->pedido_id }}
                                                     </a>
                                                 </td>
                                             @endif
@@ -529,7 +529,8 @@
                                         @else
                                             <td><a href="{{ route('pedidos.edit', ['id' => $fact->pedido_id]) }}"
                                                     class="btn btn-primary" target="_blank"> &nbsp;Pedido
-                                                    {{ $fact->pedido->numero ? $fact->pedido->numero : $fact->pedido->id }}</a></td>
+                                                                {{ optional($fact->pedido)->numero ?? $fact->pedido_id }}
+
                                         @endif
                                          <td>
                                             <a href="{{ route('facturas.edit', ['id' => $this->getFacturaAsociada($fact->id)]) }}"
