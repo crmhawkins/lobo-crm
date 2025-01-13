@@ -59,13 +59,28 @@ class CreateComponent extends Component
         ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
         ->get();
         $this->ordenes_mercaderias = OrdenProduccion::all();
-        //$this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $this->ordenes_mercaderias->whereBetween('fecha', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->count() + 1);
-        //$this->numero debe de ser el numero siguiente del ultimo orden de produccion. Es decir, hay que coger el ultimo orden de produccion y sumarle 1. Teniendo en cuenta que el numero tiene este formato: 24/0001 teniendo en cuenta que 24 hace referencia al año actual y 0001 hace referencia al numero de orden de produccion.
+        // Obtener el último orden de producción
         $lastOrdenProduccion = OrdenProduccion::latest()->first();
-        $lastNumero = $lastOrdenProduccion->numero;
-        $lastNumero = explode('/', $lastNumero);
-        $lastNumero = $lastNumero[1];
-        $this->numero = Carbon::now()->format('y') . '/' . sprintf('%04d', $lastNumero + 1);
+
+        if ($lastOrdenProduccion) {
+            // Extraer el año y el número del último orden
+            list($lastYear, $lastNumero) = explode('/', $lastOrdenProduccion->numero);
+
+            // Verificar si el año actual es diferente al año del último orden
+            if ($lastYear == Carbon::now()->format('y')) {
+                // Si es el mismo año, incrementar el número
+                $newNumero = sprintf('%04d', $lastNumero + 1);
+            } else {
+                // Si es un nuevo año, reiniciar el número
+                $newNumero = '0001';
+            }
+        } else {
+            // Si no hay órdenes previas, iniciar con el primer número
+            $newNumero = '0001';
+        }
+
+        // Asignar el nuevo número de orden
+        $this->numero = Carbon::now()->format('y') . '/' . $newNumero;
         
         $user = Auth::user();
         $this->almacen_id = $user->almacen_id;

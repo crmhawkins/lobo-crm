@@ -144,6 +144,7 @@ class CreateComponent extends Component
         $this->cliente_id = null;
         $this->almacenes = Almacen::all(); 
         $this->numero = Pedido::whereYear('created_at', Carbon::now()->year)->max('numero') + 1;
+        //dd(Pedido::whereYear('created_at', Carbon::now()->year)->max('numero'));
     }
     public function isOnline(){
         $this->almacen_id = 6;
