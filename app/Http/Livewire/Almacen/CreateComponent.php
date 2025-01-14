@@ -629,7 +629,7 @@ class CreateComponent extends Component
                 // Añadir el producto al array de productos
                 $productos[] = [
                     'nombre' => $producto->nombre,
-                    'lote_id' => $productoPedido['lote_id'],
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
                     'num_pallet' => $pallets,
                     'num_cajas' => $cajasSobrantes,
                     'cantidad' => $productoPedido['unidades_old'],
@@ -681,11 +681,19 @@ class CreateComponent extends Component
                     }
                 }
 
+                $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
+
+
+        
+                if (!isset($stockEntrante)) {
+                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
+                }
+
                 // Añadir el producto al array de productos
 
                 $productos[] = [
                     'nombre' => $producto->nombre,
-                    'lote_id' => $productoPedido['lote_id'],
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------',
                     'num_pallet' => $pallets,
                     'num_cajas' => $cajasSobrantes,
                     'cantidad' => $productoPedido['unidades_old'],
