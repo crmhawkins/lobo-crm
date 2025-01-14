@@ -661,14 +661,26 @@ class CreateComponent extends Component
                
             }
         }else{
+            /******************************* */
             foreach ($this->productos_pedido as $productoPedido) {
+                //dd($productoPedido['producto_pedido_id']);
                 $producto = Productos::find($productoPedido['producto_pedido_id']);
+                $stockSeguridad = $producto->stock_seguridad;
+                $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
+
+
+        
+                if (!isset($stockEntrante)) {
+                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
+                }
+
                 // Calcula el número de cajas y pallets
                 $cajas = floor($productoPedido['unidades_old'] / $producto->unidades_por_caja);
                 $pallets = floor($cajas / $producto->cajas_por_pallet);
                 $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
                 $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
 
+                //el peso total de los packs depende de los productos asociados y sus unidades
                 if($productoPedido['is_pack']){
                     $pesoTotalProducto = 0;
                     foreach($productoPedido['productos_asociados'] as $productoAsociado){
@@ -681,26 +693,86 @@ class CreateComponent extends Component
                     }
                 }
 
-                $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
 
-
-        
-                if (!isset($stockEntrante)) {
-                    $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
-                }
 
                 // Añadir el producto al array de productos
-
                 $productos[] = [
                     'nombre' => $producto->nombre,
-                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------',
+                    'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------' ,
                     'num_pallet' => $pallets,
                     'num_cajas' => $cajasSobrantes,
                     'cantidad' => $productoPedido['unidades_old'],
                     'peso_kg' => $pesoTotalProducto,
                 ];
+                if($productoPedido['is_pack']){
+                    continue;
+                }
+                $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
+                $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
+                $almacen = Almacen::find($almacen_id);
+        
+                $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
+                
+                $cantidadRestante = $productoPedido['unidades_old'];
+                
+        
+                // Array para guardar los IDs de los lotes ya utilizados
+                $arrStockDescartados = [];
+                array_push($arrStockDescartados, $stockEntrante->id);
+        
+                
 
+                // Primero, intenta usar el stockEntrante inicial
+                if ($cantidadStockDisponible >= $cantidadRestante) {
+                    // Suficiente stock en este lote para completar el pedido
+                    $cantidad = $cantidadRestante;
+                    $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
+                    $cantidadRestante = 0; // Pedido completado
+                } 
+               
             }
+            /******************************* */
+
+            // foreach ($this->productos_pedido as $productoPedido) {
+            //     $producto = Productos::find($productoPedido['producto_pedido_id']);
+            //     // Calcula el número de cajas y pallets
+            //     $cajas = floor($productoPedido['unidades_old'] / $producto->unidades_por_caja);
+            //     $pallets = floor($cajas / $producto->cajas_por_pallet);
+            //     $cajasSobrantes = $cajas % $producto->cajas_por_pallet;
+            //     $pesoTotalProducto = ($productoPedido['unidades_old'] * $producto->peso_neto_unidad) / 1000; // Peso en kg
+
+            //     if($productoPedido['is_pack']){
+            //         $pesoTotalProducto = 0;
+            //         foreach($productoPedido['productos_asociados'] as $productoAsociado){
+            //             $productoAsociadoModel = Productos::find($productoAsociado['id']);
+            //             $pesoTotalProducto += ($productoAsociado['unidades'] * $productoAsociadoModel->peso_neto_unidad) / 1000;
+            //         }
+            //         foreach($productoPedido['productos_asociados_marketing'] as $productoAsociadoMarketing){
+            //             $productoAsociadoMarketingModel = ProductosMarketing::find($productoAsociadoMarketing['id']);
+            //             $pesoTotalProducto += ($productoAsociadoMarketing['unidades'] * $productoAsociadoMarketingModel->peso_neto_unidad) / 1000;
+            //         }
+            //     }
+
+            //     $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
+
+
+        
+            //     if (!isset($stockEntrante)) {
+            //         $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
+            //     }
+
+            //     // Añadir el producto al array de productos
+
+            //     $productos[] = [
+            //         'nombre' => $producto->nombre,
+            //         'lote_id' => isset($stockEntrante->orden_numero) ? $stockEntrante->orden_numero : '-----------',
+            //         'num_pallet' => $pallets,
+            //         'num_cajas' => $cajasSobrantes,
+            //         'cantidad' => $productoPedido['unidades_old'],
+            //         'peso_kg' => $pesoTotalProducto,
+            //     ];
+
+            // }
         }
         
 
