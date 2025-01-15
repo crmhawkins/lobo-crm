@@ -565,7 +565,8 @@ class CreateComponent extends Component
         }
 
 
-        
+        $validatedData['numero'] = Pedido::whereYear('created_at', Carbon::now()->year)->max('numero') + 1;
+
 
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);

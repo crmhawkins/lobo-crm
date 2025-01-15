@@ -13,12 +13,13 @@ use App\Models\Caja;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\Delegacion;
 use App\Models\FacturasCompensadas;
+use Livewire\WithPagination;
 
 class IndexComponent extends Component
 {
-    use LivewireAlert;
+    use LivewireAlert, WithPagination;
 
-    public $caja;
+    protected $caja;
     public $proveedores;
     public $fechas;
     public $dias;
@@ -151,7 +152,9 @@ class IndexComponent extends Component
 
     public function render()
     {
-        return view('livewire.caja.index-component');
+        return view('livewire.caja.index-component', [
+            'caja' => $this->caja,
+        ]);
     }
     public function getFactura($id)
     {
@@ -291,44 +294,43 @@ class IndexComponent extends Component
             $fechaInicio = Carbon::createFromDate($this->ano, 1, 1)->startOfYear();
             $fechaFin = Carbon::createFromDate($this->ano, 12, 31)->endOfYear();
         } else {
-            // Asegúrate de que $this->mes sea un número de mes válido
             $mesNumero = is_numeric($this->mes) ? $this->mes : Carbon::parse($this->mes)->month;
             $fechaInicio = Carbon::createFromDate($this->ano, $mesNumero, 1)->startOfMonth();
             $fechaFin = Carbon::createFromDate($this->ano, $mesNumero, 1)->endOfMonth();
         }
 
-        $fechaInicio = $fechaInicio->format('Y-m-d');
-        $fechaFin = $fechaFin->format('Y-m-d');
-
-        $this->caja = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])->orderBy('fecha')->get();
+        $query = Caja::whereBetween('fecha', [$fechaInicio, $fechaFin])
+                     ->orderBy('fecha');
 
         if ($this->filtro != 'Todos' && $this->filtro != null) {
-            $this->caja = $this->caja->where('tipo_movimiento', $this->filtro);
+            $query->where('tipo_movimiento', $this->filtro);
         }
 
         if ($this->filtroEstado != 'Todos' && $this->filtroEstado != null) {
-            $this->caja = $this->caja->where('estado', $this->filtroEstado);
+            $query->where('estado', $this->filtroEstado);
         }
 
         if ($this->delegacion != 'Todos' && $this->delegacion != null) {
-            $this->caja = $this->caja->where('delegacion_id', $this->delegacion);
+            $query->where('delegacion_id', $this->delegacion);
         }
 
         if ($this->fechaPago != null) {
-            $this->caja = $this->caja->where('fechaPago', $this->fechaPago);
+            $query->where('fechaPago', $this->fechaPago);
         }
 
         if ($this->fechaVencimiento != null) {
-            $this->caja = $this->caja->where('fechaVencimiento', $this->fechaVencimiento);
+            $query->where('fechaVencimiento', $this->fechaVencimiento);
         }
 
         if ($this->fecha != null) {
-            $this->caja = $this->caja->where('fecha', $this->fecha);
+            $query->where('fecha', $this->fecha);
         }
 
         if ($this->proveedorId != null && $this->proveedorId != 'Todos') {
-            $this->caja = $this->caja->where('poveedor_id', $this->proveedorId);
+            $query->where('poveedor_id', $this->proveedorId);
         }
+
+        $this->caja = $query->paginate(10);
 
         $this->calcularIngresoyGasto();
         $this->saldo_array = [];
