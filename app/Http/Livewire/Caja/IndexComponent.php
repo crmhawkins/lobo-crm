@@ -330,7 +330,7 @@ class IndexComponent extends Component
             $query->where('poveedor_id', $this->proveedorId);
         }
 
-        $this->caja = $query->paginate(10);
+        $this->caja = $query->get();
 
         $this->calcularIngresoyGasto();
         $this->saldo_array = [];
