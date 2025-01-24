@@ -55,60 +55,81 @@
                     @php
                     $mostrarElemento = Auth::user()->isdirectorcomercial();
                     @endphp
-
-                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Pedido Nº</th>
-                                    <th scope="col">Nº Ped. Cliente</th>
-                                    <th scope="col">Cliente</th>
-                                    <th scope="col">Almacen</th>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Precio</th>
-                                    <th scope="col">Tipo de pedido</th>
-                                    <th scope="col">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pedidos_pendientes as $pedido)
-                                    
+                        <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                            $('#datatable-buttons_pendientes').DataTable({
+                                responsive: true,
+                                layout: {
+                                    topStart: 'buttons'
+                                },
+                                lengthChange: false,
+                                pageLength: 30,
+                                buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                                stateSave: true, // Habilita el guardado del estado
+                                language: {
+                                    'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                    'zeroRecords': 'No se encontraron registros',
+                                    'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                    'infoEmpty': 'No hay registros disponibles',
+                                    'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                    'search': 'Buscar:',
+                                }
+                            });
+                        })"
+                        wire:key='{{ rand() }}'>
+                            <table id="datatable-buttons_pendientes" class="table table-striped table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
+                                <thead>
                                     <tr>
-                                        <td>{{ $pedido->id }}</td>
-                                        @if($pedido->departamento_id)
-                                            <td>M{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
-                                        @else
-                                            <td>G{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
-                                        @endif
-                                        <td>{{ $pedido->npedido_cliente }}</td>
-
-                                        <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
-                                        <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
-
-                                        <td>{{ $pedido->fecha }}</td>
-                                        <td>{{ $pedido->precio }}€</td>
-                                        <td>
-                                            @switch($pedido->tipo_pedido_id)
-                                            @case(0)
-                                                Albarán y factura
-                                                @break
-                                            @case(1)
-                                                Albarán sin factura
-                                                @break
-                                            @default
-                                                Tipo de pedido no reconocido
-                                        @endswitch
-                                        </td>
-                                        <td>
-                                            <a onclick="prepararPedido({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Preparar pedido</a>
-                                            <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
-                                        </td>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Pedido Nº</th>
+                                        <th scope="col">Nº Ped. Cliente</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Almacen</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Tipo de pedido</th>
+                                        <th scope="col">Acciones</th>
                                     </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($pedidos_pendientes as $pedido)
+                                        
+                                        <tr>
+                                            <td>{{ $pedido->id }}</td>
+                                            @if($pedido->departamento_id)
+                                                <td>M{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
+                                            @else
+                                                <td>G{{ $pedido->numero ? $pedido->numero : $pedido->id }}</td>
+                                            @endif
+                                            <td>{{ $pedido->npedido_cliente }}</td>
 
-                                @endforeach
-                            </tbody>
-                        </table>
+                                            <td>{{ $this->getNombreCliente($pedido->cliente_id) }}</td>
+                                            <td>{{ $this->getAlmacen($pedido->almacen_id) }}</td>
+
+                                            <td>{{ $pedido->fecha }}</td>
+                                            <td>{{ $pedido->precio }}€</td>
+                                            <td>
+                                                @switch($pedido->tipo_pedido_id)
+                                                @case(0)
+                                                    Albarán y factura
+                                                    @break
+                                                @case(1)
+                                                    Albarán sin factura
+                                                    @break
+                                                @default
+                                                    Tipo de pedido no reconocido
+                                            @endswitch
+                                            </td>
+                                            <td>
+                                                <a onclick="prepararPedido({{ $pedido->id }})" class="btn btn-primary"  style="color: white;">Preparar pedido</a>
+                                                <a href="pedidos-edit/{{ $pedido->id }}" class="btn btn-warning">Ver/Editar</a>
+                                            </td>
+                                        </tr>
+
+                                    @endforeach
+                                </tbody>
+                            </table>
+                    </div>
                     @else
                         <h2 class="text-center" style="color: #35a8e0 !important">No hay pedidos para preparar</h2>
                     @endif
@@ -137,9 +158,29 @@
                             <button class="btn btn-primary ml-2" id="clear-filter-preparacion">Eliminar Filtro</button>
                         </div>
                     </div>
-
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable-buttons_preparacion').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: 'buttons'
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                             stateSave: true, // Habilita el guardado del estado
+                            language: {
+                                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                'zeroRecords': 'No se encontraron registros',
+                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'infoEmpty': 'No hay registros disponibles',
+                                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                'search': 'Buscar:',
+                            }
+                        });
+                    })"
+                    wire:key='{{ rand() }}'>
                         <table id="datatable-buttons_preparacion" class="table table-striped table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                             <thead>
                                 <tr>
                                     <th scope="col">ID</th>
@@ -196,6 +237,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
                     @else
                         <h2 class="text-center" style="color: #35a8e0 !important">No hay pedidos para preparar</h2>
                     @endif
@@ -331,9 +373,29 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable-buttons_enviados').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: 'buttons'
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                             stateSave: true, // Habilita el guardado del estado
+                            language: {
+                                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                'zeroRecords': 'No se encontraron registros',
+                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'infoEmpty': 'No hay registros disponibles',
+                                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                'search': 'Buscar:',
+                            }
+                        });
+                    })"
+                    wire:key='{{ rand() }}'>
                         <table id="datatable-buttons_enviados" class="table table-striped table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;" wire:key='{{ rand() }}'>
                             <thead>
                                 <tr>
                                     <th scope="col">ID</th>
@@ -410,6 +472,8 @@
                                 @endforeach
                             </tbody>
                         </table>
+
+                    </div>
                     @else
                         <h2 class="text-center" style="color: #35a8e0 !important">No hay pedidos en proceso por enviar
                         </h2>
@@ -526,6 +590,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
     <!-- Responsive examples -->
-    <script src="../assets/pages/datatables.init.js"></script>
+    {{-- <script src="../assets/pages/datatables.init.js"></script> --}}
 @endsection
 
