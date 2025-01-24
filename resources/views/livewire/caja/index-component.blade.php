@@ -242,9 +242,9 @@
                             }
                                                 });
                                             })"
-                                            wire:key='{{ rand() }}'>
+                                            wire:key='{{ rand() }}' >
                             <table id="tablacaja" class="table-sm table-striped table-bordered mt-2"
-                                style="border-collapse: collapse; border-spacing: 0; width: 100%;"  wire:key='{{ rand() }}'>
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;"  wire:key='{{ rand() }}' >
                                 <thead>
                                     {{-- <tr>
                                         <th colspan="9">Saldo inicial</th>
@@ -374,6 +374,11 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if ($caja->hasPages())
+                                <div class="mt-3">
+                                    {{ $caja->links() }}
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -386,7 +391,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
+    <script>
+        // Escucha el evento 'updateUrl' emitido por Livewire
+        Livewire.on('updateUrl', (params) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', params.page);
+            window.history.pushState({}, '', url.toString());
+        });
+    
+        // Lee la página actual de la URL al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page');
+            if (page) {
+                Livewire.emit('setPage', page); // Notifica a Livewire la página actual
+            }
+        });
+    </script>
 
     <script src="../assets/js/jquery.slimscroll.js"></script>
 <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">

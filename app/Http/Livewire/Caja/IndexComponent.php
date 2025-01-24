@@ -19,6 +19,8 @@ class IndexComponent extends Component
 {
     use LivewireAlert, WithPagination;
 
+    protected $paginationTheme = 'bootstrap';
+
     protected $caja;
     public $proveedores;
     public $fechas;
@@ -42,6 +44,8 @@ class IndexComponent extends Component
     
     public $filtro;
     public $filtroEstado;
+    public $page = 1; // Variable para almacenar la página actual
+    protected $listeners = ['setPage'];
 
     public function descargarTodosDocumentos()
     {
@@ -114,6 +118,18 @@ class IndexComponent extends Component
             
     }
 
+    public function updatedPage($value)
+{
+    // Actualiza la URL cuando cambia la página
+    $this->emit('updateUrl', ['page' => $value]);
+}
+
+public function setPage($page)
+{
+    $this->page = $page;
+    $this->cambioMes(); // Vuelve a cargar los datos para la nueva página
+}
+
     public function mount()
 {
     $this->mes = session('caja_filtro_mes', Carbon::now()->format('n')); // 'n' devuelve el mes como número sin ceros iniciales
@@ -130,7 +146,7 @@ class IndexComponent extends Component
     $this->fecha = session('caja_filtro_fecha', null);
     $this->proveedorId = session('caja_filtro_proveedor_id', null);
 
-    $this->caja = Caja::orderBy('fecha')->get();
+    $this->caja = Caja::orderBy('fecha')->paginate(10);
     $this->saldo_inicial = Settings::where('id', 1)->first()->saldo_inicial;
     $this->cambioMes();
     $this->proveedores = Proveedores::all();
@@ -330,7 +346,7 @@ class IndexComponent extends Component
             $query->where('poveedor_id', $this->proveedorId);
         }
 
-        $this->caja = $query->get();
+        $this->caja = $query->paginate(10, ['*'], 'page', $this->page);
 
         $this->calcularIngresoyGasto();
         $this->saldo_array = [];
