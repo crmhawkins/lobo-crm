@@ -45,6 +45,9 @@ class IndexComponent extends Component
     public $filtro;
     public $filtroEstado;
     public $page = 1; // Variable para almacenar la página actual
+
+    public $itemsPerPage = 0; // Por defecto sin paginación
+
     protected $listeners = ['setPage'];
 
     public function descargarTodosDocumentos()
@@ -346,7 +349,12 @@ public function setPage($page)
             $query->where('poveedor_id', $this->proveedorId);
         }
 
-        $this->caja = $query->paginate(10, ['*'], 'page', $this->page);
+        // Modificar la consulta de paginación
+        if ($this->itemsPerPage > 0) {
+            $this->caja = $query->paginate($this->itemsPerPage, ['*'], 'page', $this->page);
+        } else {
+            $this->caja = $query->get(); // Obtener todos los elementos si itemsPerPage es 0 o negativo
+        }
 
         $this->calcularIngresoyGasto();
         $this->saldo_array = [];

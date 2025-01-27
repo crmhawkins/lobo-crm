@@ -161,10 +161,18 @@
                         </div>
                     </div>
 
+                    {{-- <div class="form-group mt-3">
+                        <label for="itemsPerPage" class="form-label">Elementos por página:</label>
+                        <select wire:model="itemsPerPage" id="itemsPerPage" class="form-select">
+                            <option value="0">Sin paginación</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div> --}}
 
-                    @if (count($caja) > 0)
-
-
+                    @if (isset($caja) && count($caja) > 0)
                         <div class="table-responsive" x-data="{}" x-init="$nextTick(() => {
                             $('#tablaingresosgastos').DataTable({
                                 responsive: true,
@@ -374,10 +382,12 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            @if ($caja->hasPages())
-                                <div class="mt-3">
-                                    {{ $caja->links() }}
-                                </div>
+                            @if ($caja instanceof \Illuminate\Pagination\LengthAwarePaginator || $caja instanceof \Illuminate\Pagination\Paginator)
+                                @if($caja->hasPages())
+                                    <div class="mt-3">
+                                        {{ $caja->links() }}
+                                    </div>
+                                @endif
                             @endif
                         </div>
                     @endif
