@@ -38,9 +38,8 @@ class FacturaHelper
         // Instanciar la clase para usar el método no estático
         $helper = new self();
         $delegacion = $helper->getDelegacion($factura->cliente_id);
-
         // Validar si la delegación está exenta de IVA
-        if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+        if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA', '01.1 ESTE – SUR EXTERIOR' , '08 OESTE - INSULAR'])) {
             return false;
         }
 

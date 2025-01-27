@@ -122,7 +122,7 @@ class IndexComponent extends Component
 
         // Total de la factura en formato numérico (no formatees todavía)
         $totalFactura = round($factura->total, 2);
-        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
             $totalFactura = round($factura->precio, 2);
         }
 
@@ -130,12 +130,12 @@ class IndexComponent extends Component
             $facturaRectificativa = Facturas::find($factura->factura_rectificativa_id);
             if (!$facturaRectificativa || $facturaRectificativa->total == null) {
                 $totalFactura = round($factura->total, 2);
-                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'|| $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
                     $totalFactura = round($factura->precio, 2);
                 }
             } else {
                 $totalFactura = round($facturaRectificativa->total, 2);
-                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'|| $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
                     $totalFactura = round($facturaRectificativa->precio, 2);
                 }
             }
@@ -198,7 +198,7 @@ class IndexComponent extends Component
         $delegacion = $this->getDelegacion($factura->cliente_id);
 
         //si la factura tiene rectificativa
-        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+        if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
             return number_format(0, 2, '.', '');
         }
         if ($factura->factura_rectificativa_id != null) {
@@ -239,20 +239,20 @@ class IndexComponent extends Component
             if (!$facturaRectificativa || $facturaRectificativa->total == null) {
                 //numbert_format($factura->total, 2, ',', '.');
                 //si la factura tiene rectificativa
-                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
                     return number_format($factura->precio, 2, '.', '');
                 }
                 return number_format($factura->total, 2, '.', '');
             } else {
                 //si la factura tiene rectificativa
-                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+                if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
                     return number_format($facturaRectificativa->precio, 2, '.', '');
                 }
                 return number_format($facturaRectificativa->total, 2, '.', '');
             }
         } else {
 
-            if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') {
+            if ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') {
                 return number_format($factura->precio, 2, '.', '');
             }
 
@@ -486,12 +486,12 @@ class IndexComponent extends Component
             $this->totalImportes += $factura->precio;
 
             // Sumar IVA si la delegación no está en la lista de exención
-            if (!in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+            if (!in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA' , '01.1 ESTE – SUR EXTERIOR' , '08 OESTE - INSULAR'])) {
                 $this->totalIva += $factura->iva;
             }
 
             // Sumar totales con IVA, considerando las delegaciones
-            if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA'])) {
+            if (in_array($delegacion, ['07 CANARIAS', '13 GIBRALTAR', '14 CEUTA', '15 MELILLA' , '01.1 ESTE – SUR EXTERIOR' , '08 OESTE - INSULAR'])) {
                 $this->totalesConIva += $factura->precio; // Sin IVA
             } else {
                 $this->totalesConIva += $factura->total; // Con IVA

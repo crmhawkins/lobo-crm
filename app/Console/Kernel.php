@@ -264,7 +264,7 @@ class Kernel extends ConsoleKernel
                 if($factura->cliente && $factura->cliente->delegacion){
                     $delegacion = $factura->cliente->delegacion->nombre;
 
-                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') 
                     ? $factura->precio 
                     : $factura->total;
         
@@ -275,7 +275,7 @@ class Kernel extends ConsoleKernel
 
                     // Calcular el nuevo total aplicando la retención
                     $nuevoTotal = $factura->total_original + ($factura->total_original * $retencion->porcentaje / 100);
-                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') 
                     ? $factura->precio = $nuevoTotal
                     : $factura->total = $nuevoTotal;
                     $factura->retencion_id = $retencion->id;
