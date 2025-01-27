@@ -190,14 +190,50 @@
                     <td colspan="3"></td>
                     <td>TOTAL</td>
                     @if(isset($datos['rectificada']))
-                    <td>{{number_format($datos['total'], 2)}}€</td>
+                        <td>{{number_format($datos['total'], 2)}}€</td>
                     @else
                         <td>{{number_format($datos['factura']->precio * 1.21, 2)}}€</td>
                     @endif
                 </tr>
+                @if($factura->retencion_id)
+                    
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>Recargo % ({{$factura->retencion->nombre}})</td>
+                        <td>{{number_format(($factura->retencion->porcentaje), 2, ',', '.')}}%</td>
+                    </tr>
+
+                    <tr style="background-color:#ececec;">
+                        <td colspan="3"></td>
+                        <td>Total Recargo</td>
+                        <td>{{number_format(($factura->total_original * $factura->retencion->porcentaje / 100), 2, ',', '.')}}€</td>
+                    </tr>
+                    <tr style="background-color:#ececec;">
+                        <td colspan="3"></td>
+                        <td>Total</td>
+                        <td>{{number_format($factura->total, 2, ',', '.')}}€</td>
+                    </tr>
+                @endif
             </table>
         @else
             <table style="margin-top: 5% !important">
+                @if($factura->retencion_id)
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>Total Original</td>
+                        <td>{{number_format(($factura->total_original), 2, ',', '.')}}€</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>Recargo % ({{$factura->retencion->nombre}})</td>
+                        <td>{{number_format(($factura->retencion->porcentaje), 2, ',', '.')}}%</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>Total Recargo</td>
+                        <td>{{number_format(($factura->total_original * $factura->retencion->porcentaje / 100), 2, ',', '.')}}€</td>
+                    </tr>
+                @endif
                 <tr style="background-color:#ececec;">
                     <td colspan="3"></td>
                     <td>Total</td>

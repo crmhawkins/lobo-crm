@@ -329,6 +329,25 @@
                     <td>{{number_format(($factura->total_recargo), 2, ',', '.')}}€</td>
                 </tr>
             @endif
+            @if($factura->retencion_id)
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>Total Original</td>
+                <td>{{number_format(($factura->total_original), 2, ',', '.')}}€</td>
+            </tr>
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>Recargo % ({{$factura->retencion->nombre}})</td>
+                <td>{{number_format(($factura->retencion->porcentaje), 2, ',', '.')}}%</td>
+            </tr>
+            <tr style="background-color:#ececec;">
+                <td></td>
+                <td>Total Recargo</td>
+                <td>{{number_format(($factura->total_original * $factura->retencion->porcentaje / 100), 2, ',', '.')}}€</td>
+            </tr>
+
+
+        @endif
             <tr style="background-color:#ececec;">
                 <td></td>
                 <td>TOTAL</td>
@@ -340,7 +359,29 @@
             </tr>
         </table>
     @else
+
+        
+
         <table style="margin-top: 5% !important">
+            @if($factura->retencion_id)
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>Total Original</td>
+                    <td>{{number_format(($factura->total_original), 2, ',', '.')}}€</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>Recargo % ({{$factura->retencion->nombre}})</td>
+                    <td>{{number_format(($factura->retencion->porcentaje), 2, ',', '.')}}%</td>
+                </tr>
+                <tr style="background-color:#ececec;">
+                    <td></td>
+                    <td>Total Recargo</td>
+                    <td>{{number_format(($factura->total_original * $factura->retencion->porcentaje / 100), 2, ',', '.')}}€</td>
+                </tr>
+
+
+            @endif
             <tr style="background-color:#ececec;">
                 <td></td>
                 <td>Total</td>

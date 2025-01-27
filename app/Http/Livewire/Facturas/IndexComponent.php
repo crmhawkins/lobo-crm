@@ -31,6 +31,7 @@ use App\Models\FacturasCompensadas;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use App\Models\ProductosFacturas;
+use App\Models\Retencion;
 
 class IndexComponent extends Component
 {
@@ -78,6 +79,7 @@ class IndexComponent extends Component
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
+        
 
         // if ($user_rol == 3) {
         //     // Comercial
@@ -94,6 +96,18 @@ class IndexComponent extends Component
         // }
     }
 
+
+    public function getRetencion($facturaId){
+        $factura = Facturas::find($facturaId);
+        $retencion = Retencion::find($factura->retencion_id);
+        if($factura->retencion_id == null){
+            return 0;
+        }
+        $total = round(($factura->total_original * $retencion->porcentaje / 100), 2);
+
+
+        return $total;
+    }
 
     public function getTotalSobrante($facturaId)
     {
@@ -1416,8 +1430,8 @@ class IndexComponent extends Component
             try {
                 //dd($datos);
                 $emailsDireccion = [
-                    'Alejandro.martin@serlobo.com',
-                    'Sandra.lopez@serlobo.com'
+                    // 'Alejandro.martin@serlobo.com',
+                    // 'Sandra.lopez@serlobo.com'
                 ];
 
                 $cliente = Clients::find($factura->cliente_id);
@@ -1434,8 +1448,8 @@ class IndexComponent extends Component
                 //dd($this->emailsSeleccionados);
 
                 if (count($this->emailsSeleccionados) > 0) {
-                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    //  Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    // Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                     Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach ($this->emailsSeleccionados as $email) {
                         $registroEmail = new RegistroEmail();
@@ -1453,8 +1467,8 @@ class IndexComponent extends Component
                     }
                 } else {
                     //dd($datos);
-                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                    //  Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
+                    // Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                     Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;

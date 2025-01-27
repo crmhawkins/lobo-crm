@@ -30,6 +30,7 @@ use App\Models\Almacen;
 use App\Mail\TransporteRecogida;
 use App\Models\TipoEmails;
 use App\Models\ProductosMarketingPedido;
+use App\Models\Retencion;
 
 
 class EditComponent extends Component
@@ -87,6 +88,8 @@ class EditComponent extends Component
     public $emailTransporte;
     public $anotacionesEmail;
     public $observacionesEmail;
+    public $retencion_id;
+    public $retenciones;
 
 
     public function getTipo($id){
@@ -119,6 +122,7 @@ class EditComponent extends Component
         if(isset($this->pedido)){
             $this->precio = $this->pedido->precio;
         }else{
+            // dd($this->facturas);
             $this->precio = 0;
             $this->serviciosDB = ServiciosFacturas::where('factura_id', $this->facturas->id)->get();
            
@@ -186,8 +190,43 @@ class EditComponent extends Component
 
         $this->emails = Emails::where('cliente_id', $this->cliente_id)->get();
 
+        $this->retenciones = Retencion::orderBy('dias_retencion', 'desc')->get();
+
+        $this->retencion_id = $this->facturas->retencion_id;
+        $this->total_original = $this->facturas->total_original;
+        $this->total_retencion = $this->facturas->retencion ? ($this->facturas->total_original * $this->facturas->retencion->porcentaje / 100) : 0;
+
+        if($this->retencion_id){
+            $this->precio = $this->facturas->precio;
+        }
+        // dd($this->facturas , $this->precio);
+        
     }
 
+
+    public function updatedRetencionId($value)
+    {
+        if ($value === '') {
+            $this->retencion_id = null;
+        } else {
+            $this->retencion_id = (int) $value;
+        }
+    
+        
+        $retencion = Retencion::find($value);
+        $delegacion = $this->facturas->cliente->delegacion->nombre;
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+            $this->total_original = $this->total_original  ? $this->total_original : $this->precio;
+        }else{
+            $this->total_original = $this->total_original  ? $this->total_original : $this->total;
+        }
+        if ($retencion) {
+
+            $this->total_retencion = round($this->total_original * $retencion->porcentaje / 100, 2);
+        } else {
+            $this->total_retencion = 0;
+        }
+    }
    
 
     public function getPedido(){
@@ -310,6 +349,7 @@ class EditComponent extends Component
 
     public function render()
     {
+        
 
         // $this->tipoCliente == 0;
         return view('livewire.facturas.edit-component');
@@ -662,8 +702,16 @@ class EditComponent extends Component
         }else{
             // Guardar datos validados
 
+
+
+            // dd("hola");
+
+
+
             //$pedido = Pedido::find($this->pedido_id);
             $this->getPedido();
+            
+            
             $facturasSave = $this->facturas->update([
                 'numero_factura' => $this->numero_factura,
                 'cliente_id' => $this->cliente_id,
@@ -681,9 +729,13 @@ class EditComponent extends Component
                 'descuento_total_pedido' => $this->descuento_total_pedido,
                 'iva_total_pedido' => $this->iva_total_pedido,
                 'subtotal_pedido' => $this->subtotal_pedido,
+                'retencion_id' => isset($this->retencion_id) ? $this->retencion_id : null,
+                'total_original' => isset($this->total_original) ? $this->total_original : null,
 
 
             ]);
+
+            // dd($this->facturas);
 
             if($this->facturas->estado == "Pagado"){
                 $pedido=Pedido::find($this->pedido_id);
@@ -1419,9 +1471,42 @@ class EditComponent extends Component
             $factura->total = $total;
             $factura->recargo = $recargo;
             $factura->total_recargo = $recargo_total;
-            $this->total = $total;
+            $factura->total = $total;
+
+            if ($factura->retencion_id != null) {
+                $delegacion =$factura->cliente->delegacion->nombre;
+                if ($delegacion) {
+                    // Determinar el valor base para el cálculo
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                        ? $factura->precio 
+                        : $factura->total;
+                    $retencion = Retencion::find($factura->retencion_id);
+                    
+                    // Establecer el total original si aún no está definido
+                    $factura->total_original = $factura->total_original ?? $valorBase;
+                    
+                    // Calcular el total con retención si aún no está definido
+                    $total_retencion = ($factura->total_original + ($factura->total_original * $retencion->porcentaje / 100));
+                    // dd($this->total_retencion);
+                    // dd($this->total_original);
+                   if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                        $factura->precio = $total_retencion;
+                   }else{
+                        $factura->total =  $total_retencion;
+                   }
+
+
+                //    dd($this->precio , $this->total);
+                    // Actualizar el total de la factura
+                }
+            }
+
             //dd($factura);
             $factura->save();
+            // dd($factura);
+            $this->total =  round($factura->total, 2);
+            $this->iva_total_pedido = round($factura->iva, 2);
+            $this->precio = round($factura->precio, 2);
             
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){

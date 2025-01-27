@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\StockMercaderiaEntrante;
 use App\Models\MercaderiaProduccion;
 use App\Models\Mercaderia;
+use App\Models\Retencion;
 
 class Kernel extends ConsoleKernel
 {
@@ -160,6 +161,8 @@ class Kernel extends ConsoleKernel
                 }
             }
 
+
+
             foreach ($pedidosEnEnvio as $pedido) {
                 // Verificar si ya existe una alerta para este pedido
                 $alertaExistente = Alertas::where('referencia_id', $pedido->id)->where('stage', 5)->first();
@@ -241,6 +244,49 @@ class Kernel extends ConsoleKernel
                     
 
             }
+
+
+            $retenciones = Retencion::orderBy('dias_retencion', 'desc')->get();
+
+        foreach ($retenciones as $retencion) {
+            // Obtener las facturas vencidas que cumplen con los días de retención
+            $facturasVencidas = Facturas::whereNull('tipo')
+                ->where('estado', 'Pendiente')
+                ->where('fecha_vencimiento', '<', Carbon::now()->subDays($retencion->dias_retencion))
+                ->where(function ($query) use ($retencion) { // Asegúrate de pasar $retencion al closure
+                    $query->whereNull('retencion_id')
+                          ->orWhere('retencion_id', '<', $retencion->id);
+                })
+                ->get();
+
+            foreach ($facturasVencidas as $factura) {
+                // Si total_original es null, copiar el total actual
+                if($factura->cliente && $factura->cliente->delegacion){
+                    $delegacion = $factura->cliente->delegacion->nombre;
+
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                    ? $factura->precio 
+                    : $factura->total;
+        
+
+                    if (is_null($factura->total_original)) {
+                        $factura->total_original = $valorBase;
+                    }
+
+                    // Calcular el nuevo total aplicando la retención
+                    $nuevoTotal = $factura->total_original + ($factura->total_original * $retencion->porcentaje / 100);
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                    ? $factura->precio = $nuevoTotal
+                    : $factura->total = $nuevoTotal;
+                    $factura->retencion_id = $retencion->id;
+                    $factura->save();
+                }
+
+            }
+        }
+
+
+
         })->everyMinute();
 
     }

@@ -273,6 +273,41 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 
                                     </div>
                                 </div>
+
+                                    <div class="col-md-4">
+                                        <label for="fecha_emision" class="col-sm-12 col-form-label">Recargo vencimiento</label>
+                                        <div class="col-sm-12">
+                                           <select name="retencion" id="retencion" class="form-control" wire:model="retencion_id" >
+                                            <option value="">Selecciona un recargo vencimiento</option>
+                                            @foreach($retenciones as $ret)
+                                                <option value="{{$ret->id}}">{{$ret->nombre}}</option>
+                                            @endforeach
+                                           </select>
+                                        </div>
+                                    </div>
+
+                                    @if($retencion_id)
+
+                                    <div class="col-md-4">
+                                        <label for="total_original" class="col-sm-12 col-form-label">Total original</label>
+                                        <div class="col-sm-12">
+                                            <input type="number" wire:model="total_original" class="form-control"
+                                                placeholder="total retencion" disabled>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <label for="total_retencion" class="col-sm-12 col-form-label">Total Recargo</label>
+                                        <div class="col-sm-12">
+                                            <input type="number" wire:model="total_retencion" class="form-control"
+                                                placeholder="total retencion" disabled>
+                                        </div>
+                                    </div>
+
+                                @endif
+
+
                             @endif
                         </div>
                         <div class="form-group row">
@@ -342,7 +377,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <label for="descripcion" class="col-sm-12 col-form-label">Descripción </label>
                                 <div class="col-sm-12">
                                     <textarea wire:model="descripcion" class="form-control" name="descripcion" id="descripcion"
-                                        placeholder="Factura para el cliente Dani..." @if(!$canEdit) disabled @endif></textarea>
+                                        placeholder="Factura para el cliente ..." @if(!$canEdit) disabled @endif></textarea>
                                     @error('descripcion')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror

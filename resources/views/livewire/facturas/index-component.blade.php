@@ -221,6 +221,7 @@
                                     { data: 'IVA' },
                                     { data: 'Total(Con IVA)' },
                                     { data: 'Pendiente' },
+                                    { data: 'Recargo' },
                                     { data: 'M.pago' },
                                     { data: 'Estado' },
                                     { data: 'Acciones' },
@@ -255,6 +256,7 @@
                                             <th scope="col">Total(Con IVA)</th>
 
                                             <th scope="col">Pendiente</th>
+                                            <th scope="col">Recargo</th>
                                             <th scope="col">M.pago</th>
                                             <th scope="col">Estado</th>
                                         @else
@@ -264,6 +266,7 @@
                                             <th scope="col" style="display: none">IVA</th>
                                             <th scope="col" style="display: none">Total(Con IVA)</th>
                                             <th scope="col" style="display: none">Pendiente</th>
+                                            <th scope="col" style="display: none">Recargo</th>
                                             <th scope="col" style="display: none">M.pago</th>
                                             <th scope="col" style="display: none">Estado</th>
                                         @endif
@@ -318,6 +321,7 @@
                                                 </td>
 
                                                 <td>{{$this->getTotalSobrante($fact->id)}}€</td>
+                                                <td>{{$this->getRetencion($fact->id)}}€  || {{$fact->retencion ? $fact->retencion->nombre : 'Sin recargo'}}</td>
                                                 
                                                 <td >
                                                     @switch($fact->metodo_pago)
