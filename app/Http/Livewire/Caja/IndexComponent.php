@@ -52,6 +52,7 @@ class IndexComponent extends Component
 
     public function descargarTodosDocumentos()
     {
+        $this->cambioMes();
         $caja = $this->caja->where('documento_pdf', '!=', null)
                         ->where('tipo_movimiento', 'Gasto');
                         
