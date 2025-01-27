@@ -215,7 +215,7 @@ class EditComponent extends Component
         
         $retencion = Retencion::find($value);
         $delegacion = $this->facturas->cliente->delegacion->nombre;
-        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR'){
             $this->total_original = $this->total_original  ? $this->total_original : $this->precio;
         }else{
             $this->total_original = $this->total_original  ? $this->total_original : $this->total;
@@ -1477,7 +1477,7 @@ class EditComponent extends Component
                 $delegacion =$factura->cliente->delegacion->nombre;
                 if ($delegacion) {
                     // Determinar el valor base para el cálculo
-                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA') 
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') 
                         ? $factura->precio 
                         : $factura->total;
                     $retencion = Retencion::find($factura->retencion_id);
@@ -1489,7 +1489,7 @@ class EditComponent extends Component
                     $total_retencion = ($factura->total_original + ($factura->total_original * $retencion->porcentaje / 100));
                     // dd($this->total_retencion);
                     // dd($this->total_original);
-                   if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+                   if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR'){
                         $factura->precio = $total_retencion;
                    }else{
                         $factura->total =  $total_retencion;

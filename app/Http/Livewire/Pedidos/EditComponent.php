@@ -1979,7 +1979,8 @@ public function setPrecioEstimadoMarketing()
     // }
 
     $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-    if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA'){
+    if($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
+    ){
         $iva = false;
     }
 

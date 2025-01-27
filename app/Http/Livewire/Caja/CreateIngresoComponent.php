@@ -166,7 +166,7 @@ class CreateIngresoComponent extends Component
 
         }
         $delegacion = $this->getDelegacion($factura->cliente_id);
-        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA'){
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR'){
             return false;
         }else{
             return true;

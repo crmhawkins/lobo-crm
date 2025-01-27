@@ -1138,7 +1138,8 @@ class IndexComponent extends Component
                 //     }
                 // }
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
+                ) {
                     $iva = false;
                 }
 
@@ -1293,7 +1294,8 @@ class IndexComponent extends Component
                 //     }
                 // }
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
+                ) {
                     $iva = false;
                 }
                 $productofact = Productos::find($factura->producto_id);
@@ -1383,7 +1385,8 @@ class IndexComponent extends Component
                 // }
 
                 $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
+                if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
+                ) {
                     $iva = false;
                 }
 
@@ -1567,7 +1570,8 @@ class IndexComponent extends Component
 
             $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
             $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-            if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA') {
+            if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
+            ) {
                 $iva = false;
             }
 
