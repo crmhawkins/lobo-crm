@@ -86,7 +86,7 @@ class IndexComponent extends Component
         );
         $mesActual = $meses[$mesActual];
 
-        $ano = Carbon::parse($this->mes)->format('Y');
+        $ano = $this->ano;
 
         $zipFileName = 'documentos_gastos_' . $mesActual . '_' . $ano . '.zip';
         $zipFilePath = storage_path($zipFileName);
