@@ -68,6 +68,7 @@ class IndexComponent extends Component
        
         $mesNumero = is_numeric($this->mes) ? $this->mes : Carbon::parse($this->mes)->month;
         $mesActual = Carbon::createFromDate(null, $mesNumero, 1)->format('F');
+        //
         //en español
         $meses = array(
             'January' => 'Enero',
