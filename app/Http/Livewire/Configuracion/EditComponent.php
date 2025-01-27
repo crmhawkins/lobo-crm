@@ -10,7 +10,7 @@ use Livewire\WithFileUploads;
 use App\Models\Almacen;
 use App\Models\Configuracion;
 use App\Models\Logs;
-
+use App\Models\Retencion;
 use Carbon\Carbon;
 
 class EditComponent extends Component
@@ -34,6 +34,10 @@ class EditComponent extends Component
     public $texto_albaran;
     public $texto_email;
     public $logs;
+    public $retenciones = [];
+    public $nombre_retencion;
+    public $porcentaje_retencion;
+    public $dias_retencion;
 
     public $newAlmacen = [
         'almacen' => '',
@@ -91,7 +95,34 @@ class EditComponent extends Component
         $this->texto_pedido = $configuracion->texto_pedido;
         $this->texto_albaran = $configuracion->texto_albaran;
         $this->texto_email = $configuracion->texto_email;
+
+        $this->retenciones = Retencion::all();
         //dd($this->firma);
+    }
+
+    public function addRetencion(){
+        $this->validate([
+            'nombre_retencion' => 'required',
+            'porcentaje_retencion' => 'required',
+            'dias_retencion' => 'required'
+        ]);
+        Retencion::create([
+            'nombre' => $this->nombre_retencion,
+            'porcentaje' => $this->porcentaje_retencion,
+            'dias_retencion' => $this->dias_retencion
+        ]);
+        $this->retenciones = Retencion::all();
+        $this->nombre_retencion = '';
+        $this->porcentaje_retencion = '';
+        $this->dias_retencion = '';
+        $this->alert('success', 'Retención añadida con éxito');
+    }
+
+    public function deleteRetencion($id){
+        $retencion = Retencion::find($id);
+        $retencion->delete();
+        $this->retenciones = Retencion::all();
+        $this->alert('success', 'Retención eliminada con éxito');
     }
 
     

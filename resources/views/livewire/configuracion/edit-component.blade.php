@@ -1,6 +1,6 @@
 @php
-$EsAdmin = Auth::user()->isAdmin();
-$canEdit = $EsAdmin; //|| $estado == 1;
+    $EsAdmin = Auth::user()->isAdmin();
+    $canEdit = $EsAdmin; //|| $estado == 1;
 @endphp
 {{-- {{ var_dump($eventoServicios) }} --}}
 <div class="container-fluid">
@@ -19,7 +19,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
     </div>
     <!-- end page-title -->
     @php
-    $mostrarElemento = Auth::user()->isAdmin();
+        $mostrarElemento = Auth::user()->isAdmin();
     @endphp
     <div class="row" style="align-items: start !important">
         <div class="col-md-9">
@@ -247,70 +247,119 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                     </form>
                 </div>
             </div>
-        
-        </div>
 
-        <div class="card m-b-30">
-            <div class="card-body">
-                <h5 class="card-title">Historial de Logs del Mes Actual</h5>
-    
-                @if(count($logs) > 0)
-                <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
-                    $('#datatable-logs').DataTable({
-                    stateSave: true,
-                        responsive: true,
-                        layout: {
-                            topStart: {
-                                buttons: [
-                                    'copy', 'excel', 'pdf', 'colvis'
-                                ]
-                            }
-                        },
-                        lengthChange: false,
-                        pageLength: 10,
-                        buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
-                        language: {
-                            lengthMenu: 'Mostrar _MENU_ registros por página',
-                            zeroRecords: 'No se encontraron registros',
-                            info: 'Mostrando página _PAGE_ de _PAGES_',
-                            infoEmpty: 'No hay registros disponibles',
-                            infoFiltered: '(filtrado de _MAX_ total registros)',
-                            search: 'Buscar:'
-                        },
-                        
-                    
-                    
-                    });
-                })" wire:key='{{ rand() }}'>
-                <table id="datatable-logs" class="table table-striped" wire:key='{{ rand() }}'>
-                    <thead>
+            <div class="card col-md-12">
+                <div class="card-body">
+                    <h5 class="card-title">Retenciones</h5>
+                </div>
+
+                <form wire:submit.prevent="addRetencion" class="d-flex align-items-center">
+                    <div class="form-group me-2">
+                        <label for="nombre" class="me-2">Nombre</label>
+                        <input type="text" wire:model="nombre_retencion" class="form-control" id="nombre" placeholder="Nombre">
+                    </div>
+                    <div class="form-group me-2">
+                        <label for="porcentaje" class="me-2">Porcentaje</label>
+                        <input type="number" wire:model="porcentaje_retencion" class="form-control" id="porcentaje" placeholder="Porcentaje">
+                    </div>
+                    <div class="form-group me-2">
+                        <label for="dias_retencion" class="me-2">Días de Retención</label>
+                        <input type="number" wire:model="dias_retencion" class="form-control" id="dias_retencion" placeholder="Días de Retención">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Añadir</button>
+                </form>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <th>Acción</th>
-                                <th>Descripción</th>
-                                <th>Fecha de Creación</th>
+                                <th>Nombre</th>
+                                <th>Porcentaje</th>
+                                <th>Días de Retención</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($logs as $log)
+                            @foreach($retenciones as $retencion)
                                 <tr>
-                                    <td>{{ $log->action }}</td>
-                                    <td>{{ $log->description }}</td>
-                                    <td>{{ $log->created_at->format('d-m-Y H:i:s') }}</td> <!-- Usamos created_at -->
+                                    <td>{{ $retencion->nombre }}</td>
+                                    <td>{{ $retencion->porcentaje }}</td>
+                                    <td>{{ $retencion->dias_retencion }}</td>
+                                    <td>
+                                        <button wire:click="deleteRetencion({{ $retencion->id }})" class="btn btn-danger">Eliminar</button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                @else
-                    <p>No hay logs para mostrar en el mes actual.</p>
-                @endif
             </div>
+
+
+
+
+            <div class="card col-md-12">
+                <div class="card-body">
+                    <h5 class="card-title">Historial de Logs del Mes Actual</h5>
+        
+                    @if(count($logs) > 0)
+                        <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                                $('#datatable-logs').DataTable({
+                                stateSave: true,
+                                    responsive: true,
+                                    layout: {
+                                        topStart: {
+                                            buttons: [
+                                                'copy', 'excel', 'pdf', 'colvis'
+                                            ]
+                                        }
+                                    },
+                                    lengthChange: false,
+                                    pageLength: 10,
+                                    buttons: ['copy', 'excelHtml5', 'pdf', 'colvis'],
+                                    language: {
+                                        lengthMenu: 'Mostrar _MENU_ registros por página',
+                                        zeroRecords: 'No se encontraron registros',
+                                        info: 'Mostrando página _PAGE_ de _PAGES_',
+                                        infoEmpty: 'No hay registros disponibles',
+                                        infoFiltered: '(filtrado de _MAX_ total registros)',
+                                        search: 'Buscar:'
+                                    },
+                                    
+                                
+                                
+                                });
+                            })" wire:key='{{ rand() }}'>
+                            <table id="datatable-logs" class="table table-striped" wire:key='{{ rand() }}'>
+                                <thead>
+                                    <tr>
+                                        <th>Acción</th>
+                                        <th>Descripción</th>
+                                        <th>Fecha de Creación</th>
+                                    </tr>
+                                </thead>
+                                    <tbody>
+                                        @foreach($logs as $log)
+                                            <tr>
+                                                <td>{{ $log->action }}</td>
+                                                <td>{{ $log->description }}</td>
+                                                <td>{{ $log->created_at->format('d-m-Y H:i:s') }}</td> <!-- Usamos created_at -->
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p>No hay logs para mostrar en el mes actual.</p>
+                    @endif
+                </div>
+            </div>
+        
         </div>
 
+        
+       
 
 
-        </div>
-</div>
         @if($canEdit)
             <div class="col-md-3">
                 <div class="card m-b-30">
@@ -335,6 +384,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
             </div>
         @endif
     </div>
+        
 </div>
 
     @section('scripts')

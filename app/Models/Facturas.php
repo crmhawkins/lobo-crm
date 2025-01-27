@@ -47,6 +47,8 @@ class Facturas extends Model
         'factura_rectificativa_id',
         'factura_id',
         'gastos_transporte',
+        'retencion_id',
+        'total_original',
     ];
 
 
@@ -78,6 +80,11 @@ class Facturas extends Model
     public function facturaNormal()
     {
         return $this->belongsTo(Facturas::class, 'factura_id');
+    }
+
+    public function retencion()
+    {
+        return $this->belongsTo(Retencion::class, 'retencion_id');
     }
 
 
