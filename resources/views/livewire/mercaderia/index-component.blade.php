@@ -184,6 +184,9 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                                 <button class="btn btn-success"  data-toggle="modal" style="align-self: end !important;" data-target="#addStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Sumar</button>
                                                 <button class="btn btn-danger" data-toggle="modal" style="align-self: end !important;" data-target="#deleteStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Restar</button>
                                                 <button class="btn btn-warning" data-toggle="modal" style="align-self: end !important;" data-target="#roturaStock" wire:click="changeMercaderiaSeleccionadaId({{ $mercaderia->id }})">Rotura</button>
+                                                @if(Auth::user()->isAdmin())
+                                                 <button class="btn btn-danger" wire:click="eliminarMaterial({{ $mercaderia->id }})">Eliminar</button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

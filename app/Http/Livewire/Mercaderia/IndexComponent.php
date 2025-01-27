@@ -32,6 +32,8 @@ class IndexComponent extends Component
 
     public $categoria_id;
 
+    public $deleteId;
+
     public function mount()
     {
         $this->categoria_id = session('mercaderia_filtro_categoria_id', 0);
@@ -42,6 +44,35 @@ class IndexComponent extends Component
 
         if ($this->categoria_id != 0) {
             $this->mercaderias = Mercaderia::where('categoria_id', $this->categoria_id)->get();
+        }
+    }
+
+    public function eliminarMaterial($id)
+    {
+        $this->deleteId = $id;
+        $this->confirm('¿Estás seguro de eliminar este material?', [
+            'onConfirmed' => 'confirmarEliminacion',
+            'params' => $id,
+        ]);
+    }
+
+    public function confirmarEliminacion($id)
+    {
+
+        $usuario = Auth::user()->id;
+
+        if(!Auth::user()->isAdmin()){
+            $this->alert('error', 'No tienes permisos para eliminar materiales.');
+            return;
+        }
+
+        $material = Mercaderia::find($this->deleteId);
+        if ($material) {
+            $material->delete();
+            $this->alert('success', 'Material eliminado exitosamente.');
+            $this->mercaderias = Mercaderia::all();
+        } else {
+            $this->alert('error', 'Material no encontrado.');
         }
     }
 
@@ -310,6 +341,7 @@ class IndexComponent extends Component
             'cambioCategoria',
             'comprobarStockMateriales',
             'refreshComponent' => '$refresh',
+            'confirmarEliminacion' => 'confirmarEliminacion'
         ];
     }
 
