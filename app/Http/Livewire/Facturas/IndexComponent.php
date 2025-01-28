@@ -144,8 +144,9 @@ class IndexComponent extends Component
         $facturasCompensadas = FacturasCompensadas::where('factura_id', $facturaId)->get();
         $totalCompensado = 0;
         foreach ($facturasCompensadas as $facturaCompensada) {
-            $totalCompensado += $facturaCompensada->importe;
+            $totalCompensado += $facturaCompensada->pagado;
         }
+
 
         // Suma los ingresos en la caja
         $IngresosCaja = Caja::where('pedido_id', $factura->id)->sum('importe');
@@ -156,7 +157,7 @@ class IndexComponent extends Component
         if ($totalSobrante < 0) {
             $totalSobrante = 0;
         }
-
+        //dd($totalSobrante);
         // Si necesitas formatear para la visualización, hazlo después
         return number_format($totalSobrante, 2, ',', '.');
     }

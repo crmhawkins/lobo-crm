@@ -422,6 +422,7 @@ class EditComponent extends Component
 
         // Encuentra el identificador
         $caja = Caja::find($this->identificador);
+        // dd($this->gasto_id);
         // Guardar datos validados
         $tipoSave = $caja->update([
             'metodo_pago' => $this->metodo_pago,
@@ -451,7 +452,7 @@ class EditComponent extends Component
             'pendiente' => $this->pendiente,
             'asientoContable' => $this->asientoContable,
             'cuentaContable_id' => $this->cuentaContable_id,
-            'gasto_id' => $this->gasto_id
+            'gasto_id' => $this->gasto_id == '' ? null : $this->gasto_id
 
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 53, $caja->id));   

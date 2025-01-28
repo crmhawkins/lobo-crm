@@ -346,6 +346,8 @@
                                             <td>
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
                                                         @if($tipo->pagado != null)
+                                                        {{-- {{var_dump($tipo->id,$tipo->tipo_movimiento)}} --}}
+
                                                             {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
                                                         @else
                                                             @if($tipo->estado == 'Pendiente')

@@ -284,6 +284,7 @@ public function setPage($page)
                 return 0;
             }
             $compensacion = FacturasCompensadas::where('caja_id', $ingreso->id)->sum('pagado');
+            
             return $compensacion;
         }else{
             $factura = $this->facturas->firstWhere('id', $id);
