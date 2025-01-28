@@ -63,8 +63,8 @@ class CalendarioController extends Controller
         $end = is_array($request->end) ? $request->end['d']['d'] : $request->end;
 
         // Convertir a hora local sumando 2 horas para la hora española
-        $startTime = \Carbon\Carbon::parse($start)->addHours(2)->format('Y-m-d H:i:s');
-        $endTime = \Carbon\Carbon::parse($end)->addHours(2)->format('Y-m-d H:i:s');
+        $startTime = \Carbon\Carbon::parse($start)->addHours(1)->format('Y-m-d H:i:s');
+        $endTime = \Carbon\Carbon::parse($end)->addHours(1)->format('Y-m-d H:i:s');
 
         // Actualizar el evento
         $event->update([
