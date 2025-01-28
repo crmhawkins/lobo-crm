@@ -127,12 +127,14 @@ class IndexComponent extends Component
             try {
 
                 $empleado = User::find($incidencia->user_id);
+                // dd($empleado);
+
                 Mail::to($empleado->email)
                     ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
                     ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia, 'normal'));
 
                 // Mail::to('ivan.mayol@hawkins.es')
-                // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                // ->bcc('ivmabr95@gmail.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
                 // ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia , 'normal'));
 
                 Alertas::create([
@@ -145,6 +147,11 @@ class IndexComponent extends Component
                 ]);
             } catch (\Exception $e) {
                 //dd($e);
+                $this->alert('error', 'Error al enviar el email', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
             }
 
 
@@ -163,12 +170,13 @@ class IndexComponent extends Component
             try {
 
                 $empleado = User::find($pedidoIncidencia->user_id);
+               // dd($empleado);
                 Mail::to($empleado->email)
                     ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
                     ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia, 'pedido'));
 
                 // Mail::to('ivan.mayol@hawkins.es')
-                // ->bcc('ivan.mayol@hawkins.es')  // Aquí colocas el email que recibirá la copia oculta (BCC)
+                // ->bcc('ivmabr95@gmail.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
                 // ->send(new CambioEstadoIncidenciaMail($empleado, $pedidoIncidencia, 'pedido'));
 
                 Alertas::create([
@@ -180,6 +188,11 @@ class IndexComponent extends Component
                     'leida' => null,
                 ]);
             } catch (\Exception $e) {
+                $this->alert('error', 'Error al enviar el email', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
             }
 
             $this->loadIncidencias();
