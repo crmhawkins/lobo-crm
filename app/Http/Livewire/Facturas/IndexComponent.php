@@ -1433,8 +1433,8 @@ class IndexComponent extends Component
             try {
                 //dd($datos);
                 $emailsDireccion = [
-                    // 'Alejandro.martin@serlobo.com',
-                    // 'Sandra.lopez@serlobo.com'
+                    'Alejandro.martin@serlobo.com',
+                    'Sandra.lopez@serlobo.com'
                 ];
 
                 $cliente = Clients::find($factura->cliente_id);
@@ -1451,8 +1451,8 @@ class IndexComponent extends Component
                 //dd($this->emailsSeleccionados);
 
                 if (count($this->emailsSeleccionados) > 0) {
-                    // Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                     Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    //  Mail::to('ivan.mayol@hawkins.es')->cc('ivan.mayol@hawkins.es')->bcc( $emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
 
                     foreach ($this->emailsSeleccionados as $email) {
                         $registroEmail = new RegistroEmail();
@@ -1470,8 +1470,8 @@ class IndexComponent extends Component
                     }
                 } else {
                     //dd($datos);
-                    // Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
-                     Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
+                    Mail::to($cliente->email)->bcc($emailsDireccion)->send(new RecordatorioMail($pdf->output(), $datos));
+                    //  Mail::to('ivan.mayol@hawkins.es')->bcc('ivan.mayol@hawkins.es')->send(new RecordatorioMail($pdf->output(), $datos));
 
                     $registroEmail = new RegistroEmail();
                     $registroEmail->factura_id = $factura->id;
