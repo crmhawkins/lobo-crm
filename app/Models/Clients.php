@@ -86,4 +86,9 @@ class Clients extends Model
     {
         return $this->hasMany(Emails::class, 'cliente_id');
     }
+
+    public function direcciones()
+    {
+        return $this->hasMany(Direcciones::class, 'cliente_id');
+    }
 }

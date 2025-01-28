@@ -38,6 +38,7 @@ use App\Models\ProductosMarketingPedido;
 use App\Models\ProductosPedidoPack;
 use App\Models\EmpresasTransporte;
 use App\Models\ProductosMarketingPedidoPack;
+use App\Models\Direcciones;
 
 
 class EditComponent extends Component
@@ -136,6 +137,14 @@ class EditComponent extends Component
 
     public $productos_asociados = []; // Nueva propiedad para productos asociados
     public $productos_asociados_marketing = []; // Nueva propiedad para productos asociados marketing
+
+    public $direccionPorDefecto;
+    public $localidadPorDefecto;
+    public $provinciaPorDefecto;
+    public $codPostalPorDefecto;
+
+    public $direcciones = [];
+    public $direccion_seleccionada;
 
     public function getTipo($id){
 
@@ -342,10 +351,10 @@ class EditComponent extends Component
         $this->almacenes = Almacen::all();
         $this->almacen_id = $pedido->almacen_id;
         $this->descuento = $pedido->descuento;
-        $this->localidad_entrega = $cliente->localidadenvio;
-        $this->provincia_entrega = $cliente->provinciaenvio;
-        $this->direccion_entrega = $cliente->direccionenvio;
-        $this->cod_postal_entrega = $cliente->codPostalenvio;
+        $this->localidad_entrega = $pedido->localidad_entrega;
+        $this->provincia_entrega = $pedido->provincia_entrega;
+        $this->direccion_entrega = $pedido->direccion_entrega;
+        $this->cod_postal_entrega = $pedido->cod_postal_entrega;
         $this->precio_crema = $cliente->precio_crema;
         $this->precio_vodka07l = $cliente->precio_vodka07l;
         $this->precio_vodka175l = $cliente->precio_vodka175l;
@@ -502,6 +511,15 @@ class EditComponent extends Component
        // 
         $this->emit('refreshComponent');
 
+        $this->direcciones = Direcciones::where('cliente_id', $this->cliente_id)->get();
+        $this->direccionPorDefecto = $cliente->direccion;
+        $this->localidadPorDefecto = $cliente->localidad;
+        $this->provinciaPorDefecto = $cliente->provincia;
+        $this->codPostalPorDefecto = $cliente->cod_postal;
+        $direccionSeleccionada = $this->direcciones->firstWhere('direccion', $this->direccion_entrega);
+        // dd($this->direcciones , $this->direccion_entrega);
+        $this->direccion_seleccionada = $direccionSeleccionada ? $direccionSeleccionada->id : 'default';
+
 
     }
 
@@ -615,14 +633,44 @@ public function setPrecioEstimadoMarketing()
     public function selectCliente()
     {
         $cliente = Clients::find($this->cliente_id);
-        $this->localidad_entrega = $cliente->localidad;
-        $this->provincia_entrega = $cliente->provincia;
-        $this->direccion_entrega = $cliente->direccion;
-        $this->cod_postal_entrega = $cliente->cod_postal;
-        $this->precio_crema = $cliente->precio_crema;
-        $this->precio_vodka07l = $cliente->precio_vodka07l;
-        $this->precio_vodka175l = $cliente->precio_vodka175l;
-        $this->precio_vodka3l = $cliente->precio_vodka3l;
+        if ($cliente) {
+            $this->cliente = $cliente;
+            // Almacenar la dirección por defecto del cliente
+            $this->direccionPorDefecto = $cliente->direccion;
+            $this->localidadPorDefecto = $cliente->localidad;
+            $this->provinciaPorDefecto = $cliente->provincia;
+            $this->codPostalPorDefecto = $cliente->cod_postal;
+
+            // Inicializar las propiedades de dirección con la dirección por defecto
+            $this->direccion_entrega = $this->direccionPorDefecto;
+            $this->localidad_entrega = $this->localidadPorDefecto;
+            $this->provincia_entrega = $this->provinciaPorDefecto;
+            $this->cod_postal_entrega = $this->codPostalPorDefecto;
+
+            $this->direcciones = $cliente->direcciones;
+
+            // Establecer la dirección por defecto
+            $this->direccion_seleccionada = 'default';
+        }
+    }
+
+    public function updatedDireccionSeleccionada($direccionId)
+    {
+        if ($direccionId !== 'default') {
+            $direccion = Direcciones::find($direccionId);
+            if ($direccion) {
+                $this->direccion_entrega = $direccion->direccion;
+                $this->localidad_entrega = $direccion->localidad;
+                $this->provincia_entrega = $direccion->provincia;
+                $this->cod_postal_entrega = $direccion->codigopostal;
+            }
+        } else {
+            // Restaurar la dirección por defecto del cliente
+            $this->direccion_entrega = $this->direccionPorDefecto;
+            $this->localidad_entrega = $this->localidadPorDefecto;
+            $this->provincia_entrega = $this->provinciaPorDefecto;
+            $this->cod_postal_entrega = $this->codPostalPorDefecto;
+        }
     }
 
     public function actualizarPrecioTotal($index)
@@ -755,7 +803,6 @@ public function setPrecioEstimadoMarketing()
 
     public function update()
     {
-        //dd("hola");
         $totalUnidades = 0;
         $totalUnidadesSinCargo = 0;
         foreach ($this->productos_pedido as $productoPedido) {
@@ -793,6 +840,8 @@ public function setPrecioEstimadoMarketing()
                 break; // Si encuentra una modificación en los precios, no necesita seguir comprobando
             }
         }
+
+        // dd($this->direccion_entrega , $this->provincia_entrega , $this->localidad_entrega , $this->cod_postal_entrega);
         // Validación de datos
         $validatedData = $this->validate(
             [

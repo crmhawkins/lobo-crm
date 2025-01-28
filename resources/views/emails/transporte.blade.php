@@ -113,8 +113,8 @@
         <br><br>
         <p>Los datos y direccion de <strong>Entrega</strong> es:</p>
         <p><strong>{{ $cliente->nombre }} </strong></p>
-        <p><strong>{{ $cliente->direccionenvio }} </strong></p>
-        <p><strong>{{ $cliente->codPostalenvio }} - {{ $cliente->localidadenvio }}({{ $cliente->provinciaenvio }})</strong></p>
+        <p><strong>{{ $pedido->direccion_entrega }} </strong></p>
+        <p><strong>{{ $pedido->cod_postal_entrega }} - {{ $pedido->localidad_entrega }}({{ $pedido->provincia_entrega }})</strong></p>
         <br>
         <p style="color:red; text-transform: uppercase; font-weight: bold;">@if(isset($observaciones)) {{ $observaciones }} @endif</p>
         <br>

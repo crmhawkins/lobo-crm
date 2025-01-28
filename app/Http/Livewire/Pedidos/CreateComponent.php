@@ -27,7 +27,7 @@ use App\Models\ProductosPedidoPack;
 
 use App\Models\ProductosMarketingPedido;
 use App\Models\ProductosMarketingPedidoPack;
-
+use App\Models\Direcciones;
 
 use Illuminate\Support\Facades\Mail;
 
@@ -89,8 +89,15 @@ class CreateComponent extends Component
     public $productosMarketing = []; // Nueva propiedad para los productos de marketing
     public $productos_marketing_pedido = [];
     public $producto_marketing_seleccionado;
+    public $direcciones = [];
+    public $direccion_seleccionada = 'default';
 
     public $precio_producto_marketing = 0.01;
+
+    public $direccionPorDefecto;
+    public $localidadPorDefecto;
+    public $provinciaPorDefecto;
+    public $codPostalPorDefecto;
 
     public function mount()
     {
@@ -145,6 +152,7 @@ class CreateComponent extends Component
         $this->almacenes = Almacen::all(); 
         $this->numero = Pedido::whereYear('created_at', Carbon::now()->year)->max('numero') + 1;
         //dd(Pedido::whereYear('created_at', Carbon::now()->year)->max('numero'));
+        $this->cargarDirecciones();
     }
     public function isOnline(){
         $this->almacen_id = 6;
@@ -158,38 +166,44 @@ class CreateComponent extends Component
     public function selectCliente()
     {
         $cliente = Clients::find($this->cliente_id);
-        $this->cliente = $cliente;
-        $this->localidad_entrega = $cliente->localidadenvio;
-        $this->provincia_entrega = $cliente->provinciaenvio;
-        $this->direccion_entrega = $cliente->direccionenvio;
-        $this->cod_postal_entrega = $cliente->codPostalenvio;
-        $this->precio_crema = $cliente->precio_crema;
-        $this->precio_vodka07l = $cliente->precio_vodka07l;
-        $this->precio_vodka175l = $cliente->precio_vodka175l;
-        $this->precio_vodka3l = $cliente->precio_vodka3l;
-        $this->porcentaje_bloq = $cliente->porcentaje_bloq;
+        if ($cliente) {
+            $this->cliente = $cliente;
+            // Almacenar la dirección por defecto del cliente
+            $this->direccionPorDefecto = $cliente->direccion;
+            $this->localidadPorDefecto = $cliente->localidad;
+            $this->provinciaPorDefecto = $cliente->provincia;
+            $this->codPostalPorDefecto = $cliente->cod_postal;
 
-        $this->productosPecioCliente = ProductoPrecioCliente::where('cliente_id', $this->cliente_id)->get();
-        //dd($this->productosPecioCliente);
+            // Inicializar las propiedades de dirección con la dirección por defecto
+            $this->direccion_entrega = $this->direccionPorDefecto;
+            $this->localidad_entrega = $this->localidadPorDefecto;
+            $this->provincia_entrega = $this->provinciaPorDefecto;
+            $this->cod_postal_entrega = $this->codPostalPorDefecto;
 
-        $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
-        //alert si hay anotaciones pendientes con botón para cerrar y boton para ver anotaciones
-        if (count($this->anotacionesProximoPedido) > 0) {
-            $this->alert('info', '¡El cliente tiene anotaciones pendientes!', [
-                'position' => 'center',
-                'toast' => false,
-                'showConfirmButton' => true,
-                'confirmButtonText' => 'Cerrar',
-                //'showDenyButton' => true,
-                //'denyButtonText' => 'Ver anotaciones',
-                'onConfirmed' => '',
-                //'onDenied' => 'verAnotaciones',
-                'timerProgressBar' => true,
-            ]);
+            $this->precio_crema = $cliente->precio_crema;
+            $this->precio_vodka07l = $cliente->precio_vodka07l;
+            $this->precio_vodka175l = $cliente->precio_vodka175l;
+            $this->precio_vodka3l = $cliente->precio_vodka3l;
+            $this->porcentaje_bloq = $cliente->porcentaje_bloq;
+            $this->direcciones = $cliente->direcciones;
+
+            // Establecer la dirección por defecto
+            $this->direccion_seleccionada = 'default';
+
+            $this->productosPecioCliente = ProductoPrecioCliente::where('cliente_id', $this->cliente_id)->get();
+
+            $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->cliente_id)->where('estado', 'pendiente')->get();
+
+            if (count($this->anotacionesProximoPedido) > 0) {
+                $this->alert('info', '¡El cliente tiene anotaciones pendientes!', [
+                    'position' => 'center',
+                    'toast' => false,
+                    'showConfirmButton' => true,
+                    'confirmButtonText' => 'Cerrar',
+                    'timerProgressBar' => true,
+                ]);
+            }
         }
-       
-
-
     }
 
 
@@ -410,6 +424,8 @@ class CreateComponent extends Component
                 
             }
         }
+
+        
         
 
         $totalUnidades = 0;
@@ -475,7 +491,7 @@ class CreateComponent extends Component
          $this->iva_total = $total_iva;
 
         
-
+        //  dd($this->direccion_entrega , $this->localidad_entrega , $this->provincia_entrega , $this->cod_postal_entrega);
         // Validación de datos
         //si el rol es 2
         if (Auth::user()->role == 2) {
@@ -1336,5 +1352,36 @@ public function addProductosMarketing($id)
     public function getEstadoNombre()
     {
         return PedidosStatus::firstWhere('id', $this->estado)->status;
+    }
+
+    public function cargarDirecciones()
+    {
+        if ($this->cliente_id) {
+            $this->direcciones = Direcciones::where('cliente_id', $this->cliente_id)->get();
+        }
+    }
+
+    public function updatedDireccionSeleccionada($direccionId)
+    {
+        if ($direccionId !== 'default') {
+            $direccion = Direcciones::find($direccionId);
+            if ($direccion) {
+                $this->direccion_entrega = $direccion->direccion;
+                $this->localidad_entrega = $direccion->localidad;
+                $this->provincia_entrega = $direccion->provincia;
+                $this->cod_postal_entrega = $direccion->codigopostal;
+            }
+        } else {
+            // Restaurar la dirección por defecto del cliente
+            $this->direccion_entrega = $this->direccionPorDefecto;
+            $this->localidad_entrega = $this->localidadPorDefecto;
+            $this->provincia_entrega = $this->provinciaPorDefecto;
+            $this->cod_postal_entrega = $this->codPostalPorDefecto;
+        }
+    }
+
+    public function updatedClienteId($clienteId)
+    {
+        $this->cargarDirecciones();
     }
 }

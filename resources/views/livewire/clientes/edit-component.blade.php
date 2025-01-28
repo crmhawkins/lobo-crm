@@ -315,79 +315,43 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                         </div>
                         @if($usarDireccionEnvio)
-                            <div class="form-group row justify-content-center">
-                                <div class="col-sm-5">
-                                    <label for="example-text-input" class="col-sm-12 col-form-label">Dirección de envio</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" wire:model="direccionenvio" class="form-control" name="direccionenvio"
-                                            id="direccionenvio" placeholder="Avenida/Plaza/Calle..." @if(!$canEdit) disabled @endif>
-                                        @error('direccion')
-                                            <span class="text-danger">{{ $message }}</span>
-                                            <style>
-                                                .direccionenvio {
-                                                    color: red;
-                                                }
-                                            </style>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-1 invisible">
-                                    &nbsp;
-                                </div>
-                                <div class="col-sm-5">
-                                    <label for="example-text-input" class="col-sm-12 col-form-label">Provincia de envio</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" wire:model="provinciaenvio" class="form-control" name="provinciaenvio"
-                                            id="provinciaenvio" placeholder="Provincia" @if(!$canEdit) disabled @endif>
-                                        @error('provincia')
-                                            <span class="text-danger">{{ $message }}</span>
-
-                                            <style>
-                                                .provinciaenvio {
-                                                    color: red;
-                                                }
-                                            </style>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- Dir Adi 1 -->
-                            <div class="form-group row justify-content-center">
-                                <div class="col-sm-5">
-                                    <label for="example-text-input" class="col-sm-12 col-form-label">Localidad de envio</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" wire:model="localidadenvio" class="form-control"
-                                            name="localidadenvio" id="localidadenvio" placeholder="Localidad" @if(!$canEdit) disabled @endif>
-                                        @error('localidad')
-                                            <span class="text-danger">{{ $message }}</span>
-
-                                            <style>
-                                                .localidadenvio {
-                                                    color: red;
-                                                }
-                                            </style>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="form-group col-sm-1 invisible">
-                                    &nbsp;
-                                </div>
-                                <div class="col-sm-5">
-                                    <label for="example-text-input" class="col-sm-12 col-form-label">Código Postal de envio</label>
-                                    <div class="col-sm-12">
-                                        <input type="text" wire:model="codPostalenvio" class="form-control"
-                                            name="codPostalenvio" id="codPostalenvio" placeholder="Código postal" @if(!$canEdit) disabled @endif>
-                                        @error('cod_postal')
-                                            <span class="text-danger">{{ $message }}</span>
-
-                                            <style>
-                                                .cod_postalenvio {
-                                                    color: red;
-                                                }
-                                            </style>
-                                        @enderror
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h5>Direcciones de Envío</h5>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Dirección</th>
+                                                    <th>Localidad</th>
+                                                    <th>Provincia</th>
+                                                    <th>Código Postal</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($direcciones as $index => $direccion)
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" wire:model="direcciones.{{ $index }}.direccion" class="form-control" placeholder="Dirección">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" wire:model="direcciones.{{ $index }}.localidad" class="form-control" placeholder="Localidad">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" wire:model="direcciones.{{ $index }}.provincia" class="form-control" placeholder="Provincia">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" wire:model="direcciones.{{ $index }}.codigopostal" class="form-control" placeholder="Código Postal">
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-danger" type="button" wire:click="removeDireccion({{ $index }})">Eliminar</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <button class="btn btn-outline-primary mt-3" type="button" wire:click="addDireccion">Añadir Dirección +</button>
                                     </div>
                                 </div>
                             </div>
@@ -409,7 +373,23 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                         </style>
                                     @enderror
                                 </div>
+                                <div class="container">
+                                    <div class="row">
+                                        @foreach($telefonos as $index => $telefono)
+                                            <div class="col-md-12 mb-3 mt-2">
+                                                <div class="input-group">
+                                                    <input type="text" id="telefono_{{ $index }}" wire:model="telefonos.{{ $index }}.telefono" class="form-control" placeholder="Teléfono {{ $index + 1 }}">
+                                                    <button class="btn btn-outline-danger" type="button" wire:click="removeTelefono({{ $index }})">-</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <button class="btn btn-outline-primary mt-3" type="button" wire:click="addTelefono">Añadir Teléfono +</button>
+                                </div>
                             </div>
+                            
+                            
+
                             <div class="form-group col-sm-1 invisible">
                                 &nbsp;
                             </div>
@@ -419,7 +399,7 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                                 <div class="col-sm-12">
                                     <button data-toggle="modal" data-target="#addEmailModal" class="btn btn-secondary botones" style="color: white;">Añadir email</button>
 
-                                    @if($emailsExistentes)
+                                    @if($emailsExistentes)              
                                         <ul class="p-2 mt-2" style="border: 1px solid; ">
                                             @foreach ($emailsExistentes as $email)
                                                 <li style="list-style: none" class="m-1">{{ $email->email }} - <button wire:click="eliminarEmailExistente({{ $email->id }})" class="btn btn-danger">x</button></li>

@@ -181,31 +181,46 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">Datos
                                 de envío</h5>
                         </div>
-                        <div class="form-group col-md-5">
-                            <label for="localidad_entrega">Dirección</label>
-                            <input type="text" wire:model="direccion_entrega" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-md-1">
-                            &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
-                            <label for="localidad_entrega">Localidad</label>
-                            <input type="text" wire:model="localidad_entrega" class="form-control" readonly>
+                        <div class="form-group col-md-12">
+                            <h5>Direcciones de Envío</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Seleccionar</th>
+                                        <th>Dirección</th>
+                                        <th>Localidad</th>
+                                        <th>Provincia</th>
+                                        <th>Código Postal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dirección por defecto del cliente -->
+                                    <tr>
+                                        <td>
+                                            <input type="radio" wire:model="direccion_seleccionada" value="default">
+                                        </td>
+                                        <td>{{ $direccionPorDefecto }}</td>
+                                        <td>{{ $localidadPorDefecto }}</td>
+                                        <td>{{ $provinciaPorDefecto }}</td>
+                                        <td>{{ $codPostalPorDefecto }}</td>
+                                    </tr>
+                                    <!-- Otras direcciones del cliente -->
+                                    @foreach ($direcciones as $direccion)
+                                        <tr>
+                                            <td>
+                                                <input type="radio" wire:model="direccion_seleccionada" value="{{ $direccion->id }}">
+                                            </td>
+                                            <td>{{ $direccion->direccion }}</td>
+                                            <td>{{ $direccion->localidad }}</td>
+                                            <td>{{ $direccion->provincia }}</td>
+                                            <td>{{ $direccion->codigopostal }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="form-row justify-content-center">
-                        <div class="form-group col-md-5">
-                            <label for="provincia_entrega">Provincia</label>
-                            <input type="text" wire:model="provincia_entrega" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-md-1">
-                            &nbsp;
-                        </div>
-                        <div class="form-group col-md-5">
-                            <label for="cod_postal_entrega">Código postal</label>
-                            <input type="text" wire:model="cod_postal_entrega" class="form-control" readonly>
-                        </div>
-                        
                         <div class="form-group col-md-5">
                             <label for="npedido_cliente" >Nº Pedido Cliente</label>
                             <input wire:model="npedido_cliente" class="form-control">
@@ -940,3 +955,4 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
             };
         </script>
     @endsection
+        

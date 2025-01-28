@@ -15,6 +15,7 @@ use App\Models\AnotacionesClientePedido;
 use App\Models\Emails;
 use App\Helpers\GlobalFunctions;
 use App\Models\acuerdosComerciales;
+use App\Models\TelefonosClientes;
 
 class EditComponent extends Component
 {
@@ -69,6 +70,9 @@ class EditComponent extends Component
     public $credito;
     public $cuentaContable_id;
     public $cuentasContables;
+    public $telefonos = [];
+
+    public $direcciones = [];
 
     public function anadirEmail(){
         //dd("prueba");
@@ -135,12 +139,26 @@ class EditComponent extends Component
             $this->arrProductos[$producto->id] = $this->productosAsignados->where('producto_id', $producto->id)->first() ? $this->productosAsignados->where('producto_id', $producto->id)->first()->precio : 0;
         }
         $this->anotacionesProximoPedido = AnotacionesClientePedido::where('cliente_id', $this->identificador)->where('estado', 'pendiente')->get();
+        $this->telefonos = TelefonosClientes::where('cliente_id', $this->identificador)->get()->toArray();
+        // dd("hola");
+
+        $this->direcciones = $this->cliente->direcciones ? $this->cliente->direcciones->toArray() : [];
     }
 
 
     public function eliminarEmail($index){
         unset($this->emails[$index]);
     }
+
+    public function addTelefono()
+{
+    $this->telefonos[] = ['telefono' => ''];
+}
+public function removeTelefono($index)
+{
+    unset($this->telefonos[$index]);
+    $this->telefonos = array_values($this->telefonos); // Reindexar el array
+}
 
     public function eliminarEmailExistente($id){
         $email = Emails::find($id);
@@ -247,7 +265,10 @@ class EditComponent extends Component
                 'cuenta'=> 'nullable',
                 'observaciones'=> 'nullable',
                 'credito'=> 'nullable',
-
+                'direcciones.*.direccion' => 'nullable|string|max:255',
+                'direcciones.*.localidad' => 'nullable|string|max:255',
+                'direcciones.*.provincia' => 'nullable|string|max:255',
+                'direcciones.*.codigopostal' => 'nullable|string|max:10',
             ],
             // Mensajes de error
             [
@@ -317,6 +338,20 @@ class EditComponent extends Component
 
         if($clienteSave){
 
+               // Guardar los teléfonos
+            foreach ($this->telefonos as $telefonoData) {
+                TelefonosClientes::updateOrCreate(
+                    ['cliente_id' => $this->identificador, 'telefono' => $telefonoData['telefono']],
+                    ['nombre' => $telefonoData['nombre'] ?? '']
+                );
+            }
+
+            // Eliminar teléfonos que fueron removidos
+            TelefonosClientes::where('cliente_id', $this->identificador)
+            ->whereNotIn('telefono', array_column($this->telefonos, 'telefono'))
+            ->delete();
+
+
             if($this->emails != null){
                 foreach ($this->emails as $email) {
                     $email1 = new Emails();
@@ -341,6 +376,11 @@ class EditComponent extends Component
                     ]);
                 }
             }
+
+            // Guardar las direcciones
+            $this->cliente->direcciones()->delete(); // Eliminar direcciones existentes
+            $this->cliente->direcciones()->createMany($this->direcciones); // Guardar nuevas direcciones
+
             }
         if ($clienteSave) {
 
@@ -366,8 +406,34 @@ class EditComponent extends Component
         $this->emit('eventUpdated');
     }
 
-      // Eliminación
-      public function destroy(){
+    public function addDireccion()
+    {
+        $this->direcciones[] = ['direccion' => '', 'localidad' => '', 'provincia' => '', 'codigopostal' => ''];
+    }
+
+    public function removeDireccion($index)
+    {
+        unset($this->direcciones[$index]);
+        $this->direcciones = array_values($this->direcciones);
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'direcciones.*.direccion' => 'required|string|max:255',
+            'direcciones.*.localidad' => 'required|string|max:255',
+            'direcciones.*.provincia' => 'required|string|max:255',
+            'direcciones.*.codigopostal' => 'required|string|max:10',
+        ]);
+
+        $this->cliente->direcciones()->delete(); // Eliminar direcciones existentes
+        $this->cliente->direcciones()->createMany($this->direcciones); // Guardar nuevas direcciones
+
+        session()->flash('message', 'Direcciones guardadas correctamente.');
+    }
+
+    // Eliminación
+    public function destroy(){
 
         $this->alert('warning', '¿Seguro que desea borrar el cliente? No hay vuelta atrás', [
             'position' => 'center',
