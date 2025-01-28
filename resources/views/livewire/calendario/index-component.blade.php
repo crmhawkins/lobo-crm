@@ -342,7 +342,7 @@
                 <label for="usuariosEmail">Seleccionar usuarios para enviar email:</label>
                 <select id="usuariosEmail" class="form-control" multiple>
                     @foreach($usuarios as $usuario)
-                        <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                        <option value="{{ $usuario->id }}">{{ $usuario->email }}</option>
                     @endforeach
                 </select>
             </div>
