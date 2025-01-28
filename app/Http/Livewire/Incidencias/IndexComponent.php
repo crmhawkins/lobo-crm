@@ -173,7 +173,7 @@ class IndexComponent extends Component
                // dd($empleado);
                 Mail::to($empleado->email)
                     ->bcc('Alejandro.martin@serlobo.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
-                    ->send(new CambioEstadoIncidenciaMail($empleado, $incidencia, 'pedido'));
+                    ->send(new CambioEstadoIncidenciaMail($empleado, $pedidoIncidencia, 'pedido'));
 
                 // Mail::to('ivan.mayol@hawkins.es')
                 // ->bcc('ivmabr95@gmail.com')  // Aquí colocas el email que recibirá la copia oculta (BCC)
