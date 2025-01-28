@@ -56,7 +56,7 @@
                         <label for="usuariosAlerta" class="form-label">Enviar a</label>
                         <select id="usuariosAlerta" class="form-control select2" multiple="multiple" wire:model="usuariosSeleccionados" wire:ignore.self>
                             @foreach($usuarios as $usuario)
-                                <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                                <option value="{{ $usuario->id }}">{{ $usuario->email }}</option>
                             @endforeach
                         </select>
                     </div>
