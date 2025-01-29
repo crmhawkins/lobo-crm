@@ -81,6 +81,12 @@ class Caja extends Model
         return $this->belongsTo(Delegacion::class, 'delegacion_id');
     }
 
+
+    public function factura()
+    {
+        return $this->belongsTo(Facturas::class, 'pedido_id');
+    }
+
     /**
      * Mutaciones de fecha.
      *

@@ -165,6 +165,11 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/caja-create-gasto', [CajaController::class, 'createGasto'])->name('caja.create-gasto');
     Route::get('/caja-edit/{id}', [CajaController::class, 'edit'])->name('caja.edit');
 
+    Route::get('/caja-cuadro-flujo', [CajaController::class, 'cuadroFlujo'])->name('caja.cuadro-flujo');
+    Route::get('/caja-giro-bancario', [CajaController::class, 'giroBancario'])->name('caja.giro-bancario');
+    Route::get('/caja-pagares', [CajaController::class, 'pagares'])->name('caja.pagares');
+
+
     //Route::get('/test/fechavencimiento', [Test::class, 'index'])->name('test.index');
     Route::get('/test/ivaAProductos', [Test::class, 'ivaAProductos'])->name('test.ivaAProductos'); //ok
     Route::get('/test/calcularIvayTotalFacturas', [Test::class, 'calcularIvayTotalFacturas'])->name('test.calcularIvayTotalFacturas'); //ok

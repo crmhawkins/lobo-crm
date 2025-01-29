@@ -20,6 +20,21 @@ class CajaController extends Controller
         return view('caja.index', compact('response'));
     }
 
+    public function cuadroFlujo()
+    {
+        return view('caja.cuadro-flujo');
+    }
+
+    public function giroBancario()
+    {
+        return view('operaciones.giro');
+    }
+
+    public function pagares(){
+        return view('operaciones.pagares');
+    }
+    
+
     /**
      * Show the form for creating a new resource.
      *

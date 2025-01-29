@@ -192,6 +192,22 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                         @endif
                                     </div>
                                 </div>
+                                @if(count($bancos) > 0)
+                                <div class="mb-3 row d-flex align-items-center">
+                                    <label for="nombre" class="col-sm-12 col-form-label">Cuenta Bancaria</label>
+                                    <div class="col-sm-10" wire:ignore.self>
+                                        <select id="banco" class="form-control" wire:model="banco">
+                                                <option value="" selected>Selecciona una opción</option>
+                                                @foreach ($bancos as $banco)
+                                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>     
+                                                @endforeach
+                                            </select>
+                                        @error('banco')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
                             </div>
                             
                             
@@ -419,6 +435,22 @@ $canEdit = $EsAdmin || Auth::user()->role = 7 || Auth::user()->role = 6     //||
                                         </div>
                                     </div>
                                 @endif
+                                @if(count($bancos) > 0)
+                                <div class="mb-3 row d-flex align-items-center">
+                                    <label for="nombre" class="col-sm-12 col-form-label">Cuenta Bancaria</label>
+                                    <div class="col-sm-10" wire:ignore.self>
+                                        <select id="banco" class="form-control" wire:model="banco">
+                                                <option value="" selected>Selecciona una opción</option>
+                                                @foreach ($bancos as $banco)
+                                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>     
+                                                @endforeach
+                                            </select>
+                                        @error('banco')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            @endif
                                 
                             </div>
                             

@@ -72,7 +72,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        {{-- <div class="col-md-4">
                                             <h5>Contabilidad</h5>
                                             <!-- Dropdown Button -->
                                             <div class="dropdown">
@@ -85,6 +85,23 @@
                                                     <li><a class="dropdown-item" href="{{ route('admin.subCuentasHijaContables.index') }}">Sub-Cuentas Hijas</a></li>
                                                     <li><a class="dropdown-item" href="{{ route('admin.grupoContabilidad.index') }}">Grupos Contables</a></li>
                                                     <li><a class="dropdown-item" href="{{ route('admin.subGrupoContabilidad.index') }}">Sub-Grupos Contables</a></li>
+                                                </ul>
+                                            </div>
+                                        </div> --}}
+
+
+                                        <div class="col-md-4">
+                                            <h5>Operaciones Bancarias</h5>
+                                            <!-- Dropdown Button -->
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary w-100 dropdown-toggle" type="button" id="dropdownContabilidad" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Cuadros
+                                                </button>
+                                                <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
+                                                    <li><a class="dropdown-item" href="{{ route('caja.giro-bancario') }}">Giro bancario</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('caja.pagares') }}">Pagares</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('caja.cuadro-flujo') }}">Cuadro flujo bancario</a></li>
+
                                                 </ul>
                                             </div>
                                         </div>
@@ -346,7 +363,7 @@
                                             <td>
                                                     @if ($tipo->tipo_movimiento == 'Gasto')
                                                         @if($tipo->pagado != null)
-                                                        {{-- {{var_dump($tipo->id,$tipo->tipo_movimiento)}} --}}
+                                                        {{-- {{var_dump($t  ipo->id,$tipo->tipo_movimiento)}} --}}
 
                                                             {{ floatval($tipo->pagado) - $this->getCompensacion($tipo->id,$tipo->tipo_movimiento ) }}€
                                                         @else

@@ -20,6 +20,7 @@ use App\Models\CuentasContable;
 use App\Models\SubCuentaContable;
 use App\Models\SubCuentaHijo;
 use Carbon\Carbon;
+use App\Models\Bancos;
 
 class CreateGastoComponent extends Component
 {
@@ -62,6 +63,8 @@ class CreateGastoComponent extends Component
     public $cuentasContables;
     public $facturasSeleccionadas = [];
     public $pagos = [];
+    public $bancos = [];
+
 
 
     public function mount()
@@ -69,7 +72,7 @@ class CreateGastoComponent extends Component
         $this->poveedores = Proveedores::all();
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
-
+        $this->bancos = Bancos::all();
         //generar numero interno de esta manera: 06(nombremesactual)_000(Siguiente numero de la base de datos)
         $this->nInterno = date('m') . '_' . str_pad(Caja::where('tipo_movimiento', 'Gasto')->whereYear('created_at', Carbon::now()->year)->count() + 1, 3, '0', STR_PAD_LEFT);
 
@@ -84,6 +87,7 @@ class CreateGastoComponent extends Component
 
         // Contar los asientos contables del año actual
         $cajas = Caja::where('asientoContable', 'like', '%/' . $currentYear)->get();
+
 
         // Crear el nuevo asiento contable comenzando desde 0001 si es un nuevo año
         $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;

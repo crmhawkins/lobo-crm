@@ -18,7 +18,7 @@ use App\Models\SubGrupoContable;
 use App\Models\CuentasContable;
 use App\Models\SubCuentaContable;
 use App\Models\SubCuentaHijo;
-
+use App\Models\Bancos;
 
 
 
@@ -200,6 +200,8 @@ class EditComponent extends Component
             $this->asientoContable = str_pad($cajas->count() + 1, 4, '0', STR_PAD_LEFT) . '/' . $currentYear;
         }
         $this->cuentaContable_id = $caja->cuentaContable_id;
+        $this->bancos = Bancos::all();
+        $this->banco = $caja->banco;
         $this->loadCuentasContables();
 
     }
@@ -422,8 +424,13 @@ class EditComponent extends Component
 
         // Encuentra el identificador
         $caja = Caja::find($this->identificador);
+
+        if($this->banco === null || $this->banco === ''){
+            $this->banco = null;
+        }
         // dd($this->gasto_id);
         // Guardar datos validados
+
         $tipoSave = $caja->update([
             'metodo_pago' => $this->metodo_pago,
             'importe' => $this->importe,
