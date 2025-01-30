@@ -79,50 +79,50 @@
 <script src="../assets/pages/datatables.init.js"></script>
 
     <script>
-        $(document).ready(function() {
-            console.log('entro');
-            $('#datatable-buttons').DataTable({
-                responsive: true,
-                dom: 'Bfrtip',
-                // buttons: [
-                //     'csv', 'excel', 'pdf', 'print'
-                //     // 'copy', 'csv', 'excel', 'pdf', 'print'
-                // ],
-                buttons: [{
-                    extend: 'collection',
-                    text: 'Export',
-                    buttons: [{
-                            extend: 'pdf',
-                            className: 'btn btn-secondary buttons-copy buttons-html5'
-                        },
-                        {
-                            extend: 'excel',
-                            className: 'btn btn-secondary buttons-copy buttons-html5'
-                        }
-                    ],
-                    className: 'btn-group'
-                }],
-                "language": {
-                    "lengthMenu": "Mostrando _MENU_ registros por página",
-                    "zeroRecords": "Nothing found - sorry",
-                    "info": "Mostrando página _PAGE_ of _PAGES_",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ total registros)",
-                    "search": "Buscar:",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Ultimo",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    },
-                    "zeroRecords": "No se encontraron registros coincidentes",
-                }
-            });
+        // $(document).ready(function() {
+        //     console.log('entro');
+        //     $('#datatable-buttons').DataTable({
+        //         responsive: true,
+        //         dom: 'Bfrtip',
+        //         // buttons: [
+        //         //     'csv', 'excel', 'pdf', 'print'
+        //         //     // 'copy', 'csv', 'excel', 'pdf', 'print'
+        //         // ],
+        //         buttons: [{
+        //             extend: 'collection',
+        //             text: 'Export',
+        //             buttons: [{
+        //                     extend: 'pdf',
+        //                     className: 'btn btn-secondary buttons-copy buttons-html5'
+        //                 },
+        //                 {
+        //                     extend: 'excel',
+        //                     className: 'btn btn-secondary buttons-copy buttons-html5'
+        //                 }
+        //             ],
+        //             className: 'btn-group'
+        //         }],
+        //         "language": {
+        //             "lengthMenu": "Mostrando _MENU_ registros por página",
+        //             "zeroRecords": "Nothing found - sorry",
+        //             "info": "Mostrando página _PAGE_ of _PAGES_",
+        //             "infoEmpty": "No hay registros disponibles",
+        //             "infoFiltered": "(filtrado de _MAX_ total registros)",
+        //             "search": "Buscar:",
+        //             "paginate": {
+        //                 "first": "Primero",
+        //                 "last": "Ultimo",
+        //                 "next": "Siguiente",
+        //                 "previous": "Anterior"
+        //             },
+        //             "zeroRecords": "No se encontraron registros coincidentes",
+        //         }
+        //     });
 
-            addEventListener("resize", (event) => {
-                location.reload();
-            })
-        });
+        //     addEventListener("resize", (event) => {
+        //         location.reload();
+        //     })
+        // });
     </script>
 
 
