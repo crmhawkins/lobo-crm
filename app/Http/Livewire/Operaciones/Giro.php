@@ -24,6 +24,8 @@ class Giro extends Component
 
     public function mount()
     {
+
+        
        
     }
 

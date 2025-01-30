@@ -45,7 +45,7 @@ class EditComponent extends Component
         $this->descripcion_producto = $this->producto->descripcion;
         $mercaderias_orden = MaterialesProducto::where('producto_id', $this->identificador)->get();
         foreach ($mercaderias_orden as $mercaderia) {
-            $this->mercaderias_ordenadas[] = [
+            $this->mercaderias_ordenadas[] = [  
                 'id' => $mercaderia->id,
                 'mercaderia_id' => $mercaderia->mercaderia_id,
                 'cantidad' => $mercaderia->cantidad,
@@ -69,7 +69,8 @@ class EditComponent extends Component
 
     public function getNombreTabla($id)
     {
-        $nombre_producto = $this->mercaderias->where('id', $id)->first()->nombre;
+        $mercaderia = Mercaderia::find($id);
+        $nombre_producto = $mercaderia ? $mercaderia->nombre : 'Material borrado';
         return $nombre_producto;
     }
 
