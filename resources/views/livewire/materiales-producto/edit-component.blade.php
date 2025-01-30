@@ -183,7 +183,7 @@
                     <div class="row">
                         <div class="col-12">
                             <button class="w-100 btn btn-success mb-2" wire:click.prevent="alertaGuardar">Guardar
-                                presupuesto</button>
+                                </button>
                         </div>
                     </div>
                 </div>
