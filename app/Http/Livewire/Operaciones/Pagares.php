@@ -45,6 +45,7 @@ class Pagares extends Component
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
         ->whereMonth('fecha', '=', $this->mes)
         ->whereYear('fecha', '=', $this->anio)
+        ->where('tipo_movimiento', 'Gasto')
         ->get()
         ->toArray();
         // dd($this->cajas);
@@ -110,6 +111,8 @@ class Pagares extends Component
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
         ->whereMonth('fecha', '=', $this->mes)
         ->whereYear('fecha', '=', $this->anio)
+        ->where('tipo_movimiento', 'Gasto')
+
         ->get()
         ->toArray();
 
@@ -128,6 +131,8 @@ class Pagares extends Component
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
         ->whereMonth('fecha', '=', $this->mes)
         ->whereYear('fecha', '=', $this->anio)
+        ->where('tipo_movimiento', 'Gasto')
+
         ->get()
         ->toArray();
 
@@ -183,6 +188,8 @@ class Pagares extends Component
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
         ->whereMonth('fecha', '=', $this->mes)
         ->whereYear('fecha', '=', $this->anio)
+        ->where('tipo_movimiento', 'Gasto')
+
         ->get()
         ->toArray();
         
