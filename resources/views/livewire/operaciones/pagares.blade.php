@@ -76,7 +76,13 @@
                                     {{-- {{dd($caja)}} --}}
                                     <tr>
                                         <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}" ><a class="badge badge-primary" href="{{ route('caja.edit', $caja['id']) }}">{{ $caja['nFactura'] }}</a></td>
-                                        <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}"><a class="badge badge-primary" href="{{ route('proveedores.edit', $caja['proveedor']['id']) }}">{{ $caja['proveedor']['nombre'] ?? 'N/A' }}</a></td>
+                                        <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">
+                                            @if($caja['proveedor'])
+                                                <a class="badge badge-primary" href="{{ route('proveedores.edit', $caja['proveedor']['id']) }}">{{ $caja['proveedor']['nombre'] ?? 'N/A' }}</a>
+                                            @else
+                                                <small>Sin proveedor</small>
+                                            @endif
+                                        </td>
                                         <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">{{ $caja['total'] }} @if($caja['total']) € @endif</td>
                                         <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">{{ $caja['fecha'] }}</td>
                                         <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">
