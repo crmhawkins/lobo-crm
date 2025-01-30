@@ -20,6 +20,16 @@ class FacturasCompensadas extends Model
         'fecha',
     ];
 
+    public function factura()
+    {
+        return $this->belongsTo(Facturas::class, 'factura_id');
+    }
+
+    public function caja()
+    {
+        return $this->belongsTo(Caja::class, 'caja_id');
+    }
+
     protected $dates = [
         'created_at', 'updated_at', 'deleted_at',
     ];

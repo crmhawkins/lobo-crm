@@ -87,6 +87,16 @@ class Caja extends Model
         return $this->belongsTo(Facturas::class, 'pedido_id');
     }
 
+    public function facturasCompensadas()
+    {
+        return $this->hasMany(FacturasCompensadas::class, 'caja_id');
+    }
+
+    public function pagares()
+    {
+        return $this->hasMany(Pagares::class, 'caja_id');
+    }
+
     /**
      * Mutaciones de fecha.
      *
