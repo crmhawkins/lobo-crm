@@ -51,6 +51,10 @@ class Facturas extends Model
         'total_original',
     ];
 
+    public function giro_bancario()
+    {
+        return $this->hasOne(GiroBancario::class, 'factura_id');
+    }
 
     public function cliente()
     {
