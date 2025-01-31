@@ -1529,12 +1529,19 @@ class IndexComponent extends Component
         $configuracion = Configuracion::first();
         if ($factura != null) {
             $pedido = Pedido::find($factura->pedido_id);
+            if ($pedido) {
+                $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
+            } else {
+                $productosMarketing = [];
+            }
             $albaran =  Albaran::where('pedido_id', $factura->pedido_id)->first();
             $cliente = Clients::find($factura->cliente_id);
             $productofact = Productos::find($factura->producto_id);
             $productos = [];
-
-
+            if ($factura->tipo == 3) {
+                $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
+            }
+            //dd($albaran);
 
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
@@ -1568,12 +1575,45 @@ class IndexComponent extends Component
                     }
                 }
             }
+            $productosFactura = DB::table('productos_factura')->where('factura_id', $factura->id)->get();
+            $productosdeFactura = [];
+            foreach ($productosFactura as $productoPedido) {
+                $producto = Productos::find($productoPedido->producto_id);
+                $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
 
-            $productosMarketing = ProductosMarketingPedido::where('pedido_id', $pedido->id)->get();
-            $delegacionNombre = $cliente->delegacion->nombre ?? 'General'; // Obtener la delegación o 'General' si no tiene
-            if ($delegacionNombre == '07 CANARIAS' || $delegacionNombre == '13 GIBRALTAR' || $delegacionNombre == '14 CEUTA' || $delegacionNombre == '15 MELILLA' || $delegacionNombre == '01.1 ESTE – SUR EXTERIOR' || $delegacionNombre == '08 OESTE - INSULAR'
-            ) {
-                $iva = false;
+                if ($stockEntrante) {
+                    $lote = $stockEntrante->orden_numero;
+                } else {
+                    $lote = "";
+                }
+                if ($producto) {
+                    if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
+                        $peso = "Peso no definido";
+                    } else {
+                        $peso = ($producto->peso_neto_unidad * $productoPedido->unidades) / 1000;
+                    }
+                    $productosdeFactura[] = [
+                        'nombre' => $producto->nombre,
+                        'cantidad' => $productoPedido->cantidad,
+                        'precio_ud' => $productoPedido->precio_ud,
+                        'precio_total' => ($productoPedido->cantidad * $productoPedido->precio_ud),
+                        'iva' => $producto->iva != 0 ?  (($productoPedido->cantidad * $productoPedido->precio_ud) * $producto->iva / 100) : (($productoPedido->cantidad * $productoPedido->precio_ud) * 21 / 100),
+                        'lote_id' => $lote,
+                        'peso_kg' =>  $peso,
+                    ];
+                }
+            }
+            $total = 0;
+            $base_imponible = 0;
+            $iva_productos = 0;
+
+            if ($factura->tipo == 2) {
+
+                foreach ($productosdeFactura as $producto) {
+                    $base_imponible += $producto['precio_total'];
+                    $iva_productos += $producto['iva'];
+                }
+                $total = $base_imponible + $iva_productos;
             }
 
             $datos = [
@@ -1585,7 +1625,13 @@ class IndexComponent extends Component
                 'productos' => $productos,
                 'producto' => $productofact,
                 'configuracion' => $configuracion,
+                'servicios' => $servicios ?? null,
+                'productosFactura' => $productosdeFactura,
+                'total' => $total,
+                'base_imponible' => $base_imponible,
+                'iva_productos' => $iva_productos,
                 'productosMarketing' => $productosMarketing,
+
             ];
 
             // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
