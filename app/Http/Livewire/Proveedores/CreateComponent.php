@@ -77,14 +77,29 @@ class CreateComponent extends Component
 
     public function crearCuentaContable($cod)
     {
+        $delegacion = Delegacion::where('COD', $cod)->first();
+        $cod_numero = $delegacion->COD_numero;
         // Buscar el último proveedor cuya cuenta contable comience con cuentaContable_id seguido del código de delegación
-        $ultimoCliente = Proveedores::where('cuenta_contable', 'LIKE', $this->cuentaContable_id . '%')
+        $ultimoCliente = Proveedores::where('cuenta_contable', 'LIKE', $this->cuentaContable_id .$cod_numero. '%')
                                     ->whereNotNull('cuenta_contable')
                                     ->latest()->first();
+                                    // dd($this->cuentaContable_id , $cod);
         
         if ($ultimoCliente) {
             // Obtener la cuenta contable sin los primeros 5 caracteres (cuentaContable_id + cod)
-            $numeroCliente = substr($ultimoCliente->cuenta_contable, 5);
+
+            $totallen = strlen($this->cuentaContable_id) + strlen($cod_numero);
+
+
+            if($totallen > 0){
+                $numeroCliente = substr($ultimoCliente->cuenta_contable, $totallen);
+            }else{
+                $numeroCliente = substr($ultimoCliente->cuenta_contable, 5);
+            }
+
+
+            
+            // dd($numeroCliente);
 
             // Convertir a número entero
             $numeroCliente = (int)$numeroCliente;
@@ -100,7 +115,15 @@ class CreateComponent extends Component
         $numeroCliente = str_pad($numeroCliente, 3, '0', STR_PAD_LEFT);
 
         // Crear la nueva cuenta contable concatenando cuentaContable_id, delegación y el número de cliente
-        $this->cuenta_contable = $this->cuentaContable_id . $cod . $numeroCliente;
+        $this->cuenta_contable = $this->cuentaContable_id . $cod_numero . $numeroCliente;
+
+        if(strlen($this->cuenta_contable) > 9){
+            $this->alert('error', '¡La cuenta contable no puede tener más de 9 dígitos!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
     }
 
 
@@ -114,6 +137,18 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
+
+
+        if($this->cuenta_contable != null && strlen($this->cuenta_contable) > 9){
+            $this->alert('error', '¡La cuenta contable no puede tener más de 9 dígitos!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+            return;
+        }
+
+
         // Validación de datos
         $validatedData = $this->validate(
             [
