@@ -294,6 +294,59 @@ class ContabilidadController extends Controller
 
         return $numerosCuentas;
     }
+
+
+
+
+    public function perdidasYGanancias(){
+        // dd('perdidasYGanancias');
+
+       
+        $cajasNegocios = Caja::whereNotNull('asientoContable')
+        ->whereHas('proveedor', function($query) {
+            $query->where('cuenta_contable', 'LIKE', '70%');
+        })
+        ->orWhereHas('facturas.cliente', function($query) {
+            $query->where('cuenta_contable', 'LIKE', '70%');
+        })
+        ->with(['proveedor', 'facturas.cliente'])
+        ->get();
+
+
+        $totalNegocios = 0;
+
+        foreach ($cajasNegocios as $caja) {
+            $cuentaContable = null;
+            $totalCaja = $caja->total;
+
+            // Verificar si la cuenta contable viene del proveedor o del cliente
+            if ($caja->proveedor && strpos($caja->proveedor->cuenta_contable, '70') === 0) {
+                $cuentaContable = $caja->proveedor->cuenta_contable;
+            } elseif ($caja->facturas->isNotEmpty() && $caja->facturas[0]->cliente && 
+                     strpos($caja->facturas[0]->cliente->cuenta_contable, '70') === 0) {
+                $cuentaContable = $caja->facturas[0]->cliente->cuenta_contable;
+            }
+
+            // Aplicar las reglas según la cuenta contable
+            if ($cuentaContable) {
+                $primerosTresDigitos = substr($cuentaContable, 0, 3);
+                if (in_array($primerosTresDigitos, ['700', '701', '702', '703', '704', '705'])) {
+                    $totalNegocios += $totalCaja;
+                } elseif (in_array($primerosTresDigitos, ['706', '707', '708', '709'])) {
+                    $totalNegocios -= $totalCaja;
+                }
+            }
+        }
+
+        //dd($totalNegocios);
+
+        
+
+        return view('contabilidad.pedidasganancias', compact('totalNegocios'));
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -314,6 +367,9 @@ class ContabilidadController extends Controller
     {
         //
     }
+
+
+
 
     /**
      * Display the specified resource.

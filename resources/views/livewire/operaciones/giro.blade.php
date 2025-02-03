@@ -45,61 +45,119 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-12 mt-4" x-data="{}" x-init="$nextTick(() => {
+                        $('#datatable-buttons1').DataTable({
+                            responsive: true,
+                            layout: {
+                                topStart: 'buttons'
+                            },
+                            lengthChange: false,
+                            pageLength: 30,
+                            buttons: [
+                                {
+                                    extend: 'copy',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                },
+                                {
+                                    extend: 'excel',
+                                    exportOptions: {
 
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Factura</th>
-                                <th>Cliente</th>
-                                <th>Nº Cuenta</th>
-                                <th>Importe</th>
-                                <th>F. Vencimiento</th>
-                                <th>Banco</th>
-                                <th>F. Programación</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($facturas as $item)
+                                        columns: ':not(:last-child)',
+                                         format: {
+                                        body: function (data, row, column, node) {
+                                            if ($(node).find('a').length) {
+                                                return $(node).text();
+                                            }
+
+                                            if ($(node).find('select').length) {
+
+                                                return $(node).find('select option:selected').text();
+                                            }
+                                            return $(node).find('input').val() || data;                                        
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    extend: 'pdf',
+                                    exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    },
+                                    customize: function (doc) {
+                                        doc.pageSize = 'A3'; // Cambiar a A3
+                                    }
+                                },
+                                'colvis'
+                            ],
+                            language: {
+                                'lengthMenu': 'Mostrar _MENU_ registros por página',
+                                'zeroRecords': 'No se encontraron registros',
+                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'infoEmpty': 'No hay registros disponibles',
+                                'infoFiltered': '(filtrado de _MAX_ total registros)',
+                                'search': 'Buscar:',
+                            }
+                        });
+                    })"
+                    wire:key='{{ rand() }}'>
+                        <table id="datatable-buttons1" class="table table-bordered" wire:key='{{ rand() }}'>
+                            <thead>
                                 <tr>
-                                    <td><a class="btn btn-primary" href="{{ route('facturas.edit', $item->id) }}">{{ $item->numero_factura }}</a></td>
-                                    <td><a class="btn btn-primary" href="{{ route('clientes.edit', $item->cliente_id) }}">{{ $item->cliente->nombre }}</a></td>
-                                    <td>{{ $item->cliente->cuenta }}</td>
-                                    <td>{{ $item->total }}</td>
-                                    <td>{{ $item->fecha_vencimiento }}</td>
-                                    @if(isset($editing[$item->id]) || $item->giro_bancario)
-                                        <td>
-                                            <select wire:model="giroData.{{ $item->id }}.banco_id" class="form-control">
-                                                @foreach($bancos as $banco)
-                                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="date" wire:model="giroData.{{ $item->id }}.fecha_programacion" class="form-control">
-                                        </td>
-                                        <td>
-                                            <select wire:model="giroData.{{ $item->id }}.estado" class="form-control">
-                                                <option value="Pendiente">Pendiente</option>
-                                                <option value="Programado">Pagado</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <button wire:click="saveGiro({{ $item->id }})" class="btn btn-success">Guardar</button>
-                                        </td>
-                                    @else
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>
-                                            <button wire:click="editGiro({{ $item->id }})" class="btn btn-primary">Editar</button>
-                                        </td>
-                                    @endif
+                                    <th>Factura</th>
+                                    <th>Cliente</th>
+                                    <th>Nº Cuenta</th>
+                                    <th>Importe</th>
+                                    <th>F. Vencimiento</th>
+                                    <th>Banco</th>
+                                    <th>F. Programación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($facturas as $item)
+                                    <tr>
+                                        <td><a class="btn btn-primary" href="{{ route('facturas.edit', $item->id) }}">{{ $item->numero_factura }}</a></td>
+                                        <td><a class="btn btn-primary" href="{{ route('clientes.edit', $item->cliente_id) }}">{{ $item->cliente->nombre }}</a></td>
+                                        <td>{{ $item->cliente->cuenta }}</td>
+                                        <td>{{ $item->total }}</td>
+                                        <td>{{ $item->fecha_vencimiento }}</td>
+                                        @if(isset($editing[$item->id]) || $item->giro_bancario)
+                                            <td>
+                                                <select wire:model="giroData.{{ $item->id }}.banco_id" class="form-control">
+                                                    <option value="">Seleccione un banco</option>
+                                                    @foreach($bancos as $banco)
+                                                        <option value="{{ $banco->id }}" {{ $banco->id == $item->giro_bancario->banco_id ? 'selected' : '' }}>{{ $banco->nombre }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td>
+                                                {{-- {{var_dump($giroData)}} --}}
+                                                <input type="date" wire:model="giroData.{{ $item->id }}.fecha_programacion" class="form-control">
+                                            </td>
+                                            <td>
+                                                {{$item->estado}}
+                                            </td>
+                                            <td>
+                                                <button wire:click="saveGiro({{ $item->id }})" class="btn btn-success">Guardar</button>
+                                            </td>
+                                        @else
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                {{$item->estado}}
+                                            </td>
+                                            <td>
+                                                <button wire:click="editGiro({{ $item->id }})" class="btn btn-primary">Editar</button>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
                     <style>
                         td {
@@ -114,7 +172,11 @@
     </div>
 
     @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/jquery.slimscroll.js"></script>
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
    
     @endsection
 

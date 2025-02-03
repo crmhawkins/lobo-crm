@@ -24,7 +24,7 @@ class IndexComponent extends Component
     public function mount()
     {
         // Obtener todas las delegaciones
-        $this->delegaciones = Delegacion::all();
+        $this->delegaciones = Delegacion::where('created_at', '!=', null)->get();
         $this->filtrarVentas();
         $this->filtrarCompras();
         $this->calcularResultado();
@@ -32,7 +32,7 @@ class IndexComponent extends Component
     }
     public function exportarAPDF()
     {
-        $this->delegaciones = Delegacion::all();
+        $this->delegaciones = Delegacion::where('created_at', '!=', null)->get();
         $this->filtrarVentas();
         $this->filtrarCompras();
         $this->calcularResultado();

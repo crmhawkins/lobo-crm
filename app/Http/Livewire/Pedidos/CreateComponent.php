@@ -601,15 +601,32 @@ class CreateComponent extends Component
 
         
         try{
+            // dd($pedidosSave->cliente->nombre);
             Mail::send([], [], function ($message) use ($pedidosSave) {
                 $message->to('Alejandro.martin@serlobo.com')
-                        ->subject('Nuevo Pedido Creado Nº '.$pedidosSave->numero .' - '.$pedidosSave->nombre_cliente)
+                        ->subject('Nuevo Pedido Creado Nº '.$pedidosSave->numero .' - '.$pedidosSave->cliente->nombre)
                         ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->nombre_cliente . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
             });
+
+            // dd($pedidosSave->cliente->nombre);
+
+            // Mail::send([], [], function ($message) use ($pedidosSave) {
+            //     $message->to('ivan.mayol@hawkins.es')
+            //             ->subject('Nuevo Pedido Creado Nº '.$pedidosSave->numero .' - '.$pedidosSave->cliente->nombre)
+
+            //             ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->cliente->nombre . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
+            // });
+            
+
         }catch(\Exception $e){
-            //dd($e);
+            $this->alert('error', '¡No se ha podido enviar el correo! ' . $e->getMessage(), [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
         }
         
+
 
         if (Auth::user()->role == 2) {
             $hasStock = $this->ComprobarStockPedido();

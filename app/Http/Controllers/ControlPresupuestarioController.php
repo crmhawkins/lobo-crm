@@ -162,7 +162,7 @@ public function analisisGlobal(Request $request)
     }
 
     // Obtener todas las delegaciones y agregar "General" si no existe
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
 
     // Inicializar un array para almacenar las ventas, compras, márgenes y gastos por delegación y mes
@@ -229,28 +229,31 @@ public function analisisGlobal(Request $request)
         $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
 
         // Sumar el total de la factura a la delegación correspondiente (ventas)
-        $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+        if(isset( $ventasPorDelegacion[$mes][$delegacionNombre])){
+            $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+        
 
-        // Procesar los productos del pedido para calcular las compras
-        if ($factura->pedido) {
-            foreach ($factura->pedido->productosPedido as $productoPedido) {
-                try {
-                    $productId = $productoPedido->producto->id;
-                    $unidadesVendidas = $productoPedido->unidades;
+            // Procesar los productos del pedido para calcular las compras
+            if ($factura->pedido) {
+                foreach ($factura->pedido->productosPedido as $productoPedido) {
+                    try {
+                        $productId = $productoPedido->producto->id;
+                        $unidadesVendidas = $productoPedido->unidades;
 
-                    // Obtener el coste del producto para la delegación o para "General"
-                    $costeProducto = $costesMap[$productId][$factura->cliente->delegacion->COD ?? 'General'] ?? $costesMap[$productId]['General'] ?? 0;
+                        // Obtener el coste del producto para la delegación o para "General"
+                        $costeProducto = $costesMap[$productId][$factura->cliente->delegacion->COD ?? 'General'] ?? $costesMap[$productId]['General'] ?? 0;
 
-                    // Sumar el coste total de las unidades vendidas (compras)
-                    $comprasPorDelegacion[$mes][$delegacionNombre] += $unidadesVendidas * $costeProducto;
-                } catch (\Exception $e) {
-                    continue;
+                        // Sumar el coste total de las unidades vendidas (compras)
+                        $comprasPorDelegacion[$mes][$delegacionNombre] += $unidadesVendidas * $costeProducto;
+                    } catch (\Exception $e) {
+                        continue;
+                    }
                 }
             }
-        }
 
-        // Calcular el resultado (A-B) para cada delegación en cada mes
-        $resultadosPorDelegacion[$mes][$delegacionNombre] = $ventasPorDelegacion[$mes][$delegacionNombre] - $comprasPorDelegacion[$mes][$delegacionNombre];
+            // Calcular el resultado (A-B) para cada delegación en cada mes
+            $resultadosPorDelegacion[$mes][$delegacionNombre] = $ventasPorDelegacion[$mes][$delegacionNombre] - $comprasPorDelegacion[$mes][$delegacionNombre];
+        }
     }
 
     // Calcular el margen de beneficio (Ventas - Compras) para cada delegación en cada mes
@@ -283,7 +286,9 @@ public function analisisGlobal(Request $request)
         $mes = Carbon::parse($gasto->fecha)->month;
         $delegacionNombre = $gasto->delegacion->nombre ?? 'General';
         if (in_array($mes, $meses)) {
-            $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+            if(isset( $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre])){
+                $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+            }
         }
     }
 
@@ -304,7 +309,9 @@ public function analisisGlobal(Request $request)
         $mes = Carbon::parse($gasto->fecha)->month;
         $delegacionNombre = $gasto->delegacion->nombre ?? 'General';
         if (in_array($mes, $meses)) {
-            $gastosVariablesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+            if(isset( $gastosVariablesPorDelegacion[$mes][$delegacionNombre])){
+                $gastosVariablesPorDelegacion[$mes][$delegacionNombre] += $gasto->total;
+            }
         }
     }
 
@@ -312,9 +319,11 @@ public function analisisGlobal(Request $request)
     foreach ($meses as $mes) {
         foreach ($delegaciones as $delegacion) {
             $delegacionNombre = $delegacion->nombre;
-            $gastosTotalesPorDelegacion[$mes][$delegacionNombre] = 
-                $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] + 
-                $gastosVariablesPorDelegacion[$mes][$delegacionNombre];
+            if(isset( $gastosTotalesPorDelegacion[$mes][$delegacionNombre])){
+                $gastosTotalesPorDelegacion[$mes][$delegacionNombre] = 
+                    $gastosEstructuralesPorDelegacion[$mes][$delegacionNombre] + 
+                    $gastosVariablesPorDelegacion[$mes][$delegacionNombre];
+            }
         }
     }
 
@@ -449,7 +458,7 @@ public function exportarAnalisisGlobalAPDF(Request $request)
     }
 
     // Obtener todas las delegaciones y agregar "General" si no existe
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
 
     // Inicializar arrays para almacenar datos
@@ -720,7 +729,7 @@ public function compras(Request $request)
 
     // Obtener todos los productos y delegaciones
     $productos2 = Productos::all();
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Obtenemos todas las facturas sin paginación
     $facturas = Facturas::whereYear('created_at', $year)
@@ -824,7 +833,7 @@ public function exportarComprasAPDF(Request $request)
 
     // Obtener todos los productos y delegaciones
     $productos2 = Productos::all();
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Obtenemos todas las facturas sin paginación
     $facturas = Facturas::whereYear('created_at', $year)
@@ -911,7 +920,7 @@ public function ventasDelegaciones(Request $request)
     $delegacionId = $request->input('delegacion');
     
     // Obtener las delegaciones y agregar "No-definido" si no existe en la base de datos
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'No-definido']])); // Agregar manualmente 'No-definido'
 
     // Inicializar arrays para ventas por trimestre y precios
@@ -959,7 +968,7 @@ public function exportarVentasDelegacionesAPDF(Request $request)
     $delegacionId = $request->input('delegacion');
     
     // Obtener las delegaciones y agregar "No-definido" si no existe en la base de datos
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'No-definido']])); // Agregar manualmente 'No-definido'
 
     // Inicializar arrays para ventas por trimestre y precios
@@ -1005,7 +1014,7 @@ public function ventasPorProductos(Request $request)
     $year = $request->input('year', Carbon::now()->year);
 
     // Obtener las delegaciones ordenadas por ID
-    $delegaciones = Delegacion::orderBy('id')->get()->toArray();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get()->toArray();
 
     // Añadir "No-definido" como último objeto
     $delegaciones[] = [
@@ -1076,7 +1085,7 @@ public function exportarVentasPorProductosAPDF(Request $request)
     $year = $request->input('year', Carbon::now()->year);
 
     // Obtener las delegaciones ordenadas por ID
-    $delegaciones = Delegacion::orderBy('id')->get()->toArray();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get()->toArray();
 
     // Añadir "No-definido" como último objeto
     $delegaciones[] = [
@@ -1150,9 +1159,9 @@ public function presupuestosDelegacion(Request $request)
 
     $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
     $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
-    $delegacion = Delegacion::find($delegacionId);
+    $delegacion = Delegacion::where('created_at', '!=', null)->find($delegacionId);
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $presupuestosPorTrimestre = [];
 
     if(!$delegacion){
@@ -1390,8 +1399,8 @@ public function exportarPresupuestosDelegacionAPDF(Request $request)
 
     $year = $request->input('year', Carbon::now()->year);
     $delegacionId = $request->input('delegacion');
-    $delegacion = Delegacion::find($delegacionId);
-    $delegaciones = Delegacion::all();
+    $delegacion = Delegacion::where('created_at', '!=', null)->find($delegacionId);
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $presupuestosPorTrimestre = [];
 
     if (!$delegacion) {
@@ -1609,9 +1618,9 @@ public function proyeccion(Request $request)
     $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
     $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
     $porcentaje = $request->input('porcentaje', 0); // Porcentaje  por defecto
-    $delegacion = Delegacion::find($delegacionId);
+    $delegacion = Delegacion::where('created_at', '!=', null)->find($delegacionId);
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $presupuestosPorTrimestre = [];
 
     if(!$delegacion){
@@ -1851,9 +1860,9 @@ public function exportarProyeccionAPDF(Request $request)
       $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
       $delegacionId = $request->input('delegacion'); // Delegación seleccionada por defecto
       $porcentaje = $request->input('porcentaje', 0); // Porcentaje  por defecto
-      $delegacion = Delegacion::find($delegacionId);
+      $delegacion = Delegacion::where('created_at', '!=', null)->find($delegacionId);
       // Obtener todas las delegaciones
-      $delegaciones = Delegacion::all();
+      $delegaciones = Delegacion::where('created_at', '!=', null)->get();
       $presupuestosPorTrimestre = [];
   
       if(!$delegacion){
@@ -2332,7 +2341,7 @@ public function exportarVentasAPDF(Request $request)
         $totalPorTrimestre[$trimestre][$delegacionNombre] += $gastoTransporte->gastos_transporte;
     }
 
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     return view('control-presupuestario.logistica', compact(
         'gastosTransportePorTrimestre', 'totalesPorDelegacion', 'totalPorTrimestre', 'delegaciones', 'year'
@@ -2387,7 +2396,7 @@ public function exportarLogisticaAPDF(Request $request)
         $totalPorTrimestre[$trimestre][$delegacionNombre] += $gastoTransporte->gastos_transporte;
     }
 
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Generar el PDF
     $pdf = PDF::loadView('pdf.logistica', compact(
@@ -2406,7 +2415,7 @@ public function comerciales(Request $request)
 
     // Obtener todos los productos cuyo precio_ud es 0
     $productosGratis = Productos::all();
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Obtener todos los pedidos sin paginación y dentro del año seleccionado
     $pedidos = Pedido::whereYear('created_at', $year)
@@ -2511,7 +2520,7 @@ public function exportarComercialesAPDF(Request $request)
 
     // Obtener todos los productos cuyo precio_ud es 0
     $productosGratis = Productos::all();
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Obtener todos los pedidos sin paginación y dentro del año seleccionado
     $pedidos = Pedido::whereYear('created_at', $year)
@@ -2601,7 +2610,7 @@ public function marketing(Request $request)
     $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
 
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $productos2 = Productos::all();
     $productosMarketing = ProductosMarketing::all();
 
@@ -2791,7 +2800,7 @@ public function exportarMarketingAPDF(Request $request)
     $year = $request->input('year', Carbon::now()->year);
 
     // Obtener los datos necesarios para la vista
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $productos2 = Productos::all();
     $cajas = Caja::where('departamento', 'marketing')
         ->whereYear('fecha', $year)
@@ -2841,7 +2850,7 @@ public function analisisVentas(Request $request)
     $totalGeneralVentas = 0; // Para almacenar el total de ventas general
 
     // Obtener todas las delegaciones, asegurándonos de incluir "General" si no existe
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
 
     // Inicializar arrays para almacenar ventas por delegación y mes
@@ -2871,7 +2880,9 @@ public function analisisVentas(Request $request)
         $delegacionNombre = $factura->cliente->delegacion->nombre ?? 'General';
         
         // Añadir el total de la factura a la delegación correspondiente
-        $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+        if(isset( $ventasPorDelegacion[$mes][$delegacionNombre])){
+            $ventasPorDelegacion[$mes][$delegacionNombre] += $factura->total;
+        }
         $totalGeneralVentas += $factura->total;
     }
 
@@ -2972,7 +2983,7 @@ public function exportarAnalisisVentasAPDF(Request $request)
     $meses = $mesesPorTrimestre[$trimestre] ?? [1, 2, 3];
 
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::orderBy('id')->get();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->orderBy('id')->get();
     $delegaciones = $delegaciones->concat(collect([(object)['id' => 0, 'nombre' => 'General']]));
 
     // Inicializar arrays para almacenar ventas por delegación y mes
@@ -3093,7 +3104,7 @@ public function patrocinios(Request $request)
     $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
 
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $productos2 = Productos::all();
     // Obtener los registros de caja del departamento "patrocinios"
     $cajasPatrocinios = Caja::where('departamento', 'patrocinios')
@@ -3147,7 +3158,7 @@ public function exportarPatrociniosAPDF(Request $request)
     $year = $request->input('year', Carbon::now()->year);
 
     // Obtener los datos necesarios para la vista
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $productos2 = Productos::all();
     $cajasPatrocinios = Caja::where('departamento', 'patrocinios')
         ->whereYear('fecha', $year)
@@ -3184,7 +3195,7 @@ public function gastos(Request $request)
     $year = $request->input('year', Carbon::now()->year); // Año actual por defecto
 
     // Obtener todas las delegaciones
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
 
     // Obtener los gastos de los departamentos de administración y RRHH
     $gastos = Caja::whereIn('departamento', ['administracion', 'rrhh'])
@@ -3237,7 +3248,7 @@ public function exportarGastosAPDF(Request $request)
 
     $year = $request->input('year', Carbon::now()->year);
 
-    $delegaciones = Delegacion::all();
+    $delegaciones = Delegacion::where('created_at', '!=', null)->get();
     $gastos = Caja::whereIn('departamento', ['administracion', 'rrhh'])
         ->whereYear('fecha', $year)
         ->where('tipo_movimiento', 'Gasto')

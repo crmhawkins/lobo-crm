@@ -197,7 +197,7 @@
 
                                                     // Calcular el porcentaje de ventas sobre compras
                                                     $porcentajeVentasCompras = ($totalAnualDelegacionCompras > 0) 
-                                                        ? ($totalAnualDelegacionCompras / $totalAnualDelegacionVentas) * 100 
+                                                        ? ( $totalAnualDelegacionVentas / $totalAnualDelegacionCompras ) * 100 
                                                         : 0;
                                                 @endphp
                                                 <td>{{ number_format($porcentajeVentasCompras, 2) }}%</td>

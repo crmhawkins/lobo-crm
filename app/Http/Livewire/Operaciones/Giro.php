@@ -34,13 +34,26 @@ class Giro extends Component
     {
         $this->mes = Carbon::now()->month;
         $this->anio = Carbon::now()->year;
-        
-        $this->facturas = $this->obtenerFacturas();
+        $this->obtenerFacturas();
         $this->bancos = Bancos::all();
 
         // Inicializar giroData con los datos existentes
+      
+    }
+
+    public function obtenerFacturas()
+    {
+
+        $this->facturas = Facturas::where('tipo', null)
+        ->where('metodo_pago', 'giro_bancario')
+        ->whereMonth('fecha_emision', $this->mes)
+        ->whereYear('fecha_emision', $this->anio)
+        ->get();
+
+
         foreach ($this->facturas as $factura) {
             if ($factura->giro_bancario) {
+                // dd($factura->giro_bancario);
                 $this->giroData[$factura->id] = [
                     'banco_id' => $factura->giro_bancario->banco_id,
                     'fecha_programacion' => $factura->giro_bancario->fecha_programacion,
@@ -48,15 +61,8 @@ class Giro extends Component
                 ];
             }
         }
-    }
 
-    public function obtenerFacturas()
-    {
-        return Facturas::where('tipo', null)
-            ->where('metodo_pago', 'giro_bancario')
-            ->whereMonth('fecha_emision', $this->mes)
-            ->whereYear('fecha_emision', $this->anio)
-            ->get();
+
     }
 
     public function editGiro($facturaId)
@@ -70,34 +76,37 @@ class Giro extends Component
             $this->alert('error', 'Por favor, complete los datos del giro bancario.');
             return;
         }
+        
 
         $data = $this->giroData[$facturaId];
 
-
-        GiroBancario::updateOrCreate(
+        $giro = GiroBancario::updateOrCreate(
             ['factura_id' => $facturaId],
             [
+
                 'banco_id' => $data['banco_id'] ?? null,
                 'fecha_programacion' => $data['fecha_programacion'] ?? null,
                 'estado' => $data['estado'] ?? null
             ]
         );
 
+        // dd($giro);
+
         $this->editing[$facturaId] = false;
-        $this->facturas = $this->obtenerFacturas();
+        $this->obtenerFacturas();
         $this->alert('success', 'Giro bancario guardado correctamente!');
     }
 
     public function updatedMes($value)
     {
         $this->mes = $value;
-        $this->facturas = $this->obtenerFacturas();
+        $this->obtenerFacturas();
     }
 
     public function updatedAnio($value)
     {
         $this->anio = $value;
-        $this->facturas = $this->obtenerFacturas();
+     $this->obtenerFacturas();
     }
 
     public function render()
