@@ -276,9 +276,34 @@ class CreateGastoComponent extends Component
 
             ]
         );
+        if ($this->documento) {
+            $filename = $this->documento->hashName();
+            
+            // Guardar el archivo en el disco 'private'
+            $this->documento->storeAs('documentos_gastos', $filename, 'private');
+        
+            // Guardar la ruta del archivo
+            $this->documentoPath = "documentos_gastos/{$filename}";
+        
+            // Verificar si el archivo fue almacenado correctamente
+            if (!Storage::disk('private')->exists($this->documentoPath)) {
+                $this->alert('error', '¡No se ha podido guardar el documento!', [
+                    'position' => 'center',
+                    'timer' => 3000,
+                    'toast' => false,
+                ]);
+            }
+        
+            
+        } else {
+            $this->alert('error', '¡No hay documento para subir!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+        }
 
-        $this->documento->storeAs('documentos_gastos', $this->documento->hashName(), 'private');
-        $this->documentoPath = $this->documento->hashName();
+
 
         // Guardar datos validados
         $usuariosSave = Caja::create([
