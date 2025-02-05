@@ -295,54 +295,405 @@ class ContabilidadController extends Controller
         return $numerosCuentas;
     }
 
-
-
-
-    public function perdidasYGanancias(){
-        // dd('perdidasYGanancias');
-
-       
-        $cajasNegocios = Caja::whereNotNull('asientoContable')
-        ->whereHas('proveedor', function($query) {
-            $query->where('cuenta_contable', 'LIKE', '70%');
-        })
-        ->orWhereHas('facturas.cliente', function($query) {
-            $query->where('cuenta_contable', 'LIKE', '70%');
-        })
-        ->with(['proveedor', 'facturas.cliente'])
-        ->get();
-
-
-        $totalNegocios = 0;
-
-        foreach ($cajasNegocios as $caja) {
+    private function calcularTotalPorCuentas($cajas, $reglasCuentas)
+    {
+        $total = 0;
+        
+        foreach ($cajas as $caja) {
             $cuentaContable = null;
             $totalCaja = $caja->total;
 
             // Verificar si la cuenta contable viene del proveedor o del cliente
-            if ($caja->proveedor && strpos($caja->proveedor->cuenta_contable, '70') === 0) {
+            if ($caja->proveedor) {
                 $cuentaContable = $caja->proveedor->cuenta_contable;
-            } elseif ($caja->facturas->isNotEmpty() && $caja->facturas[0]->cliente && 
-                     strpos($caja->facturas[0]->cliente->cuenta_contable, '70') === 0) {
+            } elseif ($caja->facturas->isNotEmpty() && $caja->facturas[0]->cliente) {
                 $cuentaContable = $caja->facturas[0]->cliente->cuenta_contable;
             }
 
             // Aplicar las reglas según la cuenta contable
             if ($cuentaContable) {
-                $primerosTresDigitos = substr($cuentaContable, 0, 3);
-                if (in_array($primerosTresDigitos, ['700', '701', '702', '703', '704', '705'])) {
-                    $totalNegocios += $totalCaja;
-                } elseif (in_array($primerosTresDigitos, ['706', '707', '708', '709'])) {
-                    $totalNegocios -= $totalCaja;
+                foreach ($reglasCuentas as $prefijo => $operacion) {
+                    if (strpos($cuentaContable, $prefijo) === 0) {
+                        $total += ($operacion === '+' ? $totalCaja : -$totalCaja);
+                        break;
+                    }
                 }
             }
         }
 
-        //dd($totalNegocios);
+        return $total;
+    }
 
-        
+    public function perdidasYGanancias(Request $request){
+        // dd('perdidasYGanancias');
 
-        return view('contabilidad.pedidasganancias', compact('totalNegocios'));
+       $year = $request->input('year' , date('Y'));
+
+        $cajasNegocios = Caja::whereNotNull('asientoContable')
+            ->whereYear('fecha', $year)  // Filtro por año
+            ->where(function($query) {
+                $query->whereHas('proveedor', function($q) {
+                    $q->where('cuenta_contable', 'LIKE', '70%')
+                      ->orWhere('cuenta_contable', 'LIKE', '71%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6930%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7930%')
+                      ->orWhere('cuenta_contable', 'LIKE', '73%')
+                      ->orWhere('cuenta_contable', 'LIKE', '600%')
+                      ->orWhere('cuenta_contable', 'LIKE', '601%')
+                      ->orWhere('cuenta_contable', 'LIKE', '602%')
+                      ->orWhere('cuenta_contable', 'LIKE', '606%')
+                      ->orWhere('cuenta_contable', 'LIKE', '607%')
+                      ->orWhere('cuenta_contable', 'LIKE', '608%')
+                      ->orWhere('cuenta_contable', 'LIKE', '609%')
+                      ->orWhere('cuenta_contable', 'LIKE', '61%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6931%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6932%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6933%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7931%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7932%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7933%')
+                      ->orWhere('cuenta_contable', 'LIKE', '740%')
+                      ->orWhere('cuenta_contable', 'LIKE', '747%')
+                      ->orWhere('cuenta_contable', 'LIKE', '75%')
+                      ->orWhere('cuenta_contable', 'LIKE', '64%')
+                      ->orWhere('cuenta_contable', 'LIKE', '62%')
+                      ->orWhere('cuenta_contable', 'LIKE', '631%')
+                      ->orWhere('cuenta_contable', 'LIKE', '634%')
+                      ->orWhere('cuenta_contable', 'LIKE', '636%')
+                      ->orWhere('cuenta_contable', 'LIKE', '639%')
+                      ->orWhere('cuenta_contable', 'LIKE', '65%')
+                      ->orWhere('cuenta_contable', 'LIKE', '694%')
+                      ->orWhere('cuenta_contable', 'LIKE', '695%')
+                      ->orWhere('cuenta_contable', 'LIKE', '794%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7954%')
+                      ->orWhere('cuenta_contable', 'LIKE', '68%')
+                      ->orWhere('cuenta_contable', 'LIKE', '746%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7951%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7952%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7955%')
+                      ->orWhere('cuenta_contable', 'LIKE', '670%')
+                      ->orWhere('cuenta_contable', 'LIKE', '671%')
+                      ->orWhere('cuenta_contable', 'LIKE', '672%')
+                      ->orWhere('cuenta_contable', 'LIKE', '690%')
+                      ->orWhere('cuenta_contable', 'LIKE', '691%')
+                      ->orWhere('cuenta_contable', 'LIKE', '692%')
+                      ->orWhere('cuenta_contable', 'LIKE', '770%')
+                      ->orWhere('cuenta_contable', 'LIKE', '771%')
+                      ->orWhere('cuenta_contable', 'LIKE', '772%')
+                      ->orWhere('cuenta_contable', 'LIKE', '790%')
+                      ->orWhere('cuenta_contable', 'LIKE', '791%')
+                      ->orWhere('cuenta_contable', 'LIKE', '792%')
+                      ->orWhere('cuenta_contable', 'LIKE', '760%')
+                      ->orWhere('cuenta_contable', 'LIKE', '761%')
+                      ->orWhere('cuenta_contable', 'LIKE', '762%')
+                      ->orWhere('cuenta_contable', 'LIKE', '769%')
+                      ->orWhere('cuenta_contable', 'LIKE', '660%')
+                      ->orWhere('cuenta_contable', 'LIKE', '661%')
+                      ->orWhere('cuenta_contable', 'LIKE', '662%')
+                      ->orWhere('cuenta_contable', 'LIKE', '664%')
+                      ->orWhere('cuenta_contable', 'LIKE', '665%')
+                      ->orWhere('cuenta_contable', 'LIKE', '669%')
+                      ->orWhere('cuenta_contable', 'LIKE', '663%')
+                      ->orWhere('cuenta_contable', 'LIKE', '763%')
+                      ->orWhere('cuenta_contable', 'LIKE', '668%')
+                      ->orWhere('cuenta_contable', 'LIKE', '768%')
+                      ->orWhere('cuenta_contable', 'LIKE', '666%')
+                      ->orWhere('cuenta_contable', 'LIKE', '667%')
+                      ->orWhere('cuenta_contable', 'LIKE', '673%')
+                      ->orWhere('cuenta_contable', 'LIKE', '675%')
+                      ->orWhere('cuenta_contable', 'LIKE', '696%')
+                      ->orWhere('cuenta_contable', 'LIKE', '697%')
+                      ->orWhere('cuenta_contable', 'LIKE', '698%')
+                      ->orWhere('cuenta_contable', 'LIKE', '699%')
+                      ->orWhere('cuenta_contable', 'LIKE', '766%')
+                      ->orWhere('cuenta_contable', 'LIKE', '773%')
+                      ->orWhere('cuenta_contable', 'LIKE', '775%')
+                      ->orWhere('cuenta_contable', 'LIKE', '796%')
+                      ->orWhere('cuenta_contable', 'LIKE', '797%')
+                      ->orWhere('cuenta_contable', 'LIKE', '798%')
+                      ->orWhere('cuenta_contable', 'LIKE', '799%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6300%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6301%')
+                      ->orWhere('cuenta_contable', 'LIKE', '633%')
+                      ->orWhere('cuenta_contable', 'LIKE', '638%');
+
+
+                })
+                ->orWhereHas('facturas.cliente', function($q) {
+                    $q->where('cuenta_contable', 'LIKE', '70%')
+                      ->orWhere('cuenta_contable', 'LIKE', '71%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6930%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7930%')
+                      ->orWhere('cuenta_contable', 'LIKE', '73%')
+                      ->orWhere('cuenta_contable', 'LIKE', '600%')
+                      ->orWhere('cuenta_contable', 'LIKE', '601%')
+                      ->orWhere('cuenta_contable', 'LIKE', '602%')
+                      ->orWhere('cuenta_contable', 'LIKE', '606%')
+                      ->orWhere('cuenta_contable', 'LIKE', '607%')
+                      ->orWhere('cuenta_contable', 'LIKE', '608%')
+                      ->orWhere('cuenta_contable', 'LIKE', '609%')
+                      ->orWhere('cuenta_contable', 'LIKE', '61%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6931%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6932%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6933%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7931%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7932%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7933%')
+                      ->orWhere('cuenta_contable', 'LIKE', '740%')
+                      ->orWhere('cuenta_contable', 'LIKE', '747%')
+                      ->orWhere('cuenta_contable', 'LIKE', '75%')
+                      ->orWhere('cuenta_contable', 'LIKE', '64%')
+                      ->orWhere('cuenta_contable', 'LIKE', '62%')
+                      ->orWhere('cuenta_contable', 'LIKE', '631%')
+                      ->orWhere('cuenta_contable', 'LIKE', '634%')
+                      ->orWhere('cuenta_contable', 'LIKE', '636%')
+                      ->orWhere('cuenta_contable', 'LIKE', '639%')
+                      ->orWhere('cuenta_contable', 'LIKE', '65%')
+                      ->orWhere('cuenta_contable', 'LIKE', '694%')
+                      ->orWhere('cuenta_contable', 'LIKE', '695%')
+                      ->orWhere('cuenta_contable', 'LIKE', '794%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7954%')
+                      ->orWhere('cuenta_contable', 'LIKE', '68%')
+                      ->orWhere('cuenta_contable', 'LIKE', '746%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7951%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7952%')
+                      ->orWhere('cuenta_contable', 'LIKE', '7955%')
+                      ->orWhere('cuenta_contable', 'LIKE', '670%')
+                      ->orWhere('cuenta_contable', 'LIKE', '671%')
+                      ->orWhere('cuenta_contable', 'LIKE', '672%')
+                      ->orWhere('cuenta_contable', 'LIKE', '690%')
+                      ->orWhere('cuenta_contable', 'LIKE', '691%')
+                      ->orWhere('cuenta_contable', 'LIKE', '692%')
+                      ->orWhere('cuenta_contable', 'LIKE', '770%')
+                      ->orWhere('cuenta_contable', 'LIKE', '771%')
+                      ->orWhere('cuenta_contable', 'LIKE', '772%')
+                      ->orWhere('cuenta_contable', 'LIKE', '790%')
+                      ->orWhere('cuenta_contable', 'LIKE', '791%')
+                      ->orWhere('cuenta_contable', 'LIKE', '792%')
+                      ->orWhere('cuenta_contable', 'LIKE', '760%')
+                      ->orWhere('cuenta_contable', 'LIKE', '761%')
+                      ->orWhere('cuenta_contable', 'LIKE', '762%')
+                      ->orWhere('cuenta_contable', 'LIKE', '769%')
+                      ->orWhere('cuenta_contable', 'LIKE', '660%')
+                      ->orWhere('cuenta_contable', 'LIKE', '661%')
+                      ->orWhere('cuenta_contable', 'LIKE', '662%')
+                      ->orWhere('cuenta_contable', 'LIKE', '664%')
+                      ->orWhere('cuenta_contable', 'LIKE', '665%')
+                      ->orWhere('cuenta_contable', 'LIKE', '669%')
+                      ->orWhere('cuenta_contable', 'LIKE', '663%')
+                      ->orWhere('cuenta_contable', 'LIKE', '763%')
+                      ->orWhere('cuenta_contable', 'LIKE', '668%')
+                      ->orWhere('cuenta_contable', 'LIKE', '768%')
+                      ->orWhere('cuenta_contable', 'LIKE', '666%')
+                      ->orWhere('cuenta_contable', 'LIKE', '667%')
+                      ->orWhere('cuenta_contable', 'LIKE', '673%')
+                      ->orWhere('cuenta_contable', 'LIKE', '675%')
+                      ->orWhere('cuenta_contable', 'LIKE', '696%')
+                      ->orWhere('cuenta_contable', 'LIKE', '697%')
+                      ->orWhere('cuenta_contable', 'LIKE', '698%')
+                      ->orWhere('cuenta_contable', 'LIKE', '699%')
+                      ->orWhere('cuenta_contable', 'LIKE', '766%')
+                      ->orWhere('cuenta_contable', 'LIKE', '773%')
+                      ->orWhere('cuenta_contable', 'LIKE', '775%')
+                      ->orWhere('cuenta_contable', 'LIKE', '796%')
+                      ->orWhere('cuenta_contable', 'LIKE', '797%')
+                      ->orWhere('cuenta_contable', 'LIKE', '798%')
+                      ->orWhere('cuenta_contable', 'LIKE', '799%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6300%')
+                      ->orWhere('cuenta_contable', 'LIKE', '6301%')
+                      ->orWhere('cuenta_contable', 'LIKE', '633%')
+                      ->orWhere('cuenta_contable', 'LIKE', '638%');
+
+
+
+                });
+            })
+            ->with(['proveedor', 'facturas.cliente'])
+            ->get();
+
+        // Reglas para negocios
+        $reglasNegocios = [
+            '700' => '+', '701' => '+', '702' => '+', '703' => '+', '704' => '+', '705' => '+',
+            '706' => '-', '707' => '-', '708' => '-', '709' => '-'
+        ];
+
+        // Reglas para variación de productos
+        $reglasVariacionProductos = [
+            '6930' => '-',
+            '71' => '+',
+            '7930' => '+'
+        ];
+        $reglasTrabajosRealizados = [
+            '73' => '+'
+        ];
+
+        $reglasAprovisionamientos = [
+            '600' => '-',
+            '601' => '-',
+            '602' => '-',
+            '606' => '+',
+            '607' => '-',
+            '608' => '+',
+            '609' => '+',
+            '61' => '+',
+            '6931' => '-',
+            '6932' => '-',
+            '6933' => '-',
+            '7931' => '+',
+            '7932' => '+',
+            '7933' => '+'
+        ];
+
+        $reglasIngresosExplotacion = [
+            '740' => '+',
+            '747' => '+',
+            '75' => '+'
+        ];
+
+        $reglasGastoPersonal = [
+            '64' => '-'
+        ];
+
+
+        $reglasOtrosGastosExplotacion = [
+            '62' => '-',
+            '631' => '-',
+            '634' => '-',
+            '636' => '+',
+            '639' => '+',
+            '65' => '-',
+            '694' => '-',
+            '695' => '-',
+            '794' => '+',
+            '7954' => '+'
+
+        ];
+
+        $reglasInmovilizado = [
+            '68' => '-'
+        ];
+
+        $reglasSubvencionesNoFinancieras = [
+            '746' => '+'
+        ];
+        $reglasExcesodeProvisiones = [
+            '7951' => '+',
+            '7952' => '+',
+            '7955' => '+'
+        ];
+
+        $reglasDeterioroInmovilizado = [
+            '670' => '-',
+            '671' => '-',
+            '672' => '-',
+            '690' => '-',
+            '691' => '-',
+            '692' => '-',
+            '770' => '+',
+            '771' => '+',
+            '772' => '+',
+            '790' => '+',
+            '791' => '+',
+            '792' => '+'
+        ];
+
+
+        $reglasIngresosFinancieros = [
+            '760' => '+',
+            '761' => '+',
+            '762' => '+',
+            '769' => '+'
+        ];
+
+
+
+        $reglasGastosFinancieros = [
+            '660' => '-',
+            '661' => '-',
+            '662' => '-',
+            '664' => '-',
+            '665' => '-',
+            '669' => '-'
+        ];
+
+
+        $reglasVariacionInstrumentosfinancieros = [
+            '663' => '-',
+            '763' => '+'
+        ];
+
+
+        $reglasDiferenciasCambio = [
+            '668' => '-',
+            '768' => '+'
+        ];
+
+        $reglasDeterioroEnajenaciones = [
+            '666' => '-',
+            '667' => '-',
+            '673' => '-',
+            '675' => '-',
+            '696' => '-',
+            '697' => '-',
+            '698' => '-',
+            '699' => '-',
+            '766' => '+',
+            '773' => '+',
+            '775' => '+',
+            '796' => '+',
+            '797' => '+',
+            '798' => '+',
+            '799' => '+'
+        ];
+
+
+        $reglasImpuestosBeneficio =[
+            '6300' => '-',
+            '6301' => '-',
+            '633' => '-',
+            '638' => '+'
+        ];
+
+
+
+        $totalNegocios = $this->calcularTotalPorCuentas($cajasNegocios, $reglasNegocios);
+
+        $variacionProductos = $this->calcularTotalPorCuentas($cajasNegocios, $reglasVariacionProductos);
+        $trabajosRealizados = $this->calcularTotalPorCuentas($cajasNegocios, $reglasTrabajosRealizados);
+        $aprovisionamientos = $this->calcularTotalPorCuentas($cajasNegocios, $reglasAprovisionamientos);
+        $ingresosExplotacion = $this->calcularTotalPorCuentas($cajasNegocios, $reglasIngresosExplotacion);
+        $gastoPersonal = $this->calcularTotalPorCuentas($cajasNegocios, $reglasGastoPersonal);
+        $otrosGastosExplotacion = $this->calcularTotalPorCuentas($cajasNegocios, $reglasOtrosGastosExplotacion);
+        $inmovilizado = $this->calcularTotalPorCuentas($cajasNegocios, $reglasInmovilizado);
+        $subvencionesNoFinancieras = $this->calcularTotalPorCuentas($cajasNegocios, $reglasSubvencionesNoFinancieras);
+        $excesodeProvisiones = $this->calcularTotalPorCuentas($cajasNegocios, $reglasExcesodeProvisiones);
+        $deterioroInmovilizado = $this->calcularTotalPorCuentas($cajasNegocios, $reglasDeterioroInmovilizado);
+
+
+
+        $totalPrimero = $totalNegocios + $variacionProductos + $trabajosRealizados + $aprovisionamientos + $ingresosExplotacion + $gastoPersonal + $otrosGastosExplotacion + $inmovilizado + $subvencionesNoFinancieras + $excesodeProvisiones + $deterioroInmovilizado;
+
+
+
+        $ingresosFinancieros = $this->calcularTotalPorCuentas($cajasNegocios, $reglasIngresosFinancieros);
+        $gastosFinancieros = $this->calcularTotalPorCuentas($cajasNegocios, $reglasGastosFinancieros);
+        $variacionInstrumentosFinancieros = $this->calcularTotalPorCuentas($cajasNegocios, $reglasVariacionInstrumentosfinancieros);
+        $diferenciasCambio = $this->calcularTotalPorCuentas($cajasNegocios, $reglasDiferenciasCambio);
+        $deterioroEnajenaciones = $this->calcularTotalPorCuentas($cajasNegocios, $reglasDeterioroEnajenaciones);
+
+        $totalResultadosFinancieros = $ingresosFinancieros + $gastosFinancieros + $variacionInstrumentosFinancieros + $diferenciasCambio + $deterioroEnajenaciones;
+
+
+
+        $impuestosBeneficio = $this->calcularTotalPorCuentas($cajasNegocios, $reglasImpuestosBeneficio);
+
+        $ResultadoEjercicio = $totalPrimero + $totalResultadosFinancieros + $impuestosBeneficio;
+        return view('contabilidad.pedidasganancias', compact('totalNegocios', 'variacionProductos', 'trabajosRealizados', 'aprovisionamientos', 'ingresosExplotacion', 'gastoPersonal', 'otrosGastosExplotacion', 'inmovilizado', 'subvencionesNoFinancieras', 'excesodeProvisiones', 'deterioroInmovilizado', 'totalPrimero', 'ingresosFinancieros' , 'gastosFinancieros', 'variacionInstrumentosFinancieros', 'diferenciasCambio', 'deterioroEnajenaciones', 'totalResultadosFinancieros', 'ResultadoEjercicio' , 'impuestosBeneficio' , 'year'));   
+
+
+
+
+
     }
 
 

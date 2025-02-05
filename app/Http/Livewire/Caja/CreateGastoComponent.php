@@ -276,7 +276,7 @@ class CreateGastoComponent extends Component
 
             ]
         );
-
+        // dd($this->documento);
         $this->documento->storeAs('documentos_gastos', $this->documento->hashName(), 'private');
         $this->documentoPath = $this->documento->hashName();
 
