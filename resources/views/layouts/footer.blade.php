@@ -1251,7 +1251,7 @@
                     <div class="exit-button-col">
                         <a class="footer-button" href="{{ route('caja.pagares') }}">
                             <i class="fa-regular fa-file-lines" style="font-size: 44px;"></i>
-                            <span>PAGARES</span>
+                            <span>PAGARES</span>    
                         </a>
                     </div>
 
