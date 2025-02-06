@@ -95,7 +95,7 @@
                     <ul class="dropdown-menu w-100" aria-labelledby="dropdownContabilidad">
                         <li><a class="dropdown-item" href="{{ route('contabilidad.libroDiario') }}">Libro Diario</a></li>
                         <li><a class="dropdown-item" href="{{ route('contabilidad.perdidasYGanancias') }}">Perdidas y Ganancias</a></li>
-                        <li><a class="dropdown-item" href="{{ route('contabilidad.balancesituacion') }}">Balance de Situación</a></li>
+                        <li><a class="dropdown-item" href="{{ route('contabilidad.balanceSituacion') }}">Balance de Situación</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.cuentasContables.index') }}">Cuentas Contables</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.subCuentasContables.index') }}">Sub-Cuentas Contables</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.subCuentasHijaContables.index') }}">Sub-Cuentas Hijas</a></li>
