@@ -169,10 +169,11 @@ class CreateComponent extends Component
         if ($cliente) {
             $this->cliente = $cliente;
             // Almacenar la dirección por defecto del cliente
-            $this->direccionPorDefecto = $cliente->direccion;
-            $this->localidadPorDefecto = $cliente->localidad;
-            $this->provinciaPorDefecto = $cliente->provincia;
-            $this->codPostalPorDefecto = $cliente->cod_postal;
+            $this->direccionPorDefecto = $cliente->direccionenvio;
+            $this->localidadPorDefecto = $cliente->localidadenvio;
+            $this->provinciaPorDefecto = $cliente->provinciaenvio;
+            $this->codPostalPorDefecto = $cliente->codPostalenvio;
+
 
             // Inicializar las propiedades de dirección con la dirección por defecto
             $this->direccion_entrega = $this->direccionPorDefecto;
@@ -261,7 +262,7 @@ class CreateComponent extends Component
         }else{
             $this->bloqueado=false;
         }
-
+        // dd($this->direccion_entrega, $this->localidad_entrega, $this->provincia_entrega, $this->cod_postal_entrega);
         $validatedData = $this->validate(
             [
                 'cliente_id' => 'required',

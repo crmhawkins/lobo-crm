@@ -512,10 +512,11 @@ class EditComponent extends Component
         $this->emit('refreshComponent');
 
         $this->direcciones = Direcciones::where('cliente_id', $this->cliente_id)->get();
-        $this->direccionPorDefecto = $cliente->direccion;
-        $this->localidadPorDefecto = $cliente->localidad;
-        $this->provinciaPorDefecto = $cliente->provincia;
-        $this->codPostalPorDefecto = $cliente->cod_postal;
+        $this->direccionPorDefecto = $cliente->direccionenvio;
+        $this->localidadPorDefecto = $cliente->localidadenvio;
+        $this->provinciaPorDefecto = $cliente->provinciaenvio;
+        $this->codPostalPorDefecto = $cliente->codPostalenvio;
+
         $direccionSeleccionada = $this->direcciones->firstWhere('direccion', $this->direccion_entrega);
         // dd($this->direcciones , $this->direccion_entrega);
         $this->direccion_seleccionada = $direccionSeleccionada ? $direccionSeleccionada->id : 'default';
@@ -636,13 +637,14 @@ public function setPrecioEstimadoMarketing()
         if ($cliente) {
             $this->cliente = $cliente;
             // Almacenar la dirección por defecto del cliente
-            $this->direccionPorDefecto = $cliente->direccion;
-            $this->localidadPorDefecto = $cliente->localidad;
-            $this->provinciaPorDefecto = $cliente->provincia;
-            $this->codPostalPorDefecto = $cliente->cod_postal;
+            $this->direccionPorDefecto = $cliente->direccionenvio;
+            $this->localidadPorDefecto = $cliente->localidadenvio;
+            $this->provinciaPorDefecto = $cliente->provinciaenvio;
+            $this->codPostalPorDefecto = $cliente->codPostalenvio;
+
 
             // Inicializar las propiedades de dirección con la dirección por defecto
-            $this->direccion_entrega = $this->direccionPorDefecto;
+            $this->direccion_entrega = $this->direccionPorDefecto;  
             $this->localidad_entrega = $this->localidadPorDefecto;
             $this->provincia_entrega = $this->provinciaPorDefecto;
             $this->cod_postal_entrega = $this->codPostalPorDefecto;
