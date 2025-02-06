@@ -697,6 +697,447 @@ class ContabilidadController extends Controller
     }
 
 
+    public function balanceSituacion(Request $request){
+        // dd('balanceSituacion');
+        $year = $request->input('year' , date('Y'));
+        $prefijosCuentas = [
+            '20', '280', '290', '21', '281', '291', '23', '22', '282', '292',
+            '2403', '2404', '2413', '2414', '2423', '2424', '2493', '2494',
+            '2933', '2934', '2943', '2944', '2953', '2954', '2405', '2415',
+            '2425', '2495', '250', '251', '252', '253', '254', '255', '258', '259',
+            '26', '2935', '2945', '2955', '296', '297', '298', '474', '30', '31',
+            '32', '33', '34', '35', '36', '39', '407', '430', '431', '432',
+            '433', '434', '435', '436', '437', '490', '493', '5580', '44', '460',
+            '470', '471', '472', '544', '5303', '5304', '5313', '5314', '5323',
+
+            '5324', '5333', '5334', '5343', '5344', '5353', '5354', '5393',
+            '5394', '5523', '5524', '5933', '5934', '5943', '5944', '5953',
+            '5954', '5305', '5315', '5325', '5335', '5345', '5355', '5395',
+            '540', '541', '542', '543', '545', '546', '547', '548', '549',
+            '551', '5525', '5590', '565', '566', '5935', '5945', '5955',
+            '596', '597', '598', '480', '567', '57', '100', '101', '102',
+            '1030', '1040', '110', '112', '113', '114', '119', '108', '109',
+            '120', '121', '118', '129', '557', '130', '131', '132', '14', '1605',
+            '170', '1625', '174', '1615', '1635', '171', '172', '173', '175' , '176',
+            '177', '179', '180', '185', '1603', '1604', '1613', '1614', '1623', '1624',
+            '1633', '1634', '479', '181', '499' , '529', '5105' , '520' , '527', '5125',
+            '524', '1034', '1044', '190', '192', '194', '500', '505', '506', '509', '5115',
+            '5135', '5145', '521', '522', '523', '525', '526', '528', '551', '5525', '555',
+            '5565', '5566', '5595', '560', '561', '5103', '5104', '5113' , '5114', '5123',
+            '5124', '5133', '5134', '5143', '5144', '5523', '5524', '5563', '5564', '400',
+            '401', '403',  '404', '405', '406', '41', '438', '465', '475', '476', '477',
+            '485', '568'
+
+        ];
+
+        $cajasNegocios = Caja::whereNotNull('asientoContable')
+        ->whereYear('fecha', $year)  // Filtro por año
+        ->where(function($query) use ($prefijosCuentas) {
+            $query->whereHas('proveedor', function($q) use ($prefijosCuentas) {
+                foreach ($prefijosCuentas as $prefijo) {
+                    $q->orWhere('cuenta_contable', 'LIKE', $prefijo . '%');
+                }
+            })
+            ->orWhereHas('facturas.cliente', function($q) use ($prefijosCuentas) {
+                foreach ($prefijosCuentas as $prefijo) {
+                    $q->orWhere('cuenta_contable', 'LIKE', $prefijo . '%');
+                }
+            });
+        })
+        ->with(['proveedor', 'facturas.cliente'])
+        ->get();
+
+
+        $reglasInmovilizadoIntangible = [
+            '20' => '+',
+            '280' => '-',
+            '290' => '-',
+        ];
+
+        $reglaInmovilizadoMaterial = [
+            '21' => '+',
+            '281' => '-',
+            '291' => '-',
+            '23' => '+',
+        ];
+
+        $reglaInversionesInmobiliarias = [
+            '22' => '+',
+            '282' => '-',
+            '292' => '-',
+        ];
+
+        $inversionesLargoPlazo = [
+            '2403' => '+',
+            '2404' => '+',
+            '2413' => '+',
+            '2414' => '+',
+            '2423' => '+',
+            '2424' => '+',
+            '2493' => '-',
+            '2494' => '-',
+            '2933' => '-',
+            '2934' => '-',
+            '2943' => '-',
+            '2944' => '-',
+            '2953' => '-',
+            '2954' => '-',
+            
+        ];
+
+        $inversionesFinancierasLargoPlazo = [
+            '2405' => '+',
+            '2415' => '+',
+            '2425' => '+',
+            '2495' => '-',
+            '250' => '+',
+            '251' => '+',
+            '252' => '+',
+            '253' => '+',
+            '254' => '+',
+            '255' => '+',
+            '258' => '+',
+            '259' => '-',
+            '26' => '+',
+            '2935' => '-',
+            '2945' => '-',
+            '2955' => '-',
+            '296' => '-',
+            '297' => '-',
+            '298' => '-',
+        ];
+
+
+        $activosDiferidos = [
+            '474' => '+',
+            
+            
+        ];
+
+        $existencias = [
+            '30' => '+',
+            '31' => '+',
+            '32' => '+',
+            '33' => '+',
+            '34' => '+',
+            '35' => '+',
+            '36' => '+',
+            '39' => '-',
+            '407' => '+',
+            
+        ];
+
+        $deudores = [
+            '430' => '+',
+            '431' => '+',
+            '432' => '+',
+            '433' => '+',
+            '434' => '+',
+            '435' => '+',
+            '436' => '+',
+            '437' => '-',
+            '490' => '-',
+            '493' => '-',
+            '5580' => '+',
+            '44' => '+',
+            '460' => '+',
+            '470' => '+',
+            '471' => '+',
+            '472' => '+',
+            '544' => '+',
+            
+            
+            
+            
+        ];
+
+        
+        $inversionesacortoPlazo = [
+            '5303' => '+',
+            '5304' => '+',
+            '5313' => '+',
+            '5314' => '+',
+            '5323' => '+',
+            '5324' => '+',
+            '5333' => '+',
+            '5334' => '+',
+            '5343' => '+',
+            '5344' => '+',
+            '5353' => '+',
+            '5354' => '+',
+            '5393' => '-',
+            '5394' => '-',
+            '5523' => '+',
+            '5524' => '+',
+            '5933' => '-',
+            '5934' => '-',
+            '5943' => '-',
+            '5944' => '-',
+            '5953' => '-',
+            '5954' => '-',
+            
+            
+            
+            
+        ];
+
+        $periodificacionesCortoPlazo = [
+            '480' => '+',
+            '567' => '+',
+        ];
+
+
+        $efectivoOtrosActivos = [
+            '57' => '+',
+        ];
+
+
+        $capital = [
+            '100' => '+',
+            '101' => '+',
+            '102' => '+',
+            '1030' => '-',
+            '1040' => '-',
+        ];
+
+        $primaDeEmision = [
+            '110' => '+',
+        ];
+
+        $reservas = [
+            '112' => '+',
+            '113' => '+',
+            '114' => '+',
+            '119' => '+',
+        ];
+
+        $accionesParticipaciones = [
+            '108' => '-',
+            '109' => '-',
+        ];
+
+        $resultadosEjerciciosAnteriores = [
+            '120' => '+',
+            '121' => '-',
+
+        ];
+
+        $otrosAportacionesSocios = [
+            '118' => '+',
+        ];
+        
+
+        $resultadoEjercicio = [
+            '129' => '+',
+        ];
+
+        
+        $dividendoACuenta = [
+            '557' => '-',
+        ];
+
+        $subvencionesDonacionesLegados = [
+            '130' => '+',
+            '131' => '+',
+            '132' => '+',
+        ];
+
+        $provisionesLargoPlazo = [
+            '14' => '+',
+
+        ];
+
+        $deudasLargoPlazo = [
+            '1605' => '+',
+            '170' => '+',
+            '1625' => '+',
+            '174' => '+',
+            '1615' => '+',
+            '1635' => '+',
+            '171' => '+',
+            '172' => '+',
+            '173' => '+',
+            '175' => '+',
+            '176' => '+',
+            '177' => '+',
+            '179' => '+',
+            '180' => '+',
+            '185' => '+',
+        ];
+
+        $deudasConEmpresasGrupoAsociadasLargoPlazo = [
+            '1603' => '+',
+            '1604' => '+',
+            '1613' => '+',
+            '1614' => '+',
+            '1623' => '+',
+            '1624' => '+',
+            '1633' => '+',
+            '1634' => '+'
+        ];
+
+        $pasivosImpuestoDiferido = [
+            '479' => '+',
+        ];
+        
+        $periodificacionesLargoPlazo = [
+            '181' => '+',
+        ];
+            
+        $provisionesCortoPlazo = [
+            '499' => '+',
+            '529' => '+',
+        ];
+
+        $deudasCortoPlazo = [
+            '5105' => '+',
+            '520' => '+',
+            '527' => '+',
+            '5125' => '+',
+            '524' => '+',
+            '1034' => '-',
+            '1044' => '-',
+            '190' => '-',
+            '192' => '-',
+            '194' => '+',
+            '500' => '+',
+            '505' => '+',
+            '506' => '+',
+            '509' => '+',
+            '5115' => '+',
+            '5135' => '+',
+            '5145' => '+',
+            '521' => '+',
+            '522' => '+',
+            '523' => '+',
+            '525' => '+',
+            '526' => '+',
+            '528' => '+',
+            '551' => '+',
+            '5525' => '+',
+            '555' => '+',
+            '5565' => '+',
+            '5566' => '+',
+            '5595' => '+',
+            '560' => '+',
+            '561' => '+',
+            
+
+        ];
+
+        $deudasConEmpresasGrupoAsociadasCortoPlazo = [
+            '5103' => '+',
+            '5104' => '+',
+            '5113' => '+',
+            '5114' => '+',
+            '5123' => '+',
+            '5124' => '+',
+            '5133' => '+',
+            '5134' => '+',
+            '5143' => '+',
+            '5144' => '+',
+            '5523' => '+',
+            '5524' => '+',
+            '5963' => '-',
+            '5964' => '-',
+            
+        ];
+
+        $acreedoresComercialesOtrasCuentas = [
+            '400' => '+',
+            '401' => '+',
+            '403' => '+',
+            '404' => '+',
+            '405' => '+',
+            '406' => '-',
+            '41' => '+',
+            '438' => '+',
+            '465' => '+',
+            '475' => '+',
+            '476' => '+',
+            '477' => '+',
+            
+        ];
+
+        $periodificacionesCortoPlazo2 = [
+            '485' => '+',
+            '568' => '+',
+        ];
+        
+        
+
+
+
+
+
+
+
+        $inmovilizadoIntangible = $this->calcularTotalPorCuentas($cajasNegocios, $reglasInmovilizadoIntangible);
+
+
+
+
+        $inmovilizadoMaterial = $this->calcularTotalPorCuentas($cajasNegocios, $reglaInmovilizadoMaterial);
+        $inversionesInmobiliarias = $this->calcularTotalPorCuentas($cajasNegocios, $reglaInversionesInmobiliarias);
+        $inversionesLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $inversionesLargoPlazo);
+        $inversionesFinancierasLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $inversionesFinancierasLargoPlazo);
+        $activosDiferidos = $this->calcularTotalPorCuentas($cajasNegocios, $activosDiferidos);
+        $existencias = $this->calcularTotalPorCuentas($cajasNegocios, $existencias);
+
+        $deudores = $this->calcularTotalPorCuentas($cajasNegocios, $deudores);
+        $inversionesacortoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $inversionesacortoPlazo);
+        $periodificacionesCortoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $periodificacionesCortoPlazo);
+        $efectivoOtrosActivos = $this->calcularTotalPorCuentas($cajasNegocios, $efectivoOtrosActivos);
+
+        $totalActivo = $inmovilizadoIntangible + $inmovilizadoMaterial + $inversionesInmobiliarias + $inversionesLargoPlazo + $inversionesFinancierasLargoPlazo + $activosDiferidos + $existencias + $deudores + $inversionesacortoPlazo + $periodificacionesCortoPlazo + $efectivoOtrosActivos;
+
+
+
+        $capital = $this->calcularTotalPorCuentas($cajasNegocios, $capital);
+        $primaDeEmision = $this->calcularTotalPorCuentas($cajasNegocios, $primaDeEmision);
+        $reservas = $this->calcularTotalPorCuentas($cajasNegocios, $reservas);
+        $accionesParticipaciones = $this->calcularTotalPorCuentas($cajasNegocios, $accionesParticipaciones);
+        $resultadosEjerciciosAnteriores = $this->calcularTotalPorCuentas($cajasNegocios, $resultadosEjerciciosAnteriores);
+        $otrosAportacionesSocios = $this->calcularTotalPorCuentas($cajasNegocios, $otrosAportacionesSocios);
+        $resultadoEjercicio = $this->calcularTotalPorCuentas($cajasNegocios, $resultadoEjercicio);
+        $dividendoACuenta = $this->calcularTotalPorCuentas($cajasNegocios, $dividendoACuenta);
+        $subvencionesDonacionesLegados = $this->calcularTotalPorCuentas($cajasNegocios, $subvencionesDonacionesLegados);
+        $provisionesLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $provisionesLargoPlazo);
+        $deudasLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $deudasLargoPlazo);
+        $deudasConEmpresasGrupoAsociadasLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $deudasConEmpresasGrupoAsociadasLargoPlazo);
+        $pasivosImpuestoDiferido = $this->calcularTotalPorCuentas($cajasNegocios, $pasivosImpuestoDiferido);
+        $periodificacionesLargoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $periodificacionesLargoPlazo);
+        $provisionesCortoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $provisionesCortoPlazo);
+        $deudasCortoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $deudasCortoPlazo);
+        $deudasConEmpresasGrupoAsociadasCortoPlazo = $this->calcularTotalPorCuentas($cajasNegocios, $deudasConEmpresasGrupoAsociadasCortoPlazo);
+        $acreedoresComercialesOtrasCuentas = $this->calcularTotalPorCuentas($cajasNegocios, $acreedoresComercialesOtrasCuentas);
+        $periodificacionesCortoPlazo2 = $this->calcularTotalPorCuentas($cajasNegocios, $periodificacionesCortoPlazo2);
+
+
+        $totalPasivo = $capital + $primaDeEmision + $reservas + $accionesParticipaciones + $resultadosEjerciciosAnteriores + $otrosAportacionesSocios + $resultadoEjercicio + $dividendoACuenta + $subvencionesDonacionesLegados + $provisionesLargoPlazo + $deudasLargoPlazo + $deudasConEmpresasGrupoAsociadasLargoPlazo + $pasivosImpuestoDiferido + $periodificacionesLargoPlazo + $provisionesCortoPlazo + $deudasCortoPlazo + $deudasConEmpresasGrupoAsociadasCortoPlazo + $acreedoresComercialesOtrasCuentas + $periodificacionesCortoPlazo2;
+
+
+        return view('contabilidad.balancesituacion', compact('inmovilizadoIntangible', 'inmovilizadoMaterial' , 'inversionesInmobiliarias' , 'inversionesLargoPlazo'
+        , 'inversionesFinancierasLargoPlazo' , 'activosDiferidos' , 'existencias' , 'deudores' , 'inversionesacortoPlazo' , 'periodificacionesCortoPlazo' 
+        , 'efectivoOtrosActivos', 'totalActivo' , 'capital' , 'primaDeEmision' , 'reservas' , 'accionesParticipaciones' , 'resultadosEjerciciosAnteriores'
+        , 'otrosAportacionesSocios' , 'resultadoEjercicio' , 'dividendoACuenta' , 'subvencionesDonacionesLegados' , 'provisionesLargoPlazo'
+        , 'deudasLargoPlazo' , 'deudasConEmpresasGrupoAsociadasLargoPlazo' , 'pasivosImpuestoDiferido' , 'periodificacionesLargoPlazo'
+        , 'provisionesCortoPlazo' , 'deudasCortoPlazo' , 'deudasConEmpresasGrupoAsociadasCortoPlazo' , 'acreedoresComercialesOtrasCuentas'
+        , 'periodificacionesCortoPlazo2' , 'totalPasivo' , 'year'));
+
+
+
+        
+        
+
+
+
+
+
+
+    }
+
+
 
     /**
      * Show the form for creating a new resource.

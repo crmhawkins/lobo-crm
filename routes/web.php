@@ -293,6 +293,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
 
     Route::get('/contabilidad/libro-diario', [ContabilidadController::class, 'getLibroDiario'])->name('contabilidad.libroDiario');
     Route::get('/contabilidad/perdidas-ganancias', [ContabilidadController::class, 'perdidasYGanancias'])->name('contabilidad.perdidasYGanancias');
+    Route::get('/contabilidad/balancesituacion', [ContabilidadController::class, 'balanceSituacion'])->name('contabilidad.balanceSituacion');
     Route::get('/empresas-transporte', [EmpresasTransporte::class , 'index'])->name('empresas-transporte.index');
 
 
