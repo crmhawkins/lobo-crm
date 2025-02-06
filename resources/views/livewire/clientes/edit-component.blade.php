@@ -315,9 +315,32 @@ $canEdit = $EsAdmin; //|| $estado == 1;
                             </div>
                         </div>
                         @if($usarDireccionEnvio)
+
+                           
                             <div class="container">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        @if($direccionenvio != null)
+
+                                        <h5>Direcciones de Envío (Antiguas)</h5>
+                                            <table class="table table-bordered mb-2">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th>Dirección</th>
+                                                        <th>Localidad</th>
+                                                        <th>Provincia</th>
+                                                        <th>Código Postal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                   <td>{{$direccionenvio}}</td>
+                                                   <td>{{$localidadenvio}}</td>
+                                                   <td>{{$provinciaenvio}}</td>
+                                                   <td>{{$codPostalenvio}}</td>
+                                                </tbody>
+                                            </table>
+                                        @endif
                                         <h5>Direcciones de Envío</h5>
                                         <table class="table table-bordered">
                                             <thead>
