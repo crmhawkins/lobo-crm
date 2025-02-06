@@ -786,7 +786,7 @@
         // Verificar si se encontraron tablas antes de intentar exportar
         if (tablesFound) {
             // Exportar el libro de trabajo a un archivo Excel
-            XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+            XLSX.writeFile(wb, 'control_presupuestario_presupuestos_delegacion.xlsx');
         } else {
             alert('No se encontraron tablas para exportar.');
         }

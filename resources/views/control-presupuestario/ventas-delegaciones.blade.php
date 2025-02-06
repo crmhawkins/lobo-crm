@@ -213,7 +213,7 @@
             });
 
             // Exportar el libro de trabajo a un archivo Excel
-            XLSX.writeFile(wb, 'control_presupuestario_logistica.xlsx');
+            XLSX.writeFile(wb, 'control_presupuestario_ventas_delegaciones.xlsx');
         }
     </script>
 
