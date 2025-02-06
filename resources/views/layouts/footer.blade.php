@@ -1246,9 +1246,21 @@
                         <span>ALERTAS</span>
                     </a>
                 </div>
+                @if(Auth::user()->surname == 'algeciras')
+
+                    <div class="exit-button-col">
+                        <a class="footer-button" href="{{ route('caja.pagares') }}">
+                            <i class="fa-regular fa-file-lines" style="font-size: 44px;"></i>
+                            <span>PAGARES</span>
+                        </a>
+                    </div>
+
+                @endif
+
               {{--  <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('pedidos.index') }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-folder" width="44"
+
                             height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
