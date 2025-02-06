@@ -2665,12 +2665,16 @@ public function marketing(Request $request)
     // Obtener los costes de productos normales por año
     $costesProductos = Costes::where('year', $year)
         ->with('producto', 'delegacion')
+        ->where('year', $year)
         ->get();
 
     // Obtener los costes de productos de marketing por año
     $costesMarketing = CostesMarketing::where('year', $year)
         ->with('producto', 'delegacion')
+        ->where('year', $year)
         ->get();
+
+        // dd($costesProductos, $costesMarketing);
 
     // Mapa de costes por producto y delegación
     $costesMapProductos = [];
