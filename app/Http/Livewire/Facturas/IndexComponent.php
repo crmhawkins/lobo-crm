@@ -559,7 +559,7 @@ class IndexComponent extends Component
         $delegaciones = Delegacion::all();
         $cliente = $this->clientes->find($id);
         if (isset($cliente)) {
-            return $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre;
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first() ? $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre : "no definido";
         }
         return "no definido";
     }

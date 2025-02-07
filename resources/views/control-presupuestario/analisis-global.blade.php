@@ -373,7 +373,7 @@
                 </tbody>
             </table>
         </div>
-        <h3>Resultado (C-D-E-F) = G por Trimestre</h3>
+        <h3>Resultado C - (D + E + F) = G por Trimestre</h3>
         <div class="table-responsive mb-5">
             <table class="table table-bordered">
                 <thead>
@@ -407,8 +407,9 @@
                                     $gastoVariableE = $gastosVariablesPorDelegacion[$mes][$delegacion->nombre] ?? 0;
                                     $gastoLogisticoF = $gastosLogisticaPorDelegacion[$mes][$delegacion->nombre] ?? 0;
 
-                                    // Calcular G = C - D - E - F
-                                    $resultadoGDelegacionMes = $resultadoC - $gastoEstructuralD - $gastoVariableE - $gastoLogisticoF;
+                                    // Calcular G = C - (D + E + F)
+                                    $resultadoGDelegacionMes = $resultadoC - ($gastoEstructuralD + $gastoVariableE + $gastoLogisticoF);
+
 
                                     $totalesResultadoGTrimestre[$delegacion->nombre] += $resultadoGDelegacionMes;
                                     $totalMesG += $resultadoGDelegacionMes;
@@ -421,7 +422,7 @@
 
                     <!-- Fila de total del trimestre para el resultado G -->
                     <tr class="trimestre-header">
-                        <td><strong>Total Trimestre Resultado (C-D-E-F)</strong></td>
+                        <td><strong>Total Trimestre Resultado C - (D + E + F)</strong></td>
                         @foreach($totalesResultadoGTrimestre as $delegacionNombre => $total)
                             <td><strong>{{ number_format($total, 2, ',', '.') }} €</strong></td>
                         @endforeach
