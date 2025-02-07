@@ -265,10 +265,23 @@
                 <tbody>
                     <tr>
                         <td>COMERCIAL</td>
-                        <td> {{$user->name}} {{$user->surname}} </td>
+                        @if(Auth::user()->isAdmin())
+                            <td>
+                                <select name="" id="" wire:model="comercial_id">
+                                    <option value="">---SELECCIONE UN COMERCIAL---</option>
+                                    @foreach ($comerciales as $comercial)
+                                        <option value="{{$comercial->id}}" {{ $comercial->id == $comercial_id ? 'selected' : '' }}>{{$comercial->name}} {{$comercial->surname}}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+                        @else
+
+                            <td> {{$user->name}} {{$user->surname}} </td>
+                        @endif
                     </tr>
                     <tr>
                         <td>N.º ACUERDO</td>
+
                         <td><input type="text" style="width: 98%" wire:model="nAcuerdo" value={{$nAcuerdo}}></td>
                     </tr>
                     <tr>

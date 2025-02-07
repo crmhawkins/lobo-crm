@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\DocumentosAcuerdosComerciales;
 use Livewire\WithFileUploads;
+use App\Models\User;
 
 class EditComponent extends Component
 {
@@ -49,6 +50,9 @@ class EditComponent extends Component
     public $fecha_firma;
     public $documentos = [];
     public $nuevosDocumentos = [];
+    public $comerciales = [];
+    public $comercial_id;
+
 
     public function getListeners()
     {
@@ -61,7 +65,9 @@ class EditComponent extends Component
     public function mount($identificador)
     {
         $this->user = Auth::user();
+        $this->comerciales = User::all();
         $this->acuerdo = acuerdosComerciales::findOrFail($this->identificador);
+        $this->comercial_id = $this->acuerdo->user_id;
         $this->nAcuerdo = $this->acuerdo->nAcuerdo;
 
         // Cargar cliente y demás datos del acuerdo
@@ -244,13 +250,18 @@ class EditComponent extends Component
         //dd($this->fecha_firma);
         //dd($this->productos_lobo);
 
-
+        if($this->comercial_id == 0 || $this->comercial_id == null || $this->comercial_id == ''){
+            $this->comercial_id = null;
+        }
         // Actualizar el acuerdo comercial
         $this->acuerdo->update([
+            'user_id' => $this->comercial_id == null ? $this->user->id : $this->comercial_id,
+
             'prductos_lobo' => json_encode($this->productos_lobo),
             'productos_otros' => json_encode($this->productos_otros),
             'marketing' => $this->marketing,
             'observaciones' => $this->observaciones,
+
             'firma_comercial_lobo' => $this->firma_comercial_lobo_data,
             'firma_comercial' => $this->firma_comercial_data,
             'firma_cliente' => $this->firma_cliente_data,

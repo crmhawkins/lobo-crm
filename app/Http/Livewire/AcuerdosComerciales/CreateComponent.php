@@ -4,10 +4,12 @@ namespace App\Http\Livewire\AcuerdosComerciales;
 
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-
+use App\Models\User;
 use App\Models\ClientesComercial;
 use App\Models\acuerdosComerciales;
+
 use Illuminate\Support\Facades\Auth;
+
 
 use Carbon\Carbon;
 
@@ -47,11 +49,17 @@ class CreateComponent extends Component
     public $firma_comercial_data;
     public $firma_cliente_data;
     public $firma_distribuidor_data;
+    public $comerciales = [];
+    public $comercial_id;
 
 
     public function mount()
     {
         $this->user = Auth::user();
+
+        $this->comerciales = User::all();
+
+
         $this->mes_firma = 'Enero';
         $this->cliente = ClientesComercial::findOrFail($this->identificador)->toArray();
         // $this->dni = $this->cliente['cif'];
@@ -164,10 +172,17 @@ class CreateComponent extends Component
         } else {
             $fecha_firma = $this->formarFechaFirma($this->dia_firma, $this->mes_firma, $this->anio_firma);
         }
+        
+        if($this->comercial_id == 0 || $this->comercial_id == null || $this->comercial_id == ''){
+            
+            $this->comercial_id = null;
+
+        }
+
 
         // Crear el acuerdo comercial
         $acuerdoComercial = acuerdosComerciales::create([
-            'user_id' => $this->user->id,
+            'user_id' => $this->comercial_id == null ? $this->user->id : $this->comercial_id,
             'cliente_id' => $this->cliente['id'],
             'nAcuerdo' => $this->nAcuerdo,
             'nombre_empresa' => $this->cliente['nombre'],
