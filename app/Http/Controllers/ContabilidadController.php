@@ -186,7 +186,7 @@ class ContabilidadController extends Controller
         );
 
         // Pasar los totales por cuenta y los totales generales a la vista
-        return view('contabilidad.libroDiario', compact('paginatedTotalesPorCuenta', 'year', 'month', 'cuentaContableId', 'totalDebe', 'totalHaber'));
+        return view('contabilidad.librodiario', compact('paginatedTotalesPorCuenta', 'year', 'month', 'cuentaContableId', 'totalDebe', 'totalHaber'));
     }
 
 
