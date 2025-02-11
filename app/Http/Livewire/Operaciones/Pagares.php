@@ -37,17 +37,20 @@ class Pagares extends Component
         $this->bancos = Bancos::all();
 
         // Obtener todas las cajas con sus pagares
-        $this->cajas = Caja::with([
-            'pagares',
-            'proveedor',
-            'facturasCompensadas.factura'
-        ])
-        ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
-        ->whereMonth('fecha', '=', $this->mes)
-        ->whereYear('fecha', '=', $this->anio)
-        ->where('tipo_movimiento', 'Gasto')
-        ->get()
-        ->toArray();
+      // Obtener todas las cajas con sus pagares
+            $this->cajas = Caja::with([
+                'pagares',
+                'proveedor',
+                'facturasCompensadas.factura'
+            ])
+            ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
+            ->when($this->mes != 0, function($query) {
+                $query->whereMonth('fecha', '=', $this->mes);
+            })
+            ->whereYear('fecha', '=', $this->anio)
+            ->where('tipo_movimiento', 'Gasto')
+            ->get()
+            ->toArray();
         // dd($this->cajas);
         // Inicializar nPagos con el conteo de pagarés de cada caja
         // Inicializar nPagos con el conteo de pagarés de cada caja
@@ -102,20 +105,21 @@ class Pagares extends Component
     
     public function updatedMes()
     {
-         // Obtener todas las cajas con sus pagares
-         $this->cajas = Caja::with([
+        // Obtener todas las cajas con sus pagares
+        $this->cajas = Caja::with([
             'pagares',
             'proveedor',
             'facturasCompensadas.factura'
         ])
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
-        ->whereMonth('fecha', '=', $this->mes)
+        ->when($this->mes != 0, function($query) {
+            $query->whereMonth('fecha', '=', $this->mes);
+        })
         ->whereYear('fecha', '=', $this->anio)
         ->where('tipo_movimiento', 'Gasto')
-
         ->get()
         ->toArray();
-
+    
         foreach ($this->cajas as $index => $caja) {
             $this->nPagos[$index] = count($caja['pagares']);
         }
@@ -129,10 +133,11 @@ class Pagares extends Component
             'facturasCompensadas.factura'
         ])
         ->whereIn('metodo_pago', ['Pagare', 'PAGARÉ', 'pagare', 'Pagaré', 'PAGARE'])
-        ->whereMonth('fecha', '=', $this->mes)
+        ->when($this->mes != 0, function($query) {
+            $query->whereMonth('fecha', '=', $this->mes);
+        })
         ->whereYear('fecha', '=', $this->anio)
         ->where('tipo_movimiento', 'Gasto')
-
         ->get()
         ->toArray();
 
@@ -145,6 +150,17 @@ class Pagares extends Component
     {
         $caja = $this->cajas[$key];
         $currentPagosCount = count($caja['pagares']);
+
+        // Calcular la compensación total
+        $compensacionTotal = 0;
+        if (isset($caja['facturas_compensadas']) && count($caja['facturas_compensadas']) > 0) {
+            foreach ($caja['facturas_compensadas'] as $item) {
+                $compensacionTotal += $item['pagado'];
+            }
+        }
+
+        // Calcular el total restante después de la compensación
+        $totalRestante = $caja['total'] - $compensacionTotal;
 
         if ($value > $currentPagosCount) {
             // Crear nuevos pagarés
@@ -163,11 +179,9 @@ class Pagares extends Component
             PagaresModel::where('caja_id', $caja['id'])->orderBy('nPagos', 'desc')->take($currentPagosCount - $value)->delete();
         }
 
-        // Calcular el importe por pagaré
-
         if($value != 0){
-
-            $importePorPagare = round($caja['total'] / $value, 2);
+            // Calcular el importe por pagaré usando el total restante
+            $importePorPagare = round($totalRestante / $value, 2);
 
             $cajaModel = Caja::find($caja['id']);
 
@@ -189,18 +203,13 @@ class Pagares extends Component
         ->whereMonth('fecha', '=', $this->mes)
         ->whereYear('fecha', '=', $this->anio)
         ->where('tipo_movimiento', 'Gasto')
-
         ->get()
         ->toArray();
         
         foreach ($this->cajas as $index => $caja) {
             $this->nPagos[$index] = count($caja['pagares']);
         }
-        // Emitir un evento para actualizar la vista
         $this->emit('refreshComponent');
-
-        // Actualizar la propiedad nPagos
-        //$this->nPagos[$key] = $value;
     }
 
     public function obtenerPagares()

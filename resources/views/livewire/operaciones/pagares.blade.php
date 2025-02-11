@@ -30,6 +30,8 @@
                                 @php
                                     \Carbon\Carbon::setLocale('es');
                                 @endphp
+                                <option value="0">Todos los meses</option>
+
                                 @foreach(range(1, 12) as $m)
                                     <option value="{{ $m }}">{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
                                 @endforeach
@@ -242,10 +244,10 @@
                             ],
                             responsive: true,
                             lengthChange: false,
-                            pageLength: 30,
+                            {{-- pageLength: 30, --}}
+                            paging: false,
                             ordering: false,
                             searching: false,
-                            paging: false,
                             autoWidth: false,
                             columnDefs: [
                                 { targets: '_all', defaultContent: '' },
@@ -257,7 +259,7 @@
                             language: {
                                 'lengthMenu': 'Mostrar _MENU_ registros por página',
                                 'zeroRecords': 'No se encontraron registros',
-                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'info': '',
                                 'infoEmpty': 'No hay registros disponibles',
                                 'infoFiltered': '(filtrado de _MAX_ total registros)',
                                 'search': 'Buscar:',
@@ -290,7 +292,12 @@
                             <tbody>
                                 
                                 @foreach($cajas as $index => $caja)
-
+                                @php
+                                    $compensacion = 0;
+                                        foreach ($caja['facturas_compensadas'] as $item) {
+                                            $compensacion += $item['pagado'];
+                                        }
+                                @endphp
                                     
                                         {{-- {{dd($caja)}} --}}
                                         <tr>
@@ -302,16 +309,11 @@
                                                     <small>Sin proveedor</small>
                                                 @endif
                                             </td>
-                                            <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">{{ $caja['total'] }} @if($caja['total']) € @endif</td>
+                                            <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">{{ $caja['total'] - $compensacion }} @if($caja['total']) € @endif</td>
                                             <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">{{ $caja['fecha'] }}</td>
                                             <td rowspan="{{ (count($caja['pagares']) ?? 1) + 1 }}">
                                                 @if(isset($caja['facturas_compensadas']) && count($caja['facturas_compensadas']) > 0)
-                                                @php
-                                                        $compensacion = 0;
-                                                        foreach ($caja['facturas_compensadas'] as $item) {
-                                                            $compensacion += $item['pagado'];
-                                                        }
-                                                @endphp
+                                                
                                                 {{ $compensacion }} @if($compensacion) € @endif
                                                 @else
                                                     <small>Sin compensar</small>
@@ -328,7 +330,7 @@
                                                     @foreach ($caja['facturas_compensadas'] as $item)
                                                         {{-- {{dd($item['factura'])}} --}}
                                                         @if($item['factura'])
-                                                            <small>{{ $item['factura']['numero_factura'] }}</small> 
+                                                            <a href="{{ route('facturas.edit', $item['factura']['id']) }}">{{ $item['factura']['numero_factura'] }}</a>
                                                         @endif
                                                     @endforeach
                                                 @else

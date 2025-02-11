@@ -1246,7 +1246,7 @@
                         <span>ALERTAS</span>
                     </a>
                 </div>
-                @if(Auth::user()->surname == 'algeciras')
+                @if(Auth::user()->surname == 'algeciras' || Auth::user()->surname == 'cordoba')
 
                     <div class="exit-button-col">
                         <a class="footer-button" href="{{ route('caja.pagares') }}">
@@ -1579,6 +1579,16 @@
                         <span>ALERTAS</span>
                     </a>
                 </div>
+                @if(Auth::user()->surname == 'algeciras' || Auth::user()->surname == 'cordoba')
+
+                    <div class="exit-button-col">
+                        <a class="footer-button" href="{{ route('caja.pagares') }}">
+                            <i class="fa-regular fa-file-lines" style="font-size: 44px;"></i>
+                            <span>PAGARES</span>    
+                        </a>
+                    </div>
+
+                @endif
                 <div class="col-2 col-md-2 col-lg-1 exit-button-col">
                     <button class="footer-button" href="{{ route('logout') }}"
                         onclick="event.preventDefault();document.getElementById('cPnEf0Yn21GWvOwPEAvTtEmZ1IuHPGSMwogz4WnK').submit();">
