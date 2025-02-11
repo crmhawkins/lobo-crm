@@ -43,17 +43,18 @@ class Giro extends Component
 
     public function obtenerFacturas()
     {
-
-        $this->facturas = Facturas::where('tipo', null)
-        ->where('metodo_pago', 'giro_bancario')
-        ->whereMonth('fecha_emision', $this->mes)
-        ->whereYear('fecha_emision', $this->anio)
-        ->get();
-
-
+        $query = Facturas::where('tipo', null)
+            ->where('metodo_pago', 'giro_bancario')
+            ->whereYear('fecha_emision', $this->anio);
+    
+        if ($this->mes != 0) {
+            $query->whereMonth('fecha_emision', $this->mes);
+        }
+    
+        $this->facturas = $query->get();
+    
         foreach ($this->facturas as $factura) {
             if ($factura->giro_bancario) {
-                // dd($factura->giro_bancario);
                 $this->giroData[$factura->id] = [
                     'banco_id' => $factura->giro_bancario->banco_id,
                     'fecha_programacion' => $factura->giro_bancario->fecha_programacion,
@@ -61,8 +62,6 @@ class Giro extends Component
                 ];
             }
         }
-
-
     }
 
     public function editGiro($facturaId)

@@ -31,6 +31,7 @@
                                 @php
                                     \Carbon\Carbon::setLocale('es');
                                 @endphp
+                                <option value="0">Todos los meses</option>
                                 @foreach(range(1, 12) as $m)
                                     <option value="{{ $m }}">{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
                                 @endforeach
@@ -39,6 +40,7 @@
                         <div class="col-md-4">
                             <label for="anio">Año</label>
                             <select wire:model="anio" id="anio" class="form-control" >
+                                
                                 @foreach(range(Carbon\Carbon::now()->year, 2020) as $y)
                                     <option value="{{ $y }}">{{ $y }}</option>
                                 @endforeach
@@ -51,8 +53,9 @@
                             layout: {
                                 topStart: 'buttons'
                             },
+                            paging: false,
                             lengthChange: false,
-                            pageLength: 30,
+                            {{-- pageLength: 30, --}}
                             buttons: [
                                 {
                                     extend: 'copy',
@@ -94,7 +97,7 @@
                             language: {
                                 'lengthMenu': 'Mostrar _MENU_ registros por página',
                                 'zeroRecords': 'No se encontraron registros',
-                                'info': 'Mostrando página _PAGE_ de _PAGES_',
+                                'info': '',
                                 'infoEmpty': 'No hay registros disponibles',
                                 'infoFiltered': '(filtrado de _MAX_ total registros)',
                                 'search': 'Buscar:',
@@ -129,7 +132,7 @@
                                                 <select wire:model="giroData.{{ $item->id }}.banco_id" class="form-control">
                                                     <option value="">Seleccione un banco</option>
                                                     @foreach($bancos as $banco)
-                                                        <option value="{{ $banco->id }}" {{ $banco->id == $item->giro_bancario->banco_id ? 'selected' : '' }}>{{ $banco->nombre }}</option>
+                                                    <option value="{{ $banco->id }}" {{ $banco->id == ($item->giro_bancario ? $item->giro_bancario->banco_id : '') ? 'selected' : '' }}>{{ $banco->nombre }}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
