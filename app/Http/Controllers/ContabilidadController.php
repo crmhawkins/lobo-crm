@@ -845,10 +845,7 @@ class ContabilidadController extends Controller
             '471' => '+',
             '472' => '+',
             '544' => '+',
-            
-            
-            
-            
+               
         ];
 
         
@@ -1066,16 +1063,7 @@ class ContabilidadController extends Controller
         
         
 
-
-
-
-
-
-
         $inmovilizadoIntangible = $this->calcularTotalPorCuentas($cajasNegocios, $reglasInmovilizadoIntangible);
-
-
-
 
         $inmovilizadoMaterial = $this->calcularTotalPorCuentas($cajasNegocios, $reglaInmovilizadoMaterial);
         $inversionesInmobiliarias = $this->calcularTotalPorCuentas($cajasNegocios, $reglaInversionesInmobiliarias);
@@ -1124,16 +1112,6 @@ class ContabilidadController extends Controller
         , 'deudasLargoPlazo' , 'deudasConEmpresasGrupoAsociadasLargoPlazo' , 'pasivosImpuestoDiferido' , 'periodificacionesLargoPlazo'
         , 'provisionesCortoPlazo' , 'deudasCortoPlazo' , 'deudasConEmpresasGrupoAsociadasCortoPlazo' , 'acreedoresComercialesOtrasCuentas'
         , 'periodificacionesCortoPlazo2' , 'totalPasivo' , 'year'));
-
-
-
-        
-        
-
-
-
-
-
 
     }
 
