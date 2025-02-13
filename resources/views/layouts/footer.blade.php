@@ -56,6 +56,41 @@
     cursor: pointer;
 }
     </style>
+                    <style>
+
+                        .dropdown {
+                            position: relative;
+                            display: inline-block;
+                            width: 100%;
+                        }
+                        
+                        .dropdown-content {
+                            display: none;
+                            position: absolute;
+                            background-color: #f9f9f9;
+                            min-width: 160px;
+                            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                            z-index: 1;
+                            left: 0;
+                            top: 100%;
+                        }
+                        
+                        .dropdown-content a {
+                            color: black;
+                            padding: 12px 16px;
+                            text-decoration: none;
+                            display: block;
+                        }
+                        
+                        .dropdown-content a:hover {
+                            background-color: #f1f1f1;
+                        }
+                        
+                        .dropdown:hover .dropdown-content {
+                            display: block;
+                        }
+                        
+                                        </style>
 @switch($user_rol)
     @case(1)
         <footer class="" style="">
@@ -228,6 +263,27 @@
                           </svg>
                         <span>CAJA</span>
                     </a>
+                </div>
+
+
+
+                <div class="exit-button-col">
+                    <div class="footer-button dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-safe" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="3" y="7" width="18" height="14" rx="2" />
+                            <path d="M7 7v-1a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v1" />
+                            <path d="M12 10v4" />
+                            <circle cx="12" cy="14" r="2" />
+                            <path d="M10 14h4" />
+                        </svg>
+                        <span>OPERACIONES BANCARIAS</span>
+                        <div class="dropdown-content">
+                            <a href="{{ route('caja.cuadro-flujo') }}">Cuadro de Flujo</a>
+                            <a href="{{ route('caja.giro-bancario') }}">Giro Bancario</a>
+                            <a href="{{ route('caja.pagares') }}">Pagares</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('contabilidad.index') }}">
@@ -1246,7 +1302,7 @@
                         <span>ALERTAS</span>
                     </a>
                 </div>
-                @if(Auth::user()->surname == 'algeciras' || Auth::user()->surname == 'cordoba')
+                @if( Auth::user()->surname == 'cordoba')
 
                     <div class="exit-button-col">
                         <a class="footer-button" href="{{ route('caja.pagares') }}">
@@ -1579,7 +1635,7 @@
                         <span>ALERTAS</span>
                     </a>
                 </div>
-                @if(Auth::user()->surname == 'algeciras' || Auth::user()->surname == 'cordoba')
+                @if( Auth::user()->surname == 'cordoba')
 
                     <div class="exit-button-col">
                         <a class="footer-button" href="{{ route('caja.pagares') }}">
@@ -1909,6 +1965,24 @@
                           </svg>
                         <span>CAJA</span>
                     </a>
+                </div>
+                <div class="exit-button-col">
+                    <div class="footer-button dropdown">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-safe" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#35a8e0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="3" y="7" width="18" height="14" rx="2" />
+                            <path d="M7 7v-1a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v1" />
+                            <path d="M12 10v4" />
+                            <circle cx="12" cy="14" r="2" />
+                            <path d="M10 14h4" />
+                        </svg>
+                        <span>OPERACIONES BANCARIAS</span>
+                        <div class="dropdown-content">
+                            <a href="{{ route('caja.cuadro-flujo') }}">Cuadro de Flujo</a>
+                            <a href="{{ route('caja.giro-bancario') }}">Giro Bancario</a>
+                            <a href="{{ route('caja.pagares') }}">Pagares</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="exit-button-col">
                     <a class="footer-button" href="{{ route('proveedores.index') }}">
