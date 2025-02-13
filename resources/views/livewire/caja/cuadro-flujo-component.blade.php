@@ -126,7 +126,7 @@
                                 @endphp
                                 <tr>
 
-                                    <td @if(isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>{{$ingresosBanco2[$i]->factura->numero_factura ?? ''}}</td>
+                                    <td @if(isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>@if(isset($ingresosBanco2[$i])) <a href="{{ route('caja.edit', $ingresosBanco2[$i]->id) }}">{{$ingresosBanco2[$i]->factura->numero_factura ?? ''}}</a> @endif</td>
                                     <td @if(isset($ingresosBanco2[$i]) ) class="bg-danger text-white" @endif>{{ $ingresosBanco2[$i]->factura->cliente->nombre ?? '' }}</td>
 
                                     <td @if(isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>{{ $ingresosBanco2[$i]->importe ?? '' }} @if(isset($ingresosBanco2[$i])) € @endif</td>
