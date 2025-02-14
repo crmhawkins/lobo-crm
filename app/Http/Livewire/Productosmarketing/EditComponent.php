@@ -3,11 +3,12 @@
 namespace App\Http\Livewire\Productosmarketing;
 
 use App\Models\ProductosMarketing;
+use App\Models\CostesProductosMarketing;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
-
+use Carbon\Carbon;
 class EditComponent extends Component
 {
     use LivewireAlert;
@@ -24,6 +25,10 @@ class EditComponent extends Component
     public $foto_rutaOld;
     public $nueva_foto = 0;
     public $producto;
+    public $costes = [];
+    public $nuevoCoste = 0;
+    public $costesEditados = [];
+
 
     public function mount($identificador)
     {
@@ -40,6 +45,67 @@ class EditComponent extends Component
             $this->descripcion = $producto->description;
             $this->materiales = $producto->materiales;
             $this->foto_rutaOld = $producto->foto_ruta;
+        }
+        $this->cargarCostes();
+
+    }
+
+    protected function cargarCostes()
+    {
+        $this->costes = CostesProductosMarketing::where('producto_id', $this->identificador)
+            ->orderBy('fecha', 'desc')
+            ->get();
+        
+        foreach ($this->costes as $coste) {
+            $this->costesEditados[$coste->id] = [
+                'coste' => $coste->coste,
+                'fecha' => Carbon::parse($coste->fecha)->format('Y-m-d') // Convertir a Carbon antes de formatear
+            ];
+        }
+    }
+    
+    public function agregarCoste()
+    {
+        $this->validate([
+            'nuevoCoste' => 'required|numeric|min:0'
+        ]);
+
+        CostesProductosMarketing::create([
+            'producto_id' => $this->identificador,
+            'coste' => $this->nuevoCoste,
+            'fecha' => now()
+        ]);
+
+        $this->nuevoCoste = 0;
+        $this->cargarCostes();
+        $this->alert('success', 'Coste añadido correctamente');
+    }
+
+    public function actualizarCoste($costeId)
+    {
+        $this->validate([
+            'costesEditados.'.$costeId.'.coste' => 'required|numeric|min:0',
+            'costesEditados.'.$costeId.'.fecha' => 'required|date'
+        ]);
+    
+        $coste = CostesProductosMarketing::find($costeId);
+        $coste->update([
+            'coste' => $this->costesEditados[$costeId]['coste'],
+            'fecha' => $this->costesEditados[$costeId]['fecha']
+        ]);
+    
+        $this->cargarCostes();
+        $this->alert('success', 'Coste actualizado correctamente');
+    }
+
+    
+    public function eliminarCoste($costeId)
+    {
+        $coste = CostesProductosMarketing::find($costeId);
+        if ($coste) {
+            $coste->delete();
+            $this->cargarCostes();
+            $this->alert('success', 'Coste eliminado correctamente');
         }
     }
 

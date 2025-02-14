@@ -210,7 +210,7 @@
         </div>
     @endforeach
     <!-- Formulario para costes de productos normales -->
-    <form action="{{ route('control-presupuestario.guardarCostes') }}" method="POST" id="costesFormProductos">
+    {{-- <form action="{{ route('control-presupuestario.guardarCostes') }}" method="POST" id="costesFormProductos">
         @csrf
         <input type="hidden" name="año" value="{{ $year }}">
 
@@ -267,10 +267,10 @@
         </div>
         <button type="button" class="btn btn-secondary mb-5" id="addRowBtnProductos">Añadir Producto</button>
         <button type="submit" class="btn btn-primary mb-5">Guardar costes</button>
-    </form>
+    </form> --}}
 
     <!-- Formulario para costes de productos de marketing -->
-    <form action="{{ route('control-presupuestario.guardarCostesMarketing') }}" method="POST" id="costesFormMarketing">
+    {{-- <form action="{{ route('control-presupuestario.guardarCostesMarketing') }}" method="POST" id="costesFormMarketing">
         @csrf
         <input type="hidden" name="año" value="{{ $year }}">
 
@@ -324,7 +324,7 @@
         </div>
         <button type="button" class="btn btn-secondary mb-5" id="addRowBtnMarketing">Añadir Producto Marketing</button>
         <button type="submit" class="btn btn-primary mb-5">Guardar costes de marketing</button>
-    </form>
+    </form> --}}
 </div>
 
 @endsection
@@ -507,7 +507,7 @@
         document.getElementById('loader').style.display = 'none';
     }
     </script>
-<script>
+{{-- <script>
     $(document).ready(function() {
         let eliminados = $('#eliminados').val() ? $('#eliminados').val().split(',') : [];
     
@@ -689,5 +689,5 @@
             }
         });
     });
-</script>
+</script> --}}
 @endsection

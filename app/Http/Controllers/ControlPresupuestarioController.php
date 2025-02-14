@@ -17,6 +17,7 @@ use App\Models\Caja;
 use App\Models\ProductosMarketing;
 use App\Models\CostesMarketing;
 use App\Models\CostesProductos;
+use App\Models\CostesProductosMarketing;
 
 //PDF
 use PDF;
@@ -2694,31 +2695,40 @@ public function marketing(Request $request)
         ->get();
 
     // Obtener los costes de productos normales por año
-    $costesProductos = Costes::where('year', $year)
-        ->with('producto', 'delegacion')
-        ->get();
+    $costesProductos = CostesProductos::whereYear('fecha', $year)
+        ->with('productos')
+        ->get()
+        ->groupBy('producto_id');
+
 
     // Obtener los costes de productos de marketing por año
-    $costesMarketing = CostesMarketing::where('year', $year)
-        ->with('producto', 'delegacion')
-        ->get();
+    $costesMarketing = CostesProductosMarketing::whereYear('fecha', $year)
+        ->with('producto')
+        ->get()
+        ->groupBy('producto_id');
 
         // dd($costesProductos, $costesMarketing);
 
     // Mapa de costes por producto y delegación
     $costesMapProductos = [];
-    foreach ($costesProductos as $coste) {
-        $productId = $coste->product_id;
-        $delegacionCOD = $coste->COD ?? 'General';
-        $costesMapProductos[$productId][$delegacionCOD] = $coste->cost;
+    foreach ($costesProductos as $productId => $costesProducto) {
+        $costeActual = $costesProducto->sortByDesc('fecha')->first(); // Obtener el último coste para el año
+        if ($costeActual) {
+            // dd($costeActual);
+            $costesMapProductos[$productId]['General'] = $costeActual->coste; // Todos usan el mismo coste
+        }
     }
 
+    
+
     $costesMapMarketing = [];
-    foreach ($costesMarketing as $coste) {
-        $productId = $coste->product_id;
-        $delegacionCOD = $coste->COD ?? 'General';
-        $costesMapMarketing[$productId][$delegacionCOD] = $coste->cost;
+    foreach ($costesMarketing as $productId => $costesProducto) {
+        $costeActual = $costesProducto->sortByDesc('fecha')->first(); // Obtener el último coste para el año
+        if ($costeActual) {
+            $costesMapMarketing[$productId]['General'] = $costeActual->coste; // Todos usan el mismo coste
+        }
     }
+
 
     // Calcular las ventas por trimestre, mes, producto y delegación
     $ventasPorTrimestre = [];
@@ -2814,14 +2824,22 @@ public function marketing(Request $request)
         }
     }
 
-    // Agrupar los costes por delegación
-    $costesProductosPorDelegacion = $costesProductos->groupBy(function ($coste) {
-        return $coste->delegacion ? $coste->delegacion->nombre : 'General';
-    });
 
-    $costesMarketingPorDelegacion = $costesMarketing->groupBy(function ($coste) {
-        return $coste->delegacion ? $coste->delegacion->nombre : 'General';
-    });
+    $costesProductosPorDelegacion = [];
+    foreach ($delegaciones as $delegacion) {
+        // Asignar directamente el array de costes a cada delegación
+        $costesProductosPorDelegacion[$delegacion->nombre] = $costesProductos->toArray();
+    }
+    // Agrupar los costes por delegación
+  
+
+    $costesMarketingPorDelegacion = [];
+    foreach ($delegaciones as $delegacion) {
+        // Asignar directamente el array de costes a cada delegación
+        $costesMarketingPorDelegacion[$delegacion->nombre] = $costesMarketing->toArray();
+    }
+
+  
 
     return view('control-presupuestario.marketing', compact('cajaPorTrimestre', 'ventasPorTrimestre', 'ventasMarketingPorTrimestre', 'delegaciones', 'year', 'costesProductosPorDelegacion', 'costesMarketingPorDelegacion', 'productos2', 'productosMarketing'));
 }
