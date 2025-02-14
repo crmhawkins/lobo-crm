@@ -15,8 +15,8 @@ class CostesProductos extends Model
         'fecha'
     ];
 
-    public function producto()
+    public function productos()
     {
-        return $this->belongsTo(Producto::class);
+        return $this->belongsTo(Productos::class);
     }
 }
