@@ -15,6 +15,7 @@ use App\Models\Delegacion;
 use App\Models\FacturasCompensadas;
 use Livewire\WithPagination;
 use App\Models\CuadroFlujo;
+use App\Models\Bancos;
 
 class Cuadro extends Component
 {
@@ -26,11 +27,217 @@ class Cuadro extends Component
     public $saldo_inicial_caixa;
     public $saldo_inicial_santander;
 
+
+
+    public $is_pagado;
+    public $banco;
+    public $fecha;
+    public $importe = 0;
+    public $descripcion;
+    public $tipoMovimiento;
+    public $pedido_id;
+
+    public $bancos;
+
+    public $facturaSeleccionada;
+    public $importeFactura;
+    public $ingresos_factura;
+    public $facturas_compensadas;
+    public $importeFacturaCompensada;
+    public $importeCompensado;
+    public $compensacion_factura = false;
+    public $movimientoId;
+    public $isPagadoEditar = false;
+
+    public $proveedores = [];
+    public $proveedor_id;
+
     public function mount()
     {
         $this->selectedMonth = Carbon::now()->format('Y-m');
         $this->initializeSaldos();
         $this->dailyTransactions = $this->getDailyTransactions();
+        $this->facturas = Facturas::where(function($query) {
+            $query->where('estado', 'Pendiente')
+                  ->orWhere('estado', 'Parcial');
+        })
+        ->whereNull('factura_id')
+        ->orderBy('id', 'asc')
+        ->get();
+        $this->bancos = Bancos::all();
+        $this->proveedores = Proveedores::orderBy('nombre', 'asc')->get();
+    }
+
+    public function facturaHasIva($id)
+    {
+        $factura = Facturas::find($id);
+        //dd($factura);
+        //dependiendo de que delegacion sea el cliente se le aplica iva o no
+        if(!$factura){
+
+            //return alert error
+            $this->alert('error', '¡No se ha podido cargar la factura!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => false,
+            ]);
+
+            return false;
+
+
+        }
+        $delegacion = $this->getDelegacion($factura->cliente_id);
+        if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR'){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    public function getDelegacion($id)
+    {
+        $delegaciones = Delegacion::all();
+        $cliente = Clients::find($id);
+        if (isset($cliente)) {
+            return $delegaciones->where('COD', $cliente->delegacion_COD)->first() ? $delegaciones->where('COD', $cliente->delegacion_COD)->first()->nombre : "no definido";
+        }
+        return "no definido";
+    }
+
+    public function pedidoSelected($pedidoId)
+    {
+        $factura = Facturas::find($pedidoId);
+        if ($factura) {
+            $this->importe = $factura->importe;
+        }
+    }
+
+    public function editarMovimiento($id)
+{
+    $this->movimientoId = $id;
+    $movimiento = Caja::find($id);
+    
+    if ($movimiento) {
+        $this->fechaMovimiento = $movimiento->fecha;
+        $this->isPagadoEditar = $movimiento->is_pagado;
+    }
+    $this->dailyTransactions = $this->getDailyTransactions();
+
+    $this->dispatchBrowserEvent('abrirModalEditar');
+}
+
+public function actualizarMovimiento()
+{
+    $movimiento = Caja::find($this->movimientoId);
+    
+    if ($movimiento) {
+        $movimiento->update([
+            'fecha' => $this->fechaMovimiento,
+            'is_pagado' => $this->isPagadoEditar
+        ]);
+    }
+    $this->dailyTransactions = $this->getDailyTransactions();
+
+
+    $this->dispatchBrowserEvent('cerrarModalEditar');
+    $this->alert('success', 'Movimiento actualizado correctamente');
+    $this->emit('movimientoActualizado');
+}
+
+
+    public function updatedPedidoId($id)
+{
+    if(isset($id) && $id != null){
+        $this->facturaSeleccionada = Facturas::find($id);
+
+        if($this->facturaHasIva($id)){
+            $this->importeFactura = $this->facturaSeleccionada->total;
+        }else{
+            $this->importeFactura = $this->facturaSeleccionada->precio;
+        }
+        $this->ingresos_factura = Caja::where('pedido_id', $id)->get();
+        $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $id)->get();
+        //dd( $this->facturas_compensadas);
+        $total = 0;
+        foreach ($this->facturas_compensadas as $factura) {
+            
+            $total += $factura->pagado;
+       
+        }
+
+        //dd($this->ingresos_factura->sum('importe'));
+        if(count($this->ingresos_factura) > 0){
+            $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+            
+
+        }else{
+            $this->importe = $this->importeFactura;
+        }
+        
+        if(count($this->facturas_compensadas) > 0){
+            //dd("hola");
+            $this->importeFacturaCompensada = $this->importe - $total;
+            $this->importeCompensado = $total;
+            $this->compensacion_factura = true;
+        }else{
+            $this->compensacion_factura = false;
+        }
+
+        //si esta factura tiene factura rectificativa
+        $facturaRectificativa = Facturas::where('id' , $this->facturaSeleccionada->factura_rectificativa_id)->first();
+        if($facturaRectificativa){
+            //dd($facturaRectificativa);
+            if($this->facturaHasIva($facturaRectificativa->id)){
+                $this->importeFactura = $facturaRectificativa->total;
+            }else{
+                $this->importeFactura = $facturaRectificativa->precio;
+            }
+            //dd($facturaRectificativa);
+            $this->ingresos_factura = Caja::where('pedido_id', $facturaRectificativa->id)->get();
+            $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $facturaRectificativa->id)->get();
+            $total = 0;
+            foreach ($this->facturas_compensadas as $factura) {
+                
+                $total += $factura->pagado;
+           
+            }
+
+            if(count($this->ingresos_factura) > 0){
+                $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
+
+            }else{
+                $this->importe = $this->importeFactura;
+            }
+
+        }
+
+    }
+}
+
+
+    public function crearMovimiento()
+    {
+        if($this->is_pagado == null){
+            $this->is_pagado = false;
+        }
+
+        $caja = Caja::create([
+            'is_pagado' => $this->is_pagado,
+            'banco' => $this->banco,
+            'fecha' => $this->fecha,
+            'importe' => $this->importe,
+            'descripcion' => $this->descripcion,
+            'tipo_movimiento' => $this->tipoMovimiento,
+            'pedido_id' => $this->pedido_id,
+            'poveedor_id' => $this->proveedor_id,
+        ]);
+        $this->dailyTransactions = $this->getDailyTransactions();
+        
+        //resetear los campos
+        $this->reset('is_pagado', 'banco', 'fecha', 'importe', 'descripcion', 'tipoMovimiento', 'pedido_id' , 'proveedor_id');
+
+        $this->alert('success', 'Movimiento creado correctamente');
+        $this->dispatchBrowserEvent('movimientoCreado', ['caja' => $caja]);
     }
 
     public function updatedSelectedMonth()

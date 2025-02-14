@@ -45,6 +45,7 @@ class Caja extends Model
         'cuentaContable_id',
         'isIngresoProveedor',
         'gasto_id',
+        'is_pagado',
     ];
 
     // Relación con Proveedores (Una caja pertenece a un proveedor)

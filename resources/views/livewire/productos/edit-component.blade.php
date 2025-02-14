@@ -210,6 +210,54 @@ $canEdit = $EsAdmin; //|| $estado == 1;
 
                 </div>
                 </form>
+                <div class="card m-b-30">
+                    <div class="card-body">
+                        <h5>Costes del producto</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group mb-3">
+                                    <input type="number" class="form-control" wire:model="nuevoCoste" placeholder="Nuevo coste">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" wire:click="agregarCoste">Añadir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Coste</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($costes as $coste)
+                                        <tr>
+                                            <td>    <input type="date" class="form-control" 
+                                                                wire:model="costesEditados.{{ $coste->id }}.fecha"></td>
+                                            <td>
+                                                <input type="number" class="form-control" 
+                                                       wire:model="costesEditados.{{ $coste->id }}.coste">
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success" 
+                                                        wire:click="actualizarCoste({{ $coste->id }})">
+                                                    <i class="fas fa-save"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" 
+                                                        wire:click="eliminarCoste({{ $coste->id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         @if($canEdit)

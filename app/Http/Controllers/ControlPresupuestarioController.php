@@ -178,7 +178,7 @@ public function analisisGlobal(Request $request)
     $margenRealPorDelegacion = [];  // Nuevo array para almacenar el margen real
     $inversionComercialPorDelegacion = [];  // Nuevo array para almacenar la inversión comercial
     $inversionMarketingPorDelegacion = [];  // Nuevo array para almacenar la inversión marketing
-    $inversionPatrocinioPorDelegacion = [];  // Nuevo array para almacenar la inversión patrocinio
+    // $inversionPatrocinioPorDelegacion = [];  // Nuevo array para almacenar la inversión patrocinio
     $resultadoPorDelegacionGI = [];  // Nuevo array para almacenar el resultado (G-I)
 
     // Inicializar los arrays de ventas, compras y márgenes por delegación y mes
@@ -196,7 +196,7 @@ public function analisisGlobal(Request $request)
             $margenRealPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar el margen real en 0
             $inversionComercialPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar la inversión comercial en 0
             $inversionMarketingPorDelegacion[$mes][$delegacion->nombre] = 0;  // Inicializar la inversión marketing en 0
-            $inversionPatrocinioPorDelegacion[$mes][$delegacion->nombre] = 0;
+            // $inversionPatrocinioPorDelegacion[$mes][$delegacion->nombre] = 0;
             $resultadoPorDelegacionGI[$mes][$delegacion->nombre] = 0;  // Inicializar resultado G-I
 
         }
@@ -362,7 +362,7 @@ public function analisisGlobal(Request $request)
             $inversionMarketingPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.18;
 
             //calcular inversión Patrocinio (magen * 0.05)
-            $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.05;
+            // $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre] = $margenFinalPorDelegacion[$mes][$delegacionNombre] * 0.05;
         }
     }
 
@@ -378,7 +378,7 @@ public function analisisGlobal(Request $request)
     $totalMargenRealPorTrimestre = array_sum(array_map('array_sum', $margenRealPorDelegacion));
     $totalInversionComercialPorTrimestre = array_sum(array_map('array_sum', $inversionComercialPorDelegacion));
     $totalInversionMarketingPorTrimestre = array_sum(array_map('array_sum', $inversionMarketingPorDelegacion));
-    $totalInversionPatrocinioPorTrimestre = array_sum(array_map('array_sum', $inversionPatrocinioPorDelegacion));
+    // $totalInversionPatrocinioPorTrimestre = array_sum(array_map('array_sum', $inversionPatrocinioPorDelegacion));
     //dd($inversionComercialPorDelegacion);
 
     foreach ($meses as $mes) {
@@ -388,8 +388,8 @@ public function analisisGlobal(Request $request)
             // Sumar las inversiones
             $inversionTotalPorDelegacion[$mes][$delegacionNombre] = 
                 $inversionComercialPorDelegacion[$mes][$delegacionNombre] + 
-                $inversionMarketingPorDelegacion[$mes][$delegacionNombre] + 
-                $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre];
+                $inversionMarketingPorDelegacion[$mes][$delegacionNombre] ; 
+                // $inversionPatrocinioPorDelegacion[$mes][$delegacionNombre];
 
             // Calcular el resultado (G - I) => Margen Final - Total Inversiones
             $resultadoPorDelegacionGI[$mes][$delegacionNombre] = 
@@ -413,7 +413,7 @@ public function analisisGlobal(Request $request)
         'totalMargenRealPorTrimestre',
         'totalInversionComercialPorTrimestre', 
         'totalInversionMarketingPorTrimestre',
-        'totalInversionPatrocinioPorTrimestre',
+        // 'totalInversionPatrocinioPorTrimestre',
         'year',
         'trimestre',
         'delegaciones',
@@ -426,7 +426,7 @@ public function analisisGlobal(Request $request)
         'margenRealPorDelegacion',
         'inversionComercialPorDelegacion',
         'inversionMarketingPorDelegacion',
-        'inversionPatrocinioPorDelegacion',
+        // 'inversionPatrocinioPorDelegacion',
         'resultadoPorDelegacionGI',
         'inversionTotalPorDelegacion',
     ));

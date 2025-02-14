@@ -22,7 +22,7 @@
             <a href="{{ route('control-presupuestario.logistica') }}" class="btn btn-primary btn-lg mb-2">Logística</a>
             <a href="{{ route('control-presupuestario.comerciales') }}" class="btn btn-primary btn-lg mb-2">Comerciales</a>
             <a href="{{ route('control-presupuestario.marketing') }}" class="btn btn-primary btn-lg mb-2">Marketing</a>
-            <a href="{{ route('control-presupuestario.patrocinios') }}" class="btn btn-primary btn-lg mb-2">Patrocinios</a>
+            {{-- <a href="{{ route('control-presupuestario.patrocinios') }}" class="btn btn-primary btn-lg mb-2">Patrocinios</a> --}}
             <a href="{{ route('control-presupuestario.presupuestos-delegacion') }}" class="btn btn-primary btn-lg mb-2">Presupuestos Delegación</a>
             <a href="{{ route('control-presupuestario.ventas-delegaciones') }}" class="btn btn-primary btn-lg mb-2">Ventas Delegaciones</a>
             <a href="{{ route('control-presupuestario.ventas-por-productos') }}" class="btn btn-primary btn-lg mb-2">Ventas por Productos</a>

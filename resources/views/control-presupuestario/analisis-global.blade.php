@@ -529,7 +529,7 @@
                 </tbody>
             </table>
         </div>
-        <h3>(IP) Inversión Patrocinio por Trimestre</h3>
+        {{-- <h3>(IP) Inversión Patrocinio por Trimestre</h3>
 
         <div class="table-responsive mb-5">
             <table class="table table-bordered">
@@ -577,7 +577,7 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> --}}
         <h3>Resultado (G-I) por Trimestre</h3>
         <div class="table-responsive mb-5">
             <table class="table table-bordered">

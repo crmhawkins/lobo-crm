@@ -1,4 +1,6 @@
 <div class="container-fluid" >
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <div class="page-title-box">
         <div class="row align-items-center">
             <div class="col-sm-6">
@@ -22,9 +24,9 @@
             <div class="card m-b-30">
                 <div class="table-responsive card-body">
                     
-                    <div wire:loading.flex class="loader-overlay">
+                    {{-- <div wire:loading.flex class="loader-overlay">
                         <div class="spinner"></div>
-                    </div>
+                    </div> --}}
 
                     <div class="row mb-2">
                         <div class="col-md-4">
@@ -44,7 +46,9 @@
                         <div class="col-md-4 mt-2">
                             <button wire:click="saveAndReload" class="btn btn-success">Guardar y Recargar</button>
                             <button wire:click="recalculateSaldos" class="btn btn-primary">Recalcular Saldos Iniciales</button>
-
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#crearMovimientoModal">
+                                Crear Movimiento
+                            </button>
                         </div>
                     </div>
 
@@ -54,7 +58,7 @@
                         }
                     </style>
 
-                    <table class="table text-center" border="1" style="width: 100%; border-collapse: collapse;">
+                    <table class="table text-center" border="1" style="width: 100%; border-collapse: collapse;" wire:ignore:self>
                         <!-- Fila de encabezado que ocupa 12 columnas -->
                         <tr>
                             <th colspan="12">Enero 2025</th>
@@ -126,25 +130,53 @@
                                 @endphp
                                 <tr>
 
-                                    <td @if(isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>@if(isset($ingresosBanco2[$i])) <a href="{{ route('caja.edit', $ingresosBanco2[$i]->id) }}">{{$ingresosBanco2[$i]->factura->numero_factura ?? ''}}</a> @endif</td>
-                                    <td @if(isset($ingresosBanco2[$i]) ) class="bg-danger text-white" @endif>{{ $ingresosBanco2[$i]->factura->cliente->nombre ?? '' }}</td>
+                                    <td @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && is_object($ingresosBanco2[$i])) class="bg-danger text-white" @endif>
+                                        @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && is_object($ingresosBanco2[$i]) && isset($ingresosBanco2[$i]->factura))
+                                            <a class="text-white badge bg-primary" href="{{ route('caja.edit', $ingresosBanco2[$i]->id) }}">
+                                                {{ $ingresosBanco2[$i]->factura->numero_factura ?? '' }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && is_object($ingresosBanco2[$i])) class="bg-danger text-white" @endif>
+                                        @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && is_object($ingresosBanco2[$i]) && isset($ingresosBanco2[$i]->factura) && isset($ingresosBanco2[$i]->factura->cliente))
+                                            <a href="#" class="text-white badge bg-dark" data-bs-toggle="modal" data-bs-target="#editarMovimientoModal" wire:click="editarMovimiento({{ $ingresosBanco2[$i]->id }})">
+                                                {{ $ingresosBanco2[$i]->factura->cliente->nombre ?? '' }}
+                                            </a>
+                                        @endif
+                                    </td>
 
-                                    <td @if(isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>{{ $ingresosBanco2[$i]->importe ?? '' }} @if(isset($ingresosBanco2[$i])) € @endif</td>
-                                    <td @if(isset($ingresosBanco2[$i]) && $i === 0) class="text-white" style="background-color: #C00000;" @endif> @if(isset($ingresosBanco2[$i]) && $i === 0) {{ $totalIngresosBanco2 ?? '' }} @if(isset($ingresosBanco2[$i])) € @endif @endif</td>
-                                    <td class="text-center text-white" @if(isset($ingresosBanco2[$i]) && $i === 0) @endif>
+                                    <td @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i])) class="bg-danger text-white" @endif>{{ $ingresosBanco2[$i]->importe ?? '' }} @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i])) € @endif</td>
+                                    <td @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && $i === 0) class="text-white" style="background-color: #C00000;" @endif> @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && $i === 0) {{ $totalIngresosBanco2 ?? '' }} @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i])) € @endif @endif</td>
+                                    <td class="text-center text-white" @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]) && $i === 0) @endif>
 
-
-                                        {{ $ingresosBanco2[$i]->santander ?? '' }}
+                                        @if(count($ingresosBanco2) > 0 && isset($ingresosBanco2[$i]))
+                                            {{ $ingresosBanco2[$i]->santander ?? '' }}
+                                        @endif
 
                                     </td>
                                     <td></td> <!-- Columna central vacía -->
                                     <td></td>
-                                    <td>{{ $gastosBanco1[$i]->proveedor->nombre ?? '' }}</td>
-                                    <td>{{ $gastosBanco1[$i]->importe ?? '' }} @if(isset($gastosBanco1[$i])) € @endif</td>
-                                    <td class="text-center text-white" @if(isset($gastosBanco1[$i]) && $i === 0) style="background-color: #156082;" @endif  >
-                                        {{ $gastosBanco1[$i]->saldo ?? '' }}
+                                    
+                                    <td @if(count($gastosBanco1) > 0 && isset($gastosBanco1[$i])) class="bg-danger text-white" @endif>{{ $gastosBanco1[$i]->importe ?? '' }} @if(count($gastosBanco1) > 0 && isset($gastosBanco1[$i])) € @endif</td>
+                                    <td @if(count($gastosBanco1) > 0 && isset($gastosBanco1[$i])) class="bg-danger text-white" @endif>
+                                        @if(isset($gastosBanco1[$i]) && is_object($gastosBanco1[$i]) && isset($gastosBanco1[$i]->proveedor))
+                                            <a href="javascript:void(0)" wire:click="editarMovimiento('{{ $gastosBanco1[$i]->id }}')" class="text-white badge bg-dark">
+                                                {{ $gastosBanco1[$i]->proveedor->nombre }} 
+                                            </a>
+                                        @elseif(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && isset($ingresosBanco1[$i]->factura) && isset($ingresosBanco1[$i]->factura->cliente))
+                                            <a href="javascript:void(0)" wire:click="editarMovimiento('{{ $ingresosBanco1[$i]->id }}')" class="text-white badge bg-dark">
+                                                {{ $ingresosBanco1[$i]->factura->cliente->nombre }}
+                                            </a>
+                                        @else
+                                            &nbsp;
+                                        @endif
                                     </td>
-                                    <td>{{ $gastosBanco1[$i]->saldo_global ?? '' }}</td>
+                                    <td >
+                                        @if(count($gastosBanco1) > 0 && isset($gastosBanco1[$i]))
+                                            {{-- {{ $gastosBanco1[$i]->saldo ?? '' }} --}}
+                                        @endif
+                                    </td>
+                                    <td> @if(count($gastosBanco1) > 0 && isset($gastosBanco1[$i])) {{ $gastosBanco1[$i]->saldo_global ?? '' }} @endif</td>
                                     <td></td>
                                 </tr>
                             @endfor
@@ -173,10 +205,7 @@
                                 @php
                                     $totalGastosBanco2 += $gastosBanco2[$i]->importe ?? 0;
                                     $totalIngresosBanco1 += $ingresosBanco1[$i]->importe ?? 0;
-                                  
-
-
-                                    
+                                         
                                     $primerTotalCaixa =  $primerTotalCaixa ?? 0;
                                     $primerTotalSantander = $primerTotalSantander ?? 0;
 
@@ -201,8 +230,17 @@
 
 
                                     <td @if( $i === 0) style="background-color: #c5c5c5; color: white" @endif>{{ $i === 0 ? $date : '' }}</td>
-                                    <td>{{ $gastosBanco2[$i]->proveedor->nombre ?? '' }}</td>
-                                    <td>{{ $gastosBanco2[$i]->importe ?? '' }} @if(isset($gastosBanco2[$i])) € @endif</td>
+                                    <td style="@if(isset($gastosBanco2[$i]) && is_object($gastosBanco2[$i]) && !$gastosBanco2[$i]->is_pagado) background-color: #90EE90; @endif">
+                                        @if(isset($gastosBanco2[$i]) && is_object($gastosBanco2[$i]) && isset($gastosBanco2[$i]->proveedor))
+                                        <a href="#" class="text-white badge bg-dark" data-bs-toggle="modal" data-bs-target="#editarMovimientoModal" wire:click="editarMovimiento('{{ $gastosBanco2[$i]->id }}')">
+                                            {{ $gastosBanco2[$i]->proveedor->nombre }}
+                                        </a>
+                                        @else
+                                            &nbsp;
+                                        @endif
+                                    </td>       
+                                    <td style="@if(isset($gastosBanco2[$i]) && is_object($gastosBanco2[$i]) && !$gastosBanco2[$i]->is_pagado) background-color: #90EE90; @endif">
+                                        {{ $gastosBanco2[$i]->importe ?? '' }} @if(isset($gastosBanco2[$i])) € @endif</td>
 
                                     <td class="text-center text-white" @if( $i === 0) style="background-color: #156082;" @endif>
                                         @if( $i === 0) {{ $totalGastosBanco2 ?? '0' }} @if( $i === 0) € @endif @endif
@@ -215,11 +253,25 @@
                                     <td @if( $i === 0) style="background-color: #156082; color: white" @endif> @if($i === 0) {{ $totalIngresosBanco1 ?? '0' }} @if($i === 0) € @endif @endif</td>
                                     <td @if( $i === 0) style="background-color: #c5c5c5; color: white" @endif> @if($i === 0) {{$date ?? ''}} @endif</td>
 
-                                    <td> {{ $ingresosBanco1[$i]->factura->numero_factura ?? '' }}</td>
-                                    <td  >
-                                        {{ $ingresosBanco1[$i]->factura->cliente->nombre ?? '' }}
+                                    <td style="@if(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && !$ingresosBanco1[$i]->is_pagado) background-color: #90EE90; @endif"> 
+                                        @if(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && isset($ingresosBanco1[$i]->factura) && isset($ingresosBanco1[$i]->factura->numero_factura))
+                                            <a href="{{ route('caja.edit', $ingresosBanco1[$i]->id) }}" class="text-white badge bg-info"  >
+                                                {{ $ingresosBanco1[$i]->factura->numero_factura ?? '' }}
+                                            </a>
+                                        @else
+                                            &nbsp;
+                                        @endif
                                     </td>
-                                    <td>{{ $ingresosBanco1[$i]->importe ?? '' }} @if(isset($ingresosBanco1[$i])) € @endif</td>
+                                    <td style="@if(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && !$ingresosBanco1[$i]->is_pagado) background-color: #90EE90; @endif" >
+                                        @if(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && isset($ingresosBanco1[$i]->factura) && isset($ingresosBanco1[$i]->factura->cliente))
+                                            <a href="#" class="text-white badge bg-dark" data-bs-toggle="modal" data-bs-target="#editarMovimientoModal" wire:click="editarMovimiento('{{ $ingresosBanco1[$i]->id }}')">
+                                                {{ $ingresosBanco1[$i]->factura->cliente->nombre }}
+                                            </a>
+                                        @else
+                                            &nbsp;
+                                        @endif
+                                    </td>
+                                    <td style="@if(isset($ingresosBanco1[$i]) && is_object($ingresosBanco1[$i]) && !$ingresosBanco1[$i]->is_pagado) background-color: #90EE90; @endif">{{ $ingresosBanco1[$i]->importe ?? '' }} @if(isset($ingresosBanco1[$i])) € @endif</td>
                                 </tr>
                             @endfor
 
@@ -259,62 +311,196 @@
         
     </div>
 
+    <!-- Modal para crear movimiento -->
+    <div class="modal fade" id="crearMovimientoModal" tabindex="-1" aria-labelledby="crearMovimientoModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearMovimientoModalLabel">Crear Movimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" wire:key="modal-body">
+                    <form wire:submit.prevent="crearMovimiento">
+                        <div class="mb-3">
+                            <label for="tipoMovimiento" class="form-label">Tipo de Movimiento</label>
+                            <select class="form-select" wire:model="tipoMovimiento" id="tipoMovimiento" required>
+                                <option value="">---SELECCIONE UN TIPO DE MOVIMIENTO---</option>
+                                <option value="Ingreso">Ingreso</option>
+                                <option value="Gasto">Gasto</option>
+                            </select>
+                        </div>
+                        
+                        @if($tipoMovimiento == 'Ingreso')
+                            
+                                <label for="pedido_id" class="form-label">Factura</label>
+                                <select class="form-select select2" wire:model="pedido_id" id="pedido_id" required x-ref="selectFactura">
+                                    <option value="">---SELECCIONE UNA FACTURA---</option>
+                                    @foreach($facturas as $factura)
+                                        <option value="{{ $factura->id }}">{{ $factura->numero_factura }}</option>
+                                    @endforeach
+                                </select>
+                            
+                        @endif
+
+                        @if($tipoMovimiento == 'Gasto')
+                        <div class="mb-3" wire:ignore>
+                            <label for="proveedor_id" class="form-label">Proveedor</label>
+                                    <select class="form-control select2" name="proveedor_id" id="select2-monitor"
+                                        wire:model.lazy="proveedor_id" required >
+                                        <option value="0">-- ELIGE UN PROVEEDOR
+                                            --
+                                        </option>
+                                        @foreach ($proveedores as $proveedor)
+                                            <option value="{{ $proveedor->id }}">
+                                                {{ $proveedor->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                        </div>
+                        @endif
+                        
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" wire:model.defer="fecha" id="fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="importe" class="form-label">Importe</label>
+                            <input type="number" step="0.01" class="form-control" wire:model.defer="importe" id="importe" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" wire:model.defer="descripcion" id="descripcion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="banco" class="form-label">Banco</label>
+                            <select class="form-select" wire:model.defer="banco" id="banco" required>
+                                <option value="">---SELECCIONE UN BANCO---</option>
+                                @foreach($bancos as $banco)
+                                    <option value="{{ $banco->id }}">{{ $banco->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="is_pagado" class="form-label">      
+                                Pagado                      
+                                 <input type="checkbox" class="" wire:model.defer="is_pagado" id="is_pagado">
+                                 
+                            </label>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar movimiento -->
+    <div class="modal fade" id="editarMovimientoModal" tabindex="-1" aria-labelledby="editarMovimientoModalLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarMovimientoModalLabel">Editar Movimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" wire:key="editar-movimiento-body">
+                    <form wire:submit.prevent="actualizarMovimiento">
+                        <div class="mb-3">
+                            <label for="fechaMovimiento" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" wire:model.defer="fechaMovimiento" id="fechaMovimiento" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="is_pagado" class="form-label">      
+                                Pagado                      
+                                 <input type="checkbox" class="" wire:model.defer="isPagadoEditar" id="isPagadoEditar">
+                                 
+                            </label>    
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @section('scripts')
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+     
 
-    <script>
-        // Escucha el evento 'updateUrl' emitido por Livewire
-        Livewire.on('updateUrl', (params) => {
-            const url = new URL(window.location.href);
-            url.searchParams.set('page', params.page);
-            window.history.pushState({}, '', url.toString());
-        });
-    
-        // Lee la página actual de la URL al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get('page');
-            if (page) {
-                Livewire.emit('setPage', page); // Notifica a Livewire la página actual
-            }
-        });
-    </script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="../assets/js/jquery.slimscroll.js"></script>
-<link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
-<!-- Responsive examples -->
-<script src="../assets/pages/datatables.init.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            // Escucha el evento 'updateUrl' emitido por Livewire
+            Livewire.on('updateUrl', (params) => {
+                const url = new URL(window.location.href);
+                url.searchParams.set('page', params.page);
+                window.history.pushState({}, '', url.toString());
+            });
+        
+            // Lee la página actual de la URL al cargar la página
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const page = urlParams.get('page');
+                if (page) {
+                    Livewire.emit('setPage', page); // Notifica a Livewire la página actual
+                }
+            });
+        </script>
+        <script>
+            $(document).ready(function() {
+                $('.select2').select2();
+            });
+        </script>
+
+        <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.0.3/b-3.0.1/b-colvis-3.0.1/b-html5-3.0.1/b-print-3.0.1/r-3.0.1/datatables.min.js"></script>
+        <!-- Responsive examples -->
+        <script src="../assets/pages/datatables.init.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+            
+       
+
 
     @endsection
 
-    <style>
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: none; /* Cambiado a none por defecto */
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .spinner {
-            border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+        <style>
+            .loader-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.8);
+                display: none; /* Cambiado a none por defecto */
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .spinner {
+                border: 8px solid #f3f3f3; /* Light grey */
+                border-top: 8px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                animation: spin 2s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+
+    
+
 </div>
+
