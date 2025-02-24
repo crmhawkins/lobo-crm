@@ -321,8 +321,9 @@ class EditComponent extends Component
             $this->pagado = array_sum($this->pagos);
             $this->pendiente = $this->total - $this->pagado;
         }
+
         $caja = Caja::find($this->identificador);
-         $pagares = $caja->pagares();
+        $pagares = $caja->pagares();
         if(count($pagares) > 0){
             $Npagares = count($pagares);
             $importe_efecto = $this->pendiente / $Npagares;
