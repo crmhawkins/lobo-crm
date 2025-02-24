@@ -323,7 +323,7 @@ class EditComponent extends Component
         }
 
         $caja = Caja::find($this->identificador);
-        $pagares = $caja->pagares();
+        $pagares = $caja->pagares()->get();
         if(count($pagares) > 0){
             $Npagares = count($pagares);
             $importe_efecto = $this->pendiente / $Npagares;
