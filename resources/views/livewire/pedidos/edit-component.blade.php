@@ -377,8 +377,8 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <label for="npedido_cliente" >Nº Pedido Cliente</label>
                             <input wire:model="npedido_cliente" class="form-control">
                         </div>
-                        
-                        
+
+
                         <div class="form-group col-md-1">
                             &nbsp;
                         </div>
@@ -630,10 +630,10 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             @this.set('unidades_producto', 0);
                                         });">
 
-                                        
+
                                             <select name="producto" id="select2-producto" wire:model="producto_seleccionado" style="width: 100% !important">
                                                 <option value="{{ null }}">-- Selecciona un producto --</option>
-                                                
+
                                                 @foreach ($productos->groupBy('grupo') as $grupo => $productosGrupo)
                                                     @if ($grupo)
                                                         <optgroup label="{{ $grupo }}">
@@ -650,7 +650,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                                 @if ($producto_seleccionado != null)
                                     <div class="row justify-content-center mt-1">
@@ -749,7 +749,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                                 console.log('data');
                                             });">
                                             <input type="text" value="{{ $productoEditarNombre}}" class="form-control" disabled>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -842,12 +842,12 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                 <div class="form-row justify-content-center">
                     <div class="form-group col-md-12">
                         <h5 class="ms-3 d-flex justify-content-between" style="border-bottom: 1px gray solid !important; padding-bottom: 10px !important;">
-                            Lista de productos de Marketing 
+                            Lista de productos de Marketing
                             <button type="button" class="btn btn-primary" data-toggle="modal" style="align-self: end !important;" data-target="#addProductMarketingModal" >
                                 Añadir Producto de Marketing
                             </button>
                         </h5>
-        
+
                         <div class="form-group col-md-12 tabla-productos">
                             @if (count($productos_marketing_pedido) > 0)
                                 <table class="table ms-3 table-striped table-bordered dt-responsive nowrap">
@@ -882,7 +882,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                 </div>
             </div>
         </div>
-            
+
         <!-- Modal para añadir productos de marketing -->
         <div wire:ignore.self class="modal fade" id="addProductMarketingModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" style="min-width: 25vw !important; align-self: center !important; margin-top: 0 !important;">
@@ -913,7 +913,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row justify-content-center mt-3">
                             <div class="col-md-4">
                                 <label for="unidades_marketing">Unidades</label>
@@ -924,7 +924,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 <input type="number" class="form-control" wire:model="precio_producto_marketing" placeholder="Precio por unidad" step="0.01">
                             </div>
                         </div>
-                        
+
                         <div class="row justify-content-center mt-3">
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-primary w-100" wire:click.prevent="addProductosMarketing('{{ $producto_marketing_seleccionado }}')" data-dismiss="modal" aria-label="Close">
@@ -941,7 +941,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
         </div>
 
     </div>
-    
+
 
     <div wire:ignore.self class="modal fade" id="viewModal2" tabindex="-1" role="dialog">
         <div class="modal-dialog"
@@ -999,7 +999,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                 pedido</button>
                         </div>
                     @endif
-                        
+
                     @if ($bloqueado)
                         @if ($this->getEstadoNombre() == 'Recibido' && $EsAdmin && $canAccept )
                             <div class="col-12">
@@ -1024,7 +1024,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                             <button class="w-100 btn btn-danger mb-2" id="alertaEliminar">Eliminar pedido</button>
                         </div>
                     @endif
-                    
+
                     @if(count($anotacionesProximoPedido) > 0 )
                         <div class="col-12">
                             <button class="w-100 btn btn-info mb-2" id="verAnotaciones" data-toggle="modal" data-target="#viewModal2">Ver
@@ -1041,20 +1041,20 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
                         </div>
                     @endif
-                    @if(!$this->hasFactura())
+                    @if(!$this->hasFactura() && !$this->pedidoHasAlbaran())
                         <div class="col-12">
                             <h5>Generar Factura</h5>
                             <a href="/admin/facturas-create/{{ $identificador }}" class="w-100 btn btn-danger mb-2" >Generar Factura</a>
 
                         </div>
                     @endif
-                    
+
                     {{-- @if($documento)
                         <div class="col-12">
                             <button class="w-100 btn btn-secondary mb-2" wire:click="descargarDocumento2">Descargar Documento</button>
                         </div>
                     @endif --}}
-                        
+
                 </div>
             </div>
         </div>
@@ -1094,7 +1094,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
             }
 
-            
+
             td.suelo {}
 
             @media(max-width: 756px){
@@ -1118,10 +1118,10 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     });
             });
         </script>
-    
+
 </div>
     @section('scripts')
-    
+
         {{-- <script src="https://cdn.datatables.net/responsive/2.4.0/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script> --}}
@@ -1227,7 +1227,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                     $('.js-example-basic-single').select2();
                 });
 
-               
+
             });
             $('#addProductModal').on('shown.bs.modal', function () {
 
@@ -1246,7 +1246,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
             $(document).ready(function() {
                 $('.js-example-basic-single').select2();
-                
+
 
             });
 

@@ -39,6 +39,7 @@ use App\Models\ProductosPedidoPack;
 use App\Models\EmpresasTransporte;
 use App\Models\ProductosMarketingPedidoPack;
 use App\Models\Direcciones;
+use App\Models\Albaran;
 
 
 class EditComponent extends Component
@@ -106,7 +107,7 @@ class EditComponent extends Component
     public $transporte;
     public $gastos_envio_iva;
 
-    public $registroEmails = []; 
+    public $registroEmails = [];
     public $emails = [];
     public $emailsSeleccionados = [];
     public $cliente;
@@ -160,7 +161,7 @@ class EditComponent extends Component
 
     // public function addDocumento(){
     //     if($this->documentoSubido !== null){
-                
+
     //         $this->documentoSubido->storeAs('documentos_justificativos', $this->documentoSubido->hashName() , 'private');
     //         //dd($this->documentoSubido->hashName() );
     //         $this->documentoPath = $this->documentoSubido->hashName();
@@ -208,7 +209,7 @@ class EditComponent extends Component
                 }
             }
         }
-        
+
         return $stock;
     }
 
@@ -218,14 +219,14 @@ class EditComponent extends Component
         $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
 
         foreach ($stocks as $stock) {
-            
+
             $stockEntrante = StockEntrante::where('stock_id', $stock->id)->where('producto_id', $producto->id)->first();
             if($stockEntrante){
 
                 $stockEntrantes[] = $stockEntrante;
             }
         }
-        
+
         $numStockTotal = 0;
         foreach ($stockEntrantes as $stockEntrante) {
             $historialStock = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
@@ -245,6 +246,7 @@ class EditComponent extends Component
 
 
     public function hasFactura(){
+
         $factura = Facturas::where('pedido_id', $this->identificador)->first();
         if($factura){
             return true;
@@ -252,6 +254,16 @@ class EditComponent extends Component
             return false;
         }
     }
+
+    public function pedidoHasAlbaran()
+    {
+        $albaran = Albaran::where('pedido_id', $this->identificador)->first();
+        if ($albaran) {
+            return true;
+        }
+        return false;
+    }
+
 
     public function addDocumentos()
     {
@@ -297,7 +309,7 @@ class EditComponent extends Component
             } finally {
                 $documento->delete();
                 $this->documentos = PedidosDocuments::where('pedido_id', $this->identificador)->get();
-                
+
                 $this->alert('success', '¡Documento eliminado correctamente!', [
                     'position' => 'center',
                     'timer' => 3000,
@@ -459,7 +471,7 @@ class EditComponent extends Component
             }
 
 
-            
+
         }
         //dd($this->productos_pedido);
         $this->gestionesPedido = GestionPedidos::where('pedido_id', $this->identificador)->where('estado', 'pendiente')->get();
@@ -480,7 +492,7 @@ class EditComponent extends Component
         }
 
         if(isset($this->almacen_id) && $this->almacen_id == 6){
-            $this->gastos_envio = $pedido->gastos_envio; 
+            $this->gastos_envio = $pedido->gastos_envio;
             $this->gastos_transporte = $pedido->gastos_transporte;
             $this->transporte = $pedido->transporte;
             $this->subtotal = $pedido->subtotal;
@@ -492,7 +504,7 @@ class EditComponent extends Component
         }else{
             $this->setPrecioEstimado();
         }
-       
+
 
         $this->canAccept = $this->ComprobarStockPedido();
 
@@ -508,7 +520,7 @@ class EditComponent extends Component
             ]);
         }
         $this->setPrecioEstimadoMarketing();
-       // 
+       //
         $this->emit('refreshComponent');
 
         $this->direcciones = Direcciones::where('cliente_id', $this->cliente_id)->get();
@@ -644,7 +656,7 @@ public function setPrecioEstimadoMarketing()
 
 
             // Inicializar las propiedades de dirección con la dirección por defecto
-            $this->direccion_entrega = $this->direccionPorDefecto;  
+            $this->direccion_entrega = $this->direccionPorDefecto;
             $this->localidad_entrega = $this->localidadPorDefecto;
             $this->provincia_entrega = $this->provinciaPorDefecto;
             $this->cod_postal_entrega = $this->codPostalPorDefecto;
@@ -729,11 +741,11 @@ public function setPrecioEstimadoMarketing()
                 'fecha.required' => 'La fecha es obligatoria.',
             ]
         );
-        
+
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
         $pedidosSave = $pedido->update(['estado' => 2]);
-        
+
         if ($pedidosSave) {
             Alertas::create([
                 'user_id' => 13,
@@ -783,7 +795,7 @@ public function setPrecioEstimadoMarketing()
                 $phone = '+34'.$almacenCordoba->telefono;
                 enviarMensajeWhatsApp('pedido_almacen', $data, $buttondata, $phone);
             }
-            
+
 
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
@@ -898,7 +910,7 @@ public function setPrecioEstimadoMarketing()
         }
 
         foreach ($this->productos_pedido as $productos) {
-            
+
             if (!isset($productos['id'])) {
                 DB::table('productos_pedido')->insert([
                     'producto_pedido_id' => $productos['producto_pedido_id'],
@@ -914,7 +926,7 @@ public function setPrecioEstimadoMarketing()
                                 'pedido_id' => $this->identificador,
                                 'pack_id' => $productos['producto_pedido_id'],
                                 'unidades' => $productoAsociado['unidades'],
-                                
+
                             ]);
                         }
                     }
@@ -1005,7 +1017,7 @@ public function setPrecioEstimadoMarketing()
                     ]
                 );
                 $this->calcularTotales($factura);
-                
+
                 //dd($factura);
             }
 
@@ -1018,8 +1030,8 @@ public function setPrecioEstimadoMarketing()
                     'referencia_id' => $pedido->id,
                     'leida' => null,
                 ]);
-            
-            
+
+
                 $dComercial = User::where('id', 14)->first();
                 $dGeneral = User::where('id', 13)->first();
                 $administrativo1 = User::where('id', 17)->first();
@@ -1058,7 +1070,7 @@ public function setPrecioEstimadoMarketing()
                     $phone = '+34'.$almacenCordoba->telefono;
                     enviarMensajeWhatsApp('pedido_bloqueado', $data, $buttondata, $phone);
                 }
-            
+
             }
 
             $this->alert('success', '¡Pedido registrado correctamente!', [
@@ -1111,10 +1123,10 @@ public function setPrecioEstimadoMarketing()
             $factura->subtotal_pedido = $this->subtotal;
             $factura->total = $total;
             $factura->save();
-            
+
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
-                
+
                 $total = $factura->precio;
                 $iva = (($factura->precio * 21) / 100);
                 if($factura->descuento){
@@ -1131,7 +1143,7 @@ public function setPrecioEstimadoMarketing()
                 $factura->total = $total;
                 $factura->save();
 
-            }   
+            }
         }
 
     }
@@ -1207,7 +1219,7 @@ public function setPrecioEstimadoMarketing()
     }
     public function alertaGuardar()
     {
-        
+
         $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
             'position' => 'center',
             'toast' => false,
@@ -1248,9 +1260,9 @@ public function setPrecioEstimadoMarketing()
         foreach ($facturas as $factura) {
             $totalFacturas += $factura->total;
         }
-        
+
         $pedido = Pedido::find($this->identificador);
-        
+
         //confirming
         $confirmig = $cliente->credito - $totalFacturas - $this->precio;
         //dd($totalFacturas , $this->precio, $confirmig, $cliente->credito);
@@ -1297,7 +1309,7 @@ public function setPrecioEstimadoMarketing()
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
-        if($this->bloqueado){ 
+        if($this->bloqueado){
             if($bloqueadopor == '1'){
                 return $this->alert('warning', 'El pedido ha sido bloqueado por superar el porcentaje de descuento permitido. ¿Desea aceptar el pedido? ', [
                     'position' => 'center',
@@ -1322,7 +1334,7 @@ public function setPrecioEstimadoMarketing()
                     'timerProgressBar' => true,
                     'timer' => null,
                 ]);
-            
+
             }
         }
         $pedidosSave = $pedido->update(['estado' => 2]);
@@ -1396,7 +1408,7 @@ public function setPrecioEstimadoMarketing()
 
 
     public function addAdjunto(){
-        
+
     }
 
     public function rechazarPedido()
@@ -1494,7 +1506,7 @@ public function setPrecioEstimadoMarketing()
                 'timerProgressBar' => true,
             ]);
         }
-        
+
 
 
     }
@@ -1571,9 +1583,9 @@ public function setPrecioEstimadoMarketing()
                     $unidades = $this->productos_pedido[$id]['unidades'] . ' unidades (' . $pallets . ' pallets)';
                 }
             }else{
-                $unidades = 0;  
+                $unidades = 0;
             }
-                
+
         // }
 
         return $unidades;
@@ -1600,7 +1612,7 @@ public function setPrecioEstimadoMarketing()
 
     }
 
-    
+
     public function getNombreTablaMarketing($id)
     {
         $producto = ProductosMarketing::find($id);
@@ -1613,9 +1625,9 @@ public function setPrecioEstimadoMarketing()
     }
 
     public function editProductos($id){
-        
+
         // $this->arrProductosEditar = [];
-        
+
         // //añadir al array el productoEditar junto a las unidades correspondientes
         // $this->arrProductosEditar[$this->productoEditarId][] = [
         //     'producto_pedido_id' => $this->productoEditarId,
@@ -1824,9 +1836,9 @@ public function setPrecioEstimadoMarketing()
 
         if($this->sinCargo == true){
 
-            $this->productoEditarPrecio = 0;    
+            $this->productoEditarPrecio = 0;
         }
-        
+
     }
 
     public function setPrecioEstimado()
@@ -1863,7 +1875,7 @@ public function setPrecioEstimadoMarketing()
             $this->descuento_total = 0;
         }
 
-       
+
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
@@ -1886,7 +1898,7 @@ public function setPrecioEstimadoMarketing()
                     }
                 }
             }
-            
+
         }
 
         // if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
@@ -2075,11 +2087,11 @@ public function setPrecioEstimadoMarketing()
             'Pedidos@serlobo.com'
         ];
         if($this->almacen_id == 2){
-            //push emailsDireccion 
+            //push emailsDireccion
             $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
 
         }
-            
+
 
 
         if(count($this->emailsSeleccionados) > 0){
@@ -2163,7 +2175,7 @@ public function setPrecioEstimadoMarketing()
             'toast' => false,
         ]);
     }
-        
+
     /*--return response()->streamDownload(
         fn () => print($pdf),
         "pedido_{$pedido->id}.pdf"
