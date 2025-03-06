@@ -1041,7 +1041,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
 
                         </div>
                     @endif
-                    @if(!$this->hasFactura() && !$this->pedidoHasAlbaran())
+                    @if(!$this->hasFactura() && $this->pedidoHasAlbaran())
                         <div class="col-12">
                             <h5>Generar Factura</h5>
                             <a href="/admin/facturas-create/{{ $identificador }}" class="w-100 btn btn-danger mb-2" >Generar Factura</a>
