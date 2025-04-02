@@ -13,7 +13,7 @@
         .precioProductoClientes{
             display:grid;
             grid-template-columns: repeat(5, 1fr) !important;
-        } 
+        }
         @media(max-width: 768px) {
            .content-page .content{
                 padding: 0px !important;
@@ -116,8 +116,8 @@
                 margin-left: 250px;
             }
 
-          
-        
+
+
             /* Media Query para dispositivos móviles */
             @media (max-width: 768px) {
                 #footerSidebar {
@@ -125,7 +125,7 @@
                 }
             }
         </style>
-        
+
         <button id="toggleFooterSidebar" style=" z-index: 1501; cursor: pointer; background: none; border: none; color: white;">
             <i class="fas fa-bars" id="openIcon"></i> <!-- Icono visible cuando el sidebar está cerrado -->
             <i class="fas fa-arrow-left" id="closeIcon" style="display: none;"></i> <!-- Icono visible cuando el sidebar está abierto -->
@@ -135,7 +135,7 @@
         </div>
 
         <div class="page-wrapper chiller-theme toggled" id="wrapper">
-            
+
             {{-- @include('layouts.sidebar') --}}
             @include('layouts.header')
             <div class="content-page">
@@ -177,7 +177,7 @@
             var openIcon = document.getElementById('openIcon');
             var closeIcon = document.getElementById('closeIcon');
             var button = document.getElementById('toggleFooterSidebar'); // Referencia al botón
-        
+
             if (button) {
                 button.addEventListener('click', function() {
                     if (sidebar.style.left === '0px') {
@@ -241,7 +241,7 @@
                 });
 
 
-                
+
 
     </script>
 
