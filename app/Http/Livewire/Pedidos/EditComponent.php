@@ -147,6 +147,8 @@ class EditComponent extends Component
     public $direcciones = [];
     public $direccion_seleccionada;
 
+    public $productos_sin_stock = [];
+
     public function getTipo($id){
 
         $tipo = TipoEmails::find($id);
@@ -196,7 +198,6 @@ class EditComponent extends Component
 
     public function ComprobarStockPedido(){
         $stock = true;
-        //dd("hola");
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_pedido_id']);
             if($producto->is_pack){
@@ -204,8 +205,7 @@ class EditComponent extends Component
             }
             if($producto){
                 $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
-                    if(!$stock){
-                    break;
+
                 }
             }
         }
@@ -214,7 +214,6 @@ class EditComponent extends Component
     }
 
     public function comprobarStock($producto, $unidades){
-        $hasStock = true;
         $stockEntrantes = [];
         $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
 
@@ -239,6 +238,10 @@ class EditComponent extends Component
 
         if($numStockTotal < $unidades){
             $hasStock = false;
+            $this->productos_sin_stock[] = [
+                'producto' => $producto->nombre,
+                'cantidad' => $numStockTotal
+            ];
         }
         return $hasStock;
     }
