@@ -204,8 +204,10 @@ class EditComponent extends Component
                 continue;
             }
             if($producto){
-                $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
-
+                $hasStock = $this->comprobarStock($producto, $productoPedido['unidades']);
+                if (!$hasStock) {
+                    $stock = false;
+                }
             }
         }
 
@@ -213,6 +215,7 @@ class EditComponent extends Component
     }
 
     public function comprobarStock($producto, $unidades){
+        $hasStock = true;
         $stockEntrantes = [];
         $stocks = Stock::where('almacen_id', $this->almacen_id)->get();
 
