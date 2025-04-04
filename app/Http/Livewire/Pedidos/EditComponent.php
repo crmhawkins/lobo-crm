@@ -206,7 +206,6 @@ class EditComponent extends Component
             if($producto){
                 $stock = $this->comprobarStock($producto, $productoPedido['unidades']);
 
-                }
             }
         }
 
