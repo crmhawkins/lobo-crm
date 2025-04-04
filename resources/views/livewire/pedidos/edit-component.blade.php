@@ -177,7 +177,7 @@ $mostrarElemento2 = Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::
                                         <h4 class="alert-heading">Stock Insuficiente</h4>
                                         <p>Este pedido ha sido recibido y no puede ser Aceptado.</p>
                                         @foreach ($productos_sin_stock as $producto_sin_stock)
-                                            <p>{{ $producto_sin_stock['producto'] }} - {{ $producto_sin_stock['cantidad'] }}</p>
+                                            <p>{{ $producto_sin_stock['producto'] }} - {{ $producto_sin_stock['cantidad'] }} stock disponible</p>
                                         @endforeach
                                     </div>
                                 @endif
