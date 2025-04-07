@@ -470,7 +470,7 @@ class EditComponent extends Component
                     'precio_total' => $producto->precio_total,
                     'is_pack' => isset($productoModel->is_pack) ? $productoModel->is_pack : false,
                     'productos_asociados' => $productoModel->is_pack ? $productosAsociadosPedido : [],
-                    'productos_asociados_marketing' => $productoModel->is_pack ? $productosAsociadosMarketingPedido : [],
+                    'productos_asociados_marketing' => ($productoModel->is_pack && isset($productoModel->products_id_marketing) ) ? $productosAsociadosMarketingPedido : [],
                     'borrar' => 0,
                 ];
             }
@@ -958,8 +958,6 @@ public function setPrecioEstimadoMarketing()
                             $productoPack->update(['unidades' => $productoAsociado['unidades']]);
                            }
                         }
-
-
                     }
 
                     if(isset($productos['productos_asociados_marketing'])){
