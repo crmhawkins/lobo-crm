@@ -45,7 +45,7 @@ class SettingsComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Opciones del CRM actualizadas correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',

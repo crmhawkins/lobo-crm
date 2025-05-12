@@ -79,7 +79,7 @@ class IndexComponent extends Component
         $this->clientes = Clients::all();
         $this->delegaciones = Delegacion::all();
         $this->comerciales = User::whereIn('role', [2, 3])->get();
-        
+
 
         // if ($user_rol == 3) {
         //     // Comercial
@@ -1489,12 +1489,12 @@ class IndexComponent extends Component
                 }
                 $this->alert('success', '¡Factura enviada por email correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
             } catch (\Exception $e) {
                 //dd($e);

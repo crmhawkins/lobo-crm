@@ -503,12 +503,12 @@ class EditComponent extends Component
         if ($deleteContrato) {
             $this->alert('success', 'Contrato eliminado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido actualizar la información del presupuesto!', [
@@ -574,7 +574,7 @@ class EditComponent extends Component
             File::makeDirectory($path, $mode = 0777, true, true);
         }
 
-        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output(); 
+        $pdf = Pdf::loadView('livewire.contratos.contract-component', $datos)->setPaper('a4', 'vertical')->save(public_path() . $this->ruta)->output();
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();

@@ -77,7 +77,7 @@ class EditComponent extends Component
     public function anadirEmail(){
         //dd("prueba");
         if($this->emailAnadir != ""){
-           
+
             $this->emails[] = $this->emailAnadir;
             $this->emailAnadir = "";
         }
@@ -123,7 +123,7 @@ class EditComponent extends Component
         ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
         ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
         ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
-        ->get();    
+        ->get();
         $this->productosAsignados =  ProductoPrecioCliente::where('cliente_id', $this->identificador)->get();
         $this->arrProductos = [];
         $this->credito = $cliente->credito;
@@ -131,7 +131,7 @@ class EditComponent extends Component
         $this->cuentaContable_id = $cliente->cuenta_contable;
         $this->emailsExistentes = Emails::where('cliente_id', $this->identificador)->get();
         $this->acuerdos = acuerdosComerciales::where('cliente_id', $this->identificador)->get();
-        
+
         //dd($this->emailsExistentes);
 
 
@@ -200,7 +200,7 @@ public function removeTelefono($index)
                 //dd($this->cuenta_contable);
             }
 
-           
+
         }
     }
 
@@ -208,7 +208,7 @@ public function removeTelefono($index)
         //ver el ultimo cliente creado y ver su numero de cuenta contable, que empieza por 700 y añadirle el codigo de delegacion
         $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
         //dd($ultimoCliente);
-        
+
         $numeroCuenta = $ultimoCliente->cuenta_contable;
         //coger el numero y quitarle el 700 y los 2 siguentes numeros
         $numeroCuenta = substr($numeroCuenta, 5);
@@ -358,11 +358,11 @@ public function removeTelefono($index)
                     $email1->email = $email;
                     $email1->cliente_id = $cliente->id;
                     $email1->save();
-                   
+
                 }
             }
             foreach ($this->arrProductos as $key => $value) {
-                   
+
                 $productoPrecioCliente = ProductoPrecioCliente::where('cliente_id', $cliente->id)->where('producto_id', $key)->first();
                 if($productoPrecioCliente){
                     $productoPrecioCliente->update([
@@ -386,12 +386,12 @@ public function removeTelefono($index)
 
             $this->alert('success', '¡Cliente actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del cliente!', [
@@ -437,14 +437,14 @@ public function removeTelefono($index)
 
         $this->alert('warning', '¿Seguro que desea borrar el cliente? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }
@@ -470,7 +470,7 @@ public function removeTelefono($index)
     // Función para cuando se llama a la alerta
     public function confirmDelete()
     {
-        
+
         $cliente = Clients::find($this->identificador);
         //event(new \App\Events\LogEvent(Auth::user(), 10, $cliente->id));
 

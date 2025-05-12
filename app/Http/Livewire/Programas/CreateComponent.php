@@ -22,7 +22,7 @@ class CreateComponent extends Component
 
     public $dia;
     public $precioBase;
-    public $id_servicio=0; 
+    public $id_servicio=0;
     public $id_evento=0;
     public $id_monitor;
     public $comienzoMontaje;
@@ -68,7 +68,7 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        
+
         // Validación de datos
         $validatedData = $this->validate([
             'dia' => 'required',
@@ -98,12 +98,12 @@ class CreateComponent extends Component
         if ($programaSave) {
             $this->alert('success', 'Servicio registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [

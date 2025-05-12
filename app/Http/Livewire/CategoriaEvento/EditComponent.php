@@ -14,7 +14,7 @@ class EditComponent extends Component
     public $identificador;
 
     public $nombre;
-	
+
 
 	public function mount()
     {
@@ -23,12 +23,12 @@ class EditComponent extends Component
         $this->nombre = $categoria_evento->nombre;
 
     }
-	
+
     public function render()
     {
         return view('livewire.categoria-evento.edit-component');
     }
-	
+
 	// Al hacer update en el formulario
     public function update()
     {
@@ -53,12 +53,12 @@ class EditComponent extends Component
         if ($tipoSave) {
             $this->alert('success', '¡Categoría de evento actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del Categoría de evento!', [
@@ -78,14 +78,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el Categoría de evento? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }
@@ -116,5 +116,5 @@ class EditComponent extends Component
         return redirect()->route('categoria-evento.index');
 
     }
-	
+
 }

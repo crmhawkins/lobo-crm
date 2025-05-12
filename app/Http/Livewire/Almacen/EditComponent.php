@@ -121,7 +121,7 @@ class EditComponent extends Component
         if ($facturasSave) {
             $this->alert('success', '¡Pedido marcado como enviado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -168,7 +168,7 @@ class EditComponent extends Component
         if ($facturasSave) {
             $this->alert('success', '¡Pedido marcado como enviado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -194,14 +194,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el la factura? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -231,12 +231,12 @@ class EditComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto aceptado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido aceptar el presupuesto!', [
@@ -261,12 +261,12 @@ class EditComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto cancelado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido cancelar el presupuesto!', [
@@ -332,7 +332,7 @@ class EditComponent extends Component
             'configuracion' => $configuracion
         ];
 
-        $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical'); 
+        $pdf = PDF::loadView('livewire.facturas.certificado-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
 
             $totalPages = $pdf->getCanvas()->get_page_count();

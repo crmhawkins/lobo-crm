@@ -48,12 +48,12 @@ class CreateComponent extends Component
         if ($departamentoSave) {
             $this->alert('success', 'Departamento registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del departamento!', [
@@ -62,7 +62,7 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
     }
 
      // Función para cuando se llama a la alerta
@@ -73,7 +73,7 @@ class CreateComponent extends Component
              'submit'
          ];
      }
- 
+
      // Función para cuando se llama a la alerta
      public function confirmed()
      {

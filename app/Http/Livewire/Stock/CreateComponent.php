@@ -51,7 +51,7 @@ class CreateComponent extends Component
         ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
         ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
         ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
-        ->get();       
+        ->get();
          $this->almacenes = Almacen::all();
         $user = Auth::user();
         $this->almacen_id = $user->almacen_id;
@@ -203,7 +203,7 @@ class CreateComponent extends Component
             ]);
             return;
         }
-        
+
 
         $mercaderiaSave = Stock::create($validatedData);
         $dia = Carbon::now();
@@ -242,12 +242,12 @@ class CreateComponent extends Component
 
             $this->alert('success', '¡Stock entrante registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la entrada del stock!', [

@@ -45,7 +45,7 @@ class EditComponent extends Component
         //$this->id_programa = $resumen->id_programa;
         // $this->id_cliente = $resumen->id_cliente;
 
-        
+
         $this->clientes = Cliente::whereIn("id", $eventosId);
 
     }
@@ -116,12 +116,12 @@ class EditComponent extends Component
         if ($programaSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
@@ -141,14 +141,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }

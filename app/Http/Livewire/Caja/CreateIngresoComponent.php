@@ -54,14 +54,14 @@ class CreateIngresoComponent extends Component
     public $isIngresoProveedor = false;
     public $gasto_id;
     public $gastos;
-     
+
 
     public function loadCuentasContables()
     {
         // Similar lógica que tenías en createGasto para estructurar los datos jerárquicos
         $dataSub = [];
         $indice = 0;
-        
+
         $grupos = GrupoContable::orderBy('numero', 'asc')->get();
         foreach ($grupos as $grupo) {
             array_push($dataSub, [
@@ -201,20 +201,20 @@ class CreateIngresoComponent extends Component
             //dd( $this->facturas_compensadas);
             $total = 0;
             foreach ($this->facturas_compensadas as $factura) {
-                
+
                 $total += $factura->pagado;
-           
+
             }
 
             //dd($this->ingresos_factura->sum('importe'));
             if(count($this->ingresos_factura) > 0){
                 $this->importe = $this->importeFactura - $this->ingresos_factura->sum('importe');
-                
+
 
             }else{
                 $this->importe = $this->importeFactura;
             }
-            
+
             if(count($this->facturas_compensadas) > 0){
                 //dd("hola");
                 $this->importeFacturaCompensada = $this->importe - $total;
@@ -238,9 +238,9 @@ class CreateIngresoComponent extends Component
                 $this->facturas_compensadas = FacturasCompensadas::where('factura_id', $facturaRectificativa->id)->get();
                 $total = 0;
                 foreach ($this->facturas_compensadas as $factura) {
-                    
+
                     $total += $factura->pagado;
-               
+
                 }
 
                 if(count($this->ingresos_factura) > 0){
@@ -256,7 +256,7 @@ class CreateIngresoComponent extends Component
     }
 
     public function submit()
-    { 
+    {
         //dd($this->isIngresoProveedor);
 
         //dd($this->tipo_movimiento , $this->metodo_pago , $this->importe , $this->descripcion , $this->pedido_id , $this->fecha , $this->banco , $this->asientoContable , $this->cuentaContable_id , $this->isIngresoProveedor , $this->gasto_id);
@@ -271,7 +271,7 @@ class CreateIngresoComponent extends Component
                     'fecha' => 'required',
                     'banco' => 'nullable',
                     'gasto_id' => 'required',
-                    
+
 
 
                 ],
@@ -335,7 +335,7 @@ class CreateIngresoComponent extends Component
                 'isIngresoProveedor' => $this->isIngresoProveedor
             ]);
         }
-        
+
         event(new \App\Events\LogEvent(Auth::user(), 52, $usuariosSave->id));
 
         if(!$this->isIngresoProveedor){
@@ -349,7 +349,7 @@ class CreateIngresoComponent extends Component
             }
 
             if($importe - $this->importeCompensado <= 0 ){
-                
+
                 $this->facturaSeleccionada->estado = 'Pagado';
 
 
@@ -362,19 +362,19 @@ class CreateIngresoComponent extends Component
 
         }
 
-        
+
 
 
         // Alertas de guardado exitoso
         if ($usuariosSave) {
             $this->alert('success', '¡Movimiento registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del movimiento!', [

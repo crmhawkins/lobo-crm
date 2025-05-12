@@ -15,7 +15,7 @@ class EditComponent extends Component
 
     public $nombre;
 
-	
+
     public function mount()
     {
         $tipo_evento = TipoEvento::find($this->identificador);
@@ -23,7 +23,7 @@ class EditComponent extends Component
         $this->nombre = $tipo_evento->nombre;
 
     }
-	
+
     public function render()
     {
         return view('livewire.tipo-evento.edit-component');
@@ -53,12 +53,12 @@ class EditComponent extends Component
         if ($tipoSave) {
             $this->alert('success', '¡Tipo de evento actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del tipo de evento!', [
@@ -78,14 +78,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el tipo de evento? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }

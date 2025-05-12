@@ -84,7 +84,7 @@ class CreateComponent extends Component
                                     ->whereNotNull('cuenta_contable')
                                     ->latest()->first();
                                     // dd($this->cuentaContable_id , $cod);
-        
+
         if ($ultimoCliente) {
             // Obtener la cuenta contable sin los primeros 5 caracteres (cuentaContable_id + cod)
 
@@ -98,7 +98,7 @@ class CreateComponent extends Component
             }
 
 
-            
+
             // dd($numeroCliente);
 
             // Convertir a número entero
@@ -132,7 +132,7 @@ class CreateComponent extends Component
         return view('livewire.proveedores.create-component');
     }
 
-   
+
 
     // Al hacer submit en el formulario
     public function submit()
@@ -192,12 +192,12 @@ class CreateComponent extends Component
             $this->crearCuentasContables();
             $this->alert('success', '¡Proveedor registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del proveedor!', [
@@ -209,7 +209,7 @@ class CreateComponent extends Component
     }
 
     public function crearCuentasContables(){
-      
+
         if($this->cuentaContable_id != null && $this->cuenta_contable != null){
             $subcuenta = SubCuentaContable::where('numero', $this->cuentaContable_id)->first();
             //dd($subcuenta);

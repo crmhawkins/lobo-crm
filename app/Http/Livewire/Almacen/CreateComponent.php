@@ -65,7 +65,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        
+
         $this->almacen_id = auth()->user()->almacen_id;
         $this->pedido = Pedido::find($this->identificador);
         $this->gastos_envio = $this->pedido->gastos_envio;
@@ -95,7 +95,7 @@ class CreateComponent extends Component
                 foreach($productosAsociados as $productoAsociado){
                     $productoAsociadoModel = ProductosPedidoPack::where('producto_id', $productoAsociado)->where('pedido_id', $this->identificador)->first();
                     if($productoAsociadoModel){
-					
+
 						$productosAsociadosPedido[] = [
 							'id' => $productoAsociadoModel->producto_id,
 							'nombre' => $productoAsociadoModel->producto->nombre,
@@ -103,7 +103,7 @@ class CreateComponent extends Component
 							'lote_id' => $productoAsociadoModel->lote_id,
 						];
 					}else{
-						
+
 						$productoAsociadoModel = Productos::find($productoAsociado);
 								//dd($productoAsociadoModel->nombre);
 								$productosAsociadosPedido[] = [
@@ -154,9 +154,9 @@ class CreateComponent extends Component
                 'productos_asociados_marketing' => $productoModel->is_pack ? $productosAsociadosMarketingPedido : [],
             ];
 
-            
+
         }
-        
+
     }
 
     public function render()
@@ -172,7 +172,7 @@ class CreateComponent extends Component
         $productosMarketingPedidos = ProductosMarketingPedido::where('pedido_id', $this->pedido_id)->get();
         foreach ($productosMarketingPedidos as $productoMarketingPedido) {
             $hasStock = $this->HasStockMarketing($productoMarketingPedido);
-    
+
             // Si no hay suficiente stock, detener el proceso
             if (!$hasStock) {
                 //alerta stock insuficiente
@@ -217,7 +217,7 @@ class CreateComponent extends Component
         if ($facturasSave) {
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -342,7 +342,7 @@ class CreateComponent extends Component
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
         if($producto === null){
             return '';
-           
+
         }
         if (isset($this->productos_pedido[$id]['unidades_old'])) {
             $uds_total = $this->productos_pedido[$id]['unidades_old'] + $this->productos_pedido[$id]['unidades'];
@@ -374,7 +374,7 @@ class CreateComponent extends Component
     {
         // Obtener el producto de marketing asociado al pedido
         $productoMarketing = ProductosMarketing::find($productoMarketingPedido->producto_marketing_id);
-    
+
         if (!$productoMarketing) {
             $this->alert('error', 'Producto de marketing no encontrado.', [
                 'position' => 'center',
@@ -385,10 +385,10 @@ class CreateComponent extends Component
             ]);
             return false;
         }
-    
+
         // Buscar el stock en subalmacenes de marketing
         $stockDisponible = $productoMarketing->stockEnAlmacen(1);
-    
+
         // Verificar si hay suficiente stock
         if ($stockDisponible < $productoMarketingPedido->unidades) {
             // Añadir el producto a la lista de productos sin stock
@@ -397,13 +397,13 @@ class CreateComponent extends Component
                 'stockDisponible' => $stockDisponible,
                 'cantidadRequerida' => $productoMarketingPedido->unidades
             ];
-    
+
             return false; // No hay stock suficiente, retorna false
         }
-    
+
         return true; // Si hay suficiente stock, devuelve true
     }
-    
+
 
 
     public function registrarStock(){
@@ -419,8 +419,8 @@ class CreateComponent extends Component
             }
             $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
             $almacen = Almacen::find($almacen_id);
-            
-                
+
+
                 if ($stockEntrante) {
 
                     $stockRegistro = new StockRegistro();
@@ -429,9 +429,9 @@ class CreateComponent extends Component
                     $stockRegistro->tipo = "Venta";
                     $stockRegistro->motivo = "Salida";
                     $stockRegistro->pedido_id = $pedido->id;
-                    
+
                     $stockRegistro->save();
-    
+
                     $stockSaliente = StockSaliente::create([
                         'stock_entrante_id' => $stockEntrante->id,
                         'producto_id' => $producto->id,
@@ -445,8 +445,8 @@ class CreateComponent extends Component
                 }
 
 
-            
-            
+
+
             $entradasAlmacen = Stock::where('almacen_id', $almacen->id)->get()->pluck('id');
             $productoLotes = StockEntrante::where('producto_id', $producto->id)->whereIn('stock_id', $entradasAlmacen)->get();
             foreach($productoLotes as $productoLote){
@@ -473,14 +473,14 @@ class CreateComponent extends Component
                                 ->subject($producto->nombre.' - Alerta de Stock Bajo')
                                 ->html('<h1>Alerta de Stock Bajo</h1><p>El stock de '.$producto->nombre.' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>');
                     });
-                    
+
                     $dGeneral = User::where('id', 13)->first();
                     $administrativo1 = User::where('id', 17)->first();
                     $administrativo2 = User::where('id', 18)->first();
 
                     $data = [['type' => 'text', 'text' => $producto->nombre], ['type' => 'text', 'text' =>  $almacen->almacen]];
                     $buttondata = [];
-                    
+
 
                     if(isset($dGeneral) && $dGeneral->telefono != null){
                         $phone = '+34'.$dGeneral->telefono;
@@ -496,8 +496,8 @@ class CreateComponent extends Component
                         $phone = '+34'.$administrativo2->telefono;
                         enviarMensajeWhatsApp('stockaje_bajo', $data, $buttondata, $phone);
                     }
-                    
-                    
+
+
                 }
 
 
@@ -525,7 +525,7 @@ class CreateComponent extends Component
         if (!$pedido) {
             abort(404, 'Pedido no encontrado');
         }
-       
+
             // Verificar que todos los productos tienen un lote_id asignado
         foreach ($this->productos_pedido as $productoPedido) {
 
@@ -567,10 +567,10 @@ class CreateComponent extends Component
             $productoMarketing = ProductosMarketing::find($productoMarketingPedido->producto_marketing_id);
             $subAlmacenMarketing = Subalmacenes::where('almacen_id', 1)
                                         ->first();
-    
+
             // Verificar el stock disponible en el subalmacén de marketing
             $hasStock = $this->HasStockMarketing($productoMarketingPedido, $productoMarketing, $productoMarketingPedido->unidades);
-    
+
             if (!$hasStock) {
                 $this->alert('error', '¡No hay suficiente stock de Marketing en almacén para este pedido!', [
                     'position' => 'center',
@@ -581,7 +581,7 @@ class CreateComponent extends Component
                 ]);
                 return; // Detener el proceso si no hay stock suficiente
             }
-    
+
             // Registrar la salida de stock de productos de marketing
             $this->registrarSalidaDeStockMarketing($subAlmacenMarketing, $productoMarketingPedido->unidades, $pedido, $productoMarketing);
         }
@@ -600,7 +600,7 @@ class CreateComponent extends Component
                 $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
 
 
-        
+
                 if (!isset($stockEntrante)) {
                     $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
                 }
@@ -635,21 +635,21 @@ class CreateComponent extends Component
                     'cantidad' => $productoPedido['unidades_old'],
                     'peso_kg' => $pesoTotalProducto,
                 ];
-        
+
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
                 $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
                 $almacen = Almacen::find($almacen_id);
-        
+
                 $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
-                
+
                 $cantidadRestante = $productoPedido['unidades_old'];
-                
-        
+
+
                 // Array para guardar los IDs de los lotes ya utilizados
                 $arrStockDescartados = [];
                 array_push($arrStockDescartados, $stockEntrante->id);
-        
-                
+
+
 
                 // Primero, intenta usar el stockEntrante inicial
                 if ($cantidadStockDisponible >= $cantidadRestante) {
@@ -657,8 +657,8 @@ class CreateComponent extends Component
                     $cantidad = $cantidadRestante;
                     $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
                     $cantidadRestante = 0; // Pedido completado
-                } 
-               
+                }
+
             }
         }else{
             /******************************* */
@@ -669,7 +669,7 @@ class CreateComponent extends Component
                 $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
 
 
-        
+
                 if (!isset($stockEntrante)) {
                     $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
                 }
@@ -710,17 +710,17 @@ class CreateComponent extends Component
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stockEntrante->id)->sum('cantidad');
                 $almacen_id = Stock::find($stockEntrante->stock_id)->almacen_id;
                 $almacen = Almacen::find($almacen_id);
-        
+
                 $cantidadStockDisponible = $stockEntrante->cantidad - $stockRegistro;
-                
+
                 $cantidadRestante = $productoPedido['unidades_old'];
-                
-        
+
+
                 // Array para guardar los IDs de los lotes ya utilizados
                 $arrStockDescartados = [];
                 array_push($arrStockDescartados, $stockEntrante->id);
-        
-                
+
+
 
                 // Primero, intenta usar el stockEntrante inicial
                 if ($cantidadStockDisponible >= $cantidadRestante) {
@@ -728,8 +728,8 @@ class CreateComponent extends Component
                     $cantidad = $cantidadRestante;
                     $this->registrarSalidaDeStock($stockEntrante, $cantidad, $pedido, $producto, $almacen);
                     $cantidadRestante = 0; // Pedido completado
-                } 
-               
+                }
+
             }
             /******************************* */
 
@@ -756,7 +756,7 @@ class CreateComponent extends Component
             //     $stockEntrante = StockEntrante::where('id', $productoPedido['lote_id'])->first();
 
 
-        
+
             //     if (!isset($stockEntrante)) {
             //         $stockEntrante = StockEntrante::where('lote_id', $productoPedido['lote_id'])->first();
             //     }
@@ -774,7 +774,7 @@ class CreateComponent extends Component
 
             // }
         }
-        
+
 
         $num_albaran = Albaran::count() + 1;
         $fecha_albaran = Carbon::now()->format('Y-m-d');
@@ -823,7 +823,7 @@ class CreateComponent extends Component
 
             if(isset($dComercial) && $dComercial->telefono != null){
                 $phone = '+34'.$dComercial->telefono;
-                
+
                 enviarMensajeWhatsApp('pedido_albaran', $data, $buttondata, $phone);
             }
 
@@ -855,7 +855,7 @@ class CreateComponent extends Component
 
             $this->alert('success', '¡Albarán Generado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
@@ -872,7 +872,7 @@ class CreateComponent extends Component
         }
         $pdf = PDF::loadView('livewire.almacen.pdf-component', $datos)->setPaper('a4', 'vertical');
         $pdf->render();
-        
+
 
             $totalPages = $pdf->getCanvas()->get_page_count();
 
@@ -896,7 +896,7 @@ class CreateComponent extends Component
             ->where('motivo', 'Salida')
             ->where('tipo', 'Venta')
             ->first();
-    
+
         if ($existingRegistro) {
             // Actualizar el registro existente
             $existingRegistro->cantidad += $cantidad;
@@ -914,11 +914,11 @@ class CreateComponent extends Component
             $stockRegistro->pedido_id = $pedido->id;
             $stockRegistro->save();
         }
-    
+
         $existingSaliente = StockSaliente::where('stock_entrante_id', $stockEntrante->id)
             ->where('pedido_id', $pedido->id)
             ->first();
-    
+
         if ($existingSaliente) {
             // Actualizar el registro existente
             $existingSaliente->cantidad_salida += $cantidad;
@@ -940,7 +940,7 @@ class CreateComponent extends Component
             ]);
         }
     }
-    
+
 
     //tras escanear el qr
     public function handleQrScanned($qrCode, $rowIndex)
@@ -967,7 +967,7 @@ class CreateComponent extends Component
                 }
                 $stocksEntrantes = StockEntrante::where('producto_id', $productoAsociado['id'])->get();
                 $stocks = [];
-                
+
                 //filtrar de esos stockEntrantes cuales pertenecen a este almacen, para ello debemos mirar en stock que este relacionado con este stockEntrante
                 foreach($stocksEntrantes as $stockEntrante){
                     $stock = Stock::where('id', $stockEntrante->stock_id)->first();
@@ -1028,8 +1028,8 @@ class CreateComponent extends Component
                     if(!isset($stockMasAntiguo) || $stock->created_at < $stockMasAntiguo->created_at){
                         $stockMasAntiguo = $stock;
                     }
-                
-                
+
+
                 }
                 if(!isset($stockMasAntiguo)){
                     $text = $text . "No hay stock disponible para este producto: " . $productoAsociado['nombre'] . ". <br>";
@@ -1065,15 +1065,15 @@ class CreateComponent extends Component
 
 
                     }
-                        
+
 
                     ProductosPedidoPack::where('pack_id', $this->productos_pedido[$rowIndex]['producto_pedido_id'])->where('producto_id', $productoAsociado['id'])->where('pedido_id', $this->pedido_id)->update([
                         'lote_id' => $stockMasAntiguo->orden_numero
-                    ]); 
-                    
+                    ]);
+
                 }
 
-   
+
 
             }
 
@@ -1087,9 +1087,9 @@ class CreateComponent extends Component
                     //dd("hola");
                     continue;
                 }
-                
+
                 $stock  = StockSubalmacen::where('producto_id', $productoAsociadoMarketing['id'])->where('subalmacen_id', 1)->get();
-                
+
                 if(count($stock) == 0){
                     $text = $text . "No hay stock disponible para este producto: " . $productoAsociadoMarketing['nombre'] . ". <br>";
                     continue;
@@ -1136,7 +1136,7 @@ class CreateComponent extends Component
                     'timer' => false,
                     'toast' => false,
                 ]);
-                
+
             }else{
                 $this->alert('success', 'Lotes asignados correctamente.', [
                     'position' => 'center',
@@ -1185,7 +1185,7 @@ class CreateComponent extends Component
             ]);
             return;
         }
-        
+
         $entradaStock = StockEntrante::where('stock_id', $stock->id)->first();
         if (!$entradaStock) {
             $this->alert('error', 'Lote no encontrado.', [
@@ -1236,7 +1236,7 @@ class CreateComponent extends Component
                 'lote_id' => $entradaStock->id
             ];
 
-        
+
 
             $this->alert('warning', 'Cantidad insuficiente en este lote, por favor escanea otro lote para completar la cantidad.', [
                 'position' => 'center',

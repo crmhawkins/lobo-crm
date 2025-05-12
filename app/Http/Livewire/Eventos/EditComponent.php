@@ -24,7 +24,7 @@ class EditComponent extends Component
 
     public $eventoNombre;
     public $eventoProtagonista;
-    public $eventoNiños; 
+    public $eventoNiños;
     public $eventoContacto;
     public $eventoParentesco;
     public $eventoLugar;
@@ -33,7 +33,7 @@ class EditComponent extends Component
     public $eventoTelefono;
     public $diaEvento;
     public $diaFinal;
-    
+
 
     public function mount()
     {
@@ -68,7 +68,7 @@ class EditComponent extends Component
         return $nombreCompleto;
     }
 
-    
+
     public function render()
     {
         return view('livewire.eventos.edit-component');
@@ -105,7 +105,7 @@ class EditComponent extends Component
                 'eventoLugar.required' => 'El eventoLugar es obligatorio.',
                 'eventoLocalidad.required' => 'La eventoLocalidad es obligatoria.',
                 'eventoTelefono.required' => 'El eventoTelefono es obligatorio.',
-            
+
             ]);
 
         // Encuentra el identificador
@@ -130,12 +130,12 @@ class EditComponent extends Component
         if ($eventoSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
@@ -162,14 +162,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }

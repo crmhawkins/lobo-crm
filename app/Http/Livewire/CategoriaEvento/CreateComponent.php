@@ -12,15 +12,15 @@ class CreateComponent extends Component
 	 use LivewireAlert;
 
     public $nombre;
-	
+
 	  public function mount(){
     }
-	
+
     public function render()
     {
         return view('livewire.categoria-evento.create-component');
     }
-	
+
 	 public function submit()
     {
         // Validación de datos
@@ -41,12 +41,12 @@ class CreateComponent extends Component
         if ($usuariosSave) {
             $this->alert('success', '¡Categoría de evento registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información de la categoría de evento!', [
@@ -73,5 +73,5 @@ class CreateComponent extends Component
         return redirect()->route('categoria-evento.index');
 
     }
-	
+
 }

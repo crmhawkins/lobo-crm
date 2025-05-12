@@ -804,12 +804,12 @@ public function setPrecioEstimadoMarketing()
 
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -1078,12 +1078,12 @@ public function setPrecioEstimadoMarketing()
 
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [
@@ -1205,12 +1205,12 @@ public function setPrecioEstimadoMarketing()
         if ($pedidosSave) {
             $this->alert('success', '¡Pedido enviado a Almacén!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -1239,14 +1239,14 @@ public function setPrecioEstimadoMarketing()
 
         $this->alert('warning', '¿Seguro que desea borrar el Pedido? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }
@@ -1393,12 +1393,12 @@ public function setPrecioEstimadoMarketing()
 
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -1471,12 +1471,12 @@ public function setPrecioEstimadoMarketing()
 
             $this->alert('success', '¡Pedido rechazado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -2162,12 +2162,12 @@ public function setPrecioEstimadoMarketing()
         }
         $this->alert('success', '¡Pedido enviado correctamente!', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmed',
             'confirmButtonText' => 'ok',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }catch(\Exception $e){
         //mostrarme el error
@@ -2217,7 +2217,7 @@ public function setPrecioEstimadoMarketing()
 
         $this->alert('success', '¡Pedido actualizado correctamente!', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmed',

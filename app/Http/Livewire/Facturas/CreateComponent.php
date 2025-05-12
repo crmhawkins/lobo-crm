@@ -83,13 +83,13 @@ class CreateComponent extends Component
             $this->total = $this->pedido->precio + $this->pedido->iva_total;
             $this->total = number_format($this->total, 2, '.', '');
         }
-    
+
         $this->facturas = Facturas::all();
         $this->productos = Productos::all();
         $this->clientes = Clients::where('estado', 2)->get();
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
         $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->max('numero_factura');
-        
+
         if ($lastInvoice) {
             // Extrae el número secuencial de la última factura del año y lo incrementa
             $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
@@ -102,14 +102,14 @@ class CreateComponent extends Component
 
         }
 
-       
+
         // si es el numero F240428, que lo excluya y coja el siguiente
         if($year == 24){
             if($lastNumber == 428){
                 $lastNumber = 429; //FACTURA EN HOLDED
             }
         }
-        
+
         //dd($lastNumber);
         // Genera el nuevo número de factura con relleno para asegurar 4 dígitos
         $this->numero_factura = 'F' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
@@ -151,11 +151,11 @@ class CreateComponent extends Component
             //productos_pedido to array
             $this->productos_pedido = json_decode(json_encode($this->productos_pedido), true);
             $this->subtotal_pedido = $this->pedido->subtotal;
-            
+
             $this->iva_total_pedido = $this->pedido->iva_total;
             $this->descuento_total_pedido = $this->pedido->descuento_total;
             $this->total = $this->pedido->precio + $this->pedido->iva_total;
-              
+
             $this->total = number_format($this->total, 2, '.', '');
         }
     }
@@ -170,11 +170,11 @@ class CreateComponent extends Component
     }
     public function getNumeroFactura(){
         $year = Carbon::now()->format('y'); // Esto obtiene el año en formato de dos dígitos, por ejemplo, "24" para 2024.
-            
+
         if($this->isFacturaRectificativa){
             $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)->where('tipo', 2)->max('numero_factura');
             if ($lastInvoice) {
-                
+
                 // Extrae el número secuencial de la última factura del año y lo incrementa
                 $lastNumber = intval(substr($lastInvoice, 4)) + 1; // Asume que el formato es siempre "F24XXXX"
             } else {
@@ -184,7 +184,7 @@ class CreateComponent extends Component
                     $lastNumber = 1;
                 }
             }
-           
+
         }else{
             //donde tipo sea distinto de 2
             $lastInvoice = Facturas::whereYear('created_at', Carbon::now()->year)
@@ -200,11 +200,11 @@ class CreateComponent extends Component
             // //para coger el lastInvoice necesito que recorra todas las facturas no rectificativas, es decir de que no sean de tipo 2, y coja la que la ultima cuyo siguiente no sea consecutivo
             // //dd($facturas);
             // foreach($facturas as $index => $factura){
-                
+
             //     $numero_factura = substr($factura->numero_factura, 1);
             //     $numero_factura = intval($numero_factura);
             //     //dd($numero_factura);
-                
+
             //     if(!isset($facturas[$index + 1])){
             //         $lastInvoice = $factura->numero_factura;
             //         break;
@@ -224,7 +224,7 @@ class CreateComponent extends Component
             if ($lastInvoice) {
                 // Extrae el número secuencial de la última factura del año y lo incrementa
                 $lastNumber = intval(substr($lastInvoice, 3)) + 1; // Asume que el formato es siempre "F24XXXX"
-                
+
             } else {
                 if($year == 24 ){
                     $lastNumber = 150;
@@ -232,11 +232,11 @@ class CreateComponent extends Component
                     $lastNumber = 1;
                 }
             }
-           
+
         }
-        
+
         if($this->isFacturaRectificativa){
-            
+
             $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
         }else{
             if($year == 24){
@@ -253,14 +253,14 @@ class CreateComponent extends Component
 
     public function render()
     {
-        
+
         $this->getNumeroFactura();
         return view('livewire.facturas.create-component');
     }
 
     public function addArticulo()
     {
-        
+
         $this->servicios = array_merge($this->servicios, [['descripcion' => $this->descripcionServicio, 'cantidad' => $this->cantidad, 'importe' => $this->importeServicio]]);
         $this->descripcionServicio = null;
         $this->cantidad = null;
@@ -291,7 +291,7 @@ class CreateComponent extends Component
     // Al hacer submit en el formulario
     public function submit()
     {
-        
+
         if($this->isFacturaRectificativa){
             $this->tipo = 2;
             // Validación de datos
@@ -310,7 +310,7 @@ class CreateComponent extends Component
                     'cantidad' => 'nullable',
                     'descuento' => 'nullable',
                     'tipo' => 'required',
-                    
+
                 ],
                 // Mensajes de error
                 [
@@ -348,7 +348,7 @@ class CreateComponent extends Component
             );
         }elseif($this->idpedido == null){
 
-                
+
                 $this->iva = 0;
                 $this->iva_total_pedido = 0;
                 $this->descuento_total_pedido = 0;
@@ -364,17 +364,17 @@ class CreateComponent extends Component
                         $this->subtotal_pedido += $servicio['importe'] * $servicio['cantidad'];
                         $this->total += $servicio['importe'] * $servicio['cantidad'];
                     }
-                }       
+                }
 
                 $this->precio = $this->total;
                 $this->iva_total_pedido = ($this->subtotal_pedido * 21) / 100;
                 $this->iva = $this->iva_total_pedido;
                 $this->total = $this->total + $this->iva_total_pedido;
-                
-                
-                
+
+
+
                 //dd($this->numero_factura, $this->cliente_id, $this->pedido_id, $this->fecha_emision, $this->fecha_vencimiento, $this->descripcion, $this->estado, $this->precio, $this->metodo_pago, $this->producto_id, $this->cantidad, $this->descuento, $this->iva, $this->subtotal_pedido, $this->iva_total_pedido, $this->descuento_total_pedido, $this->descripcion_servicio, $this->tipo, $this->total);
-            
+
             //validacion con servicios
             $validatedData = $this->validate(
                 [
@@ -405,7 +405,7 @@ class CreateComponent extends Component
                 ]
             );
         }
-        
+
         //si el pedido ya tiene factura, no se puede crear otra
         if($this->idpedido != null){
             $factura = Facturas::where('pedido_id', $this->idpedido)->first();
@@ -418,7 +418,7 @@ class CreateComponent extends Component
                 return;
             }
         }
-        
+
         // Guardar datos validados
         $facturasSave = Facturas::create($validatedData);
         //event(new \App\Events\LogEvent(Auth::user(), 17, $facturasSave->id));
@@ -445,7 +445,7 @@ class CreateComponent extends Component
             }else{
                 $this->calcularTotales($facturasSave);
             }
-           
+
 
             if($pedidosSave){
                 Alertas::create([
@@ -504,12 +504,12 @@ class CreateComponent extends Component
 
             $this->alert('success', 'Factura registrada correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información de la factura!', [
@@ -529,9 +529,9 @@ class CreateComponent extends Component
 
         //si hay pedido id
         if(isset($factura) && isset($factura->pedido_id) && $factura->pedido_id != null){
-            
+
             //calcular el recargo en base a $factura->precio, siendo recargo un porcentaje
-            
+
 
             $recargo_total = (($factura->precio * $recargo) / 100);
             $total = $factura->precio + $recargo_total + $factura->iva_total_pedido;
@@ -542,7 +542,7 @@ class CreateComponent extends Component
             $factura->recargo = $recargo;
             $factura->total_recargo = $recargo_total;
             $factura->save();
-            
+
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
                 $recargo_total = (($factura->precio * $recargo) / 100);
@@ -564,7 +564,7 @@ class CreateComponent extends Component
                 $factura->save();
 
             }
-            
+
         }
 
     }

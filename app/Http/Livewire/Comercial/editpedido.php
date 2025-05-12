@@ -52,7 +52,7 @@ class editpedido extends Component
 
     public function mount()
     {
-        
+
         $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
         ->orderBy('orden', 'asc')  // Ordenar primero por orden
         ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
@@ -65,7 +65,7 @@ class editpedido extends Component
         if (Auth::user()->role == 3 ){
             $this->clientes = ClientesComercial::where('comercial_id', Auth::user()->id)->get();
         }
-       
+
 
         $this->pedido = PedidosComercial::find($this->identificador);
         // dd($this->pedido);
@@ -101,7 +101,7 @@ class editpedido extends Component
             'onConfirmed' => 'Eliminar',
         ]);
     }
-    
+
 
     public function selectCliente()
     {
@@ -130,17 +130,17 @@ class editpedido extends Component
     protected $listeners = ['refreshComponent' => '$refresh', 'updateWithoutRestrictions' => 'updateWithoutRestrictions', 'fileUpload' => 'handleFileUpload',
         'addDocumentos'];
 
-   
+
     public function render()
     {
         return view('livewire.comercial.editpedido');
     }
 
-    
+
     public function update()
     {
 
-     
+
         $total_iva = 0;
         foreach ($this->productos_pedido as $productoPedido) {
             $producto = Productos::find($productoPedido['producto_id']);
@@ -149,13 +149,13 @@ class editpedido extends Component
             $iva = Iva::find($producto->iva_id);
             if($iva){
                 //dd($iva);
-                
+
                     $total_iva += (($productoPedido['precio_ud'] * $productoPedido['cantidad'])) * ($iva->iva / 100);
-                
+
             }else{
                 $total_iva += (($productoPedido['precio_ud'] * $productoPedido['cantidad'])) * (21 / 100);
             }
-           
+
         }
 
         $this->iva_total = $total_iva;
@@ -166,12 +166,12 @@ class editpedido extends Component
         $validatedData = $this->validate(
             [
                 'cliente_id' => 'required',
-                
+
             ],
             // Mensajes de error
             [
                 'cliente_id.required' => 'El cliente es obligatorio.',
-             
+
             ]
         );
 
@@ -192,11 +192,11 @@ class editpedido extends Component
             'provincia_entrega' => $this->provincia_entrega,
             'observaciones' => $this->observaciones,
         ]);
-       
+
         // dd($this->productos_pedido);
 
         foreach ($this->productos_pedido as $productos) {
-            
+
             if (!isset($productos['id'])) {
                 ProductosPedidoComercial::create([
                     'producto_id' => $productos['producto_id'],
@@ -218,7 +218,7 @@ class editpedido extends Component
                 DB::table('productos_pedido_comercial')->where('id', $productos['id'])->limit(1)->delete();
             }
         }
-       
+
         if($pedidosSave){
             $this->alert('success', '¡Pedido actualizado correctamente!', [
                 'position' => 'center',
@@ -232,9 +232,9 @@ class editpedido extends Component
                 'toast' => false,
             ]);
         }
-            
 
-            
+
+
     }
 
     public function getListeners()
@@ -257,7 +257,7 @@ class editpedido extends Component
     }
 
     public function alertaGuardar(){
-        
+
         //alerta Esta seguro de guardar pedido con boton que accione la funcion update
         $this->alert('warning', '¿Está seguro de guardar el pedido?', [
             'position' => 'center',
@@ -284,10 +284,10 @@ class editpedido extends Component
             $factura->subtotal_pedido = $this->subtotal;
             $factura->total = $total;
             $factura->save();
-            
+
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
-                
+
                 $total = $factura->precio;
                 $iva = (($factura->precio * 21) / 100);
                 if($factura->descuento){
@@ -304,12 +304,12 @@ class editpedido extends Component
                 $factura->total = $total;
                 $factura->save();
 
-            }   
+            }
         }
 
     }
 
-   
+
     public function aceptarPedido()
     {
 
@@ -322,9 +322,9 @@ class editpedido extends Component
         foreach ($facturas as $factura) {
             $totalFacturas += $factura->total;
         }
-        
+
         $pedido = Pedido::find($this->identificador);
-        
+
         //confirming
         $confirmig = $cliente->credito - $totalFacturas - $this->precio;
         //dd($totalFacturas , $this->precio, $confirmig, $cliente->credito);
@@ -371,7 +371,7 @@ class editpedido extends Component
         );
         $pedido = Pedido::find($this->identificador);
         $pedido->update($validatedData);
-        if($this->bloqueado){ 
+        if($this->bloqueado){
             if($bloqueadopor == '1'){
                 return $this->alert('warning', 'El pedido ha sido bloqueado por superar el porcentaje de descuento permitido. ¿Desea aceptar el pedido? ', [
                     'position' => 'center',
@@ -396,7 +396,7 @@ class editpedido extends Component
                     'timerProgressBar' => true,
                     'timer' => null,
                 ]);
-            
+
             }
         }
         $pedidosSave = $pedido->update(['estado' => 2]);
@@ -452,12 +452,12 @@ class editpedido extends Component
 
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -470,7 +470,7 @@ class editpedido extends Component
 
 
     public function addAdjunto(){
-        
+
     }
 
     public function rechazarPedido()
@@ -530,12 +530,12 @@ class editpedido extends Component
 
             $this->alert('success', '¡Pedido rechazado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -568,7 +568,7 @@ class editpedido extends Component
                 'timerProgressBar' => true,
             ]);
         }
-        
+
 
 
     }
@@ -645,9 +645,9 @@ class editpedido extends Component
                     $unidades = $this->productos_pedido[$id]['cantidad'] . ' unidades (' . $pallets . ' pallets)';
                 }
             }else{
-                $unidades = 0;  
+                $unidades = 0;
             }
-                
+
         // }
 
         return $unidades;
@@ -676,9 +676,9 @@ class editpedido extends Component
 
 
     public function editProductos($id){
-        
+
         // $this->arrProductosEditar = [];
-        
+
         // //añadir al array el productoEditar junto a las unidades correspondientes
         // $this->arrProductosEditar[$this->productoEditarId][] = [
         //     'producto_pedido_id' => $this->productoEditarId,
@@ -818,21 +818,21 @@ class editpedido extends Component
 
         if($this->sinCargo == true){
 
-            $this->productoEditarPrecio = 0;    
+            $this->productoEditarPrecio = 0;
         }
-        
+
     }
 
     public function setPrecioEstimado()
     {
         $this->precioEstimado = 0;
-     
+
 
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
-        
-       
+
+
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
@@ -840,8 +840,8 @@ class editpedido extends Component
         $this->total = $this->precioEstimado * 0.21;
         $this->iva = $this->total;
         $this->total = $this->precioEstimado + $this->iva;
-        $this->total = number_format($this->total, 2, '.', ''); 
-        $this->iva = number_format($this->iva, 2, '.', '');     
+        $this->total = number_format($this->total, 2, '.', '');
+        $this->iva = number_format($this->iva, 2, '.', '');
 
     }
 
@@ -1020,11 +1020,11 @@ class editpedido extends Component
 //             'Pedidos@serlobo.com'
 //         ];
 //         if($this->almacen_id == 2){
-//             //push emailsDireccion 
+//             //push emailsDireccion
 //             $emailsDireccion[] = 'Almacen.cordoba@serlobo.com';
 
 //         }
-            
+
 
 
 //         if(count($this->emailsSeleccionados) > 0){
@@ -1108,7 +1108,7 @@ class editpedido extends Component
 //             'toast' => false,
 //         ]);
 //     }
-        
+
 //     /*--return response()->streamDownload(
 //         fn () => print($pdf),
 //         "pedido_{$pedido->id}.pdf"

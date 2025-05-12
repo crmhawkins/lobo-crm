@@ -55,7 +55,7 @@ class EditComponent extends Component
         $this->costes = CostesProductosMarketing::where('producto_id', $this->identificador)
             ->orderBy('fecha', 'desc')
             ->get();
-        
+
         foreach ($this->costes as $coste) {
             $this->costesEditados[$coste->id] = [
                 'coste' => $coste->coste,
@@ -63,7 +63,7 @@ class EditComponent extends Component
             ];
         }
     }
-    
+
     public function agregarCoste()
     {
         $this->validate([
@@ -87,18 +87,18 @@ class EditComponent extends Component
             'costesEditados.'.$costeId.'.coste' => 'required|numeric|min:0',
             'costesEditados.'.$costeId.'.fecha' => 'required|date'
         ]);
-    
+
         $coste = CostesProductosMarketing::find($costeId);
         $coste->update([
             'coste' => $this->costesEditados[$costeId]['coste'],
             'fecha' => $this->costesEditados[$costeId]['fecha']
         ]);
-    
+
         $this->cargarCostes();
         $this->alert('success', 'Coste actualizado correctamente');
     }
 
-    
+
     public function eliminarCoste($costeId)
     {
         $coste = CostesProductosMarketing::find($costeId);
@@ -157,14 +157,14 @@ class EditComponent extends Component
     {
         $this->alert('warning', '¿Seguro que desea borrar el producto? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -182,7 +182,7 @@ class EditComponent extends Component
         }
     }
 
-  
+
 
     // Maneja la subida de la nueva foto
     public function nuevaFoto()

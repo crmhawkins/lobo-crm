@@ -179,7 +179,7 @@ class EditComponent extends Component
         if ($mercaderiaSave) {
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',

@@ -29,7 +29,7 @@ class EditComponent extends Component
         $this->categoria_id = $mercaderia->categoria_id;
         $this->categorias = MercaderiaCategoria::all();
         $this->stock_seguridad = $mercaderia->stock_seguridad;
-        
+
     }
     public function render()
     {
@@ -72,12 +72,12 @@ class EditComponent extends Component
         if ($tipoSave) {
             $this->alert('success', '¡Mercadería actualizada correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información de la mercadería!', [
@@ -98,14 +98,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar la mercadería? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 

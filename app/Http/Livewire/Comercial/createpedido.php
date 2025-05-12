@@ -46,11 +46,11 @@ class createpedido extends Component
     public $cod_postal_entrega;
     public $sinCargo;
     public $iva;
-    
+
 
     public function mount()
     {
-        
+
 
        // Inicializar la colección de productos
         // Obtener todos los productos, ordenados por grupo y orden dentro del grupo
@@ -66,12 +66,12 @@ class createpedido extends Component
         if (Auth::user()->role == 3 ){
             $this->clientes = ClientesComercial::where('comercial_id', Auth::user()->id)->get();
         }
-       
+
         $this->cliente_id = null;
     }
- 
 
-   
+
+
     public function selectCliente()
     {
         $cliente = ClientesComercial::find($this->cliente_id);
@@ -83,7 +83,7 @@ class createpedido extends Component
     }
 
 
-  
+
     protected $listeners = ['refreshComponent' => '$refresh', 'closeModal' => 'closeModal'];
 
     public function render()
@@ -91,13 +91,13 @@ class createpedido extends Component
         return view('livewire.comercial.createpedido');
     }
 
-    
+
 
 
     // Al hacer submit en el formulario
     public function submit()
     {
-        
+
         $totalUnidades = 0;
         $totalUnidadesSinCargo = 0;
         foreach ($this->productos_pedido as $productoPedido) {
@@ -107,8 +107,8 @@ class createpedido extends Component
             }
         }
 
-        
-      
+
+
 
         $total_iva  = 0;
         foreach ($this->productos_pedido as $productoPedido) {
@@ -121,30 +121,30 @@ class createpedido extends Component
                 }else{
                     $total_iva += (($productoPedido['precio_ud'] * $productoPedido['cantidad'])) * (21 / 100);
                 }
-             
-                        
+
+
          }
 
-         
+
          $this->iva_total = $total_iva;
 
          $this->total = $this->subtotal + $this->iva_total;
 
         // Validación de datos
         //si el rol es 2
-        
+
             $validatedData = $this->validate(
                 [
                     'cliente_id' => 'required',
-                    
+
                 ],
                 // Mensajes de error
                 [
                     'cliente_id.required' => 'El cliente es obligatorio.',
-                 
+
                 ]
             );
-    
+
 
 
         // Guardar datos validados
@@ -165,7 +165,7 @@ class createpedido extends Component
         ]);
 
         foreach ($this->productos_pedido as $productos) {
-           
+
             ProductosPedidoComercial::create([
                 'pedido_id' => $pedidosSave->id,
                 'producto_id' => $productos['producto_id'],
@@ -175,17 +175,17 @@ class createpedido extends Component
             ]);
 
         }
-      
+
             if ($pedidosSave) {
-               
+
                 $this->alert('success', '¡Pedido registrado correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [
@@ -263,7 +263,7 @@ class createpedido extends Component
 
     public function updated($property){
         if($property == 'precio' ){
-            
+
             //controlar valores no numericos
 
             if(!is_numeric($this->precio)){
@@ -296,7 +296,7 @@ class createpedido extends Component
                         'allowOutsideClick' => false,
                     ]);
                     $this->precio = 0;
-                }   
+                }
             }
         }
     }
@@ -332,7 +332,7 @@ class createpedido extends Component
 
     public function isClienteSeleccionado(){
         if($this->cliente_id == null){
-           
+
             //alert cuando finalize que ejecute closeModal
             $this->alert('error', '¡Debe seleccionar un cliente!', [
                 'position' => 'center',
@@ -457,13 +457,13 @@ class createpedido extends Component
     public function setPrecioEstimado()
     {
         $this->precioEstimado = 0;
-     
+
 
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
-        
-       
+
+
 
         // Asignar el precio final
         $this->precio = number_format($this->precioEstimado, 2, '.', '');
@@ -471,8 +471,8 @@ class createpedido extends Component
         $this->total = $this->precioEstimado * 0.21;
         $this->iva = $this->total;
         $this->total = $this->precioEstimado + $this->iva;
-        $this->total = number_format($this->total, 2, '.', ''); 
-        $this->iva = number_format($this->iva, 2, '.', '');     
+        $this->total = number_format($this->total, 2, '.', '');
+        $this->iva = number_format($this->iva, 2, '.', '');
 
     }
 

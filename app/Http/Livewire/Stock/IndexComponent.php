@@ -31,7 +31,7 @@ class IndexComponent extends Component
         // Recuperar filtros desde la sesión si existen
         $this->almacen_id = session('stock_filtro_almacen_id', auth()->user()->almacen_id);
         $this->producto_seleccionado = session('stock_filtro_producto_seleccionado', 0);
-    
+
         $this->almacenes = Almacen::all();
         $this->productos = Productos::orderByRaw("CASE WHEN orden IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'orden' al final
         ->orderBy('orden', 'asc')  // Ordenar primero por orden
@@ -39,7 +39,7 @@ class IndexComponent extends Component
         ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
         ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
         ->get();
-    
+
         $this->setLotes();
     }
     public function render()
@@ -205,11 +205,11 @@ class IndexComponent extends Component
         if($Qrasignado){
             $this->alert('success', '¡Qr signado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido asignar el qr!', [
@@ -223,10 +223,10 @@ class IndexComponent extends Component
 
 
     public function imprimirSaliente(){
-    
+
         $arrayProductosLotes = [];
         //dd($this->productos_lotes_salientes);
-        
+
         $allData = collect([]);
 
         $stocks = Stock::with([
@@ -239,14 +239,14 @@ class IndexComponent extends Component
 
         //unificar los datos para la vista
         foreach ($stocks as $stock) {
-            
+
             //si stock entrantes esta vacio continua
             if($stock->entrantes == null) continue;
 
             foreach ($stock->entrantes as $stockEntrante) {
                 //dd($stock->entrantes->salidas);
                 //stockEntrante un bool pero no deberia dar eso
-            
+
                 foreach ($stock->entrantes->salidas as $salida) {
                     if(count($stock->entrantes->salidas) == 0) continue;
 
@@ -311,7 +311,7 @@ class IndexComponent extends Component
                         'created_at' => $rotura->created_at,
                         'pedido_id' => '-', // No hay pedido asociado a roturas
                     ]);
-                }    
+                }
             }
         }
 
@@ -319,7 +319,7 @@ class IndexComponent extends Component
         // Ordenar todos los datos por created_at
         $allData = $allData->sortBy('created_at');
         //dd($allData);
-        
+
 
         $datos = [
             'producto_lotes' =>  $allData,
@@ -331,7 +331,7 @@ class IndexComponent extends Component
             'historial_stock_Saliente.pdf'
         );
 
-    
+
     }
 
 
@@ -357,7 +357,7 @@ class IndexComponent extends Component
         ];
 
 
-        $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output(); 
+        $pdf = PDF::loadView('livewire.stock.pdf-stock', $datos)->setPaper('a4', 'vertical')->output();
         return response()->streamDownload(
             fn () => print($pdf),
             'historial_stock_Entrante.pdf'
@@ -500,5 +500,5 @@ class IndexComponent extends Component
     {
         return redirect()->route('stock.index');
     }
-   
+
 }

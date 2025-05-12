@@ -40,7 +40,7 @@ class IndexComponent extends Component
     public $observaciones_transporte;
     public $fecha_entrega;
 
-    
+
     public function hasFactura($pedidoId){
         $factura = Facturas::where('pedido_id', $pedidoId)->first();
         if ($factura){
@@ -105,7 +105,7 @@ class IndexComponent extends Component
             return;
         }
 
-        
+
         $identificador = $this->pedidoEnRutaId;
         $pedido = Pedido::find($identificador);
         if (!$pedido) {
@@ -204,7 +204,7 @@ class IndexComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
     }
 
 
@@ -213,7 +213,7 @@ class IndexComponent extends Component
         //dd($this->pedido);
         $this->alert('warning', '¿Está seguro de volver el pedido a preparación?', [
             'position' => 'center',
-            'timer' => 6000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'allowOutsideClick'=> false,
@@ -233,14 +233,14 @@ class IndexComponent extends Component
 
         }
 
-        
+
     }
 
-    
+
 
     public function mount()
     {
-        
+
         $this->cargarPedidos();
     }
 
@@ -267,7 +267,7 @@ class IndexComponent extends Component
                 $this->pedidos_preparacion = Pedido::where('estado', 3)->where('almacen_id', 6)->get();
                 $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])->where('almacen_id', 6)->get();
             }
-                
+
 
             // $this->pedidos_enviados = Pedido::whereIn('estado', [4, 8])
             // ->where('almacen_id', $userAlmacenId)
@@ -300,7 +300,7 @@ class IndexComponent extends Component
 
         return  $almacen->almacen;
     }
-    
+
     public function getListeners()
     {
         return [
@@ -344,8 +344,8 @@ class IndexComponent extends Component
         }elseif($factura){
             $pedido->update(['estado' => 5]);
         }
-        
-        $this->alert('success', '¡Fecha de entrega actualizada!', [ 
+
+        $this->alert('success', '¡Fecha de entrega actualizada!', [
             'position' => 'center',
             'timer' => 3000,
             'toast' => false,
@@ -354,8 +354,8 @@ class IndexComponent extends Component
     }
 
 
-    
-    
+
+
 
     public function completarPedido($id){
         $this->alert('success', '¡Pedido completado!', [
@@ -396,7 +396,7 @@ class IndexComponent extends Component
             $buttondata = [$pedido->id];
 
             if(isset($dComercial) && $dComercial->telefono != null){
-                $phone = '+34'.$dComercial->telefono;    
+                $phone = '+34'.$dComercial->telefono;
                 enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
             }
 
@@ -425,16 +425,16 @@ class IndexComponent extends Component
                 enviarMensajeWhatsApp('pedido_preparacion', $data, $buttondata, $phone);
             }
 
-            
+
 
             $this->alert('success', '¡Pedido en preparación!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
             $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
 
@@ -464,14 +464,14 @@ class IndexComponent extends Component
 
 
 
- 
+
 
     public function enRuta()
     {
 
         // Validación de datos
         $validatedData = $this->validate(
-            [   
+            [
                 'pedidoEnRutaId' => 'required',
                 'fecha_salida' => 'required',
                 'empresa_transporte' => 'required',
@@ -489,7 +489,7 @@ class IndexComponent extends Component
         $pedidosSave = $pedido->update(['estado' => 8,
                                         'fecha_salida' => $this->fecha_salida,
                                         'empresa_transporte' => $this->empresa_transporte,
-                                        
+
                                     ]);
 
         if ($pedidosSave) {
@@ -514,7 +514,7 @@ class IndexComponent extends Component
 
             if(isset($dComercial) && $dComercial->telefono != null){
                 $phone = '+34'.$dComercial->telefono;
-                
+
                 enviarMensajeWhatsApp('pedido_ruta', $data, $buttondata, $phone);
             }
 
@@ -546,12 +546,12 @@ class IndexComponent extends Component
 
             $this->alert('success', '¡Pedido en Ruta!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
 
             $userAlmacenId = Auth::user()->almacen_id; // Obtiene el almacen_id del usuario autenticado
@@ -671,12 +671,12 @@ class IndexComponent extends Component
             // $arr = [];
             // $arr2 = [];
             foreach ($stockTotal as $stock) {
-                
+
                 $stockRegistro = StockRegistro::where('stock_entrante_id', $stock->id)->get();
                 if($stockRegistro->count() > 0  ){
                     foreach ($stockRegistro as $stockReg) {
                         $stockRegistroTotal += $stockReg->cantidad;
-                        
+
                     }
                     if($stock->cantidad - $stockRegistroTotal > 0){
                         $total += $stock->cantidad - $stockRegistroTotal;
@@ -690,9 +690,9 @@ class IndexComponent extends Component
                 }
 
             }
-            
+
             $stockTotal = $stockTotal->sum('cantidad') - $stockRegistroTotal;
-           
+
 
             $mensaje .= "Producto: {$producto->nombre}, Requerido: {$productoPedido->unidades}, En Stock: {$total} - ";
             if ($total >= $productoPedido->unidades) {
@@ -760,7 +760,7 @@ class IndexComponent extends Component
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timer' => 6000,
+            'timer' => null,
 
         ]);
 

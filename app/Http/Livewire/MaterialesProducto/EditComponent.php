@@ -45,7 +45,7 @@ class EditComponent extends Component
         $this->descripcion_producto = $this->producto->descripcion;
         $mercaderias_orden = MaterialesProducto::where('producto_id', $this->identificador)->get();
         foreach ($mercaderias_orden as $mercaderia) {
-            $this->mercaderias_ordenadas[] = [  
+            $this->mercaderias_ordenadas[] = [
                 'id' => $mercaderia->id,
                 'mercaderia_id' => $mercaderia->mercaderia_id,
                 'cantidad' => $mercaderia->cantidad,
@@ -147,12 +147,12 @@ class EditComponent extends Component
         if ($mercaderiaSave) {
             $this->alert('success', '¡Pedido registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [

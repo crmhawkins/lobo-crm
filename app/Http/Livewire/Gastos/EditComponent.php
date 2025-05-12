@@ -78,12 +78,12 @@ class EditComponent extends Component
         if ($GastosSave) {
             $this->alert('success', '¡Gasto actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del gasto!', [
@@ -104,14 +104,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el gasto? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -126,7 +126,7 @@ class EditComponent extends Component
             'desactivarGasto',
         ];
     }
-   
+
     // Función para cuando se llama a la alerta
     public function confirmed()
     {
@@ -160,5 +160,5 @@ class EditComponent extends Component
     }
 
 
-    
+
 }

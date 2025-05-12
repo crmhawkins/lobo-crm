@@ -169,7 +169,7 @@ class ContractComponent extends Component
         $this->nPresupuesto = $this->presupuesto->id;
 
         $this->observaciones = $this->presupuesto->observaciones;
-       
+
 
         $this->addObservaciones = $this->observaciones > " ";
         $this->precioBase = $this->presupuesto->precioBase;
@@ -282,7 +282,7 @@ class ContractComponent extends Component
         $this->confPostal = $this->cliente->confPostal;
         $this->confEmail = $this->cliente->confEmail;
         $this->confSms = $this->cliente->confSms;
-       
+
     }
 
     public function addServiceFieldFromPack()
@@ -292,7 +292,7 @@ class ContractComponent extends Component
         // dd($servicios);
         $servicioEventoList = $this->serviciosListDia[$this->dia];
 
-       
+
         foreach ($servicios as $index => $servicio) {
             // dd($index);
             $serv = [
@@ -318,7 +318,7 @@ class ContractComponent extends Component
             }else{
                 array_push($servicioEventoList, $serv);
             }
-            
+
         }
         $this->serviciosListDia[$this->dia] = $servicioEventoList;
         // dd($servicioEventoList);
@@ -331,7 +331,7 @@ class ContractComponent extends Component
 
     }
 
-    
+
     public function setupServicioEventoList($serviciosListDia)
     {
 
@@ -953,7 +953,7 @@ class ContractComponent extends Component
                 $this->entrega = $total *  ($this->adelanto / 100);
             }
         }
-        
+
     }
 
     //alterna entre activar y descativar el descuento total
@@ -1018,7 +1018,7 @@ class ContractComponent extends Component
                 // $programas[$i + $index] = $servicio["programas"];
                 $exist = isset($servicio["id"]);
                 $programas = $servicio["programas"];
-               
+
                 unset($servicio["programas"]);
                 unset($servicio["horaFin"]);
                 $exist = isset($servicio["id"]);
@@ -1028,7 +1028,7 @@ class ContractComponent extends Component
                     // dd($serv);
                 } else {
                     $serv = ServicioEvento::create($servicio)->toArray();
-                   
+
                 }
 
                 if ($serv) {
@@ -1129,12 +1129,12 @@ public function refresh(){
             if ($presupuesosSave) {
                 $this->alert('success', '¡Presupuesto actualizado correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
                 $this->emit("loadPrice", $this->precioFinal);
             } else {

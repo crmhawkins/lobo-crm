@@ -46,9 +46,9 @@ class EditComponent extends Component
             'name' => 'required',
             'taxNumber' => 'required',
             'adress' => 'required',
-            'ciudad' => 'required', 
-            'province' => 'required', 
-            'postCode' => 'required', 
+            'ciudad' => 'required',
+            'province' => 'required',
+            'postCode' => 'required',
             'photo' => 'image|max:4048', // 1MB Max
         ]);
 
@@ -62,12 +62,12 @@ class EditComponent extends Component
         if ($empresaSave) {
             $this->alert('success', 'Se ha actualido correctamente la empresa!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
                ]);
         }else{
             $this->alert('error', 'No se ha podido actualizar la información de la empresa!', [

@@ -64,7 +64,7 @@ class CreateComponent extends Component
     public function anadirEmail(){
         //dd("prueba");
         if($this->emailAnadir != ""){
-           
+
             $this->emails[] = $this->emailAnadir;
             $this->emailAnadir = "";
         }
@@ -80,7 +80,7 @@ class CreateComponent extends Component
         ->orderByRaw("CASE WHEN grupo IS NULL THEN 1 ELSE 0 END")  // Los NULL en 'grupo' al final
         ->orderBy('grupo', 'asc')  // Luego ordenar por grupo
         ->orderBy('nombre', 'asc')  // Finalmente, ordenar alfabéticamente por nombre
-        ->get();    
+        ->get();
 
         //array asociativo donde cada producto es una clave y el precio es el valor
         $this->arrProductos = [];
@@ -103,7 +103,7 @@ class CreateComponent extends Component
             //ver el ultimo cliente creado y ver su numero de cuenta contable, que empieza por 700 y añadirle el codigo de delegacion
             $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
             //dd($ultimoCliente);
-            
+
             $numeroCuenta = $ultimoCliente->cuenta_contable;
             //coger el numero y quitarle el 700 y los 2 siguentes numeros
             $numeroCuenta = substr($numeroCuenta, 5);
@@ -113,7 +113,7 @@ class CreateComponent extends Component
             $numeroCuenta = $numeroCuenta + 1;
 
             $this->cuenta_contable = '700'.$cod.$numeroCuenta;
-           
+
         }
     }
 
@@ -210,11 +210,11 @@ class CreateComponent extends Component
             }
 
         }
-            
+
         // Guardar datos validados
         $clienteSave = Clients::create($validatedData);
-        
-       
+
+
         if($clienteSave){
 
             if($this->cuenta_contable != null){
@@ -230,14 +230,14 @@ class CreateComponent extends Component
                 }
             }
 
-           
+
             if($this->emails != null){
                 foreach ($this->emails as $email) {
                     $email1 = new Emails();
                     $email1->email = $email;
                     $email1->cliente_id = $clienteSave->id;
                     $email1->save();
-                   
+
                 }
             }
 
@@ -247,7 +247,7 @@ class CreateComponent extends Component
                         'producto_id' => $key,
                         'precio' => $value
                     ]);
-                    
+
             }
         }
 
@@ -299,12 +299,12 @@ class CreateComponent extends Component
 
             $this->alert('success', '¡Cliente registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del cliente!', [
@@ -319,7 +319,7 @@ class CreateComponent extends Component
 
         $ultimoCliente = Clients::whereNotNull('cuenta_contable')->latest()->first();
         //dd($ultimoCliente);
-        
+
         $numeroCuenta = $ultimoCliente->cuenta_contable;
         //coger el numero y quitarle el 700 y los 2 siguentes numeros
         $numeroCuenta = substr($numeroCuenta, 5);

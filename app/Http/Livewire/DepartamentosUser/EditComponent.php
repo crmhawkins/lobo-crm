@@ -25,7 +25,7 @@ class EditComponent extends Component
             $this->name = $this->departamento->name;
         }
     }
-    
+
     public function render()
     {
         return view('livewire.departamentos-user.edit-component');
@@ -37,12 +37,12 @@ class EditComponent extends Component
         // Validación de datos
         $this->validate([
             'name' => 'required',
- 
+
         ],
             // Mensajes de error
             [
                 'name.required' => 'El nombre del departamento es obligatorio.',
-            
+
             ]);
 
         // Encuentra el identificador
@@ -51,19 +51,19 @@ class EditComponent extends Component
         // Guardar datos validados
         $departamentoSave = $departamentoFind->update([
             'name' => $this->name,
-            
+
         ]);
         event(new \App\Events\LogEvent(Auth::user(), 42, $departamentoFind->id));
 
         if ($departamentoSave) {
             $this->alert('success', 'Departamento actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del departamento!', [
@@ -82,14 +82,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }
@@ -101,7 +101,7 @@ class EditComponent extends Component
              'update'
          ];
      }
- 
+
      // Función para cuando se llama a la alerta
      public function confirmed()
      {

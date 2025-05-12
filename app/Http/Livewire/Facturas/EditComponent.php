@@ -105,13 +105,13 @@ class EditComponent extends Component
 
     public function mount()
     {
-        
+
         $this->facturas = Facturas::find($this->identificador);
         $this->clientes = Clients::where('estado', 2)->get();
         $this->cliente_id = $this->facturas->cliente_id;
         $this->cliente = Clients::find($this->cliente_id);
         $this->pedido = Pedido::find($this->facturas->pedido_id);
-        $this->productos = Productos::where('tipo_precio',5)->get();  
+        $this->productos = Productos::where('tipo_precio',5)->get();
         $this->producto_id = $this->facturas->producto_id;
         $this->cantidad = $this->facturas->cantidad;
         $this->recargo = $this->facturas->recargo ?? 0;
@@ -125,18 +125,18 @@ class EditComponent extends Component
             // dd($this->facturas);
             $this->precio = 0;
             $this->serviciosDB = ServiciosFacturas::where('factura_id', $this->facturas->id)->get();
-           
+
             if($this->serviciosDB){
-                
+
                 foreach($this->serviciosDB as $servicio){
-                    
+
                     $this->servicios= array_merge($this->servicios, [['descripcion' => $servicio->descripcion, 'cantidad' => $servicio->cantidad, 'importe' => $servicio->precio , 'id' => $servicio->id, 'new' => false]]);
                 }
             }
         }
         //dd($this->pedido->precio);
         $this->pedido_id = $this->facturas->pedido_id;
-        
+
        // dd($this->productos_pedido);
 
         $this->numero_factura = $this->facturas->numero_factura;
@@ -155,7 +155,7 @@ class EditComponent extends Component
         if($this->tipo == 2){
             $this->precio = $this->facturas->precio;
         }
-        
+
         if(!$this->facturas->descuento){
             if(isset($this->pedido)){
                 if($this->pedido->descuento){
@@ -185,7 +185,7 @@ class EditComponent extends Component
                     }
                 }
             }
-            
+
         }
 
         $this->emails = Emails::where('cliente_id', $this->cliente_id)->get();
@@ -200,7 +200,7 @@ class EditComponent extends Component
             $this->precio = $this->facturas->precio;
         }
         // dd($this->facturas , $this->precio);
-        
+
     }
 
 
@@ -211,8 +211,8 @@ class EditComponent extends Component
         } else {
             $this->retencion_id = (int) $value;
         }
-    
-        
+
+
         $retencion = Retencion::find($value);
         $delegacion = $this->facturas->cliente->delegacion->nombre;
         if($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR'){
@@ -227,7 +227,7 @@ class EditComponent extends Component
             $this->total_retencion = 0;
         }
     }
-   
+
 
     public function getPedido(){
         $pedido = Pedido::find($this->pedido_id);
@@ -271,13 +271,13 @@ class EditComponent extends Component
         }
     }
 
-    
 
 
-    
+
+
     public function addArticulo()
     {
-        
+
         $this->servicios = array_merge($this->servicios, [['descripcion' => $this->descripcionServicio, 'cantidad' => $this->cantidadServicio, 'importe' => $this->importeServicio, 'new' => true]]);
         $this->descripcionServicio = null;
         $this->cantidadServicio = null;
@@ -294,7 +294,7 @@ class EditComponent extends Component
         }
     }
 
-    
+
 
 
     public function getNombreTabla($id)
@@ -321,12 +321,12 @@ class EditComponent extends Component
                     $lastNumber = 1;
                 }
             }
-           
-        
-         
+
+
+
             $this->numero_factura = 'CN' . $year . str_pad($lastNumber, 4, '0', STR_PAD_LEFT);
-        
-        //dd("prueba"); 
+
+        //dd("prueba");
 
     }
 
@@ -334,7 +334,7 @@ class EditComponent extends Component
     {
 
         $producto = Productos::find($this->productos_pedido[$id]['producto_pedido_id']);
-        
+
         $cajas = ($this->productos_pedido[$id]['unidades'] / $producto->unidades_por_caja);
         $pallets = floor($cajas / $producto->cajas_por_pallet);
         $cajas_sobrantes = $cajas % $producto->cajas_por_pallet;
@@ -349,7 +349,7 @@ class EditComponent extends Component
 
     public function render()
     {
-        
+
 
         // $this->tipoCliente == 0;
         return view('livewire.facturas.edit-component');
@@ -472,7 +472,7 @@ class EditComponent extends Component
                         $registroStock->motivo = "Entrada";
                         $registroStock->factura_id = $this->facturas->id;
                         $registroStock->save();
-                        
+
 
                         $this->productos_factura->push([
                             'producto_pedido_id' => $producto_pedido['producto_pedido_id'],
@@ -490,17 +490,17 @@ class EditComponent extends Component
                         $productosFactura->stock_entrante_id = $stockEntrante->id;
                         $productosFactura->save();
                 }
-                    
+
                 }
             }
 
 
-            
+
             $factura = Facturas::find($this->facturas->id);
             $factura::where('id', $this->facturas->id)->update(['cliente_id' => $this->cliente_id]);
 
-    
-    
+
+
                 //dd($productos);
                 //comparar ids entre productos y productos de la factura y si coinciden, restarle la cantidad de productos factura a productos
                 // foreach($productos as $index => $producto){
@@ -513,11 +513,11 @@ class EditComponent extends Component
                 //         }
                 //     }
                 // }
-    
+
                 //$facturaRectificativa
                 //dd($total , $base_imponible, $iva_productos);
-                
-                
+
+
             $pedido = Pedido::find($this->facturas->pedido_id);
             $factura = Facturas::where('id', $this->facturas->factura_id)->first();
             $facturaRectificativa = Facturas::where('id', $this->facturas->id)->first();
@@ -530,9 +530,9 @@ class EditComponent extends Component
                 $cliente = Clients::find($factura->cliente_id);
                 $productofact = Productos::find($factura->producto_id);
                 $productos = [];
-               
+
                 //dd($albaran);
-               
+
                 if (isset($pedido)) {
                     $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                     // Preparar los datos de los productos del pedido
@@ -567,21 +567,21 @@ class EditComponent extends Component
                     }
                 }
                 $arrProductosFactura = [];
-                
+
                 if ($facturaRectificativa){
                     $productosdeFactura = [];
                     $productosFactura = DB::table('productos_factura')->where('factura_id', $facturaRectificativa->id)->get();
-    
+
                     foreach($productosFactura as $productoPedido){
                         $producto = Productos::find($productoPedido->producto_id);
                         $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-    
+
                         if ($stockEntrante) {
                             $lote = $stockEntrante->orden_numero;
                         } else {
                             $lote = "";
                         }
-    
+
                         if ($producto) {
                             if (!isset($producto->peso_neto_unidad) || $producto->peso_neto_unidad <= 0) {
                                 $peso = "Peso no definido";
@@ -599,22 +599,22 @@ class EditComponent extends Component
                                 'peso_kg' =>  $peso,
                             ];
                         }
-    
+
                     }
-    
-    
+
+
                 }
-    
+
                 $totalRectificado = 0;
                 $base_imponible_rectificado = 0;
                 $iva_productos_rectificado = 0;
-    
+
                 foreach ($arrProductosFactura as $producto) {
                     $base_imponible_rectificado += $producto['precio_total'];
                     $iva_productos_rectificado += $producto['iva'];
-                    
+
                 }
-    
+
                 $totalRectificado = $base_imponible_rectificado + $iva_productos_rectificado;
                 $total = $factura->total - $totalRectificado;
                 $base_imponible = $factura->precio - $base_imponible_rectificado;
@@ -630,19 +630,19 @@ class EditComponent extends Component
 
 
 
-    
-    
-            } 
+
+
+            }
 
             //alerta
             $this->alert('success', 'Factura actualizada correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
             //dd("prueba");
 
@@ -669,15 +669,15 @@ class EditComponent extends Component
                 $total = 0;
                 $precio = 0;
                 foreach($servicios as $servicio){
-                    
+
                     $total += $servicio->total;
-                    
+
                 }
 
 
 
                 $this->facturas->precio = $total;
-                
+
                 $this->facturas->iva_total_pedido = $total * 21 / 100;
                 $this->facturas->iva = $this->facturas->iva_total_pedido;
                 $this->facturas->total = $total + ($total * 21 / 100);
@@ -686,19 +686,19 @@ class EditComponent extends Component
                 $this->facturas->fecha_vencimiento = $this->fecha_vencimiento;
                 $this->facturas->estado = $this->estado;
                 $this->facturas->descripcion = $this->descripcion;
-                $this->facturas->cliente_id = $this->cliente_id;    
+                $this->facturas->cliente_id = $this->cliente_id;
                 $this->facturas->save();
 
                 $this->alert('success', 'Factura actualizada correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
-            
+
         }else{
             // Guardar datos validados
 
@@ -710,8 +710,8 @@ class EditComponent extends Component
 
             //$pedido = Pedido::find($this->pedido_id);
             $this->getPedido();
-            
-            
+
+
             $facturasSave = $this->facturas->update([
                 'numero_factura' => $this->numero_factura,
                 'cliente_id' => $this->cliente_id,
@@ -748,12 +748,12 @@ class EditComponent extends Component
                 $this->calcularTotales($this->facturas);
                 $this->alert('success', 'Factura actualizada correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
             } else {
                 $this->alert('error', '¡No se ha podido guardar la información de la factura!', [
@@ -763,13 +763,13 @@ class EditComponent extends Component
                 ]);
             }
 
-            
+
         }
 
         session()->flash('message', 'Factura actualizada correctamente.');
 
             $this->emit('productUpdated');
-        
+
     }
     public function changeDescontar($id){
         // si descontar es mayor que unidades, descontar = unidades
@@ -788,14 +788,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el la factura? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -872,12 +872,12 @@ class EditComponent extends Component
 
             $this->alert('success', '¡Presupuesto aceptado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido aceptar el presupuesto!', [
@@ -898,12 +898,12 @@ class EditComponent extends Component
         if ($presupuesosSave) {
             $this->alert('success', '¡Presupuesto cancelado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido cancelar el presupuesto!', [
@@ -952,7 +952,7 @@ class EditComponent extends Component
                 $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
             }
             //dd($albaran);
-           
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -990,7 +990,7 @@ class EditComponent extends Component
             foreach ($productosFactura as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_id);
                 $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-               
+
                 if ($stockEntrante) {
                     $lote = $stockEntrante->orden_numero;
                 } else {
@@ -1017,9 +1017,9 @@ class EditComponent extends Component
             $base_imponible = 0;
             $iva_productos = 0;
             $iva = true;
-            
+
             if ($factura->tipo == 2){
-                
+
                 foreach ($productosdeFactura as $producto) {
                     $base_imponible += $producto['precio_total'];
                     $iva_productos += $producto['iva'];
@@ -1045,15 +1045,15 @@ class EditComponent extends Component
                 'base_imponible' => $base_imponible,
                 'iva_productos' => $iva_productos,
                 'anotacionesEmail' => $this->anotacionesEmail,
-                'productosMarketing' => $productosMarketing,	
-                
+                'productosMarketing' => $productosMarketing,
+
             ];
 
             //update factura con anotaciones email
             $factura = Facturas::find($this->identificador);
             $factura->anotacionesEmail = $this->anotacionesEmail;
             $factura->save();
-            
+
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');
@@ -1086,7 +1086,7 @@ class EditComponent extends Component
                     $emailsDireccion[] = $comercial->email;
                 }
             }
-            
+
 
             if(count($this->emailsSeleccionados) > 0){
                 if($this->emailNuevo != null){
@@ -1150,12 +1150,12 @@ class EditComponent extends Component
             }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
 
         }catch(\Exception $e){
@@ -1179,7 +1179,7 @@ class EditComponent extends Component
 
 
     public function enviarTransporte(){
-        
+
         //si emailTransporte es null, alert
         if($this->emailTransporte == null){
             $this->alert('error', '¡No se ha podido enviar la factura por email!', [
@@ -1275,7 +1275,7 @@ class EditComponent extends Component
                 $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
             }
             //dd($albaran);
-           
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -1313,7 +1313,7 @@ class EditComponent extends Component
             foreach ($productosFactura as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_id);
                 $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-               
+
                 if ($stockEntrante) {
                     $lote = $stockEntrante->orden_numero;
                 } else {
@@ -1345,7 +1345,7 @@ class EditComponent extends Component
             $iva_productos = 0;
             $iva = true;
             if ($factura->tipo == 2){
-                
+
                 foreach ($productosdeFactura as $producto) {
                     $base_imponible += $producto['precio_total'];
                     $iva_productos += $producto['iva'];
@@ -1374,14 +1374,14 @@ class EditComponent extends Component
                 'observacionesEmail' => $this->observacionesEmail,
                 'hasproductosFactura' => true,
                 'almacen' => $almacenOrigen,
-                
+
             ];
 
             //update factura con anotaciones email
             $factura = Facturas::find($this->identificador);
             $factura->observacionesEmail = $this->observacionesEmail;
             $factura->save();
-            
+
             //dd($datos);
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf3-component',$datos)->setPaper('a4', 'vertical');
@@ -1407,7 +1407,7 @@ class EditComponent extends Component
             ];
 
             Mail::to($this->emailTransporte)->cc($this->emailTransporte)->bcc($emailsDireccion)->send(new TransporteRecogida($pdf->output(), $datos));
-                
+
             $registroEmail = new RegistroEmail();
             $registroEmail->factura_id = $factura->id;
             $registroEmail->pedido_id = null;
@@ -1417,15 +1417,15 @@ class EditComponent extends Component
             $registroEmail->tipo_id = 4;
             $registroEmail->save();
 
-            
+
             $this->alert('success', '¡Enviado al transportista correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
 
         }catch(\Exception $e){
@@ -1477,14 +1477,14 @@ class EditComponent extends Component
                 $delegacion =$factura->cliente->delegacion->nombre;
                 if ($delegacion) {
                     // Determinar el valor base para el cálculo
-                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR') 
-                        ? $factura->precio 
+                    $valorBase = ($delegacion == '07 CANARIAS' || $delegacion == '13 GIBRALTAR' || $delegacion == '14 CEUTA' || $delegacion == '15 MELILLA' || $delegacion == '01.1 ESTE – SUR EXTERIOR' || $delegacion == '08 OESTE - INSULAR')
+                        ? $factura->precio
                         : $factura->total;
                     $retencion = Retencion::find($factura->retencion_id);
-                    
+
                     // Establecer el total original si aún no está definido
                     $factura->total_original = $factura->total_original ?? $valorBase;
-                    
+
                     // Calcular el total con retención si aún no está definido
                     $total_retencion = ($factura->total_original + ($factura->total_original * $retencion->porcentaje / 100));
                     // dd($this->total_retencion);
@@ -1507,7 +1507,7 @@ class EditComponent extends Component
             $this->total =  round($factura->total, 2);
             $this->iva_total_pedido = round($factura->iva, 2);
             $this->precio = round($factura->precio, 2);
-            
+
         }else{
             if(isset($factura) && isset($factura->precio) && $factura->precio != null){
                 $recargo_total = (($factura->precio * $recargo) / 100);
@@ -1529,7 +1529,7 @@ class EditComponent extends Component
                 $factura->save();
 
             }
-            
+
 
 
         }
@@ -1551,7 +1551,7 @@ class EditComponent extends Component
                 $servicios = ServiciosFacturas::where('factura_id', $factura->id)->get();
             }
             //dd($albaran);
-           
+
             if (isset($pedido)) {
                 $productosPedido = DB::table('productos_pedido')->where('pedido_id', $pedido->id)->get();
                 // Preparar los datos de los productos del pedido
@@ -1589,7 +1589,7 @@ class EditComponent extends Component
             foreach ($productosFactura as $productoPedido) {
                 $producto = Productos::find($productoPedido->producto_id);
                 $stockEntrante = StockEntrante::where('id', $productoPedido->stock_entrante_id)->first();
-               
+
                 if ($stockEntrante) {
                     $lote = $stockEntrante->orden_numero;
                 } else {
@@ -1617,7 +1617,7 @@ class EditComponent extends Component
             $iva_productos = 0;
             $iva = false;
             if ($factura->tipo == 2){
-                
+
                 foreach ($productosdeFactura as $producto) {
                     $base_imponible += $producto['precio_total'];
                     $iva_productos += $producto['iva'];
@@ -1643,14 +1643,14 @@ class EditComponent extends Component
                 'iva_productos' => $iva_productos,
                 'anotacionesEmail' => $this->anotacionesEmail,
                 'productosMarketing' => $productosMarketing,
-                
+
             ];
 
             //update factura con anotaciones email
             $factura = Facturas::find($this->identificador);
             $factura->anotacionesEmail = $this->anotacionesEmail;
             $factura->save();
-            
+
 
         // Se llama a la vista Liveware y se le pasa los productos. En la vista se epecifican los estilos del PDF
         $pdf = Pdf::loadView('livewire.facturas.pdf-component',$datos)->setPaper('a4', 'vertical');
@@ -1689,7 +1689,7 @@ class EditComponent extends Component
                 if($this->emailNuevo != null){
                     array_push($this->emailsSeleccionados, $this->emailNuevo);
                 }
-    
+
                 Mail::to($this->emailsSeleccionados[0])->cc($this->emailsSeleccionados)->bcc( $emailsDireccion)->send(new FacturaMail($pdf->output(), $datos));
                 // Mail::to('ivan.mayol@hawkins.es')->send(new FacturaMail($pdf->output(), $datos));
 
@@ -1754,12 +1754,12 @@ class EditComponent extends Component
             }
             $this->alert('success', '¡Factura enviada por email correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
 
         }catch(\Exception $e){
@@ -1770,7 +1770,7 @@ class EditComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
 
 
 

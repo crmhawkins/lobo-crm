@@ -102,7 +102,7 @@ class EditComponent extends Component
     $this->costes = CostesProductos::where('producto_id', $this->identificador)
         ->orderBy('fecha', 'desc')
         ->get();
-    
+
     foreach ($this->costes as $coste) {
         $this->costesEditados[$coste->id] = [
             'coste' => $coste->coste,
@@ -110,7 +110,7 @@ class EditComponent extends Component
         ];
     }
 }
-    
+
 
     public function agregarCoste()
     {
@@ -135,13 +135,13 @@ class EditComponent extends Component
             'costesEditados.'.$costeId.'.coste' => 'required|numeric|min:0',
             'costesEditados.'.$costeId.'.fecha' => 'required|date'
         ]);
-    
+
         $coste = CostesProductos::find($costeId);
         $coste->update([
             'coste' => $this->costesEditados[$costeId]['coste'],
             'fecha' => $this->costesEditados[$costeId]['fecha']
         ]);
-    
+
         $this->cargarCostes();
         $this->alert('success', 'Coste actualizado correctamente');
     }
@@ -236,12 +236,12 @@ class EditComponent extends Component
         if ($productSave) {
             $this->alert('success', '¡Producto actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del producto!', [
@@ -264,14 +264,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el producto? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 

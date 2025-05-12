@@ -26,7 +26,7 @@ class CreateComponent extends Component
     {
         return view('livewire.articulos.create-component');
     }
-   
+
     public function submit()
     {
         // Validación de datos
@@ -61,12 +61,12 @@ class CreateComponent extends Component
         if ($departamentoSave) {
             $this->alert('success', 'Articulo registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del Articulo!', [
@@ -75,7 +75,7 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
     }
 
      // Función para cuando se llama a la alerta
@@ -86,7 +86,7 @@ class CreateComponent extends Component
              'submit'
          ];
      }
- 
+
      // Función para cuando se llama a la alerta
      public function confirmed()
      {

@@ -164,14 +164,14 @@ class EditComponent extends Component
 
             $this->alert('success', '¡Stock actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
-       
+
 
     }
 
@@ -205,14 +205,14 @@ class EditComponent extends Component
         $this->cantidad = $this->cantidad + $this->addStockItem;
         $this->alert('warning', '¿Seguro que desea registrar la suma de stock?', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'update',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ])
         ;
 
@@ -230,23 +230,23 @@ class EditComponent extends Component
         }
         $this->deleteStockItem = abs($this->deleteStockItem);
 
-            
+
         $this->cantidad = $this->cantidad - $this->deleteStockItem;
         //si es un numero negativo se convierte en positivo, es decir, se le quita el signo negativo
 
         $this->alert('warning', '¿Seguro que desea registrar la resta de stock?', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'update',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ])
         ;
-        
+
     }
 
     public function  roturaStock(){
@@ -266,18 +266,18 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea registrar la rotura de stock?', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'update',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ])
         ;
-       
-        
+
+
 
     }
 
@@ -287,14 +287,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el producto? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 

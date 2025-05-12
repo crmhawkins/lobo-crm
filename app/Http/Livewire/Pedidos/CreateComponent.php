@@ -76,7 +76,7 @@ class CreateComponent extends Component
     public $iva_total = 0;
     public $descuento_total = 0;
     public $npedido_cliente;
-    
+
     public $gastos_envio;
     public $transporte;
     public $gastos_envio_iva;
@@ -101,7 +101,7 @@ class CreateComponent extends Component
 
     public function mount()
     {
-        
+
 
        // Inicializar la colección de productos
         // Obtener todos los productos, ordenados por grupo y orden dentro del grupo
@@ -117,7 +117,7 @@ class CreateComponent extends Component
         //dd($this->productos);
 
 
-      
+
 
 
         //dd($this->productos);
@@ -149,7 +149,7 @@ class CreateComponent extends Component
         $this->fecha = Carbon::now()->format('Y-m-d');
         $this->estado = 1;
         $this->cliente_id = null;
-        $this->almacenes = Almacen::all(); 
+        $this->almacenes = Almacen::all();
         $this->numero = Pedido::whereYear('created_at', Carbon::now()->year)->max('numero') + 1;
         //dd(Pedido::whereYear('created_at', Carbon::now()->year)->max('numero'));
         $this->cargarDirecciones();
@@ -255,10 +255,10 @@ class CreateComponent extends Component
     public function aceptarPedido($id)
     {
         //si el rol es 2 , directamente se acepta el pedido
-        
+
         if($this->porcentaje_descuento > $this->porcentaje_bloq || (isset( $this->cliente) && ( $this->cliente->credito < $this->precio ))){
             $this->bloqueado=true;
-      
+
         }else{
             $this->bloqueado=false;
         }
@@ -352,12 +352,12 @@ class CreateComponent extends Component
 
             $this->alert('success', '¡Pedido aceptado!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido enviar el pedido!', [
@@ -368,7 +368,7 @@ class CreateComponent extends Component
         }
     }
 
-    
+
 
     public function completarAnotacion($id){
         $anotacion = AnotacionesClientePedido::find($id);
@@ -381,7 +381,7 @@ class CreateComponent extends Component
 
     public function render()
     {
-        
+
 
         return view('livewire.pedidos.create-component');
     }
@@ -422,12 +422,12 @@ class CreateComponent extends Component
                     'timerProgressBar' => true,
                 ]);
                 return;
-                
+
             }
         }
 
-        
-        
+
+
 
         $totalUnidades = 0;
         $totalUnidadesSinCargo = 0;
@@ -457,14 +457,14 @@ class CreateComponent extends Component
                     //dd($iva);
                     if($this->descuento == 1){
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
-                       
+
                     }else{
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
-                        
+
                     }
                 }
-             
-             
+
+
             // Compara el precio unitario del producto en el pedido con el precio base del cliente
             if ($productoPedido['precio_ud'] != $precioBaseProducto && $productoPedido['precio_ud'] != 0) {
                 $this->bloqueado = true;
@@ -473,7 +473,7 @@ class CreateComponent extends Component
             }
          }
 
-         
+
 
         //  if($this->gastos_envio != 0 && $this->gastos_envio != null && is_numeric($this->gastos_envio)){
         //     $this->gastos_envio_iva = $this->gastos_envio * 0.21;
@@ -491,7 +491,7 @@ class CreateComponent extends Component
 
          $this->iva_total = $total_iva;
 
-        
+
         //  dd($this->direccion_entrega , $this->localidad_entrega , $this->provincia_entrega , $this->cod_postal_entrega);
         // Validación de datos
         //si el rol es 2
@@ -531,7 +531,7 @@ class CreateComponent extends Component
                     'fecha.required' => 'La fecha es obligatoria.',
                 ]
             );
-    
+
         }else{
             $validatedData = $this->validate(
                 [
@@ -569,7 +569,7 @@ class CreateComponent extends Component
                 ]
             );
         }
-        
+
         if(Auth::user()->user_department_id == 2){
             //add to validateData the department_id
             $validatedData['departamento_id'] = config('app.departamentos_pedidos')['Marketing']['id'];
@@ -588,7 +588,7 @@ class CreateComponent extends Component
         // Guardar datos validados
         $pedidosSave = Pedido::create($validatedData);
 
-        
+
 
         foreach ($this->productos_marketing_pedido as $productoMarketing) {
             ProductosMarketingPedido::create([
@@ -600,7 +600,7 @@ class CreateComponent extends Component
             ]);
         }
 
-        
+
         try{
             // dd($pedidosSave->cliente->nombre);
             Mail::send([], [], function ($message) use ($pedidosSave) {
@@ -617,7 +617,7 @@ class CreateComponent extends Component
 
             //             ->html('<h1>Nuevo Pedido Creado</h1><p>El pedido número ' . $pedidosSave->id . ' ha sido creado para el cliente ' . $pedidosSave->cliente->nombre . '</p><br><a href="https://crmyerp.serlobo.com/admin/pedidos-edit/'.$pedidosSave->id.'" >Ir al pedido</a>');
             // });
-            
+
 
         }catch(\Exception $e){
             $this->alert('error', '¡No se ha podido enviar el correo! ' . $e->getMessage(), [
@@ -626,7 +626,7 @@ class CreateComponent extends Component
                 'toast' => false,
             ]);
         }
-        
+
 
 
         if (Auth::user()->role == 2) {
@@ -638,11 +638,11 @@ class CreateComponent extends Component
                 try{
                     Mail::send([], [], function ($message) use ($hasStock, $almacen, $producto, $pedidosSave) {
                         $htmlContent = '<h1>Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->numero.' - '.$pedidosSave->nombre_cliente.'</h1>';
-                        
+
                         foreach ($hasStock as $producto) {
                             $htmlContent .= '<p>El stock de ' . $producto . ' es insuficiente en el almacén de ' . $almacen->almacen . '.</p>';
                         }
-                    
+
                         $message->to('Alejandro.martin@serlobo.com')
                                 ->subject('Alerta de Stock Insuficiente para el pedido nº '.$pedidosSave->numero.' - '.$pedidosSave->nombre_cliente)
                                 ->html($htmlContent);
@@ -653,7 +653,7 @@ class CreateComponent extends Component
                 }catch(\Exception $e){
                     //dd($e);
                 }
-                
+
 
                 Alertas::create([
                     'user_id' => 13,
@@ -805,7 +805,7 @@ class CreateComponent extends Component
             }
 
 
-       
+
 
 
             event(new \App\Events\LogEvent(Auth::user(), 3, $pedidosSave->id));
@@ -815,15 +815,15 @@ class CreateComponent extends Component
                 //si el rol es 2 , directamente se acepta el pedido
                 if (Auth::user()->role == 2 || Auth::user()->role == 1) {
                     $this->aceptarPedido($pedidosSave->id);
-                } 
+                }
                 $this->alert('success', '¡Pedido registrado correctamente!', [
                     'position' => 'center',
-                    'timer' => 3000,
+                    'timer' => null,
                     'toast' => false,
                     'showConfirmButton' => true,
                     'onConfirmed' => 'confirmed',
                     'confirmButtonText' => 'ok',
-                    'timerProgressBar' => true,
+                    'timerProgressBar' => false,
                 ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [
@@ -920,7 +920,7 @@ public function getNombreProductoMarketing($id){
 
     public function updated($property){
         if($property == 'precio' && $this->isAlmacenOnline){
-            
+
             //controlar valores no numericos
 
             if(!is_numeric($this->precio)){
@@ -953,7 +953,7 @@ public function getNombreProductoMarketing($id){
                         'allowOutsideClick' => false,
                     ]);
                     $this->precio = 0;
-                }   
+                }
             }
 
             $this->descuento_total = $this->subtotal - $this->precio;
@@ -1003,7 +1003,7 @@ public function getNombreProductoMarketing($id){
 
     public function isClienteSeleccionado(){
         if($this->cliente_id == null){
-           
+
             //alert cuando finalize que ejecute closeModal
             $this->alert('error', '¡Debe seleccionar un cliente!', [
                 'position' => 'center',
@@ -1178,7 +1178,7 @@ public function addProductosMarketing($id)
                 foreach ($this->productos_pedido as $index => $productoPedido) {
                     if ($productoPedido['producto_pedido_id'] == $id) {
                         if ($productoPedido['precio_ud'] == 0) {
-                            $key = $index;  
+                            $key = $index;
                         }
                     }
                 }
@@ -1300,7 +1300,7 @@ public function addProductosMarketing($id)
         }
 
         if($this->gastos_transporte !=0 && $this->gastos_transporte != null && is_numeric($this->gastos_transporte)){
-        
+
             $this->precioEstimado += $this->gastos_transporte;
             $this->gastos_envio_iva = $this->gastos_transporte * 0.21;
         }
@@ -1308,7 +1308,7 @@ public function addProductosMarketing($id)
         foreach ($this->productos_pedido as $producto) {
             $this->precioEstimado += $producto['precio_total'];
         }
-        
+
         $this->precioSinDescuento = $this->precioEstimado;
         // Verificar si el descuento está activado
         if ($this->descuento) {

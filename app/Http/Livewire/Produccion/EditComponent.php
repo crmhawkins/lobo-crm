@@ -63,8 +63,8 @@ class EditComponent extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh'];
     public function editProductos($id){
-        
-        
+
+
 
         $this->productos_ordenados[$id]['cantidad'] = $this->unidades_producto;
         //dd($this->productos_ordenados[$id]['cantidad'] , $this->productoEditarUds);
@@ -103,7 +103,7 @@ class EditComponent extends Component
         $this->unidades_caja_producto = $this->productoEditarCajas;
 
         $this->indexPedidoProductoEditar = $idIndex;
-  
+
     }
 
     public function mount()
@@ -126,7 +126,7 @@ class EditComponent extends Component
                 'borrar' => 0,
             ];
         }
-       
+
         foreach ($mercaderias_orden as $mercaderia_orden) {
             $this->mercaderias_gastadas[] = [
                 'id' => $mercaderia_orden->id,
@@ -374,12 +374,12 @@ class EditComponent extends Component
         $orden->update(['estado' => 2]);
         $this->alert('success', '¡Producción en proceso!', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmed',
             'confirmButtonText' => 'ok',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -391,12 +391,12 @@ class EditComponent extends Component
         if ($OrdenSave) {
             $this->alert('success', '¡Producción completada!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
 
 
@@ -483,12 +483,12 @@ class EditComponent extends Component
         if ($mercaderiaSave) {
             $this->alert('success', '¡Órden de compra registrada correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del pedido!', [
@@ -603,16 +603,16 @@ class EditComponent extends Component
 
 
 
-        //alert 
+        //alert
 
         $this->alert('success', '¡Orden de producción actualizada correctamente!', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmed',
             'confirmButtonText' => 'ok',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
 
@@ -644,7 +644,7 @@ class EditComponent extends Component
         $this->unidades_caja_producto = floor($this->unidades_producto / $producto->unidades_por_caja);
         $this->unidades_pallet_producto = floor($this->unidades_caja_producto / $producto->cajas_por_pallet);
     }
-    
+
     public function isPedidoMarketing($pedidoId)
     {
         $pedido = Pedido::find($pedidoId);
@@ -662,7 +662,7 @@ class EditComponent extends Component
         $productos = ProductosProduccion::where('orden_id', $orden->id)->get();
         $mercaderias = MercaderiaProduccion::where('orden_id', $orden->id)->get();
 
-        
+
         foreach ($this->mercaderias_gastadas as $mercaderiaIndex => $mercaderia) {
             $this->sumarStock($mercaderia['mercaderia_id'], $mercaderia['cantidad']);
         }
@@ -676,12 +676,12 @@ class EditComponent extends Component
         $orden->delete();
         $this->alert('success', '¡Orden de producción eliminada correctamente!', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmed',
             'confirmButtonText' => 'ok',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 

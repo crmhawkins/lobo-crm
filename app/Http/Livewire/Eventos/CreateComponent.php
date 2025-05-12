@@ -84,7 +84,7 @@ class CreateComponent extends Component
         }else{
             // $this->eventoServicios[$servicio] = $this->servicios->find($servicio);
         }
-        
+
     }
 
     public function diasServicio(){
@@ -103,7 +103,7 @@ class CreateComponent extends Component
             $this->addPrograma = true;
         }
     }
-    
+
 
     public function getProgramaByServicioAndDia($id_servicio, $diaEvento){
        return $this->programas->where("id_servicio", "==", $id_servicio, "&&", "diaEvento", "==", $diaEvento);
@@ -113,8 +113,8 @@ class CreateComponent extends Component
         return $this->programas->where("id_evento", "==", $id_evento, "&&", "diaEvento", "==", $diaEvento);
     }
 
-    
-    
+
+
 
     public function render()
     {
@@ -148,7 +148,7 @@ class CreateComponent extends Component
                 'eventoTelefono' => 'required',
                 'diaEvento' => 'required',
                 'diaFinal' => 'required',
-                
+
             ],
             // Mensajes de error
             [
@@ -176,12 +176,12 @@ class CreateComponent extends Component
 
             $this->alert('success', '¡Usuario registrado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
@@ -214,6 +214,6 @@ class CreateComponent extends Component
         // Do something
         // return redirect()->route('eventos.index');
         return redirect()->route('eventos.index');
-        
+
     }
 }

@@ -21,7 +21,7 @@ class EditComponent extends Component
 
     public $dia;
     public $precioBase;
-    public $id_servicio = 0; 
+    public $id_servicio = 0;
     public $id_evento = 0;
     public $id_monitor = 0;
     public $comienzoMontaje;
@@ -118,12 +118,12 @@ class EditComponent extends Component
         if ($programaSave) {
             $this->alert('success', 'Usuario actualizado correctamente!', [
                 'position' => 'center',
-                'timer' => 3000,
+                'timer' => null,
                 'toast' => false,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'confirmed',
                 'confirmButtonText' => 'ok',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         } else {
             $this->alert('error', '¡No se ha podido guardar la información del usuario!', [
@@ -143,14 +143,14 @@ class EditComponent extends Component
 
         $this->alert('warning', '¿Seguro que desea borrar el usuario? No hay vuelta atrás', [
             'position' => 'center',
-            'timer' => 3000,
+            'timer' => null,
             'toast' => false,
             'showConfirmButton' => true,
             'onConfirmed' => 'confirmDelete',
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
 
     }
