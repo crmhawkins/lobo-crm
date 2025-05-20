@@ -1226,6 +1226,7 @@ public function setPrecioEstimadoMarketing()
         $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
             'position' => 'center',
             'toast' => false,
+            'timer' => null,
             'showConfirmButton' => true,
             'onConfirmed' => 'update',
             'confirmButtonText' => 'Sí',
@@ -1493,6 +1494,7 @@ public function setPrecioEstimadoMarketing()
             $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
                 'position' => 'center',
                 'toast' => false,
+                'timer' => null,
                 'showConfirmButton' => true,
                 'onConfirmed' => 'aceptarPedido',
                 'confirmButtonText' => 'Sí',
@@ -1519,6 +1521,7 @@ public function setPrecioEstimadoMarketing()
         $this->alert('info', 'Asegúrese de que todos los datos son correctos antes de guardar.', [
             'position' => 'center',
             'toast' => false,
+            'timer' => null,
             'showConfirmButton' => true,
             'onConfirmed' => 'rechazarPedido',
             'confirmButtonText' => 'Sí',
