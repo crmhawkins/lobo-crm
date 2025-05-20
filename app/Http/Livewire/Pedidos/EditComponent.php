@@ -1231,7 +1231,7 @@ public function setPrecioEstimadoMarketing()
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
@@ -1498,7 +1498,7 @@ public function setPrecioEstimadoMarketing()
                 'confirmButtonText' => 'Sí',
                 'showDenyButton' => true,
                 'denyButtonText' => 'No',
-                'timerProgressBar' => true,
+                'timerProgressBar' => false,
             ]);
         }else{
             $this->alert('info', 'Debe seleccionar un almacén antes de proceder.', [
@@ -1524,7 +1524,7 @@ public function setPrecioEstimadoMarketing()
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
         ]);
     }
 
