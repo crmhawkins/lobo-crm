@@ -879,7 +879,8 @@ public function getNombreProductoMarketing($id){
             'confirmButtonText' => 'Sí',
             'showDenyButton' => true,
             'denyButtonText' => 'No',
-            'timerProgressBar' => true,
+            'timerProgressBar' => false,
+            'timer' => null,
         ]);
     }
 
