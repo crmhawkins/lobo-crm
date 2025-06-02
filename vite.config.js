@@ -16,9 +16,11 @@ export default defineConfig({
                 'resources/image/background-login-3.svg',
                 'resources/image/IVAN.jpg',
                 'resources/image/pic-login-3.svg',
-
             ],
             refresh: true,
         }),
     ],
+    build: {
+        sourcemap: false, // ❌ No generar archivos .map en producción
+    },
 });
