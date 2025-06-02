@@ -1898,9 +1898,9 @@ public function setPrecioEstimadoMarketing()
                     //dd($iva);
                     if($this->descuento == 1){
                         //dd($this->descuento);
-                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
+                        $total_iva += round((($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100));
                     }else{
-                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                        $total_iva += round((($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100));
                     }
                 }
             }
