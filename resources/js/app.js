@@ -1,7 +1,9 @@
 import.meta.glob([ '../images/**', ]);
 
-import { Autoplay, Navigation, Pagination } from "swiper";
-import Swiper from "swiper";
+import Swiper from 'swiper';
+import Autoplay from 'swiper';
+import Navigation from 'swiper';
+import Pagination from 'swiper';
 Swiper.use([Autoplay, Navigation, Pagination]);
 
 jQuery(function ($) {
