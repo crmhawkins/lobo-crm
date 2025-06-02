@@ -1903,6 +1903,8 @@ public function setPrecioEstimadoMarketing()
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
                     }else{
                         $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                            Log::info('precio unidad ' . $productoPedido['precio_ud'] );
+                            Log::info('unidades ' .  $productoPedido['unidades']);
                             Log::info('precio: ' . ($productoPedido['precio_ud'] * $productoPedido['unidades']));
                             Log::info('iva: ' . ($iva->iva / 100));
                             Log::info('IVA calculado: ' . $total_iva);
