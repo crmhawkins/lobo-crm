@@ -40,6 +40,8 @@ use App\Models\EmpresasTransporte;
 use App\Models\ProductosMarketingPedidoPack;
 use App\Models\Direcciones;
 use App\Models\Albaran;
+use Illuminate\Support\Facades\Log; // Asegúrate de importar esto al inicio del archivo
+
 
 
 class EditComponent extends Component
@@ -1898,9 +1900,12 @@ public function setPrecioEstimadoMarketing()
                     //dd($iva);
                     if($this->descuento == 1){
                         //dd($this->descuento);
-                        $total_iva += round((($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100));
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades']) * (1 - ($this->porcentaje_descuento / 100))) * ($iva->iva / 100);
                     }else{
-                        $total_iva += round((($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100));
+                        $total_iva += (($productoPedido['precio_ud'] * $productoPedido['unidades'])) * ($iva->iva / 100);
+                            Log::info('precio: ' . ($productoPedido['precio_ud'] * $productoPedido['unidades']));
+                            Log::info('iva: ' . ($iva->iva / 100));
+                            Log::info('IVA calculado: ' . $total_iva);
                     }
                 }
             }
