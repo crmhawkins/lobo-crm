@@ -1066,8 +1066,9 @@ public function addProductosMarketing($id)
     }
 
     // Si el usuario no ha especificado un precio, el precio por defecto es 0.01
-    $precioUnitario = $this->precio_producto_marketing ?? 0.01;
-    $precioTotal = $precioUnitario * $this->unidades_producto;
+   $precioUnitario = (float) ($this->precio_producto_marketing !== '' ? $this->precio_producto_marketing : 0);
+    $unidades = (float) ($this->unidades_producto !== '' ? $this->unidades_producto : 0);
+    $precioTotal = $precioUnitario * $unidades;
 
     // Añadir el producto de marketing al array de productos del pedido
     $producto_existe = false;
