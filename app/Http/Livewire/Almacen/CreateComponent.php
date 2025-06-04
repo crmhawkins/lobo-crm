@@ -1233,7 +1233,10 @@ class CreateComponent extends Component
                 'unidades_old' => $cantidadStock, // Asignar lo que este lote puede dar
                 'precio_ud' => $this->productos_pedido[$rowIndex]['precio_ud'],
                 'precio_total' => $cantidadStock * $this->productos_pedido[$rowIndex]['precio_ud'],
-                'lote_id' => $entradaStock->id
+                'lote_id' => $entradaStock->id,
+                'is_pack' => $this->productos_pedido[$rowIndex]['is_pack'] ?? false,
+                'productos_asociados' => $this->productos_pedido[$rowIndex]['productos_asociados'] ?? [],
+                'productos_asociados_marketing' => $this->productos_pedido[$rowIndex]['productos_asociados_marketing'] ?? [],
             ];
 
 
