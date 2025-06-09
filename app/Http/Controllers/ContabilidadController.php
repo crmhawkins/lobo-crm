@@ -1195,6 +1195,7 @@ class ContabilidadController extends Controller
             ? Carbon::parse($request->fecha)->toDateString()
             : Carbon::now()->toDateString();
 
+        // Facturas impagadas antes de la fecha
         $clientesConDeuda = DB::table('facturas')
             ->join('clientes', 'facturas.cliente_id', '=', 'clientes.id')
             ->select(
@@ -1203,6 +1204,7 @@ class ContabilidadController extends Controller
                 DB::raw('SUM(facturas.total) as total_impagado'),
                 DB::raw('COUNT(*) as facturas_count')
             )
+            ->whereDate('facturas.created_at', '<=', $fechaLimite) // <-- Añadido
             ->whereNotIn('facturas.id', function ($subquery) use ($fechaLimite) {
                 $subquery->select('pedido_id')
                     ->from('caja')
@@ -1213,6 +1215,7 @@ class ContabilidadController extends Controller
             ->groupBy('facturas.cliente_id', 'clientes.nombre')
             ->get();
 
+        // Gastos impagados antes de la fecha
         $gastosPorProveedor = DB::table('caja')
             ->join('proveedores', 'caja.poveedor_id', '=', 'proveedores.id')
             ->select(
@@ -1222,14 +1225,13 @@ class ContabilidadController extends Controller
                 DB::raw('COUNT(*) as gastos_count')
             )
             ->where('caja.tipo_movimiento', 'gasto')
+            ->whereDate('caja.fecha', '<=', $fechaLimite) // <-- Añadido
             ->where(function ($query) use ($fechaLimite) {
                 $query->whereNull('caja.fechaPago')
                     ->orWhereDate('caja.fechaPago', '>', $fechaLimite);
             })
             ->groupBy('proveedores.id', 'proveedores.nombre')
             ->get();
-
-
 
         return view('contabilidad.deuda', [
             'clientes' => $clientesConDeuda,
