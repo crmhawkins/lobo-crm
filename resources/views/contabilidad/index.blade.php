@@ -101,7 +101,7 @@
                         <li><a class="dropdown-item" href="{{ route('admin.subCuentasHijaContables.index') }}">Sub-Cuentas Hijas</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.grupoContabilidad.index') }}">Grupos Contables</a></li>
                         <li><a class="dropdown-item" href="{{ route('admin.subGrupoContabilidad.index') }}">Sub-Grupos Contables</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.contabilidad.deudaAFecha') }}">Pendiente por fecha</a></li>
+                        <li><a class="dropdown-item" href="{{ route('contabilidad.deudaAFecha') }}">Pendiente por fecha</a></li>
 
                     </ul>
                 </div>
