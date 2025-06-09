@@ -296,6 +296,7 @@ Route::group(['middleware' => 'is.admin', 'prefix' => 'admin'], function () {
     Route::get('/contabilidad/balancesituacion', [ContabilidadController::class, 'balanceSituacion'])->name('contabilidad.balanceSituacion');
     Route::get('/empresas-transporte', [EmpresasTransporte::class , 'index'])->name('empresas-transporte.index');
 
+    Route::get('/deuda-a-fecha',[ContabilidadController::class, 'deudaAFecha'])->name('contabilidad.deudaAFecha');
 
 
 

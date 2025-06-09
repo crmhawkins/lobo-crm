@@ -8,10 +8,13 @@ use App\Models\Proveedores;
 
 use App\Helpers\GlobalFunctions;
 use App\Models\CuentasContable;
+use App\Models\Facturas;
 use App\Models\SubCuentaContable;
 use App\Models\SubCuentaHijo;
 use App\Models\GrupoContable;
 use App\Models\SubGrupoContable;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ContabilidadController extends Controller
 {
@@ -298,7 +301,7 @@ class ContabilidadController extends Controller
     private function calcularTotalPorCuentas($cajas, $reglasCuentas)
     {
         $total = 0;
-        
+
         foreach ($cajas as $caja) {
             $cuentaContable = null;
             $totalCaja = $caja->total;
@@ -688,7 +691,7 @@ class ContabilidadController extends Controller
         $impuestosBeneficio = $this->calcularTotalPorCuentas($cajasNegocios, $reglasImpuestosBeneficio);
 
         $ResultadoEjercicio = $totalPrimero + $totalResultadosFinancieros + $impuestosBeneficio;
-        return view('contabilidad.pedidasganancias', compact('totalNegocios', 'variacionProductos', 'trabajosRealizados', 'aprovisionamientos', 'ingresosExplotacion', 'gastoPersonal', 'otrosGastosExplotacion', 'inmovilizado', 'subvencionesNoFinancieras', 'excesodeProvisiones', 'deterioroInmovilizado', 'totalPrimero', 'ingresosFinancieros' , 'gastosFinancieros', 'variacionInstrumentosFinancieros', 'diferenciasCambio', 'deterioroEnajenaciones', 'totalResultadosFinancieros', 'ResultadoEjercicio' , 'impuestosBeneficio' , 'year'));   
+        return view('contabilidad.pedidasganancias', compact('totalNegocios', 'variacionProductos', 'trabajosRealizados', 'aprovisionamientos', 'ingresosExplotacion', 'gastoPersonal', 'otrosGastosExplotacion', 'inmovilizado', 'subvencionesNoFinancieras', 'excesodeProvisiones', 'deterioroInmovilizado', 'totalPrimero', 'ingresosFinancieros' , 'gastosFinancieros', 'variacionInstrumentosFinancieros', 'diferenciasCambio', 'deterioroEnajenaciones', 'totalResultadosFinancieros', 'ResultadoEjercicio' , 'impuestosBeneficio' , 'year'));
 
 
 
@@ -782,7 +785,7 @@ class ContabilidadController extends Controller
             '2944' => '-',
             '2953' => '-',
             '2954' => '-',
-            
+
         ];
 
         $inversionesFinancierasLargoPlazo = [
@@ -810,8 +813,8 @@ class ContabilidadController extends Controller
 
         $activosDiferidos = [
             '474' => '+',
-            
-            
+
+
         ];
 
         $existencias = [
@@ -824,7 +827,7 @@ class ContabilidadController extends Controller
             '36' => '+',
             '39' => '-',
             '407' => '+',
-            
+
         ];
 
         $deudores = [
@@ -845,10 +848,10 @@ class ContabilidadController extends Controller
             '471' => '+',
             '472' => '+',
             '544' => '+',
-               
+
         ];
 
-        
+
         $inversionesacortoPlazo = [
             '5303' => '+',
             '5304' => '+',
@@ -872,10 +875,10 @@ class ContabilidadController extends Controller
             '5944' => '-',
             '5953' => '-',
             '5954' => '-',
-            
-            
-            
-            
+
+
+
+
         ];
 
         $periodificacionesCortoPlazo = [
@@ -922,13 +925,13 @@ class ContabilidadController extends Controller
         $otrosAportacionesSocios = [
             '118' => '+',
         ];
-        
+
 
         $resultadoEjercicio = [
             '129' => '+',
         ];
 
-        
+
         $dividendoACuenta = [
             '557' => '-',
         ];
@@ -976,11 +979,11 @@ class ContabilidadController extends Controller
         $pasivosImpuestoDiferido = [
             '479' => '+',
         ];
-        
+
         $periodificacionesLargoPlazo = [
             '181' => '+',
         ];
-            
+
         $provisionesCortoPlazo = [
             '499' => '+',
             '529' => '+',
@@ -1018,7 +1021,7 @@ class ContabilidadController extends Controller
             '5595' => '+',
             '560' => '+',
             '561' => '+',
-            
+
 
         ];
 
@@ -1037,7 +1040,7 @@ class ContabilidadController extends Controller
             '5524' => '+',
             '5963' => '-',
             '5964' => '-',
-            
+
         ];
 
         $acreedoresComercialesOtrasCuentas = [
@@ -1053,15 +1056,15 @@ class ContabilidadController extends Controller
             '475' => '+',
             '476' => '+',
             '477' => '+',
-            
+
         ];
 
         $periodificacionesCortoPlazo2 = [
             '485' => '+',
             '568' => '+',
         ];
-        
-        
+
+
 
         $inmovilizadoIntangible = $this->calcularTotalPorCuentas($cajasNegocios, $reglasInmovilizadoIntangible);
 
@@ -1106,7 +1109,7 @@ class ContabilidadController extends Controller
 
 
         return view('contabilidad.balancesituacion', compact('inmovilizadoIntangible', 'inmovilizadoMaterial' , 'inversionesInmobiliarias' , 'inversionesLargoPlazo'
-        , 'inversionesFinancierasLargoPlazo' , 'activosDiferidos' , 'existencias' , 'deudores' , 'inversionesacortoPlazo' , 'periodificacionesCortoPlazo' 
+        , 'inversionesFinancierasLargoPlazo' , 'activosDiferidos' , 'existencias' , 'deudores' , 'inversionesacortoPlazo' , 'periodificacionesCortoPlazo'
         , 'efectivoOtrosActivos', 'totalActivo' , 'capital' , 'primaDeEmision' , 'reservas' , 'accionesParticipaciones' , 'resultadosEjerciciosAnteriores'
         , 'otrosAportacionesSocios' , 'resultadoEjercicio' , 'dividendoACuenta' , 'subvencionesDonacionesLegados' , 'provisionesLargoPlazo'
         , 'deudasLargoPlazo' , 'deudasConEmpresasGrupoAsociadasLargoPlazo' , 'pasivosImpuestoDiferido' , 'periodificacionesLargoPlazo'
@@ -1184,5 +1187,54 @@ class ContabilidadController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function deudaAFecha(Request $request)
+    {
+        $fechaLimite = $request->fecha
+            ? Carbon::parse($request->fecha)->toDateString()
+            : Carbon::now()->toDateString();
+
+        $clientesConDeuda = DB::table('facturas')
+            ->join('clientes', 'facturas.cliente_id', '=', 'clientes.id')
+            ->select(
+                'facturas.cliente_id',
+                'clientes.nombre',
+                DB::raw('SUM(facturas.total) as total_impagado'),
+                DB::raw('COUNT(*) as facturas_count')
+            )
+            ->whereNotIn('facturas.id', function ($subquery) use ($fechaLimite) {
+                $subquery->select('pedido_id')
+                    ->from('caja')
+                    ->where('tipo_movimiento', 'ingreso')
+                    ->whereNotNull('pedido_id')
+                    ->whereDate('fecha', '<=', $fechaLimite);
+            })
+            ->groupBy('facturas.cliente_id', 'clientes.nombre')
+            ->get();
+
+        $gastosPorProveedor = DB::table('caja')
+            ->join('proveedores', 'caja.poveedor_id', '=', 'proveedores.id')
+            ->select(
+                'proveedores.id as proveedor_id',
+                'proveedores.nombre as proveedor_nombre',
+                DB::raw('SUM(caja.total) as total_impagado'),
+                DB::raw('COUNT(*) as gastos_count')
+            )
+            ->where('caja.tipo_movimiento', 'gasto')
+            ->where(function ($query) use ($fechaLimite) {
+                $query->whereNull('caja.fechaPago')
+                    ->orWhereDate('caja.fechaPago', '>', $fechaLimite);
+            })
+            ->groupBy('proveedores.id', 'proveedores.nombre')
+            ->get();
+
+
+
+        return view('contabilidad.deuda', [
+            'clientes' => $clientesConDeuda,
+            'proveedores' => $gastosPorProveedor,
+            'fecha' => $fechaLimite,
+        ]);
     }
 }
